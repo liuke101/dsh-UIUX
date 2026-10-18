@@ -53,6 +53,8 @@ node tools/check.mjs           # 条目校验 + 仓库引用规则 + 页面产�
 
 前两个脚本要读 `packages/client/` 下的源码，因此必须把本目录放在 deepseek-harness 检出的 `UIUX/` 位置再运行；`build.mjs` 与 `check.mjs` 只需要本目录自己的数据。
 
+源码链接默认指向上游仓库（`https://github.com/deepseek-ai/deepseek-harness/blob/master/<路径>#L<行号>`），这样发布出去的副本点得开；加 `--source-base local` 则改回相对路径，供在检出内离线查阅。`check.mjs` 会核对这些链接目标是否都属于当前检出的已跟踪文件——发布副本因此不会带着失效链接出门。
+
 `check.mjs` 会做三件事：校验每个条目的必填字段、类名归属、设计变量与源码行号；按 `scripts/verify-repository-references.ts` 的规则确认目录内没有提交号或组织 URL；统计五张页面的体积与预览数量。
 
 页面是中文的，而生成机器上不一定装了中文字体。构建脚本会统计页面用到的全部汉字写入 `data/cjk-charset.txt`，并在缺少覆盖时提示；此时先跑字体子集再重新构建：

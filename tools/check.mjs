@@ -82,6 +82,41 @@ function referenceCheck() {
   return findings.length === 0
 }
 
+/**
+ * Every upstream source link must name a file tracked at the published
+ * revision, otherwise the catalog ships dead references.
+ */
+function sourceLinkCheck() {
+  process.stdout.write('\n== 源码链接（指向上游仓库的每一个文件）\n')
+  const pattern = /https:\/\/github\.com\/deepseek-ai\/deepseek-harness\/blob\/[^/]+\/([^"#?]+)/g
+  const targets = new Set()
+  for (const name of readdirSync(UIUX).filter((file) => file.endsWith('.html'))) {
+    for (const match of readFileSync(join(UIUX, name), 'utf8').matchAll(pattern)) targets.add(match[1])
+  }
+  if (targets.size === 0) {
+    process.stdout.write('  页面使用相对源码链接，跳过（构建时加了 --source-base local）\n')
+    return true
+  }
+  let tracked
+  try {
+    tracked = new Set(
+      execFileSync('git', ['ls-files'], { cwd: ROOT, encoding: 'utf8', maxBuffer: 1 << 28 })
+        .split('\n')
+        .filter(Boolean),
+    )
+  } catch {
+    process.stdout.write('  不在 git 检出内，跳过\n')
+    return true
+  }
+  const missing = [...targets].filter((path) => !tracked.has(path))
+  process.stdout.write(
+    missing.length === 0
+      ? `  ok — ${targets.size} 个链接目标都是当前检出的已跟踪文件\n`
+      : `${missing.map((path) => `  - 未跟踪 ${path}`).join('\n')}\n`,
+  )
+  return missing.length === 0
+}
+
 /** Page inventory: size and the counts each page should carry. */
 function pageTotals() {
   process.stdout.write('\n== 页面产物\n')
@@ -104,6 +139,7 @@ function pageTotals() {
 const ok = [
   run('条目校验（tools/validate.mjs）', [join(HERE, 'validate.mjs')]),
   referenceCheck(),
+  sourceLinkCheck(),
   pageTotals(),
 ].every(Boolean)
 

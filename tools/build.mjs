@@ -41,6 +41,22 @@ function findCheckout(start) {
   return null
 }
 
+/**
+ * Where a source reference points. The default resolves against the upstream
+ * repository so a published copy's links work; `--source-base local` emits the
+ * relative path a sibling checkout uses instead.
+ */
+const UPSTREAM = 'https://github.com/deepseek-ai/deepseek-harness/blob/master/'
+const baseFlag = argv.indexOf('--source-base')
+const SOURCE_BASE =
+  baseFlag >= 0 ? (['local', 'relative', 'none'].includes(argv[baseFlag + 1]) ? null : argv[baseFlag + 1]) : UPSTREAM
+
+/** Absolute upstream URL, or the relative path when no base is configured. */
+function sourceHref(path, line) {
+  const suffix = line == null ? '' : `#L${line}`
+  return SOURCE_BASE == null ? `../${path}${suffix}` : `${SOURCE_BASE}${path}${suffix}`
+}
+
 const checkout = findCheckout(CATALOG)
 const ROOT = rootFlag >= 0 ? argv[rootFlag + 1] : (checkout ?? join(CATALOG, '..'))
 if (checkout == null && rootFlag < 0) {
@@ -298,7 +314,7 @@ function card(entry) {
       <h3>${esc(entry.zh ?? entry.name)}</h3>
       <code class="var">${esc(entry.exportName ?? entry.name)}</code>
     </div>
-    <a class="src" href="../${esc(file)}${line ? `#L${esc(line)}` : ''}" target="_blank" rel="noreferrer">${esc(file)}${line ? `:${esc(line)}` : ''}</a>
+    <a class="src" href="${esc(sourceHref(file, line))}" target="_blank" rel="noreferrer">${esc(file)}${line ? `:${esc(line)}` : ''}</a>
   </header>
   <p class="summary">${entry.summary ?? ''}</p>
   <div class="specs">
@@ -307,7 +323,7 @@ ${(entry.specimens ?? []).map((specimen) => stage(specimen, entry)).join('\n')}
   ${entry.notes ? `<p class="notes">${entry.notes}</p>` : ''}
   ${propsTable(entry)}
   ${tokens ? `<div class="tokrow"><span class="toklabel">设计变量</span>${tokens}</div>` : ''}
-  ${entry.docs ? `<a class="doclink" href="../${esc(entry.docs)}">实现说明 ↗</a>` : ''}
+  ${entry.docs ? `<a class="doclink" href="${esc(sourceHref(entry.docs))}" target="_blank" rel="noreferrer">实现说明 ↗</a>` : ''}
 </article>`
 }
 
@@ -656,7 +672,7 @@ function indexPage() {
 
 <section class="section">
   <h2>界面约定</h2>
-  <p class="lead">这些规则来自 <a href="../docs/web-styling.md" target="_blank" rel="noreferrer">docs/web-styling.md</a> 与 <code>packages/client/AGENTS.md</code>，是查阅这套组件时最容易判断错的地方。</p>
+  <p class="lead">这些规则来自 <a href="${esc(sourceHref('docs/web-styling.md'))}" target="_blank" rel="noreferrer">docs/web-styling.md</a> 与 <code>packages/client/AGENTS.md</code>，是查阅这套组件时最容易判断错的地方。</p>
   <div class="cards">
     <article class="card"><header class="card-head"><div class="card-title"><h3>只用变量，不写字面值</h3><code class="var">--dsw-alias-*</code></div></header>
     <p class="summary">功能组件的 CSS 只消费语义别名，浅色 / 深色覆盖属于 ui-theme；不引入第二套主题，也不使用组件库或 Tailwind。自定义属性会穿过 Shadow DOM 边界，这正是本目录的示例能跟随主题切换的原因。</p></article>
@@ -673,11 +689,11 @@ function indexPage() {
   <h2>怎么读</h2>
   <p class="lead">四张子页分别对应四种查阅路径。</p>
   <div class="cards">
-    <article class="card"><header class="card-head"><div class="card-title"><h3>基础组件库</h3><code class="var">ui-primitives</code></div><a class="src" href="../packages/client/ui-primitives/README.md" target="_blank" rel="noreferrer">packages/client/ui-primitives/README.md</a></header>
+    <article class="card"><header class="card-head"><div class="card-title"><h3>基础组件库</h3><code class="var">ui-primitives</code></div><a class="src" href="${esc(sourceHref('packages/client/ui-primitives/README.md'))}" target="_blank" rel="noreferrer">packages/client/ui-primitives/README.md</a></header>
     <p class="summary">共享原子：按钮、开关、标签、菜单、弹窗、工具调用结果卡片、Markdown 渲染器、设置表单。写新组件前的第一站——已存在的控件不允许复制第二份。</p></article>
     <article class="card"><header class="card-head"><div class="card-title"><h3>产品组件</h3><code class="var">packages/client/ui-*</code></div></header>
     <p class="summary">会话气泡、思考块、输入框、侧边栏、设置页、任务面板等由功能包拥有、通过插槽组合的组件。</p></article>
-    <article class="card"><header class="card-head"><div class="card-title"><h3>设计变量</h3><code class="var">--dsw-*</code></div><a class="src" href="../packages/client/ui-theme/src/styles/design-platform.css" target="_blank" rel="noreferrer">ui-theme/src/styles/design-platform.css</a></header>
+    <article class="card"><header class="card-head"><div class="card-title"><h3>设计变量</h3><code class="var">--dsw-*</code></div><a class="src" href="${esc(sourceHref('packages/client/ui-theme/src/styles/design-platform.css'))}" target="_blank" rel="noreferrer">ui-theme/src/styles/design-platform.css</a></header>
     <p class="summary">主题层拥有的静态色板、语义别名、圆角、字体排印、浮层描边与投影。功能组件只消费语义别名，不写字面颜色。</p></article>
     <article class="card"><header class="card-head"><div class="card-title"><h3>全量清单</h3><code class="var">components.json</code></div></header>
     <p class="summary">全部 ${inventory.totals.components} 个组件的可检索表格，含导出变量名、源码位置、CSS 类名与设计变量，可直接定位到 <code>.tsx</code> 行号。</p></article>
@@ -704,7 +720,7 @@ node tools/build.mjs                # 组装 index / primitives / product / toke
   </div></div>
 </section>
 
-<p class="footnote">数据源：<code>packages/client/**/src/**/*.tsx</code>、<code>packages/experimental/**</code>、<code>packages/extensions/**</code> 与 <code>packages/client/ui-theme/src/styles/*.css</code>。源码快照日期 ${esc(inventory.sourceDate)}。语言：中文说明 + 英文标识符（与源码一致）。</p>`,
+<p class="footnote">数据源：<code>packages/client/**/src/**/*.tsx</code>、<code>packages/experimental/**</code>、<code>packages/extensions/**</code> 与 <code>packages/client/ui-theme/src/styles/*.css</code>。源码快照日期 ${esc(inventory.sourceDate)}。${SOURCE_BASE == null ? '源码链接使用相对路径，在 deepseek-harness 检出中打开有效。' : `源码链接指向 <a href="${esc(SOURCE_BASE.replace(/blob\/[^/]+\/$/, ''))}" target="_blank" rel="noreferrer">${esc(SOURCE_BASE.replace(/^https:\/\/github\.com\//, '').replace(/\/blob\//, ' @ ').replace(/\/$/, ''))}</a>，即生成这份目录时的上游版本。`}语言：中文说明 + 英文标识符（与源码一致）。</p>`,
   })
 }
 
@@ -824,7 +840,7 @@ function inventoryPage() {
   <td>${name}${curatedEntry?.zh ? ` <span class="zh">${esc(curatedEntry.zh)}</span>` : ''}</td>
   <td class="dim"><span class="clamp">${esc(component.doc ? component.doc.split('\n')[0] : '')}</span></td>
   <td><span class="pill k-${esc(component.kind)}">${esc(component.kind)}</span></td>
-  <td class="mono"><a href="../${esc(component.file)}#L${component.line}" target="_blank" rel="noreferrer">${esc(component.file.replace('packages/client/', '').replace('packages/', ''))}:${component.line}</a></td>
+  <td class="mono"><a href="${esc(sourceHref(component.file, component.line))}" target="_blank" rel="noreferrer">${esc(component.file.replace('packages/client/', '').replace('packages/', ''))}:${component.line}</a></td>
   <td class="mono dim">${esc(component.propsType ?? '—')}</td>
   <td class="mono dim">${esc((component.cssClasses ?? []).join(' ') || '—')}</td>
   <td class="dim">${(component.tokens ?? []).length || '—'}</td>

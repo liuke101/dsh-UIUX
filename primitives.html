@@ -1061,7 +1061,7 @@ td .zh { color: var(--dsw-alias-label-caption); font: var(--dsw-font-xxxs-11); m
       <h3>按钮</h3>
       <code class="var">Button</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/Button.tsx#L27" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/Button.tsx:27</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/Button.tsx#L27" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/Button.tsx:27</a>
   </header>
   <p class="summary">点击动作控件。<code>variant</code> 选择 <code>primary</code> / <code>ghost</code> / <code>outline</code> / <code>toolbar</code> 四族填充，<code>size</code> 选择 36px 高的 <code>md</code>（12px 圆角）或 28px 高的 <code>sm</code>（8px 圆角）。<code>ref</code> 指向原生 button，供焦点管理与浮层锚点使用。</p>
   <div class="specs">
@@ -1341,7 +1341,7 @@ td .zh { color: var(--dsw-alias-label-caption); font: var(--dsw-font-xxxs-11); m
       <h3>开关</h3>
       <code class="var">Switch</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/Switch.tsx#L18" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/Switch.tsx:18</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/Switch.tsx#L18" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/Switch.tsx:18</a>
   </header>
   <p class="summary">两态开关，固定 36×20。开合外观绑定在 <code>aria-checked</code> 上而不是另加一个类，因此视觉状态不可能与辅助技术读到的状态不一致。<code>label</code> 为必填，控件无法在不具名的情况下出厂。</p>
   <div class="specs">
@@ -1422,7 +1422,7 @@ td .zh { color: var(--dsw-alias-label-caption); font: var(--dsw-font-xxxs-11); m
       <h3>复选框</h3>
       <code class="var">Checkbox</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/Checkbox.tsx#L16" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/Checkbox.tsx:16</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/Checkbox.tsx#L16" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/Checkbox.tsx:16</a>
   </header>
   <p class="summary">受控的原生复选框：外层 <code>&lt;label&gt;</code> 包住 16×16 的原生 <code>&lt;input type="checkbox"&gt;</code> 和 14px/20px 的可见文案，两者同属一个 6px 间距的点击区域，键盘与表单语义全部来自浏览器。<code>label</code> 同时是可见文案和无障碍名称，控件不会以无名状态出厂。<code>:has(input:disabled)</code> 把禁用态整体降到 50% 不透明度并把指针还原为默认。</p>
   <div class="specs">
@@ -1563,7 +1563,7 @@ td .zh { color: var(--dsw-alias-label-caption); font: var(--dsw-font-xxxs-11); m
       <h3>分段控件</h3>
       <code class="var">SegmentedControl</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/SegmentedControl.tsx#L70" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/SegmentedControl.tsx:70</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/SegmentedControl.tsx#L70" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/SegmentedControl.tsx:70</a>
   </header>
   <p class="summary">等宽分段选择器，整条轨道是 <code>role="tablist"</code> 的 <code>inline-grid</code>：2px 间隙、4px 内边距、<code>--dsw-radius-md</code> 圆角，底色与悬停色同为 <code>--dsw-alias-interactive-bg-hover</code>，唯一抬起的是滑块 <code>.indicator</code>（<code>--dsw-alias-bg-layer-1</code> 填充 + <code>--dsw-elevation-soft</code> 阴影，160ms 位移）。每段 28px 高、13px/20px 字号、左右 16px 内边距。段数与选中下标通过行内自定义属性 <code>--dsh-segment-count</code> / <code>--dsh-segment-index</code> 交给 CSS，滑块宽度与位移全部算出，不测量 DOM；方向键循环、Home/End 跳首尾，并跳过禁用段。</p>
   <div class="specs">
@@ -1848,7 +1848,7 @@ td .zh { color: var(--dsw-alias-label-caption); font: var(--dsw-font-xxxs-11); m
       <h3>分段标签</h3>
       <code class="var">SegmentedTabs</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/SegmentedTabs.tsx#L24" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/SegmentedTabs.tsx:24</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/SegmentedTabs.tsx#L24" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/SegmentedTabs.tsx:24</a>
   </header>
   <p class="summary">只出标签条、不出面板的分段标签页：外层是 4px 内边距、<code>--dsw-radius-lg</code> 圆角、<code>--dsw-alias-bg-module-platform</code> 底的 <code>role="tablist"</code> 网格，每一段复用 <code>Pill</code> 再叠一层 <code>.tab</code>（34px 高、14px 字号、居中、透明底），滑块是独立的 <code>.indicator</code>（<code>--dsw-alias-bg-layer-3</code> 填充 + 0.5px <code>--dsw-alias-border-l3</code> 描边，180ms 位移）。等宽由 <code>grid-template-columns: repeat(n, minmax(0, 1fr))</code> 保证，滑块宽度与 <code>translateX</code> 由行内样式给出。Left/Right 循环、Home/End 跳首尾，键盘选择同时移动焦点，只有选中段是可停靠点。</p>
   <div class="specs">
@@ -2159,7 +2159,7 @@ td .zh { color: var(--dsw-alias-label-caption); font: var(--dsw-font-xxxs-11); m
       <h3>行内编辑器</h3>
       <code class="var">InlineEditor</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/InlineEditor.tsx#L20" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/InlineEditor.tsx:20</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/InlineEditor.tsx#L20" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/InlineEditor.tsx:20</a>
   </header>
   <p class="summary">自动聚焦的多行行内编辑器，用来改短草稿：队列里的待发消息、目标条的文本。用 <code>textarea</code> 而不是 <code>input</code>，因为单行输入会吞掉换行；盒子 28px 起、随文本长高，六行（<code>max-height: 127px</code>）之后内部滚动，宽度变化由 <code>ResizeObserver</code> 重新贴合。Enter 保存、Shift+Enter 换行、IME 组合中的 Enter 不生效、Escape 取消。外观是 13px 的表单框：0.5px <code>--dsw-alias-border-l4</code> 边框、<code>--dsw-radius-sm</code> 圆角、<code>--dsw-alias-bg-base</code> 底，聚焦时边框转为 <code>--dsw-alias-state-business-primary</code>。</p>
   <div class="specs">
@@ -2292,7 +2292,7 @@ td .zh { color: var(--dsw-alias-label-caption); font: var(--dsw-font-xxxs-11); m
       <h3>单行输入</h3>
       <code class="var">Input</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/Input.tsx#L14" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/Input.tsx:14</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/Input.tsx#L14" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/Input.tsx:14</a>
   </header>
   <p class="summary">单行文本输入原子，用于搜索框与行内小表单：外层 <code>.wrap</code> 是 32px 高、0.5px <code>--dsw-alias-border-l4</code> 边框、<code>--dsw-radius-md</code> 圆角、<code>--dsw-alias-bg-layer-1</code> 底的 <code>inline-flex</code>，可选 16px 前置图标走 <code>--dsw-alias-label-tertiary</code>；内层原生 <code>input</code> 无边框无底色，占位符用 <code>--dsw-alias-label-dimmed</code>。焦点只改外层边框色（<code>.wrap:focus-within</code>），不画焦点环。<code>ref</code> 指向原生 input，其余 input 属性原样透传。</p>
   <div class="specs">
@@ -2460,7 +2460,7 @@ td .zh { color: var(--dsw-alias-label-caption); font: var(--dsw-font-xxxs-11); m
       <h3>快捷键</h3>
       <code class="var">ShortcutKeys</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/ShortcutKeys.tsx#L10" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/ShortcutKeys.tsx:10</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/ShortcutKeys.tsx#L10" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/ShortcutKeys.tsx:10</a>
   </header>
   <p class="summary">快捷键键帽，只画键、不持有默认绑定也不持有文案：调用方给的是已经平台化的按键标签数组。<code>variant="plain"</code>（默认）是菜单与行内提示用的无框键帽：12px/16px、<code>--dsw-alias-label-tertiary</code>、3px 间距；<code>variant="tooltip"</code> 换成 11px/14px、16px 见方的浅色键帽（<code>--dsw-alias-tooltip-key-bg</code>），给深色气泡使用。数组里的 <code>'+'</code> 渲染成 <code>.separator</code>；tooltip 变体下含 <code>'+'</code> 的整组再加 <code>.joined</code>，把 Ctrl + Enter 合成一个填充块（macOS 的 ⌘ Enter 不含加号，保持相邻键帽）。</p>
   <div class="specs">
@@ -2633,7 +2633,7 @@ td .zh { color: var(--dsw-alias-label-caption); font: var(--dsw-font-xxxs-11); m
       <h3>连接指示</h3>
       <code class="var">ConnectionIndicator</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/ConnectionIndicator.tsx#L29" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/ConnectionIndicator.tsx:29</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/ConnectionIndicator.tsx#L29" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/ConnectionIndicator.tsx:29</a>
   </header>
   <p class="summary">连接恢复指示器，28px 高的内联控件，按状态换外观：<code>disconnected</code> 是琥珀色按钮（刷新图标 + 已写明点击重连的文案），<code>connecting</code> 复用 <code>StateDot</code> 的 14px 加载环并在文案后每 500ms 逐点点亮三个点，<code>recovered</code> 换成成功色 <code>role="status"</code>。警告态与成功态分别是 <code>--dsw-alias-state-warn-tertiary</code> / <code>--dsw-alias-state-success-tertiary</code> 底，配 20% 同色描边。出现时 150ms 淡入，<code>state</code> 变回 <code>undefined</code> 时先加 <code>.leaving</code> 淡出 150ms 再卸载。</p>
   <div class="specs">
@@ -3361,7 +3361,7 @@ td .zh { color: var(--dsw-alias-label-caption); font: var(--dsw-font-xxxs-11); m
       <h3>文字微光</h3>
       <code class="var">TextShimmer</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/TextShimmer.tsx#L37" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/TextShimmer.tsx:37</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/TextShimmer.tsx#L37" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/TextShimmer.tsx:37</a>
   </header>
   <p class="summary">给一行文字加一道从左到右扫过的高亮：基础层是真实、可选中、可读屏的文本（<code>data-shimmer</code> 只标记运行状态），运行中再叠一层 <code>aria-hidden</code> 且 <code>inert</code> 的装饰副本，扫光由 105° 渐变蒙版裁出，1.5s 一轮、延迟 0.3s。字符串子节点在装饰层用 <code>data-shimmer-text</code> + <code>::after</code> 复现，所以文本更新不会打断动画；组合子节点会整体渲染两遍，必须是无副作用、无 id 的表现型内容。图标与折叠箭头留在组件外，分隔符用 <code>data-shimmer-decoration</code> 让填充跟随高亮。</p>
   <div class="specs">
@@ -3691,7 +3691,7 @@ td .zh { color: var(--dsw-alias-label-caption); font: var(--dsw-font-xxxs-11); m
       <h3>胶囊</h3>
       <code class="var">Pill</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/Pill.tsx#L17" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/Pill.tsx:17</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/Pill.tsx#L17" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/Pill.tsx:17</a>
   </header>
   <p class="summary">24px 文字行高度的胶囊控件。传入 <code>onClick</code> 时渲染为可选择的 button（视图切换、过滤器），否则渲染为静态 span（例如 <code>TerminalBlock</code> 的退出状态）。11px 的只读徽标是 <code>Tag</code>——尺寸与可交互性共同区分两者。</p>
   <div class="specs">
@@ -3749,7 +3749,7 @@ td .zh { color: var(--dsw-alias-label-caption); font: var(--dsw-font-xxxs-11); m
       <h3>徽标</h3>
       <code class="var">Tag</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/Tag.tsx#L22" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/Tag.tsx:22</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/Tag.tsx#L22" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/Tag.tsx:22</a>
   </header>
   <p class="summary">只读胶囊徽标，几何固定为 11px / 17px 行高，只有配色随 <code>tone</code> 变化。<code>tone</code> 提供八种调色：<code>outline</code>、<code>solid</code>、<code>neutral</code>、<code>quiet</code>，以及 success / info / warning / danger 四种状态色。</p>
   <div class="specs">
@@ -3835,7 +3835,7 @@ td .zh { color: var(--dsw-alias-label-caption); font: var(--dsw-font-xxxs-11); m
       <h3>状态点</h3>
       <code class="var">StateDot</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/StateDot.tsx#L60" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/StateDot.tsx:60</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/StateDot.tsx#L60" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/StateDot.tsx:60</a>
   </header>
   <p class="summary">工具调用与任务行的状态标记。<code>done</code> 绿、<code>warning</code> 琥珀、<code>error</code> 红、<code>idle</code> 中性灰都占 10px 布局槽但只画 6px 实心圆；<code>ongoing</code> 是唯一的非圆点状态——14px 旋转加载环，其动画起点固定在文档时间零点，因此列表重排后所有可见加载环仍然同步。<code>appearance="step"</code> 改为步骤样式：完成为实心勾，待办为空心圆。</p>
   <div class="specs">
@@ -4182,7 +4182,7 @@ td .zh { color: var(--dsw-alias-label-caption); font: var(--dsw-font-xxxs-11); m
       <h3>路径标签</h3>
       <code class="var">PathLabel</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/PathLabel.tsx#L14" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/PathLabel.tsx:14</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/PathLabel.tsx#L14" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/PathLabel.tsx:14</a>
   </header>
   <p class="summary">单行文件路径：目录段用 <code>--dsw-alias-label-tertiary</code>，文件名用 <code>--dsw-alias-label-primary</code>，整体 12px / nowrap。<code>pathPartsOf</code> 把路径切成目录与文件名两段，宽度够时整体贴左；溢出时裁掉前端、保住文件名结尾，并从左侧 28px 渐变淡出——淡出由组件在 <code>offsetWidth &gt; clientWidth</code> 时写入的 <code>data-path-clipped</code> 触发，随路径变化与 ResizeObserver 尺寸变化更新。<code>title</code> 恒为完整路径。</p>
   <div class="specs">
@@ -4315,7 +4315,7 @@ td .zh { color: var(--dsw-alias-label-caption); font: var(--dsw-font-xxxs-11); m
       <h3>JSON 树</h3>
       <code class="var">JsonTree</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/JsonTree.tsx#L687" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/JsonTree.tsx:687</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/JsonTree.tsx#L687" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/JsonTree.tsx:687</a>
   </header>
   <p class="summary">只读 JSON 检视树，12px/16px 等宽字体，面板底色 <code>--dsw-alias-bg-layer-1</code>。<code>expandTopLevel</code>（默认 true）让顶层括号各占一行（<code>.topLevelBracket</code>），中间是可折叠的行列表；每个分支行左侧有 8px 宽的三角展开器（展开时旋转 90°），折叠时用 <code>.summary</code> 单行省略号预览内容。字符串按 <code>collapsedStringLines</code>（默认 3 行 = 48px）折叠，并浮出「…展开」入口；悬停行显示 20×16 的复制按钮，右键打开复制菜单（复制值 / JSON / 路径）。</p>
   <div class="specs">
@@ -5397,7 +5397,7 @@ td .zh { color: var(--dsw-alias-label-caption); font: var(--dsw-font-xxxs-11); m
       <h3>展开行</h3>
       <code class="var">DisclosureRow</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/DisclosureRow.tsx#L43" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/DisclosureRow.tsx:43</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/DisclosureRow.tsx#L43" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/DisclosureRow.tsx:43</a>
   </header>
   <p class="summary">24px 高的过程行表头：左侧 16px 图标槽 + 6px 间距 + 13px/24px 标题，静息文字为 <code>--dsw-alias-label-tertiary</code>，悬停转 <code>--dsw-alias-label-secondary</code>。可展开时折叠态显示原图标、悬停换成下拉箭头，展开态固定为上箭头；<code>expandOnRowClick</code> 让整行成为 <code>role="button"</code> 且可键盘触发，否则只有左侧 16px 槽是按钮。<code>headerAccessory</code> 在标题右侧空出 8px 放独立动作，标题行随之收缩到内容宽度。行高、图标槽与字号跟随设置里的 <code>--dsh-content-font-delta</code>。</p>
   <div class="specs">
@@ -6276,7 +6276,7 @@ button.c0-leading {
       <h3>悬停卡</h3>
       <code class="var">HoverCard</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/HoverCard.tsx#L38" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/HoverCard.tsx:38</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/HoverCard.tsx#L38" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/HoverCard.tsx:38</a>
   </header>
   <p class="summary">悬停预览卡。<code>variant="compact"</code> 是锚点右侧 244px 宽、12×16 内边距、圆角 lg 的深色卡（本地变量 <code>--dsw-hovercard-bg: #2C2C2E</code>，两种主题都是深色）；<code>variant="preview"</code> 改成 <code>--dsw-alias-bg-layer-1</code> 面板、无内边距、24px 侧缩进、最高 420px，并带 100ms 透明度过渡；<code>inline</code> 让文件链接留在正文里，悬停或键盘聚焦时弹出菜单材质的 300px 媒体卡。默认停留 500ms（<code>openDelayMs</code>）出现，指针可以移进卡片继续阅读或点击复制。</p>
   <div class="specs">
@@ -6609,7 +6609,7 @@ button.c0-leading {
       <h3>图片预览</h3>
       <code class="var">ImagePreview</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/ImagePreview.tsx#L11" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/ImagePreview.tsx:11</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/ImagePreview.tsx#L11" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/ImagePreview.tsx:11</a>
   </header>
   <p class="summary">Markdown 图片链接的被动预览：固定 180px 高、圆角 sm、<code>--dsw-alias-bg-base</code> 底的容器，图片按 <code>object-fit: contain</code> 居中。图片就绪前 <code>.image</code> 透明（只有 <code>data-ready</code> 才显示），整块覆盖一层居中的 <code>role="status"</code>：加载中显示 16px 弧线图标 + 文案，失败时撤掉图片只留文案。切换 <code>src</code> 会重挂载并回到加载态。</p>
   <div class="specs">
@@ -6730,7 +6730,7 @@ button.c0-leading {
       <h3>原图灯箱</h3>
       <code class="var">ImageLightbox</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/ImageLightbox.tsx#L27" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/ImageLightbox.tsx:27</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/ImageLightbox.tsx#L27" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/ImageLightbox.tsx:27</a>
   </header>
   <p class="summary">原图预览模态：<code>createPortal</code> 到 body 的全视口 fixed 层（<code>z-index: 1000</code>），<code>.stage</code> 从 Windows 标题栏下沿（<code>--dsh-frame-chrome-top</code>）铺满并留 40px 内边距；遮罩读 <code>--dsw-alias-bg-mask-1</code> 与 <code>--dsw-mask-blur</code>。图片最大 1600px 宽、圆角 lg、elevation-prominent 阴影，右上角 20px 处是 36px 圆形关闭按钮。打开时焦点移到关闭按钮，Esc 或点遮罩关闭，卸载时把焦点还给打开者。</p>
   <div class="specs">
@@ -6886,7 +6886,7 @@ button.c0-leading {
       <h3>浮层提示</h3>
       <code class="var">Toast</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/Toast.tsx#L46" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/Toast.tsx:46</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/Toast.tsx#L46" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/Toast.tsx:46</a>
   </header>
   <p class="summary">顶部居中横幅：<code>top: 40px</code>、<code>translateX(-50%)</code>（给了 <code>anchor</code> 就改用锚点中线），<code>z-index: 1100</code> 高于原图灯箱，整块 <code>pointer-events: none</code> 不挡点击，只有动作文字可点。宽度由内容决定（<code>max-content</code>，上限 <code>min(640px, 100vw - 48px)</code>），14px/22px、圆角 lg、<code>--dsw-alias-toast-bg</code> 深色底——浅色与深色主题下都是深色。160ms 滑入后保持 <code>holdMs</code>（默认 3000ms），再 1000ms 淡出，淡出结束调用 <code>onDone</code>；<code>tone="success"</code> 用绿色圆圈勾，否则图标槽保持警告色。</p>
   <div class="specs">
@@ -7250,7 +7250,7 @@ button.c0-leading {
       <h3>气泡提示</h3>
       <code class="var">Tooltip</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/Tooltip.tsx#L62" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/Tooltip.tsx:62</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/Tooltip.tsx#L62" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/Tooltip.tsx:62</a>
   </header>
   <p class="summary">给锚点元素挂悬停/聚焦提示：气泡 13px/20px、3×7 内边距、圆角 sm、<code>--dsw-alias-tooltip-bg</code> 深色底，<code>width: max-content</code> 且上限 50vw，不可断行的路径按 <code>overflow-wrap: break-word</code> 折行。<code>side</code> 选 right / bottom / top，<code>align="end"</code> 让气泡右缘对齐锚点右缘。气泡先以 <code>visibility: hidden</code> 渲染，等 ResizeObserver 量到尺寸后贴边内推（两侧各留 12px），只有对面确实放得下时才翻转；<code>shortcutKeys</code> 会在文字后追加 16px 键帽，<code>portal</code> 时 z-index 升到 1100。</p>
   <div class="specs">
@@ -7616,7 +7616,7 @@ button.c0-leading {
       <h3>下拉菜单</h3>
       <code class="var">Menu</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/Menu.tsx#L168" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/Menu.tsx:168</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/Menu.tsx#L168" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/Menu.tsx:168</a>
   </header>
   <p class="summary">锚定式下拉菜单：<code>anchor</code> 原地渲染触发器，卡片绝对定位在锚点下方 4px（<code>side</code> 可改为上方，<code>align</code> 控制贴左 / 贴右），<code>items</code> 提供数据行、分隔线与分组标题，<code>children</code> 追加 <code>MenuItemButton</code> 组件行，两类行共享同一次键盘遍历与选中后的焦点归还。卡片材质由 <code>MenuSurface</code> 提供（半透明 <code>--dsw-menu-surface-fill</code> 加 <code>--dsw-menu-backdrop-filter</code>），<code>Menu.module.css</code> 只负责几何与悬浮：4px 内边距、R16 外圆角、R12 行、<code>--dsw-elevation-prominent</code> 投影且 <code>border: 0</code>。行高 34px、13/20 字号，<code>dense</code> 压到 30px，<code>compact</code> 整体切到 24px 行 / R12 卡片 / 11px 字号。</p>
   <div class="specs">
@@ -8582,7 +8582,7 @@ html[data-platform='darwin'] .c1-backing {
       <h3>菜单组件行</h3>
       <code class="var">MenuItemButton</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/Menu.tsx#L84" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/Menu.tsx:84</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/Menu.tsx#L84" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/Menu.tsx:84</a>
   </header>
   <p class="summary">Menu 的组件行：渲染一个 <code>role="menuitem"</code> 的 34px 行（14px 图标槽、单行省略标签、右端快捷键、危险行错误色），与数据行同源同一个 <code>.item</code>，因此不需要共享状态就能加入列表的键盘遍历与选中后焦点归还。行本身不持有任何状态：是否在选中后关闭菜单由调用方在 <code>onSelect</code> 里决定。<code>separatorBefore</code> 在这行上方补一条与数据分隔行一致的发丝线，列表首行不画，紧跟数据分隔行时也不重复。</p>
   <div class="specs">
@@ -9380,7 +9380,7 @@ html[data-platform='darwin'] .c1-backing {
       <h3>菜单材质层</h3>
       <code class="var">MenuSurface</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/MenuSurface.tsx#L20" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/MenuSurface.tsx:20</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/MenuSurface.tsx#L20" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/MenuSurface.tsx:20</a>
   </header>
   <p class="summary">菜单材质层，所有下拉、右键菜单、子菜单与自定义列表框共用的卡片外壳：半透明填充 <code>--dsw-menu-surface-fill</code> 与背景模糊 <code>--dsw-menu-backdrop-filter</code> 画在 <code>.material</code> 子层（<code>inset: 0; z-index: -1; border-radius: inherit</code>），<code>.surface</code> 自身只做 <code>isolation: isolate</code>、<code>anchor-name</code> 与 R16 外圆角（<code>compact</code> 切 R12）。内边距、宽度与 <code>--dsw-elevation-prominent</code> 投影（<code>border: 0</code>）由调用方类提供，产品里就是 <code>Menu.list</code> 与模型选择器的 <code>.menu</code>。macOS 上额外渲染一个由 CSS anchor 跟随卡片的 <code>.backing</code>，给 Chromium 提供不透明底，使原生 vibrancy 之上仍能模糊页面内容。</p>
   <div class="specs">
@@ -10452,7 +10452,7 @@ html[data-platform='darwin'] .c0-backing {
       <h3>菜单分组</h3>
       <code class="var">MenuGroup</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/MenuGroup.tsx#L10" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/MenuGroup.tsx:10</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/MenuGroup.tsx#L10" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/MenuGroup.tsx:10</a>
   </header>
   <p class="summary">自定义菜单与列表框里的可访问分组：<code>role="group"</code> 配 <code>aria-labelledby</code> 指向实例自有的 heading id，另有一个 1px 的不可见哨兵 <code>[data-menu-group-start]</code> 供观察器定位。heading 是 11/16、weight 500 的三级文字，<code>position: sticky; top: 0</code>，静止时背景透明；只有 <code>observeStickyMenuGroups</code> 观测到分组顶部越过滚动容器顶边并写入 <code>data-stuck</code> 时，才取 94% 不透明的 <code>--dsw-alias-menu-group-header-fill</code>。非 macOS 平台 heading 取 R12 圆角，相邻分组之间留 3px。</p>
   <div class="specs">
@@ -11246,7 +11246,7 @@ html[data-platform='darwin'] .c1-backing {
       <h3>模态对话框</h3>
       <code class="var">Modal</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/Modal.tsx#L48" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/Modal.tsx:48</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/Modal.tsx#L48" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/Modal.tsx:48</a>
   </header>
   <p class="summary">居中对话框，portal 到 body：<code>.root</code> 是 z-index 1000 的全视口 fixed 层，四周至少 24px 留白，顶部改用 <code>--dsh-frame-overlay-top</code> 避开窗口标题栏。<code>.mask</code> 只画 <code>--dsw-alias-bg-mask-1</code> 半透明遮罩、不涂 Windows 标题栏区域，并保留主题的 <code>--dsw-mask-blur</code>（当前为 none）。卡片宽 <code>min(380px, 100%)</code>、R28（<code>--dsw-radius-panel</code>）、<code>--dsw-alias-bg-layer-2</code> 填充加 <code>--dsw-elevation-prominent</code> 投影，<code>border: 0</code>；头部内边距 22/14/12/24，标题 16/24/500，右上角是 28×28 关闭按钮。<code>headless</code> 时 children 直接放进卡片，遮罩、卡片、Escape 与 <code>aria-label</code> 仍由 Modal 负责。</p>
   <div class="specs">
@@ -11718,7 +11718,7 @@ html[data-platform='darwin'] .c1-backing {
       <h3>风险确认</h3>
       <code class="var">RiskConfirmation</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/RiskConfirmation.tsx#L29" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/RiskConfirmation.tsx:29</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/RiskConfirmation.tsx#L29" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/RiskConfirmation.tsx:29</a>
   </header>
   <p class="summary">风险确认对话框：在 Modal（宽 <code>min(440px, 100%)</code>，内容区可滚动）里放一个错误色警示图标加 14/22 的说明段落，下面是一个 16×16 原生 checkbox 的确认项（选中色取 <code>--dsw-alias-button-primary-fill</code>，焦点环用 <code>--dsw-focus-ring-*</code>）。底栏两个按钮：<code>outline</code> 取消（≥72px）与 <code>primary</code> 确认（≥136px），确认按钮在 <code>disabled || !acknowledged</code> 时不可用。它完全受控：勾选状态由调用方持有，文案与无障碍名称全部由调用方本地化后传入，组件自身不做任何确认判定。</p>
   <div class="specs">
@@ -12345,7 +12345,7 @@ html[data-platform='darwin'] .c1-backing {
       <h3>折叠开关</h3>
       <code class="var">FoldToggle</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/FoldToggle.tsx#L19" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/FoldToggle.tsx:19</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/FoldToggle.tsx#L19" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/FoldToggle.tsx:19</a>
   </header>
   <p class="summary">输出卡片的头尾折叠控件：一个铺满整行的「… 其余 N 行」/「收起」按钮，外观完全由调用方的 <code>className</code> 决定，产品里是四张输出卡片的 <code>.expand</code>（<code>display: block; width: 100%</code>、透明底、三级文字色，悬停转二级色；read 卡片把左内边距设为 <code>calc(var(--dsl-read-gutter) + 12px)</code> 对齐行号槽，diff 卡片固定 22px）。组件自身只做三件事：写入 <code>aria-expanded</code>、随状态切换可见文案与 <code>aria-label</code>（「展开其余 N 行」/「收起…」）、把点击交给 <code>onToggle</code>。TerminalBlock 与 SearchBlock 的同名折叠按钮是内联实现的同一外观。</p>
   <div class="specs">
@@ -12472,7 +12472,7 @@ html[data-platform='darwin'] .c1-backing {
       <h3>终端输出</h3>
       <code class="var">TerminalBlock</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/TerminalBlock.tsx#L173" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/TerminalBlock.tsx:173</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/TerminalBlock.tsx#L173" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/TerminalBlock.tsx:173</a>
   </header>
   <p class="summary">shell 命令的结果卡片：左侧 30px 的 <code>--dsl-terminal-gutter</code> 放运行状态点，横幅每条命令一行（<code>$</code> + cwd 末段 + 可横向滚动的 <code>CommandText</code>），右侧是退出状态 <code>Pill</code> 与复制按钮；输出区 <code>white-space: pre</code> 保列，超过 <code>maxLines</code>（默认 16）时把中段折成头 8 + <code>… 其余 N 行</code> + 尾 8。输出里的 ANSI SGR 由 <code>ansi.ts</code> 解析成内联 token 色的 span，不引入类名。</p>
   <div class="specs">
@@ -13943,7 +13943,7 @@ html[data-platform='darwin'] .c1-backing {
       <h3>读取卡片</h3>
       <code class="var">ReadBlock</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/ReadBlock.tsx#L69" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/ReadBlock.tsx:69</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/ReadBlock.tsx#L69" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/ReadBlock.tsx:69</a>
   </header>
   <p class="summary">read 工具的文件窗口：共享代码卡头部（tertiary 的语言与文件名、secondary 的换行与复制图标），正文是行号 gutter + 代码，gutter 宽度按本次返回的最大行号算（最小 3ch），窗口读取时头部右侧补一条 <code>显示 X / Y 行</code>。正文默认 <code>white-space: pre</code> 保列，启用换行后 <code>overflow-wrap: anywhere</code>。</p>
   <div class="specs">
@@ -14105,7 +14105,7 @@ html[data-platform='darwin'] .c1-backing {
       <h3>差异卡片</h3>
       <code class="var">DiffBlock</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/DiffBlock.tsx#L168" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/DiffBlock.tsx:168</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/DiffBlock.tsx#L168" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/DiffBlock.tsx:168</a>
   </header>
   <p class="summary">文件改动的内联 diff：每个改动一行，路径行用 secondary 加粗，增删行带 <code>- </code>/<code>+ </code> 前缀（<code>::before</code> 画出）与整行填充、左侧 3px 内阴影，上下文行 secondary；同一文件的多段改动之间插入 <code>⋯</code> 间隔行。行按 <code>structuredPatch</code> 的 3 行上下文生成，超过 256 次编辑搜索时退化为整段替换。</p>
   <div class="specs">
@@ -14475,7 +14475,7 @@ html[data-platform='darwin'] .c1-backing {
       <h3>检索卡片</h3>
       <code class="var">SearchBlock</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/SearchBlock.tsx#L177" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/SearchBlock.tsx:177</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/SearchBlock.tsx#L177" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/SearchBlock.tsx:177</a>
   </header>
   <p class="summary">grep / glob 结果卡片：标题行是结果摘要与复制按钮，正文两种形态由 <code>kind</code> 决定——<code>matches</code> 每组文件一个可折叠的文件头（加粗路径 + 命中数）加逐行命中（tertiary 行号 + 原文），<code>paths</code> 则是每行一个路径。行高固定 22px、不折行，超出 16 行按头尾折叠，尾部若从某文件的命中中间开始会补回该文件的头。</p>
   <div class="specs">
@@ -14743,7 +14743,7 @@ html[data-platform='darwin'] .c1-backing {
       <h3>联网卡片</h3>
       <code class="var">WebBlock</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/WebBlock.tsx#L194" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/WebBlock.tsx:194</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/WebBlock.tsx#L194" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/WebBlock.tsx:194</a>
   </header>
   <p class="summary">web_search / web_fetch 的结果卡片，由 <code>kind</code> 分两种正文：<code>search</code> 先渲染 provider 的 answer（走 <code>MarkdownText</code>），再列出编号来源（标题、URL、摘要、时间，最多 320px 高就地滚动），截断时补一行提示；<code>fetch</code> 只画一行等宽 URL 与 <code>HTTP 200</code> 状态、截断说明。</p>
   <div class="specs">
@@ -16626,7 +16626,7 @@ html[data-platform='darwin'] .c1-backing {
       <h3>代码块</h3>
       <code class="var">CodeBlock</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/markdown/CodeBlock.tsx#L71" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/markdown/CodeBlock.tsx:71</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/markdown/CodeBlock.tsx#L71" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/markdown/CodeBlock.tsx:71</a>
   </header>
   <p class="summary">markdown 围栏与源码预览共用的代码卡：默认画 11px 的 infostring 横幅与文字复制按钮；传入 <code>toolbarLabels</code> 后换成共享代码卡头部（tertiary 语言 + secondary 图标）并补齐内边距，<code>lineNumbers</code> 打开行号 gutter，宽度按行号位数算（下限 2ch）。围栏默认开启换行，源码预览按 owner 的 <code>wrap</code> 决定。</p>
   <div class="specs">
@@ -17149,7 +17149,7 @@ html[data-platform='darwin'] .c1-backing {
       <h3>JSON 块</h3>
       <code class="var">JsonBlock</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/markdown/JsonBlock.tsx#L8" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/markdown/JsonBlock.tsx:8</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/markdown/JsonBlock.tsx#L8" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/markdown/JsonBlock.tsx:8</a>
   </header>
   <p class="summary">可折叠的只读 JSON 块：一行 <code>▸ label</code> 切换按钮，展开后在 200px 高的等宽 <code>pre</code> 里画 <code>JSON.stringify(payload, null, 2)</code>，超过 20000 字符截断并追加 owner 给的脚注。用于 UI 版本不认识的会话事件或内容块兜底。</p>
   <div class="specs">
@@ -17278,7 +17278,7 @@ html[data-platform='darwin'] .c1-backing {
       <h3>正文渲染</h3>
       <code class="var">MarkdownText</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/markdown/MarkdownText.tsx#L174" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/markdown/MarkdownText.tsx:174</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/markdown/MarkdownText.tsx#L174" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/markdown/MarkdownText.tsx:174</a>
   </header>
   <p class="summary">助手 Markdown 渲染器：解析 GFM + TeX，禁用原始 HTML 与非安全协议，输出的元素全部由 <code>MarkdownText.module.css</code> 定版式。默认 <code>variant="body"</code> 走完整文档排版；<code>variant="compact"</code> 用 13px/20px 次级文字、统一的 600 字重标题与更紧的块间距，文字与代码保持 tertiary 色。围栏交给 <code>CodeBlock</code>（owner 提供 toolbarLabels 时用共享代码卡头部）。</p>
   <div class="specs">
@@ -18721,7 +18721,7 @@ html[data-platform='darwin'] .c1-backing {
       <h3>命令文本</h3>
       <code class="var">CommandText</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/CommandText.tsx#L21" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/CommandText.tsx:21</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/CommandText.tsx#L21" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/CommandText.tsx:21</a>
   </header>
   <p class="summary">一段可选择的命令文本：<code>white-space: pre</code> + 横向滚动，内容放不下时才进入 Tab 序（<code>tabIndex=0</code>、<code>role="group"</code>、owner 给的 <code>aria-label</code>），因此不溢出的命令不会多出一个焦点停靠点。组件只提供滚动行为与焦点环，字体与颜色由 owner 的类决定（终端卡里是 <code>.command</code>）。</p>
   <div class="specs">
@@ -18784,7 +18784,7 @@ html[data-platform='darwin'] .c1-backing {
       <h3>用户文本段</h3>
       <code class="var">UserTextRun</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/user-text.tsx#L18" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/user-text.tsx:18</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/user-text.tsx#L18" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/user-text.tsx:18</a>
   </header>
   <p class="summary">已发送用户文本的「不解释」渲染：一个 <code>.plainRun</code> span 原样输出字符串，不做 Markdown、不识别 <code>@</code> 引用或 <code>/</code> 命令，也不产生块级盒。整张 user-text 表里 <code>.plainRun</code> 只有 <code>font-size: inherit</code> 与 <code>line-height: inherit</code> 两条声明，所以字号、行高、换行策略（气泡的 pre-wrap 或队列行的 nowrap 省略）全部由宿主决定。<code>ui-conversation</code> 的 UserText 在解析失败、或某个业务节点没有注册渲染器时，正是用它兜住整段原文。</p>
   <div class="specs">
@@ -18920,7 +18920,7 @@ html[data-platform='darwin'] .c1-backing {
       <h3>引用芯片</h3>
       <code class="var">ReferenceChip</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/user-text.tsx#L37" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/user-text.tsx:37</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/user-text.tsx#L37" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/user-text.tsx:37</a>
   </header>
   <p class="summary">业务侧已解析完成的引用标签：外观、文案、title 都由调用方给出（<code>@</code> 的文件 / 文件夹 / 会话，或 <code>/</code> 的技能、命令），组件自己不做匹配。芯片是 <code>display: inline</code> 而不是 inline-flex，因此与句子共享同一条基线，左右各留 2px。<code>appearance</code> 为 <code>skill</code> / <code>command</code> 时不画图标并改用代码字体（斜杠芯片），其余三种画 1em 的 ReferenceIcon。</p>
   <div class="specs">
@@ -20539,7 +20539,7 @@ html[data-platform='darwin'] .c1-backing {
       <h3>代码工具条</h3>
       <code class="var">CodeToolbar</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/CodeToolbar.tsx#L38" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/CodeToolbar.tsx:38</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/CodeToolbar.tsx#L38" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/CodeToolbar.tsx:38</a>
   </header>
   <p class="summary">代码卡片的表头：左边是 11px 等宽语言名与可省略的文件名，右边是状态文字、换行开关（24×24，<code>aria-pressed</code> 表达状态、无障碍名固定为「自动换行」）与复制按钮（复制成功后图标换成对勾、名字与提示换成「复制成功」）。<code>lang</code> 不被高亮器支持时退回属主给的 <code>labels.codeLabel</code>。组件自身不持有任何文案，<code>labels</code> / <code>copyLabel</code> / <code>copiedLabel</code> 全部由卡片属主传入。</p>
   <div class="specs">
@@ -20865,7 +20865,7 @@ html[data-platform='darwin'] .c1-backing {
       <h3>配置字段</h3>
       <code class="var">ConfigField</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/ConfigField.tsx#L33" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/ConfigField.tsx:33</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/ConfigField.tsx#L33" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/ConfigField.tsx:33</a>
   </header>
   <p class="summary">配置表单里的受控字段：行头是 <code>label</code> 加可选的「重置」按钮，下面按 <code>choices</code> / <code>secret</code> 三选一渲染 <code>&lt;select&gt;</code>（首项是「继承」占位，选中它等于重置）、<code>&lt;input type="password"&gt;</code>（<code>autoComplete="new-password"</code>，拒绝浏览器回填）或随内容在 1–8 行之间自适应的 <code>&lt;textarea&gt;</code>。控件不持有 schema、草稿或持久化，只把文本变更交回调用方；<code>overridden</code> 决定是否显示重置入口，<code>invalid</code> 把描边切到 <code>--dsw-alias-state-error-primary</code> 并给出 <code>role="status"</code> 的错误文案。相邻字段之间是 0.5px <code>--dsw-alias-border-l2</code> 发丝线，单个字段上下各 12px 留白。</p>
   <div class="specs">
@@ -20935,7 +20935,7 @@ html[data-platform='darwin'] .c1-backing {
       <h3>设置表单</h3>
       <code class="var">SettingsForm</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/settings-form/SettingsForm.tsx#L50" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/settings-form/SettingsForm.tsx:50</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/settings-form/SettingsForm.tsx#L50" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/settings-form/SettingsForm.tsx:50</a>
   </header>
   <p class="summary">一个插件设置页的表单骨架：命名空间没被服务时只渲染一行 <code>role="status"</code> 的不可用提示；可写时渲染只读提示（若不是可写文档）、属主的控件、以及底部唯一的写入点——「保存」按钮。按钮的禁用条件是 <code>!dirty || invalid || saving</code>，所以没有改动、有非法草稿、正在写入三种情况都点不动。<code>labels</code> 提供 unavailable / readOnly / saveFailed / save / saving 五段文案，表单自己不持有任何字符串。</p>
   <div class="specs">
@@ -21206,7 +21206,7 @@ html[data-platform='darwin'] .c1-backing {
       <h3>设置值字段</h3>
       <code class="var">SettingsValueField</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/settings-form/fields.tsx#L49" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/settings-form/fields.tsx:49</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/settings-form/fields.tsx#L49" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/settings-form/fields.tsx:49</a>
   </header>
   <p class="summary">设置页里的一行文本值：13px 标签 + 34px 高输入框（0.5px <code>--dsw-alias-border-l4</code> 描边、<code>--dsw-radius-md</code> 圆角、<code>--dsw-alias-bg-layer-3</code> 底），行内纵向间距 6px，相邻两行之间自动加一条 0.5px 分隔线。字段被用户层覆盖时，右侧出现 <code>Tag</code>（neutral，「已覆盖」）与 12px 的「恢复默认」文本按钮——判据是「用户层里有没有这个键」，不是值比不比得上默认值。草稿非法时描边转错误色、hint 换成 invalidLabel。</p>
   <div class="specs">
@@ -22092,7 +22092,7 @@ html[data-platform='darwin'] .c1-backing {
       <h3>设置密钥字段</h3>
       <code class="var">SettingsSecretField</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/settings-form/fields.tsx#L125" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/settings-form/fields.tsx:125</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/settings-form/fields.tsx#L125" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/settings-form/fields.tsx:125</a>
   </header>
   <p class="summary">只写的凭据字段：<code>type="password"</code> 且 <code>autoComplete="new-password"</code>，明确要求浏览器不要用保存过的登录密码来填充。密钥字面量不会出现在任何响应里，所以控件没有可回填的值——草稿永远从空开始，右侧 <code>Tag</code> 只回答「是否已配置」（已配置走 neutral，未配置走 quiet）。空草稿不产生写入，因此留空保存等于保留现有密钥，而不是清空它。</p>
   <div class="specs">
@@ -22761,7 +22761,7 @@ html[data-platform='darwin'] .c1-backing {
       <h3>文件类型图标</h3>
       <code class="var">FileTypeIcon</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/FileTypeIcon.tsx#L275" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/FileTypeIcon.tsx:275</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/FileTypeIcon.tsx#L275" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/FileTypeIcon.tsx:275</a>
   </header>
   <p class="summary">文件卡片的类型字形，默认 28px：传统类别（Markdown、图片、PDF、PPT、视频、Word、表格、HTML、文件夹、通用代码、其他）是一张实心类别色纸 + 白色标记 + 半透明折角，颜色读 <code>--dsh-file-type-default-color</code>，调用方可用 <code>--dsh-file-type-icon-color</code> 覆盖；48 个代码 / 配置类别（TypeScript、Python、Docker、Rust…）改用内置的全彩方形 artwork，色板烘在图形里，尺寸同样由 <code>size</code> 决定。图上没有无障碍名（<code>aria-hidden</code>），名字由渲染处给。</p>
   <div class="specs">
@@ -22961,7 +22961,7 @@ html[data-platform='darwin'] .c1-backing {
       <h3>代码文件图标</h3>
       <code class="var">CodeFileIcon</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/CodeFileIcon.tsx#L12" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/CodeFileIcon.tsx:12</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/CodeFileIcon.tsx#L12" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/CodeFileIcon.tsx:12</a>
   </header>
   <p class="summary">48 个代码 / 配置类别的全彩方形字形，20×20 视窗、默认 <code>size=20</code>，图形是构建期烘进来的 artwork（自带底色卡、品牌色与渐变），因此它没有样式表、不吃 <code>currentColor</code>，<code>className</code> 只做透传。<code>FileTypeIcon</code> 命中代码类别时把 <code>size</code> 交给它，传统类别才走 28px 着色字形那条分支。</p>
   <div class="specs">
@@ -22996,7 +22996,7 @@ html[data-platform='darwin'] .c1-backing {
       <h3>鲸鱼标识</h3>
       <code class="var">FishLogo</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/FishLogo.tsx#L15" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/FishLogo.tsx:15</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/FishLogo.tsx#L15" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/FishLogo.tsx:15</a>
   </header>
   <p class="summary">品牌鲸鱼标记，画布 23.16×17.04（<code>FISH_LOGO_VIEWBOX</code>），一条纯填充路径。<code>size</code> 是宽度 px，高度按同一比例换算：默认 24 时高 17.66px，放大到 48 时高 35.32px。颜色来自 <code>fill="currentColor"</code>，随宿主文字色。路径数据 <code>FISH_LOGO_PATH</code> 与画布尺寸都是独立导出，供入场动效、遮罩等自绘 svg 复用同一几何。</p>
   <div class="specs">
@@ -23030,7 +23030,7 @@ html[data-platform='darwin'] .c1-backing {
       <h3>品牌字标</h3>
       <code class="var">BrandWordmark</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/BrandWordmark.tsx#L16" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/BrandWordmark.tsx:16</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/BrandWordmark.tsx#L16" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/BrandWordmark.tsx:16</a>
   </header>
   <p class="summary">完整品牌字形：前置鲸鱼标记 + 「deepseek」字标 + 反白徽标，画布 182×24。<code>size</code> 是高度 px，宽度按 182:24 换算（24 → 182）；<code>includeMark=false</code> 改用 <code>26 0 156 24</code> 视窗，只留字标与徽标，宽度按 156:24 换算。字标本体与徽标底片填 <code>currentColor</code>，徽标内的文字读 <code>--dsw-alias-label-primary-inverted</code>。</p>
   <div class="specs">
@@ -23072,7 +23072,7 @@ html[data-platform='darwin'] .c1-backing {
       <h3>引用图标</h3>
       <code class="var">ReferenceIconRegular / ReferenceIconMedium</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/ReferenceIcon.tsx#L38" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/ReferenceIcon.tsx:38</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/ReferenceIcon.tsx#L38" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/ReferenceIcon.tsx:38</a>
   </header>
   <p class="summary">输入框与转写里区分引用域的前导字形，<code>kind</code> 三选一：<code>session</code> 会话气泡（气泡内两条文本线）、<code>file</code> 文档浏览（折角纸张加两条文本线）、<code>folder</code> 闭合文件夹。<code>Regular</code> 与 <code>Medium</code> 是同一份几何的两种描边——1px 与 1.3px，默认 16px，颜色走 <code>currentColor</code>。</p>
   <div class="specs">
@@ -23107,7 +23107,7 @@ html[data-platform='darwin'] .c1-backing {
       <h3>链接图标</h3>
       <code class="var">LinkIconRegular / LinkIconMedium</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/LinkIcon.tsx#L107" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/LinkIcon.tsx:107</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/LinkIcon.tsx#L107" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/LinkIcon.tsx:107</a>
   </header>
   <p class="summary">可点击产物链接的前导字形，<code>kind</code> 六选一：<code>url</code> 地球、<code>folder</code> 文件夹、<code>code</code> 尖括号加斜杠、<code>image</code> 相框、<code>document</code> 折角文档、<code>other</code> 空白纸张。默认 14px（README 指定的链接前导尺寸），<code>Regular</code> 1px 与 <code>Medium</code> 1.3px 同几何、同默认尺寸；产品里链接前导位用的是 <code>LinkIconMedium</code>。</p>
   <div class="specs">
@@ -23143,7 +23143,7 @@ html[data-platform='darwin'] .c1-backing {
       <h3>权限图标</h3>
       <code class="var">PermissionIcon{ReadOnly,WorkspaceWrite,FullAccess,AutoReview}{Regular,Medium}</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/PermissionIcon.tsx#L54" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/PermissionIcon.tsx:54</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/PermissionIcon.tsx#L54" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/PermissionIcon.tsx:54</a>
   </header>
   <p class="summary">权限模式选择用的盾形字形，四种模式各一对字重、共 8 个导出：<code>ReadOnly</code> 盾内对勾、<code>WorkspaceWrite</code> 盾内两条文本线加铅笔、<code>FullAccess</code> 盾内感叹号、<code>AutoReview</code> 盾内字母 A。默认 16px，<code>Regular</code> 1px / <code>Medium</code> 1.3px，盾形与符号同画在 16×16 视窗内，颜色走 <code>currentColor</code>。</p>
   <div class="specs">
@@ -23177,7 +23177,7 @@ html[data-platform='darwin'] .c1-backing {
       <h3>插件美术</h3>
       <code class="var">PluginArtwork{Terminal,Loop,Subagent,Search,Default}</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/plugin-artwork.tsx#L16" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/plugin-artwork.tsx:16</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/plugin-artwork.tsx#L16" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/plugin-artwork.tsx:16</a>
   </header>
   <p class="summary">插件管理界面的 36×36 固定配色美术，五个导出：<code>Terminal</code> 浅蓝提示符（<code>#679EFE</code>，3.5px 描边）、<code>Loop</code> 四片叶子绕中心（含紫到灰渐变）、<code>Subagent</code> 两个叠放圆角方块（青绿与蓝渐变，0.8 不透明度）、<code>Search</code> 渐变环加手柄、<code>Default</code> 连接块与节点（青到蓝渐变，没有自带美术的插件用它）。<code>size</code> 默认 36。</p>
   <div class="specs">
@@ -23211,7 +23211,7 @@ html[data-platform='darwin'] .c1-backing {
       <h3>指南美术</h3>
       <code class="var">GuideArtwork{Browser,Files}</code>
     </div>
-    <a class="src" href="../packages/client/ui-primitives/src/guide-artwork.tsx#L9" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/guide-artwork.tsx:9</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-primitives/src/guide-artwork.tsx#L9" target="_blank" rel="noreferrer">packages/client/ui-primitives/src/guide-artwork.tsx:9</a>
   </header>
   <p class="summary">侧栏指南条目的 36×36 固定配色美术，两个导出：<code>Browser</code> 蓝色地球（<code>#539CFA</code>，2px 描边，赤道线为方头）、<code>Files</code> 琥珀色文件夹（轮廓 <code>#FFCD78</code> 1.97886px 描边，内页 <code>#FFBC4D</code> 填充）。<code>size</code> 默认 36，两件都是 <code>aria-hidden="true"</code> 的纯装饰。</p>
   <div class="specs">

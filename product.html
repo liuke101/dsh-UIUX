@@ -1061,7 +1061,7 @@ td .zh { color: var(--dsw-alias-label-caption); font: var(--dsw-font-xxxs-11); m
       <h3>用户消息</h3>
       <code class="var">UserMessageNodeView</code>
     </div>
-    <a class="src" href="../packages/client/ui-chat/src/client/chat/MessageItem.tsx#L298" target="_blank" rel="noreferrer">packages/client/ui-chat/src/client/chat/MessageItem.tsx:298</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-chat/src/client/chat/MessageItem.tsx#L298" target="_blank" rel="noreferrer">packages/client/ui-chat/src/client/chat/MessageItem.tsx:298</a>
   </header>
   <p class="summary">右对齐的用户消息行，同时渲染 <code>user</code> 与已被接收的 <code>steering</code> 两种 Chat 节点。<code>.userStack</code> 把气泡宽度限制为「内容列宽 × 0.702」与 <code>82%</code> 的较小值（默认列 748px → 525px），气泡圆角 <code>--dsw-radius-xl</code>、内边距 10px 16px、行高 22px，所以单行气泡高 42px；气泡下方是 28px 高的复制 / 分支 / 时钟操作行（由 MessageIconActions 提供）。</p>
   <div class="specs">
@@ -2544,7 +2544,7 @@ td .zh { color: var(--dsw-alias-label-caption); font: var(--dsw-font-xxxs-11); m
       <h3>待接收插话</h3>
       <code class="var">PendingSteeringBubble</code>
     </div>
-    <a class="src" href="../packages/client/ui-chat/src/client/chat/MessageItem.tsx#L220" target="_blank" rel="noreferrer">packages/client/ui-chat/src/client/chat/MessageItem.tsx:220</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-chat/src/client/chat/MessageItem.tsx#L220" target="_blank" rel="noreferrer">packages/client/ui-chat/src/client/chat/MessageItem.tsx:220</a>
   </header>
   <p class="summary">Host 已接受、尚未落库的 steer 行。它复用与耐久 <code>user</code> 节点相同的气泡（同宽上限、<code>--dsw-radius-xl</code>、10px 16px 内边距），行上只多一个 <code>data-pending-steering</code> 标记——该标记不参与任何样式，只供视图识别待接收态。因为宿主投影还没带上时间，操作行只有复制按钮，没有时钟与分支。</p>
   <div class="specs">
@@ -3540,7 +3540,7 @@ td .zh { color: var(--dsw-alias-label-caption); font: var(--dsw-font-xxxs-11); m
       <h3>回合错误</h3>
       <code class="var">TurnErrorNodeView</code>
     </div>
-    <a class="src" href="../packages/client/ui-chat/src/client/chat/MessageItem.tsx#L349" target="_blank" rel="noreferrer">packages/client/ui-chat/src/client/chat/MessageItem.tsx:349</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-chat/src/client/chat/MessageItem.tsx#L349" target="_blank" rel="noreferrer">packages/client/ui-chat/src/client/chat/MessageItem.tsx:349</a>
   </header>
   <p class="summary">一轮终态失败的常驻行：10px 错误点 + 加粗标题「本轮运行失败」+ 失败文案，右侧可选一枚 code 芯片（<code>--dsw-font-markdown-code-block-small</code>）。网格固定为 10px / minmax(0,1fr) / auto 三列、间距 8px，正文 13px、行高 20px，状态点下沉 5px 与首行对齐。</p>
   <div class="specs">
@@ -4510,7 +4510,7 @@ td .zh { color: var(--dsw-alias-label-caption); font: var(--dsw-font-xxxs-11); m
       <h3>助手正文</h3>
       <code class="var">AssistantMarkdown</code>
     </div>
-    <a class="src" href="../packages/client/ui-chat/src/client/chat/AssistantMarkdown.tsx#L56" target="_blank" rel="noreferrer">packages/client/ui-chat/src/client/chat/AssistantMarkdown.tsx:56</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-chat/src/client/chat/AssistantMarkdown.tsx#L56" target="_blank" rel="noreferrer">packages/client/ui-chat/src/client/chat/AssistantMarkdown.tsx:56</a>
   </header>
   <p class="summary">助手回复的正文外壳：14px / 24px 正文、块间距 16px，把 <code>reasoning</code> 块交给 ReasoningRow、<code>text</code> 块交给 MarkdownText、图片块交给 <code>conversation.chat.message.images</code> Slot。被中断的回合在正文末尾追加一枚 11px / 18px 的「已停止」标记（<code>--dsw-radius-sm</code> 圆角、<code>--dsw-alias-interactive-bg-hover</code> 底色）。</p>
   <div class="specs">
@@ -5649,7 +5649,7 @@ td .zh { color: var(--dsw-alias-label-caption); font: var(--dsw-font-xxxs-11); m
       <h3>思考行</h3>
       <code class="var">ReasoningRow</code>
     </div>
-    <a class="src" href="../packages/client/ui-chat/src/client/chat/ReasoningRow.tsx#L48" target="_blank" rel="noreferrer">packages/client/ui-chat/src/client/chat/ReasoningRow.tsx:48</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-chat/src/client/chat/ReasoningRow.tsx#L48" target="_blank" rel="noreferrer">packages/client/ui-chat/src/client/chat/ReasoningRow.tsx:48</a>
   </header>
   <p class="summary">折叠的思考块，固定 24px 行高：16px 前置图标 + 6px 间距 + 13px 标题，右侧是 2×2px 分隔点与单行摘要（20px 行高、超出省略；流式时右端渐变淡出）。展开后正文缩进 22px 走次要字号，标题吸顶并用 <code>--dsw-alias-bg-base</code> 遮住滚过的正文。</p>
   <div class="specs">
@@ -6543,7 +6543,7 @@ button.c1-leading {
       <h3>活动统计</h3>
       <code class="var">ActivityPill</code>
     </div>
-    <a class="src" href="../packages/client/ui-chat/src/client/chat/StatsPills.tsx#L237" target="_blank" rel="noreferrer">packages/client/ui-chat/src/client/chat/StatsPills.tsx:237</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-chat/src/client/chat/StatsPills.tsx#L237" target="_blank" rel="noreferrer">packages/client/ui-chat/src/client/chat/StatsPills.tsx:237</a>
   </header>
   <p class="summary">输入框下方 dock 里的会话活动读数（<code>data-composer-stat="activity"</code>）：轮 / 步计数与整会话输出速度。12px 字号、20px 行高、内边距 1px 8px、圆角 <code>--dsw-radius-sm</code>，图标固定 14px、间距 6px。有可展开的计时数据时渲染成 button（可点开「会话统计」），否则是静态 span；Compact 模式只保留速度。</p>
   <div class="specs">
@@ -6697,7 +6697,7 @@ button.pill[aria-expanded='true'] {
       <h3>用量统计</h3>
       <code class="var">UsagePill</code>
     </div>
-    <a class="src" href="../packages/client/ui-chat/src/client/chat/StatsPills.tsx#L282" target="_blank" rel="noreferrer">packages/client/ui-chat/src/client/chat/StatsPills.tsx:282</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-chat/src/client/chat/StatsPills.tsx#L282" target="_blank" rel="noreferrer">packages/client/ui-chat/src/client/chat/StatsPills.tsx:282</a>
   </header>
   <p class="summary">dock 里的整日志 token 读数（<code>data-composer-stat="usage"</code>）：总用量 + 缓存命中率，几何与 ActivityPill 完全相同（12px 字号、1px 8px 内边距、14px 图标、<code>--dsw-radius-sm</code>）。Detailed 渲染为可点开「Token 用量」对话框的 button，Compact 只保留缓存命中。</p>
   <div class="specs">
@@ -6850,7 +6850,7 @@ button.pill[aria-expanded='true'] {
       <h3>本轮用量</h3>
       <code class="var">TurnUsagePanel</code>
     </div>
-    <a class="src" href="../packages/client/ui-chat/src/client/chat/TurnUsagePanel.tsx#L31" target="_blank" rel="noreferrer">packages/client/ui-chat/src/client/chat/TurnUsagePanel.tsx:31</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-chat/src/client/chat/TurnUsagePanel.tsx#L31" target="_blank" rel="noreferrer">packages/client/ui-chat/src/client/chat/TurnUsagePanel.tsx:31</a>
   </header>
   <p class="summary">回合尾部的用量触发器：固定 <code>calc(28px + 字号增量)</code> 高、内边距 6px 8px、图标 15px、图标与文字间距 4px、圆角 <code>--dsw-radius-sm</code>，文字比正文次要档再小 1px 并用等宽数字。点击在触发器上方（间距 8px、距视口 12px 收边）打开本轮用量对话框；窄视口（≤480px）收成 28px 圆形只剩图标。</p>
   <div class="specs">
@@ -7262,7 +7262,7 @@ button.pill[aria-expanded='true'] {
       <h3>回合导航</h3>
       <code class="var">TurnNavigator</code>
     </div>
-    <a class="src" href="../packages/client/ui-chat/src/client/chat/TurnNavigator.tsx#L295" target="_blank" rel="noreferrer">packages/client/ui-chat/src/client/chat/TurnNavigator.tsx:295</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-chat/src/client/chat/TurnNavigator.tsx#L295" target="_blank" rel="noreferrer">packages/client/ui-chat/src/client/chat/TurnNavigator.tsx:295</a>
   </header>
   <p class="summary">贴在转录右缘的 28px 宽刻度轨，每个回合一根固定 10px 间距的刻度：静止 <code>scaleX(0.6)</code>、当前回合 <code>scaleX(1)</code> 用主文字色、未加载 <code>scaleX(0.4)</code> 并降到 60% 不透明度、正在翻页的回合脉冲闪烁。预览卡 300px 宽、最高 100px、内边距 10px 12px、圆角 <code>--dsw-radius-lg</code> 并带 <code>--dsw-elevation-panel</code> 投影；刻度多于带宽时在轨内滚动，两端各有 24px 渐隐。</p>
   <div class="specs">
@@ -7749,7 +7749,7 @@ button.pill[aria-expanded='true'] {
       <h3>消息操作</h3>
       <code class="var">MessageIconActions</code>
     </div>
-    <a class="src" href="../packages/client/ui-chat/src/client/chat/MessageIconActions.tsx#L45" target="_blank" rel="noreferrer">packages/client/ui-chat/src/client/chat/MessageIconActions.tsx:45</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-chat/src/client/chat/MessageIconActions.tsx#L45" target="_blank" rel="noreferrer">packages/client/ui-chat/src/client/chat/MessageIconActions.tsx:45</a>
   </header>
   <p class="summary">用户与助手消息共用的 28px 操作行：内边距 6px 的 28×28 图标按钮、间距 8px、圆角 <code>--dsw-radius-sm</code>，图标 15px（助手尾部 17px）。<code>clock="start"</code> 把 13px 时钟放在最前（右内边距 12px），<code>clock="end"</code> 则把 12px 时钟与用量触发器一起收进末尾的 <code>.endInfo</code>（左外边距 8px）。</p>
   <div class="specs">
@@ -8141,7 +8141,7 @@ button.pill[aria-expanded='true'] {
       <h3>输入框</h3>
       <code class="var">InputBar</code>
     </div>
-    <a class="src" href="../packages/client/ui-conversation/src/client/skeleton/InputBar.tsx#L46" target="_blank" rel="noreferrer">packages/client/ui-conversation/src/client/skeleton/InputBar.tsx:46</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-conversation/src/client/skeleton/InputBar.tsx#L46" target="_blank" rel="noreferrer">packages/client/ui-conversation/src/client/skeleton/InputBar.tsx:46</a>
   </header>
   <p class="summary">常驻 composer 卡：<code>variant="hero"</code> 居中空态，文本区下限 52px；<code>variant="composer"</code> 停靠底部，下限 36px。卡片宽 <code>--dsh-composer-card-max-width</code>、圆角 <code>--dsw-radius-panel</code>，行内左侧是 28px 圆形「+」加权限 / 计划芯片，右侧是 34px 圆形发送按钮（运行中且草稿为空时同一座位变成停止）。文本区 14 行封顶后由 <code>.scroll</code> 单独滚动；无会话时同一份 DOM 转成工作区选择触发器，用内描边虚线取代 elevation 描边。</p>
   <div class="specs">
@@ -11198,7 +11198,7 @@ button.pill[aria-expanded='true'] {
       <h3>上下文占用</h3>
       <code class="var">ContextMeter</code>
     </div>
-    <a class="src" href="../packages/client/ui-conversation/src/client/skeleton/ContextMeter.tsx#L56" target="_blank" rel="noreferrer">packages/client/ui-conversation/src/client/skeleton/ContextMeter.tsx:56</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-conversation/src/client/skeleton/ContextMeter.tsx#L56" target="_blank" rel="noreferrer">packages/client/ui-conversation/src/client/skeleton/ContextMeter.tsx:56</a>
   </header>
   <p class="summary">输入卡下方的上下文占用控件：14px 圆环（2px 描边、<code>stroke-linecap: round</code>，从 12 点方向起画）加 13px 等宽百分比，触发器只有 1px 8px 内边距和 <code>--dsw-radius-sm</code> 圆角。点击后在视口内弹出 264px 面板：标题拆成百分比与其两侧文案（空的一侧用 <code>.headline:empty</code> 折叠，所以各语言词序自由），右侧是 <code>~180K / 400K</code>，下面是 4px 分段条与 system / tools / messages 三行图例。没有 pressure 或容量投影时整块不渲染。</p>
   <div class="specs">
@@ -11547,7 +11547,7 @@ button.pill[aria-expanded='true'] {
       <h3>待办面板</h3>
       <code class="var">TodoPanel</code>
     </div>
-    <a class="src" href="../packages/client/ui-conversation/src/client/skeleton/TodoPanel.tsx#L65" target="_blank" rel="noreferrer">packages/client/ui-conversation/src/client/skeleton/TodoPanel.tsx:65</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-conversation/src/client/skeleton/TodoPanel.tsx#L65" target="_blank" rel="noreferrer">packages/client/ui-conversation/src/client/skeleton/TodoPanel.tsx:65</a>
   </header>
   <p class="summary">输入卡上方的待办条，默认折叠：一行 <code>aria-expanded</code> 头部，左侧清单字形、13/24 标题「To-dos」、中间是省略号截断的进度摘要，右侧是折叠态向上的箭头。展开后按状态列出条目，每行 16px 图标槽里放 <code>StateDot</code>（completed 绿点 / in_progress 旋转环 / pending 灰点），正文 13/20 单行省略，列表最高 180px 内滚动。宽度用 dock inset 从卡片宽度里扣出，材质是菜单底 + <code>--dsw-elevation-panel</code>。</p>
   <div class="specs">
@@ -12035,7 +12035,7 @@ button.pill[aria-expanded='true'] {
       <h3>队列停靠条</h3>
       <code class="var">QueueDock</code>
     </div>
-    <a class="src" href="../packages/client/ui-conversation/src/client/queue/QueueDock.tsx#L105" target="_blank" rel="noreferrer">packages/client/ui-conversation/src/client/queue/QueueDock.tsx:105</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-conversation/src/client/queue/QueueDock.tsx#L105" target="_blank" rel="noreferrer">packages/client/ui-conversation/src/client/queue/QueueDock.tsx:105</a>
   </header>
   <p class="summary">贴在输入卡上沿的排队消息条：一条直接显示成行，多条默认折叠成「3 queued messages」计数头。面板只保留上圆角、底部不画描边，靠 <code>-3px</code> 负外边距塞到输入卡下面，读起来是一块连体表面；列表最高 180px 内滚动。每行至少 36px：附件缩略图或文件卡、单行省略的 UserText 预览、以及编辑 / 删除 / 插话三个 28px 圆形按钮；本地刚提交、还没等到 Host 队列行的 echo 行显示「Sending…」且三个按钮禁用。</p>
   <div class="specs">
@@ -12825,7 +12825,7 @@ button.pill[aria-expanded='true'] {
       <h3>用户文本</h3>
       <code class="var">UserText</code>
     </div>
-    <a class="src" href="../packages/client/ui-conversation/src/client/user-text/UserText.tsx#L17" target="_blank" rel="noreferrer">packages/client/ui-conversation/src/client/user-text/UserText.tsx:17</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-conversation/src/client/user-text/UserText.tsx#L17" target="_blank" rel="noreferrer">packages/client/ui-conversation/src/client/user-text/UserText.tsx:17</a>
   </header>
   <p class="summary">已发送文本的统一渲染入口：把原文交给注册过的纯匹配规则切成 JSON 节点，业务节点走键控槽 <code>conversation.user.text.node</code>，没有渲染器时回退成原样的纯文本 run。默认 <code>.root</code> 是 <code>display: contents</code>，自身不产生盒子，只把行内节点交给宿主行盒；<code>ellipsis</code> 切换到单行省略（队列预览用）。整段文本不做截断，解析失败也会把完整原文显示出来并上报规则错误。</p>
   <div class="specs">
@@ -12985,7 +12985,7 @@ button.pill[aria-expanded='true'] {
       <h3>会话引用</h3>
       <code class="var">SessionReference</code>
     </div>
-    <a class="src" href="../packages/client/ui-conversation/src/client/user-text/UserText.tsx#L62" target="_blank" rel="noreferrer">packages/client/ui-conversation/src/client/user-text/UserText.tsx:62</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-conversation/src/client/user-text/UserText.tsx#L62" target="_blank" rel="noreferrer">packages/client/ui-conversation/src/client/user-text/UserText.tsx:62</a>
   </header>
   <p class="summary">已发送文本里的会话引用：渲染成 ui-primitives 的只读 <code>ReferenceChip appearance="session"</code>，即一个 1em 的会话字形加标签，颜色走业务蓝、500 字重、左右各 2px 外边距。没有 <code>onActivate</code> 时是 <code>span</code> 而不是按钮，所以点选与复制都是普通文本行为；<code>title</code> 保留原文拼写。</p>
   <div class="specs">
@@ -13143,7 +13143,7 @@ button.pill[aria-expanded='true'] {
       <h3>工具行</h3>
       <code class="var">ToolRow</code>
     </div>
-    <a class="src" href="../packages/client/ui-tool/src/client/tool/components/ToolRow.tsx#L124" target="_blank" rel="noreferrer">packages/client/ui-tool/src/client/tool/components/ToolRow.tsx:124</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-tool/src/client/tool/components/ToolRow.tsx#L124" target="_blank" rel="noreferrer">packages/client/ui-tool/src/client/tool/components/ToolRow.tsx:124</a>
   </header>
   <p class="summary">工具调用的折叠摘要行加懒挂载展开体。行高 <code>calc(24px + 字体增量)</code>：[16px 图形槽 6px 间距][13/24 标题][2×2 分隔点][摘要，占满剩余宽度并省略]；失败与中断只改摘要颜色（<code>data-state</code>），带退出码胶囊时摘要保持普通灰。展开体按 card 优先级选终端卡、diff、read、image、search、web 或 IN/OUT 兜底卡，<code>inspect</code> 则在展开体左下角给一个 hover 才显形的 11px 药丸。</p>
   <div class="specs">
@@ -15840,7 +15840,7 @@ button.c2-leading {
       <h3>结果详情</h3>
       <code class="var">ToolDetails</code>
     </div>
-    <a class="src" href="../packages/client/ui-tool/src/client/tool/components/ToolDetails.tsx#L117" target="_blank" rel="noreferrer">packages/client/ui-tool/src/client/tool/components/ToolDetails.tsx:117</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-tool/src/client/tool/components/ToolDetails.tsx#L117" target="_blank" rel="noreferrer">packages/client/ui-tool/src/client/tool/components/ToolDetails.tsx:117</a>
   </header>
   <p class="summary">记录型工具结果的只读详情卡：l1 发丝描边、<code>--dsw-radius-lg</code> 圆角、代码块底色，<code>.list</code> 最高 320px 内滚动。每个条目内边距 10px / 14px，相邻条目由 0.5px l2 分隔；标题行可带状态字形（完成勾 / 进行中播放 / 待办空心方块）、<code>+</code> / <code>−</code> 变更字形、状态点徽标、可打开文件的路径按钮与右对齐的状态文字，下面依次是副标题、说明、字段网格、行列表、Markdown、代码块或可折叠分组。</p>
   <div class="specs">
@@ -16658,7 +16658,7 @@ button.c2-leading {
       <h3>退出码胶囊</h3>
       <code class="var">ExitCodeBadge</code>
     </div>
-    <a class="src" href="../packages/client/ui-tool/src/client/tool/components/ExitCodeBadge.tsx#L10" target="_blank" rel="noreferrer">packages/client/ui-tool/src/client/tool/components/ExitCodeBadge.tsx:10</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-tool/src/client/tool/components/ExitCodeBadge.tsx#L10" target="_blank" rel="noreferrer">packages/client/ui-tool/src/client/tool/components/ExitCodeBadge.tsx:10</a>
   </header>
   <p class="summary">已结算命令的退出状态胶囊：<code>Tag tone="neutral"</code> 之外再挂 <code>.badge</code>（左外边距 8px、内部间隙 5px）与一个 4px 红点 <code>.dot</code>，所以它只有普通灰底加一个失败点，不把整行染红。只在退出码非 0、收到终止信号或明确缺退出码时出现；运行时、后台任务与成功命令都不渲染。</p>
   <div class="specs">
@@ -16841,7 +16841,7 @@ button.c2-leading {
       <h3>Bash 行</h3>
       <code class="var">BashRow</code>
     </div>
-    <a class="src" href="../packages/client/ui-tool/src/client/tool/toolviews/bash-sample.tsx#L46" target="_blank" rel="noreferrer">packages/client/ui-tool/src/client/tool/toolviews/bash-sample.tsx:46</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-tool/src/client/tool/toolviews/bash-sample.tsx#L46" target="_blank" rel="noreferrer">packages/client/ui-tool/src/client/tool/toolviews/bash-sample.tsx:46</a>
   </header>
   <p class="summary">Bash / Pwsh / terminal_send 的行视图，注册在 <code>tool.call.toolview</code> 的 <code>bash</code> 键上：24px 摘要行加展开的终端卡，终端卡不可用时退回 IN/OUT 卡。可展开时字形在 100ms 内交叉淡入成下箭头；因为退出失败是结果数据（<code>isError</code> 仍为 false），失败行的描述保持普通灰，只由 ExitCodeBadge 的红点承担失败信号，红色摘要只在没有退出胶囊（例如命令被取消）时才用。</p>
   <div class="specs">
@@ -19970,7 +19970,7 @@ button.c2-leading {
       <h3>工具调用树</h3>
       <code class="var">ToolCallTree</code>
     </div>
-    <a class="src" href="../packages/client/ui-tool/src/client/tool/ToolCallTree.tsx#L110" target="_blank" rel="noreferrer">packages/client/ui-tool/src/client/tool/ToolCallTree.tsx:110</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-tool/src/client/tool/ToolCallTree.tsx#L110" target="_blank" rel="noreferrer">packages/client/ui-tool/src/client/tool/ToolCallTree.tsx:110</a>
   </header>
   <p class="summary">一次根工具调用及其 PTC 子调用的容器：根包装成 <code>.callRow</code>，带 <code>data-chat-anchor-key="call:&lt;id&gt;"</code> 与 <code>data-chat-call-id</code> 供翻页与选中定位；每个原子调用按线工具名走键控槽 <code>tool.call.toolview</code>，未注册的名字用通用行。子调用放在 <code>.subCalls</code> 里：左缩进 22px、8px 内边距配 0.5px l2 竖线，行间 4px。</p>
   <div class="specs">
@@ -21098,7 +21098,7 @@ button.c0-leading {
       <h3>应用外框</h3>
       <code class="var">AppFrame</code>
     </div>
-    <a class="src" href="../packages/client/ui-layout/src/client/AppFrame.tsx#L121" target="_blank" rel="noreferrer">packages/client/ui-layout/src/client/AppFrame.tsx:121</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-layout/src/client/AppFrame.tsx#L121" target="_blank" rel="noreferrer">packages/client/ui-layout/src/client/AppFrame.tsx:121</a>
   </header>
   <p class="summary">三列应用外框：一行的 grid 轨道（sidebar | center | rightbar）加一行跨列的 shell.bottom、绝对定位的 overlay 层和两个窗口拖拽手柄。轨道由组件内联写入 <code>grid-template-columns</code>：中列是 <code>minmax(CENTER_MIN, 1fr)</code>，右列是 <code>minmax(0, rightbarMax)</code> —— 右栏是"轨道而不是盒子"，占用者把固定宽面板锚在 frame 右边缘，没有轨道时 0 宽列的面板照样挂在会话列之上。侧栏/右栏的开关只写 <code>data-sidebar-collapsed</code> / <code>data-rightbar-collapsed</code>，折叠缓动挂在 <code>data-animating</code>，尺寸全部由列解算（<code>columns.ts</code>）给出。</p>
   <div class="specs">
@@ -22035,7 +22035,7 @@ html[data-windows-titlebar][data-fullscreen] {
       <h3>侧边栏列</h3>
       <code class="var">SidebarRoot</code>
     </div>
-    <a class="src" href="../packages/client/ui-sidebar/src/client/SidebarRoot.tsx#L88" target="_blank" rel="noreferrer">packages/client/ui-sidebar/src/client/SidebarRoot.tsx:88</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-sidebar/src/client/SidebarRoot.tsx#L88" target="_blank" rel="noreferrer">packages/client/ui-sidebar/src/client/SidebarRoot.tsx:88</a>
   </header>
   <p class="summary">侧栏整列：<code>flex-direction: column</code> 的 12px 内边距竖排，列底色是 <code>--dsw-specific-sidebar-fill</code>，从上到下依次是 60px 品牌行（含 28px 面板开关）、38px 的"新会话"条、全局面板行、占满剩余高度的浏览区，以及底部的设置座。收起态不换布局而是先整列淡出（<code>.fading</code>）再切成 56px 轨（<code>.collapsed</code>，控件 36×36、12px 圆角），轨道入场用 <code>.railIn</code> 从 49px 外平移进来；指针不在列内时 <code>.quietBars</code> 把嵌套滚动区的滚动条改绑成 transparent，只留 2 秒余晖。</p>
   <div class="specs">
@@ -28280,7 +28280,7 @@ html[data-windows-titlebar][data-fullscreen] {
       <h3>窗口控制</h3>
       <code class="var">HeaderLeadingControls</code>
     </div>
-    <a class="src" href="../packages/client/ui-sidebar/src/client/HeaderLeadingControls.tsx#L26" target="_blank" rel="noreferrer">packages/client/ui-sidebar/src/client/HeaderLeadingControls.tsx:26</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-sidebar/src/client/HeaderLeadingControls.tsx#L26" target="_blank" rel="noreferrer">packages/client/ui-sidebar/src/client/HeaderLeadingControls.tsx:26</a>
   </header>
   <p class="summary">macOS 桌面把侧栏整列藏起来时，补回"打开侧栏"和"新建会话"的两个 28×28 控件：<code>flex</code> 横排、8px 间距，与对话头部右侧控件同一节奏。定位（<code>top: 11px</code> / <code>left: 88px</code>、窗口拖拽扣除）全部由 AppFrame 的 <code>.leadingSeat</code> 负责，这个盒子只管排队；图标 16px，颜色 <code>--dsw-alias-label-secondary</code>，悬停铺 <code>--dsw-alias-interactive-bg-hover</code>。</p>
   <div class="specs">
@@ -28419,7 +28419,7 @@ html[data-windows-titlebar][data-fullscreen] {
       <h3>右侧栏</h3>
       <code class="var">RightbarSeat</code>
     </div>
-    <a class="src" href="../packages/client/ui-sidebar-right/src/client/shell/SidebarRight.tsx#L352" target="_blank" rel="noreferrer">packages/client/ui-sidebar-right/src/client/shell/SidebarRight.tsx:352</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-sidebar-right/src/client/shell/SidebarRight.tsx#L352" target="_blank" rel="noreferrer">packages/client/ui-sidebar-right/src/client/shell/SidebarRight.tsx:352</a>
   </header>
   <p class="summary">右侧栏在 frame 右列里的坐席与它画出的面板。<code>.panel</code> 绝对定位并锚在 frame 右边缘（top/right/bottom 0），内部 <code>.panelBody</code> 交给 ui-dockkit 的 <code>.surface</code> / <code>.tabLayout</code>；标签轨就是 dockkit 的 38px 行（28px 高 + 10px 上内边距，与对话头部同高），轨道里是 28px 的 chip（激活 chip 底色 <code>--dsw-alias-markdown-tag</code>）、10px 的 slot 分隔条、28px 的加号，末端 <code>.stripChrome</code> 放嵌入方的两个 28px 控件（全屏切换 + 收起）。内容区 <code>.paneBody</code> 自己滚动，面板底色取 <code>--dsw-alias-bg-base</code>。收起时 docked 内容不卸载，只按 <code>--dsh-sidebar-width</code> 平移到 frame 右边缘之外；全屏把 dock 层从 10 提到 40 并把宽度写成 100vw。</p>
   <div class="specs">
@@ -31532,7 +31532,7 @@ html[data-platform='darwin'] .c0-divider {
       <h3>文件树</h3>
       <code class="var">FilesBody</code>
     </div>
-    <a class="src" href="../packages/client/ui-sidebar-files/src/client/FilesBody.tsx#L140" target="_blank" rel="noreferrer">packages/client/ui-sidebar-files/src/client/FilesBody.tsx:140</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-sidebar-files/src/client/FilesBody.tsx#L140" target="_blank" rel="noreferrer">packages/client/ui-sidebar-files/src/client/FilesBody.tsx:140</a>
   </header>
   <p class="summary">右侧栏文件标签的主体：38px 表头（<code>PathLabel</code> 根路径 + 28px 重新读取按钮 + <code>sidebar.right.tab.files.actions</code> 槽）压在一条 0.5px 分隔线上，下面是唯一滚动区，逐层列出会话工作区根目录。目录行是 <code>aria-expanded</code> 的按钮（展开时换成打开状态的文件夹图标），文件行走 <code>FileTypeIcon</code>，既不是文件也不是目录的条目灰化且拒绝打开；嵌套层级每层缩进 18px，行内边距 5px/10px、圆角 <code>--dsw-radius-md</code>。</p>
   <div class="specs">
@@ -32412,7 +32412,7 @@ html[data-platform='darwin'] .c0-divider {
       <h3>工作区选择</h3>
       <code class="var">WorkspacePicker</code>
     </div>
-    <a class="src" href="../packages/client/ui-workspace/src/client/WorkspacePicker.tsx#L230" target="_blank" rel="noreferrer">packages/client/ui-workspace/src/client/WorkspacePicker.tsx:230</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-workspace/src/client/WorkspacePicker.tsx#L230" target="_blank" rel="noreferrer">packages/client/ui-workspace/src/client/WorkspacePicker.tsx:230</a>
   </header>
   <p class="summary">会话空态里的工作区选择/添加流程：一个 144–360px 的菜单卡（<code>.list</code>，4px 内边距 + 34px 行高 + 12px 圆角），已注册工作区各占一行（文件夹图标、当前项尾部打勾），"添加工作区…"用发丝线与滚动区隔开钉在卡底（<code>.footer</code>）。选目录本身交给组合进来的 directoryFlow 占位者；采纳失败时弹一个 380px 的 Modal 卡片，正文用 <code>--dsw-alias-state-error-primary</code> 报错，页脚两个 72px 最小宽度的按钮可重试。</p>
   <div class="specs">
@@ -34181,7 +34181,7 @@ html[data-platform='darwin'] .c0-backing {
       <h3>工作区行</h3>
       <code class="var">ProjectRowItem</code>
     </div>
-    <a class="src" href="../packages/client/ui-workspace/src/client/rows/Rows.tsx#L219" target="_blank" rel="noreferrer">packages/client/ui-workspace/src/client/rows/Rows.tsx:219</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-workspace/src/client/rows/Rows.tsx#L219" target="_blank" rel="noreferrer">packages/client/ui-workspace/src/client/rows/Rows.tsx:219</a>
   </header>
   <p class="summary">工作区（项目）分组头：34px 一行，8px 内边距 + <code>--dsw-radius-md</code>，左侧 16px 槽放文件夹图标（包含当前会话时转成 <code>--dsw-alias-state-business-primary</code>），悬停时文件夹让位给展开箭头，尾部浮出"⋯"与"新建会话"两个 16px 图标按钮。行本身是 <code>role="treeitem"</code>，<code>aria-expanded</code> 表示展开；真实工作区停驻 800ms 会出悬停卡（标题 + 缩略路径 + 创建时间），"未分组"桶没有卡也没有菜单。</p>
   <div class="specs">
@@ -35551,7 +35551,7 @@ html[data-platform='darwin'] .c0-backing {
       <h3>会话行</h3>
       <code class="var">SessionNodeItem</code>
     </div>
-    <a class="src" href="../packages/client/ui-workspace/src/client/rows/Rows.tsx#L545" target="_blank" rel="noreferrer">packages/client/ui-workspace/src/client/rows/Rows.tsx:545</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-workspace/src/client/rows/Rows.tsx#L545" target="_blank" rel="noreferrer">packages/client/ui-workspace/src/client/rows/Rows.tsx:545</a>
   </header>
   <p class="summary">32px 的会话行：8px 内边距 + 16px 状态槽 + 4px 间隔的标题，尾随 10px 的更新时间。状态槽优先显示待交互（warning 点 + 把时间换成"待审批/计划待审/待回答"）、其次自身或子智能体活动（14px 加载环），完成态用 done 点，空闲不画点而把槽让给 <code>sidebar.session.row.leading</code> 占位者。悬停时把标题当跑马灯滚到远端并让时间位换成"⋯"与行动作条，置顶行带 14px 图钉；拖拽插入用行边缘的 2px 蓝色标线表示。</p>
   <div class="specs">
@@ -37250,7 +37250,7 @@ html[data-platform='darwin'] .c0-backing {
       <h3>搜索结果</h3>
       <code class="var">SearchResultItem</code>
     </div>
-    <a class="src" href="../packages/client/ui-workspace/src/client/rows/Rows.tsx#L472" target="_blank" rel="noreferrer">packages/client/ui-workspace/src/client/rows/Rows.tsx:472</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-workspace/src/client/rows/Rows.tsx#L472" target="_blank" rel="noreferrer">packages/client/ui-workspace/src/client/rows/Rows.tsx:472</a>
   </header>
   <p class="summary">搜索态下的一条结果：至少 48px 高、16px 圆角的双行卡，上行是 16px 状态槽 + 14px 标题（选中或归档时整卡铺 <code>--dsw-alias-interactive-bg-hover</code>），下行从状态槽下方 20px 起排，先是 12px 的工作区名（最多占 40% 宽，没有摘要时占满），再是 <code>--dsw-alias-label-secondary</code> 的内容片段。归档结果整段降到 caption 灰并在右上角浮出"取消归档"按钮——搜索是它们唯一的恢复入口。</p>
   <div class="specs">
@@ -38925,7 +38925,7 @@ html[data-platform='darwin'] .c0-backing {
       <h3>工作区浏览</h3>
       <code class="var">WorkspaceBrowser</code>
     </div>
-    <a class="src" href="../packages/client/ui-workspace/src/client/rows/WorkspaceBrowser.tsx#L896" target="_blank" rel="noreferrer">packages/client/ui-workspace/src/client/rows/WorkspaceBrowser.tsx:896</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-workspace/src/client/rows/WorkspaceBrowser.tsx#L896" target="_blank" rel="noreferrer">packages/client/ui-workspace/src/client/rows/WorkspaceBrowser.tsx:896</a>
   </header>
   <p class="summary">侧栏浏览区：36px 区域头（"工作区/会话"标题、就地展开的搜索框、视图选项与添加工作区两个 28px 按钮）+ 唯一滚动区。分组视图按工作区渲染 <code>.groupSection</code>（组头 + 子工作区 + 本组会话行，组间 4px 间距、行间 2px），底部压一层 24px 的 <code>.fade</code> 渐隐到侧栏底色；搜索态换成扁平的 <code>.searchTree</code> 结果列表，加载中给骨架行。收起成轨时用 <code>.rail</code>：控件变 36×36、12px 圆角，列表整体卸载。</p>
   <div class="specs">
@@ -42511,7 +42511,7 @@ html[data-platform='darwin'] .c0-backing {
       <h3>设置面板</h3>
       <code class="var">SettingsRoot</code>
     </div>
-    <a class="src" href="../packages/client/ui-settings-general/src/client/SettingsRoot.tsx#L112" target="_blank" rel="noreferrer">packages/client/ui-settings-general/src/client/SettingsRoot.tsx:112</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-settings-general/src/client/SettingsRoot.tsx#L112" target="_blank" rel="noreferrer">packages/client/ui-settings-general/src/client/SettingsRoot.tsx:112</a>
   </header>
   <p class="summary">设置页外壳：全屏遮罩上是 800px 宽的模态面板，高度取 <code>min(800px, 100vh - 2×遮罩上缘)</code>，遮罩上缘至少 24px，圆角走 <code>--dsw-radius-panel</code>（R28），填充 <code>--dsw-alias-bg-layer-2</code>，投影 <code>--dsw-elevation-prominent</code>（0.5px 发丝描边藏在阴影第一层，因此面板不再另加边框）。左侧 188px 导航栏由 <code>settings.section</code> 账本投影而来：标题 16/24/500，导航格 164×40、<code>--dsw-radius-md</code>，悬停与选中分别用 <code>--dsw-specific-sidebar-nav-item-hover</code> / <code>-active</code>。右侧内容列是 54px 标题栏（右上关闭按钮 28×28）加左右 24px 内边距的滚动区。面板由 portal 挂在 <code>#root</code> 之外，遮罩从 frame 顶栏下缘开始；侧栏触发行另有 42px 展开态与 36×36 收起态。</p>
   <div class="specs">
@@ -43301,7 +43301,7 @@ html[data-platform='darwin'] .c0-backing {
       <h3>通用设置页</h3>
       <code class="var">GeneralSection</code>
     </div>
-    <a class="src" href="../packages/client/ui-settings-general/src/client/GeneralSection.tsx#L14" target="_blank" rel="noreferrer">packages/client/ui-settings-general/src/client/GeneralSection.tsx:14</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-settings-general/src/client/GeneralSection.tsx#L14" target="_blank" rel="noreferrer">packages/client/ui-settings-general/src/client/GeneralSection.tsx:14</a>
   </header>
   <p class="summary">通用设置页的单列容器，宽度 100%，自己不画卡片也不留内边距，只做两件事：按注册顺序竖排 <code>settings.general.item</code> 的贡献，并把最后一行的 <code>border-bottom</code> 去掉（分隔线由每一行自带，因此页面末行不会留下一条悬空的线）。行的节奏来自各注册者统一的 <code>padding: 16px 0</code>，相邻两行之间形成 32px 的视觉空隙。默认内容包含外观、语言、字号、Coding Tools 开关与当前版本，先后顺序由各插件注册时的 <code>order</code> 决定。</p>
   <div class="specs">
@@ -43884,7 +43884,7 @@ html[data-platform='darwin'] .c0-backing {
       <h3>当前版本</h3>
       <code class="var">CurrentVersionRow</code>
     </div>
-    <a class="src" href="../packages/client/ui-settings-general/src/client/CurrentVersionRow.tsx#L10" target="_blank" rel="noreferrer">packages/client/ui-settings-general/src/client/CurrentVersionRow.tsx:10</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-settings-general/src/client/CurrentVersionRow.tsx#L10" target="_blank" rel="noreferrer">packages/client/ui-settings-general/src/client/CurrentVersionRow.tsx:10</a>
   </header>
   <p class="summary">General 页底部的版本行：一行 14/22 文本，上下各 16px 内边距，颜色 <code>--dsw-alias-label-primary</code>，并用 <code>overflow-wrap: anywhere</code> 让 <code>0.4.0-nightly.20261017+sha</code> 这类长串在窄面板里安全折行。版本来自构建期注入的 <code>process.env.DSH_CLIENT_VERSION</code>，缺少该元数据的部分构建直接返回 null——整行消失，而不是显示占位。文案由 locale 的 <code>general.currentVersion</code> 渲染成「当前版本：{version}」，行本身不带按钮，也不画分隔线。</p>
   <div class="specs">
@@ -44188,7 +44188,7 @@ html[data-platform='darwin'] .c0-backing {
       <h3>模型设置页</h3>
       <code class="var">ModelsSection</code>
     </div>
-    <a class="src" href="../packages/client/ui-settings-models/src/client/ModelsSection.tsx#L238" target="_blank" rel="noreferrer">packages/client/ui-settings-models/src/client/ModelsSection.tsx:238</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-settings-models/src/client/ModelsSection.tsx#L238" target="_blank" rel="noreferrer">packages/client/ui-settings-models/src/client/ModelsSection.tsx:238</a>
   </header>
   <p class="summary">模型设置页：720px 上限的单列，标题 16/24/500、说明 14/22 三级色。每个已配置的提供商是一张 <code>.rowCard</code>——0.5px <code>--dsw-alias-settings-card-stroke</code> 描边、<code>--dsw-alias-settings-card-fill</code> 填充、<code>--dsw-radius-xl</code>（R20）、12/14 内边距；行头是 14/22/500 的提供商名、可选的“自定义”小标签与 8px 凭证点（绿=已配置、红=缺失），右侧是 28px 高的编辑/删除按钮（R8、12/18）。展开后的编辑器换成 R16 的 <code>--dsw-alias-bg-module-platform</code> 内嵌面，模型行用 32px 输入框编辑 <code>deepseek-chat</code> 这类 ID。列表末尾是一只 44px 高的虚线「添加模型提供商」入口。</p>
   <div class="specs">
@@ -45892,7 +45892,7 @@ select.input {
       <h3>内置插件页</h3>
       <code class="var">PluginsSettingsSection</code>
     </div>
-    <a class="src" href="../packages/client/ui-settings-plugins/src/client/PluginsSettingsSection.tsx#L33" target="_blank" rel="noreferrer">packages/client/ui-settings-plugins/src/client/PluginsSettingsSection.tsx:33</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-settings-plugins/src/client/PluginsSettingsSection.tsx#L33" target="_blank" rel="noreferrer">packages/client/ui-settings-plugins/src/client/PluginsSettingsSection.tsx:33</a>
   </header>
   <p class="summary">内置插件页的壳：18/600 标题加 13px 三级色说明，下面是 <code>settings.plugins.tab</code> 账本投影出的页签行（13/20、22px 间距、0.5px <code>--dsw-alias-border-l2</code> 底边，选中项用 2px 下划线 <code>::after</code> 标出）。只有一个 tab 注册时根本不画页签行，直接把该页面当作整页内容；两个及以上才出现 tablist。页签首次选中后保持挂载，切换只切 <code>hidden</code>，因此搜索词、滚动位置和本地草稿都不会丢。示例面板内联了 inventory 标签页的真实卡片：0.5px 卡片描边 + <code>--dsw-radius-xl</code>、36×20 开关与版本胶囊。</p>
   <div class="specs">
@@ -47347,7 +47347,7 @@ select.input {
       <h3>账号头像</h3>
       <code class="var">AccountAvatar</code>
     </div>
-    <a class="src" href="../packages/client/ui-settings-account/src/client/AccountAvatar.tsx#L11" target="_blank" rel="noreferrer">packages/client/ui-settings-account/src/client/AccountAvatar.tsx:11</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-settings-account/src/client/AccountAvatar.tsx#L11" target="_blank" rel="noreferrer">packages/client/ui-settings-account/src/client/AccountAvatar.tsx:11</a>
   </header>
   <p class="summary">账号头像：一张 <code>&lt;img&gt;</code>，<code>alt=''</code> 作为装饰交给旁边的文字命名；<code>.image</code> 撑满父级 100%、<code>object-fit: cover</code>、<code>border-radius: 50%</code> 且配 <code>corner-shape: round</code>，所以圆不会被主题的超椭圆曲线拉变形。尺寸不在组件内：侧栏用 24px，设置页用 32px，由父容器决定。只有快照 <code>status === 'ready'</code> 时才渲染图片；没有 URL、加载中或加载失败都回退到 16px 的 <code>IconUserOutlineMedium</code>。</p>
   <div class="specs">
@@ -47387,7 +47387,7 @@ select.input {
       <h3>账号菜单</h3>
       <code class="var">AccountMenu</code>
     </div>
-    <a class="src" href="../packages/client/ui-settings-account/src/client/AccountMenu.tsx#L22" target="_blank" rel="noreferrer">packages/client/ui-settings-account/src/client/AccountMenu.tsx:22</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-settings-account/src/client/AccountMenu.tsx#L22" target="_blank" rel="noreferrer">packages/client/ui-settings-account/src/client/AccountMenu.tsx:22</a>
   </header>
   <p class="summary">侧栏账号入口：<code>.root</code> 占满剩余宽度，触发器是 44px 高的整行按钮（<code>--dsw-radius-md</code>、悬停 <code>--dsw-alias-interactive-bg-hover</code>），左侧 24px 圆形头像槽（<code>--dsw-alias-bg-skeleton</code> 兜底、<code>--dsw-alias-label-tertiary</code> 图标色），右侧 14/22 的名字做单行省略。折叠时触发器收成 36×36；未登录时改成一个 32px 高的 More 行，14px 省略号打头，弹出的菜单用 <code>.signedOutMenu</code> 放宽到 124–280px、行高 40px、R12。菜单本身向上弹出，包含设置、意见反馈与退出/登录。</p>
   <div class="specs">
@@ -47504,7 +47504,7 @@ select.input {
       <h3>语言行</h3>
       <code class="var">LanguageRow</code>
     </div>
-    <a class="src" href="../packages/client/locale/src/client/LanguageRow.tsx#L30" target="_blank" rel="noreferrer">packages/client/locale/src/client/LanguageRow.tsx:30</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/locale/src/client/LanguageRow.tsx#L30" target="_blank" rel="noreferrer">packages/client/locale/src/client/LanguageRow.tsx:30</a>
   </header>
   <p class="summary">General 页的语言行：左侧 14/22 标题「语言」，右侧一个 36px 高的选择器药丸（左右 14px 内边距、12px 圆角、<code>--dsw-alias-bg-module-platform</code> 填充、文字与 12px 间距的 chevron）。行本身 flex 居中、上下 16px 内边距，并用 0.5px <code>--dsw-alias-border-l2</code> 与下一行分隔。点开是由 <code>Menu</code> 渲染的右对齐语言列表，选项来自已注册的 locale 账本（内置 <code>zh</code> / <code>en</code>，插件可追加）。选中即写入 <code>locale.preference</code> 并立即切换界面语言与 <code>&lt;html lang&gt;</code>。</p>
   <div class="specs">
@@ -47707,7 +47707,7 @@ select.input {
       <h3>外观行</h3>
       <code class="var">AppearanceRow</code>
     </div>
-    <a class="src" href="../packages/client/ui-theme/src/client/AppearanceRow.tsx#L42" target="_blank" rel="noreferrer">packages/client/ui-theme/src/client/AppearanceRow.tsx:42</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-theme/src/client/AppearanceRow.tsx#L42" target="_blank" rel="noreferrer">packages/client/ui-theme/src/client/AppearanceRow.tsx:42</a>
   </header>
   <p class="summary">General 页的外观行：标题下是一排三枚选择立方体（浅色 / 深色 / 跟随系统），<code>flex: 1 1 180px</code> 平分宽度并用 <code>flex-wrap</code> 在窄面板里换行。每枚是图标在上、14/22 标签在下的纵向按钮：<code>padding: 20px 32px</code>、0.5px <code>--dsw-alias-border-l4</code> 描边、<code>--dsw-radius-xl</code>（R20）。选中态用 <code>--dsw-alias-bg-module-platform</code> 填充并把描边换成 <code>--dsw-static-neutral-bluish-400</code>；未选中项悬停只加 <code>--dsw-alias-interactive-bg-hover</code>。选中跟随持久化偏好，而不是当前解析出的活动主题。</p>
   <div class="specs">
@@ -47860,7 +47860,7 @@ select.input {
       <h3>字号行</h3>
       <code class="var">FontSizeRow</code>
     </div>
-    <a class="src" href="../packages/client/ui-theme/src/client/FontSizeRow.tsx#L49" target="_blank" rel="noreferrer">packages/client/ui-theme/src/client/FontSizeRow.tsx:49</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-theme/src/client/FontSizeRow.tsx#L49" target="_blank" rel="noreferrer">packages/client/ui-theme/src/client/FontSizeRow.tsx:49</a>
   </header>
   <p class="summary">字号行：左侧标题 14/22 加一行 12/18 的说明（三级色），右侧控件是 72×36、12px 圆角的 <code>--dsw-alias-bg-module-platform</code> 数字步进器，值居中、等宽数字；右侧 8px 处叠着一列 17×12 的上下箭头，默认 <code>opacity: 0</code>，悬停或 <code>:focus-within</code> 时才显形，因此纯键盘聚焦也能看到箭头。步进器后跟一个 14px 的 <code>px</code> 单位标签，再跟 24×24 的「更多字体设置」展开按钮。到达范围端点时对应箭头 <code>disabled</code> 并降为 <code>--dsw-alias-label-caption</code>；文本角色范围 10–22px，默认 14px。</p>
   <div class="specs">
@@ -48334,7 +48334,7 @@ select.input {
       <h3>任务管理页</h3>
       <code class="var">TaskManagerPage</code>
     </div>
-    <a class="src" href="../packages/client/ui-schedule/src/client/TaskManagerPage.tsx#L41" target="_blank" rel="noreferrer">packages/client/ui-schedule/src/client/TaskManagerPage.tsx:41</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-schedule/src/client/TaskManagerPage.tsx#L41" target="_blank" rel="noreferrer">packages/client/ui-schedule/src/client/TaskManagerPage.tsx:41</a>
   </header>
   <p class="summary">跨会话提醒的「自动化任务」全局页：左栏 <code>flex:1</code> 可滚动，内容列 <code>max-width:960px</code> 居中、内边距 <code>0 clamp(24px,4vw,48px) 48px</code>；标题 20px/28px/500，右侧是 32px 高的「新建」胶囊（13px 文字、16px 圆角）。向下依次是 28px 高的状态筛选 chip（全部 / 已开启 / 已结束，14px/22px、<code>0 10px</code> 内边距、14px 圆角，选中态与 <code>:hover</code> 同用 <code>--dsw-alias-interactive-bg-hover</code>）、36px 高的搜索框（0.5px <code>--dsw-alias-border-l3</code> 描边、12px 圆角，聚焦转品牌色）和任务行列表（整宽按钮：8px 内边距、12px 圆角、<code>flex-start</code>，16px 时钟图标 + 500 字重标题 + 13px/21px 摘要行，行间 2px）。选中任务后右侧出现 <code>flex:0 0 47%</code> 的详情栏，左缘一条 0.5px <code>--dsw-alias-border-l4</code>；≤760px 时列表让位、只留详情。页面自身不建任务——「新建」开一个新会话，由模型在那里调用 <code>schedule_create</code>。</p>
   <div class="specs">
@@ -54770,7 +54770,7 @@ select.input {
       <h3>任务卡片</h3>
       <code class="var">ScheduleCreateCard</code>
     </div>
-    <a class="src" href="../packages/client/ui-schedule/src/client/ScheduleCreateCard.tsx#L46" target="_blank" rel="noreferrer">packages/client/ui-schedule/src/client/ScheduleCreateCard.tsx:46</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-schedule/src/client/ScheduleCreateCard.tsx#L46" target="_blank" rel="noreferrer">packages/client/ui-schedule/src/client/ScheduleCreateCard.tsx:46</a>
   </header>
   <p class="summary"><code>schedule_create</code> 调用在回合尾部渲染的「已创建任务」卡：整宽、<code>8px 10px</code> 内边距、0.5px <code>--dsw-alias-border-l1</code> 描边、<code>--dsw-radius-lg</code> 圆角，底色浅色主题 <code>--dsw-static-neutral-50</code>、深色 <code>850</code>，悬停再换一档（只对可打开的卡生效）。左侧 40×40、R10 的图标砖里放 18px 时钟；中间标题 13px/20px/500，下面一行 10px/16px tertiary 的本地化频率；尾部是原子 <code>Button variant="outline" size="sm"</code> 的「打开」。可打开时整卡铺一层透明 <code>.cardOpen</code> 按钮承接点击（行本身 <code>pointer-events:none</code>，「打开」按钮单独恢复），结果读不成完整任务时只留标题与原始结果文本 <code>.fallback</code>（11px/16px、<code>pre-wrap</code>）。</p>
   <div class="specs">
@@ -55460,7 +55460,7 @@ select.input {
       <h3>时钟选择</h3>
       <code class="var">ClockPicker</code>
     </div>
-    <a class="src" href="../packages/client/ui-schedule/src/client/ClockPicker.tsx#L100" target="_blank" rel="noreferrer">packages/client/ui-schedule/src/client/ClockPicker.tsx:100</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-schedule/src/client/ClockPicker.tsx#L100" target="_blank" rel="noreferrer">packages/client/ui-schedule/src/client/ClockPicker.tsx:100</a>
   </header>
   <p class="summary">一个暂存「运行时间」的滚动时钟面板：时 / 分 / 秒三列，每列 52px 宽、<code>max-height:216px</code> 可滚动，列内每行最小 32px、10px 圆角、13px 等宽数字。值所在行是每列唯一的 <code>tabindex=0</code> 行：上下键在列内走位、左右键换列、Home/End 到两端、Enter 或空格拾取，拾取合成 <code>HH:MM:SS</code> 并回写暂存值；<code>.selected</code> 用 <code>--dsw-alias-button-ghost-active-fill</code> 填充加 1px 内描边标记当前值。外观由共享的 <code>PickerPopover</code> <code>.panel</code> 承担：body portal、<code>position:fixed</code>、<code>z-index:1100</code>、16px 圆角、<code>--dsw-specific-menu</code> 菜单材质加 <code>--dsw-menu-backdrop-filter</code>、<code>role="dialog"</code>。<code>seconds={false}</code> 时（cron 行没有秒字段）只留时、分两列，拾取保留原有秒数。</p>
   <div class="specs">
@@ -55649,7 +55649,7 @@ select.input {
       <h3>目标条</h3>
       <code class="var">GoalBar</code>
     </div>
-    <a class="src" href="../packages/client/ui-goal/src/client/GoalBar.tsx#L42" target="_blank" rel="noreferrer">packages/client/ui-goal/src/client/GoalBar.tsx:42</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-goal/src/client/GoalBar.tsx#L42" target="_blank" rel="noreferrer">packages/client/ui-goal/src/client/GoalBar.tsx:42</a>
   </header>
   <p class="summary">输入框上方常驻的目标卡（Todo 之后、Queue 之前）：<code>.bar</code> 固定 36px 高、<code>4px 5px 4px 12px</code> 内边距、10px 元素间距、<code>--dsw-radius-md</code> 圆角，靠 <code>--dsw-elevation-panel</code> 出高度、<code>--dsw-elevation-stroke-color</code> 给 0.5px 内描边，底色是 <code>--dsw-specific-menu</code> 加 <code>--dsw-menu-backdrop-filter</code> 的菜单材质。内容依次是 14px 目标图标、13px/24px/500 的阶段词（进行中的目标 / 已暂停的目标 / 受阻的目标）、13px/20px 单行省略的目标文本，右侧 10px 间距的 28px 圆形图标按钮组：armed 的进行中给「暂停」，已暂停或 active-disarmed 给「恢复」，编辑与清除常在。编辑态换成 <code>.editBar</code>（高度自适应、底对齐）里的 <code>InlineEditor</code> 加保存 / 取消。目标为加载中、无目标或已完结时整条不渲染；失败信息在目标文本右侧以 12px 错误色就地显示。</p>
   <div class="specs">
@@ -56329,7 +56329,7 @@ select.input {
       <h3>目标停靠</h3>
       <code class="var">GoalDock</code>
     </div>
-    <a class="src" href="../packages/client/ui-goal/src/client/GoalBar.tsx#L184" target="_blank" rel="noreferrer">packages/client/ui-goal/src/client/GoalBar.tsx:184</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-goal/src/client/GoalBar.tsx#L184" target="_blank" rel="noreferrer">packages/client/ui-goal/src/client/GoalBar.tsx:184</a>
   </header>
   <p class="summary">composer 输入区 <code>conversation.input.dock</code> 座位上的停靠适配器：外观完全交给同包的 <code>GoalBar</code>，自己只负责取数与对齐——durable 侧读 <code>useProjection('goal')</code>，进程内激活侧用注入的 <code>useGoalActivation</code>，只有 <code>id</code> 与 <code>revision</code> 都等于当前目标的那条激活边才被采纳，否则 activation 保持 undefined。于是它和 Todo、Queue 三张卡在同一列、同一 36px 高、同一层阴影上排开，宽度按 composer 的 <code>--dsh-composer-dock-inset</code> 收缩。激活还没读到时，进行中的目标既不显示「暂停」也不显示「恢复」，只剩编辑与清除；目标处于加载中、无目标或已完结时整条不渲染。</p>
   <div class="specs">
@@ -56679,7 +56679,7 @@ select.input {
       <h3>交付文件</h3>
       <code class="var">Deliverables</code>
     </div>
-    <a class="src" href="../packages/client/ui-deliverables/src/client/Deliverables.tsx#L68" target="_blank" rel="noreferrer">packages/client/ui-deliverables/src/client/Deliverables.tsx:68</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-deliverables/src/client/Deliverables.tsx#L68" target="_blank" rel="noreferrer">packages/client/ui-deliverables/src/client/Deliverables.tsx:68</a>
   </header>
   <p class="summary">回合尾部的显式交付区：<code>.root</code> 是纵向 16px 间距的容器并带 <code>container-type: inline-size</code>，紧跟在改动卡之后时上边距归零；<code>.presented</code> 默认两列网格（10px 间距），只有一个文件时用 <code>data-single</code> 收成一列，容器自身 ≤620px 时也收成一列。每张 <code>.file</code> 卡 60px 高、<code>8px 10px</code> 内边距、0.5px <code>--dsw-alias-border-l1</code> 描边、<code>--dsw-radius-lg</code>，底色浅色 <code>--dsw-static-neutral-50</code>、深色 <code>850</code>；左侧 40×40 R10 图标砖放 20px 文件类型字形，中间文件名 13px/20px/500 加一行 10px/16px tertiary 描述（悬停时换成「在侧边栏预览」），右侧留给 <code>deliverables.file.actions</code> 槽位。超过 4 个文件时折成 4 个并给出居中的「全部 N 个文件」开关；主机桌面读不到或不可用时，卡片行上方多一行 12px/18px 的 <code>.hostStatus</code>。</p>
   <div class="specs">
@@ -56822,7 +56822,7 @@ select.input {
       <h3>改动文件</h3>
       <code class="var">ChangedFiles</code>
     </div>
-    <a class="src" href="../packages/client/ui-deliverables/src/client/ChangedFiles.tsx#L37" target="_blank" rel="noreferrer">packages/client/ui-deliverables/src/client/ChangedFiles.tsx:37</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-deliverables/src/client/ChangedFiles.tsx#L37" target="_blank" rel="noreferrer">packages/client/ui-deliverables/src/client/ChangedFiles.tsx:37</a>
   </header>
   <p class="summary">回合结束时按 Host 记录的 git 摘要渲染的改动卡：<code>.card</code> 0.5px <code>--dsw-alias-border-l2</code> 描边（单文件时改用 l1）、<code>--dsw-radius-lg</code> 圆角、底色 <code>--dsw-alias-bg-layer-1</code>。顶部是可点的 60px 高 <code>.header</code>：40×40 R10 图标砖 + 13px/20px/500 标题（多文件「已编辑 N 个文件」、单文件「已编辑 &lt;文件名&gt;」）+ 10px/16px 等宽计数的 <code>+128</code> <code>-46</code>，悬停或键盘聚焦时计数换成「在侧边栏预览」。多文件时下面接 <code>.list</code>：每行 <code>min-height:24px</code>、<code>7px 18px 7px 14px</code> 内边距，12px 路径配 11px 等宽计数，行悬停与聚焦用 <code>--dsw-alias-interactive-bg-hover</code>；超过 4 行先折起，底部 <code>.toggle</code> 给「全部 N 个文件」/「收起」。二进制与过大文件不显示计数而显示「二进制」「过大」；<code>(pointer: coarse)</code> 下行高升到 44px。行与单文件表头悬停 500ms 会打开 portal 的改动预览。</p>
   <div class="specs">
@@ -56978,7 +56978,7 @@ button.header:disabled { cursor: progress; }
       <h3>计划开关</h3>
       <code class="var">PlanChip</code>
     </div>
-    <a class="src" href="../packages/client/ui-plan/src/client/PlanModeControl.tsx#L19" target="_blank" rel="noreferrer">packages/client/ui-plan/src/client/PlanModeControl.tsx:19</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-plan/src/client/PlanModeControl.tsx#L19" target="_blank" rel="noreferrer">packages/client/ui-plan/src/client/PlanModeControl.tsx:19</a>
   </header>
   <p class="summary">composer 里的计划模式状态按钮：<code>.chip</code> 28px 高、最小宽 34px、<code>0 8px</code> 内边距、<code>--dsw-radius-sm</code> 圆角，底色 <code>--dsw-alias-state-business-tertiary</code>、文字 <code>--dsw-alias-state-business-primary</code>、13px/20px/500。前置 14px 图标槽在常态显示计划轮廓，悬停或键盘聚焦时换成叉圈——提示这一下点的就是把计划模式关掉；悬停底色在同一块 tertiary 上再混入 6% 品牌色。只有在有效目标是计划模式时才渲染（<code>pending ? !active : active</code>，Host 折叠出来的值而非前端乐观更新），否则整个座位为空；<code>locked</code> 或退出请求在飞时按钮禁用（<code>opacity:.6</code>），失败在该座位右侧追加一行 12px/18px 的错误文案。</p>
   <div class="specs">
@@ -57321,7 +57321,7 @@ button.header:disabled { cursor: progress; }
       <h3>计划预览</h3>
       <code class="var">PlanPreview</code>
     </div>
-    <a class="src" href="../packages/client/ui-plan/src/client/PlanPreview.tsx#L18" target="_blank" rel="noreferrer">packages/client/ui-plan/src/client/PlanPreview.tsx:18</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-plan/src/client/PlanPreview.tsx#L18" target="_blank" rel="noreferrer">packages/client/ui-plan/src/client/PlanPreview.tsx:18</a>
   </header>
   <p class="summary">右 Sidebar 里的计划文档页：<code>.preview</code> 撑满高度、<code>overflow:auto</code>、内边距 <code>20px 24px 40px</code>（≤767px 收到 <code>16px 18px 32px</code>），里面 <code>.document</code> 是 14px / 1.75 的正文容器，正文交给 ui-primitives 的 <code>MarkdownText</code> 渲染——<code>.markdown</code> 根上走 <code>--dsw-font-markdown-base</code> 排版、段落 16px 间距、列表标记 24px 行高、行内代码与标题各有自己的档位。整页用计划标题做 <code>aria-label</code>，并把地址写在 <code>data-plan-preview</code> 上。资源还没到时同一位置显示 <code>.message</code>（24px 内边距、secondary 色）的一行状态：读取中、不可用、读取失败或临时预览已失效。</p>
   <div class="specs">
@@ -58372,7 +58372,7 @@ button.header:disabled { cursor: progress; }
       <h3>轨迹工具栏</h3>
       <code class="var">TrajectoryToolbar</code>
     </div>
-    <a class="src" href="../packages/client/ui-trajectory/src/client/TrajectoryToolbar.tsx#L38" target="_blank" rel="noreferrer">packages/client/ui-trajectory/src/client/TrajectoryToolbar.tsx:38</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-trajectory/src/client/TrajectoryToolbar.tsx#L38" target="_blank" rel="noreferrer">packages/client/ui-trajectory/src/client/TrajectoryToolbar.tsx:38</a>
   </header>
   <p class="summary">轨迹视图顶部的 sticky 工具栏：<code>.root</code> 高 <code>--dsh-trajectory-toolbar-height</code>（views.module.css 里是 32px）、<code>--dsw-alias-bg-layer-1</code> 底、下缘 0.5px <code>--dsw-alias-border-l2</code>、<code>z-index:4</code>、<code>top:0</code>。左半是 12px 文字、2px 间距的控制组：20px 高的「时长」切换（带 12px 时钟图标，<code>aria-pressed</code> 为真时底色 + 主文字色）与「轮次」「调用」两个折叠开关（<code>⊞ / ⊟</code> 字形配 14px 等宽字，<code>aria-pressed</code> 表示「已全部折叠」）；三者都圆角 <code>--dsw-radius-sm</code>、悬停给 <code>--dsw-alias-interactive-bg-hover</code>。右半的搜索框靠 <code>margin-left:auto</code> 收边：高 22px、<code>flex: 0 1 164px</code>（最小 84px）、0.5px <code>--dsw-alias-border-l4</code> 描边、底色 <code>--dsw-alias-bg-layer-2</code>，聚焦时转品牌描边并抬回 layer1；框内是 11px 搜索图标与 12px 输入。源码里还有一个「实际时间」开关，当前恒带 <code>hidden</code>，不显示。</p>
   <div class="specs">
@@ -58852,7 +58852,7 @@ button.header:disabled { cursor: progress; }
       <h3>反馈弹窗</h3>
       <code class="var">FeedbackDialog</code>
     </div>
-    <a class="src" href="../packages/client/ui-message-feedback/src/client/FeedbackDialog.tsx#L45" target="_blank" rel="noreferrer">packages/client/ui-message-feedback/src/client/FeedbackDialog.tsx:45</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-message-feedback/src/client/FeedbackDialog.tsx#L45" target="_blank" rel="noreferrer">packages/client/ui-message-feedback/src/client/FeedbackDialog.tsx:45</a>
   </header>
   <p class="summary">消息反馈的提交弹窗，由 <code>conversation.input.overlay</code> 条目渲染并经 <code>Modal</code> portal 到 body。卡片宽 <code>min(488px,100%)</code>、圆角 <code>--dsw-radius-panel</code>，标题行下是七个 28px 高的分类胶囊（选中态改用主按钮填充并翻转文字色），再往下是 116px 起、可随内容长到 280px 的备注框，底部是 44px 高、整宽的提交按钮。分类与备注都可选，提交成功后由 <code>Toast</code> 确认，失败时弹窗保持打开并另起一条 6 秒的警告 Toast。</p>
   <div class="specs">
@@ -59520,7 +59520,7 @@ button.header:disabled { cursor: progress; }
       <h3>登录弹窗</h3>
       <code class="var">SignInDialog</code>
     </div>
-    <a class="src" href="../packages/client/ui-settings-account/src/client/SignInDialog.tsx#L11" target="_blank" rel="noreferrer">packages/client/ui-settings-account/src/client/SignInDialog.tsx:11</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-settings-account/src/client/SignInDialog.tsx#L11" target="_blank" rel="noreferrer">packages/client/ui-settings-account/src/client/SignInDialog.tsx:11</a>
   </header>
   <p class="summary">DeepSeek 账号登录弹窗，以 <code>Modal</code> 的 <code>headless</code> 模式渲染：遮罩与卡片来自 Modal，标题行、正文与按钮行由本包自己排版。等待阶段显示设备码式的提示——正文里内嵌一个带下划线的「复制登录链接」按钮（复制结果显示 2 秒），主按钮退化为 36px 的加载圈；标题随阶段在「开始使用 / 等待登录 / 登录已超时 / 登录失败」之间切换。卡片描边用 <code>--dsw-alias-border-inverted</code>，两个按钮最小宽 72px、高 36px。</p>
   <div class="specs">
@@ -60035,7 +60035,7 @@ button.header:disabled { cursor: progress; }
       <h3>问答回复气泡</h3>
       <code class="var">QuestionReplyBubble</code>
     </div>
-    <a class="src" href="../packages/client/ui-user-questions/src/client/QuestionReplyView.tsx#L30" target="_blank" rel="noreferrer">packages/client/ui-user-questions/src/client/QuestionReplyView.tsx:30</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-user-questions/src/client/QuestionReplyView.tsx#L30" target="_blank" rel="noreferrer">packages/client/ui-user-questions/src/client/QuestionReplyView.tsx:30</a>
   </header>
   <p class="summary">迟到的问答回复在会话流里的右侧气泡：<code>.row</code> 右对齐、<code>.bubble</code> 限宽 72%，底色取 <code>--dsw-specific-bubble</code>、圆角 <code>--dsw-radius-xl</code>。折叠时只显示一行摘要（多个答案用逗号连接，全跳过时显示「已跳过」），展开后列出每题的问法、可选说明、候选项与「回答：」行。气泡下方是 28px 高的时间与复制按钮行，复制成功后图标换成对勾。</p>
   <div class="specs">
@@ -60405,7 +60405,7 @@ button.header:disabled { cursor: progress; }
       <h3>计划审核面板</h3>
       <code class="var">PlanReviewPanel</code>
     </div>
-    <a class="src" href="../packages/client/ui-user-questions/src/client/PlanReviewPanel.tsx#L29" target="_blank" rel="noreferrer">packages/client/ui-user-questions/src/client/PlanReviewPanel.tsx:29</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-user-questions/src/client/PlanReviewPanel.tsx#L29" target="_blank" rel="noreferrer">packages/client/ui-user-questions/src/client/PlanReviewPanel.tsx:29</a>
   </header>
   <p class="summary">计划审核卡：等待中的计划在输入框上方展开一块满宽卡片，头部是琥珀色的状态条（<code>StateDot</code> + 「计划待审」+ 右侧的预览动作插槽），主体是计划首行作为标题、首段作为两行截断的摘要，底部左对齐错误行、右对齐「要求修改」与「同意执行」两个按钮。卡片宽 <code>max-width: var(--dsh-chat-content-width)</code>、圆角 <code>--dsw-radius-xl</code>、底色 <code>--dsw-specific-input-major</code>，用 <code>--dsw-elevation-panel</code> 起浮，描边色被重绑到 <code>--dsw-alias-border-l2</code>。</p>
   <div class="specs">
@@ -61025,7 +61025,7 @@ button.header:disabled { cursor: progress; }
       <h3>模型选择</h3>
       <code class="var">ModelSelect</code>
     </div>
-    <a class="src" href="../packages/client/ui-model-selection/src/client/ModelSelect.tsx#L64" target="_blank" rel="noreferrer">packages/client/ui-model-selection/src/client/ModelSelect.tsx:64</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-model-selection/src/client/ModelSelect.tsx#L64" target="_blank" rel="noreferrer">packages/client/ui-model-selection/src/client/ModelSelect.tsx:64</a>
   </header>
   <p class="summary">输入框右下角的模型座位：28px 高的胶囊触发器显示当前模型（可选地在后面跟一个会先被挤掉的推理等级），展开后是一个 portaled 的菜单卡——宽 <code>max-content</code>、限制在 <code>min(420px, 100vw - 32px)</code>、最高 <code>min(360px, 100vh - 96px)</code>，行高 34px、按供应商分组并带 sticky 组标题，当前模型用尾部对勾标记而不是填充。有推理等级时先显示「模型 / 推理等级」两行入口，再钻入对应列表。</p>
   <div class="specs">
@@ -61913,7 +61913,7 @@ html[data-platform='darwin'] .c1-backing {
       <h3>权限选择</h3>
       <code class="var">PermissionSelect</code>
     </div>
-    <a class="src" href="../packages/client/ui-permission-presets/src/client/PermissionSelect.tsx#L77" target="_blank" rel="noreferrer">packages/client/ui-permission-presets/src/client/PermissionSelect.tsx:77</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-permission-presets/src/client/PermissionSelect.tsx#L77" target="_blank" rel="noreferrer">packages/client/ui-permission-presets/src/client/PermissionSelect.tsx:77</a>
   </header>
   <p class="summary">输入框里的当前会话权限控件：28px 高的胶囊触发器显示当前模式（14px 的权限字形 + 文字 + 12px 箭头），展开后是共享材质的下拉卡，列出主机下发的预设。四个内置模式各有一个 16px 字形：只读是盾牌加对勾、工作区写入是盾牌加铅笔、完全访问是盾牌加感叹号、自动审查是盾牌加字母 A，自动审查另带一枚 8px 的 <code>EXP</code> 徽标。选择完全访问或自动审查会先弹出风险确认。</p>
   <div class="specs">
@@ -62834,7 +62834,7 @@ html[data-platform='darwin'] .c2-backing {
       <h3>权限设置行</h3>
       <code class="var">PermissionRow</code>
     </div>
-    <a class="src" href="../packages/client/ui-permission-presets/src/client/PermissionRow.tsx#L41" target="_blank" rel="noreferrer">packages/client/ui-permission-presets/src/client/PermissionRow.tsx:41</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-permission-presets/src/client/PermissionRow.tsx#L41" target="_blank" rel="noreferrer">packages/client/ui-permission-presets/src/client/PermissionRow.tsx:41</a>
   </header>
   <p class="summary">通用设置里的「权限」行：左侧是 14px 标题加 12px 说明，右侧是 36px 高、底色 <code>--dsw-alias-bg-module-platform</code> 的预设选择器（文字 + 12px 箭头），行底用 <code>--dsw-alias-border-l2</code> 的 0.5px 发丝线与下一行分隔。点开选择器后是与输入框权限控件同一套 <code>Menu</code> 下拉卡，列出宿主 <code>defaultPreset</code> 枚举里的预设。它只写「以后新建会话」的默认值，不切换当前会话。</p>
   <div class="specs">
@@ -63674,7 +63674,7 @@ html[data-platform='darwin'] .c2-backing {
       <h3>任务菜单</h3>
       <code class="var">TaskMenu</code>
     </div>
-    <a class="src" href="../packages/client/ui-schedule/src/client/TaskMenu.tsx#L123" target="_blank" rel="noreferrer">packages/client/ui-schedule/src/client/TaskMenu.tsx:123</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-schedule/src/client/TaskMenu.tsx#L123" target="_blank" rel="noreferrer">packages/client/ui-schedule/src/client/TaskMenu.tsx:123</a>
   </header>
   <p class="summary">日程包自有的下拉菜单卡：34px 行高、13px 文字、选中行用尾部对勾标记、危险行改用 <code>--dsw-alias-state-error-primary</code> 文字与 <code>--dsw-alias-interactive-bg-hover-danger</code> 悬停底色；卡片自己持有 <code>--dsw-specific-menu</code> 填充加背景模糊、0.5px 发丝描边来自投影首层、圆角 <code>--dsw-radius-lg</code>。可选的行前标题（<code>type: 'label'</code>）与发丝分隔线（<code>type: 'separator'</code>）与行混排在同一个滚动视口里，卡片顶部还能钉一行 owner 内容（时间区搜索框就挂在那里）。</p>
   <div class="specs">
@@ -64106,7 +64106,7 @@ html[data-platform='darwin'] .c2-backing {
       <h3>语音输入</h3>
       <code class="var">VoiceInput</code>
     </div>
-    <a class="src" href="../packages/experimental/client-ui-voice-input/src/client/VoiceInput.tsx#L60" target="_blank" rel="noreferrer">packages/experimental/client-ui-voice-input/src/client/VoiceInput.tsx:60</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/experimental/client-ui-voice-input/src/client/VoiceInput.tsx#L60" target="_blank" rel="noreferrer">packages/experimental/client-ui-voice-input/src/client/VoiceInput.tsx:60</a>
   </header>
   <p class="summary">输入框工具条上的语音入口（experimental 插件）：空闲时是一个 28px 见方、图标 18px 的描边麦克风按钮；一旦开始录音，它展开成 34px 高的整宽行——左侧 32px 的圆形取消按钮、中间自适应宽度的电平波形（24px 高、<code>viewBox 640×40</code>、80 根竖线）、右侧 32px 的圆形停止按钮。请求权限或识别中时中间换成一行状态文字（前置转圈点），识别失败则显示原因并可重试或把保留的文字插回草稿。</p>
   <div class="specs">
@@ -64864,7 +64864,7 @@ html[data-platform='darwin'] .c2-backing {
       <h3>子智能体谱系</h3>
       <code class="var">SubagentHeaderLineage</code>
     </div>
-    <a class="src" href="../packages/client/ui-subagent/src/client/SubagentHeaderLineage.tsx#L785" target="_blank" rel="noreferrer">packages/client/ui-subagent/src/client/SubagentHeaderLineage.tsx:785</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-subagent/src/client/SubagentHeaderLineage.tsx#L785" target="_blank" rel="noreferrer">packages/client/ui-subagent/src/client/SubagentHeaderLineage.tsx:785</a>
   </header>
   <p class="summary">子会话标题栏里的面包屑与目录入口：一个显示当前（或祖先）标题的切换按钮，加一个「N 个子智能体」的计数按钮，两者都带 <code>aria-haspopup='tree'</code>。展开后是一张 336px 宽的子智能体树——每行 44px 高，从左到右是活动点、可展开的箭头、标题与状态摘要（标题 · 模式 · 活动），右侧是 token 与耗时两行指标，非当前行还带一个 28px 的侧边栏按钮；子级用 16px 缩进加 0.5px 的竖向导轨连到父行。</p>
   <div class="specs">
@@ -65849,7 +65849,7 @@ html[data-platform='darwin'] .c2-backing {
       <h3>工作流运行面板</h3>
       <code class="var">WorkflowRunPanel</code>
     </div>
-    <a class="src" href="../packages/client/ui-workflow-run/src/client/WorkflowRunPanel.tsx#L351" target="_blank" rel="noreferrer">packages/client/ui-workflow-run/src/client/WorkflowRunPanel.tsx:351</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-workflow-run/src/client/WorkflowRunPanel.tsx#L351" target="_blank" rel="noreferrer">packages/client/ui-workflow-run/src/client/WorkflowRunPanel.tsx:351</a>
   </header>
   <p class="summary">会话流里的一次工作流运行：32px 高的运行标题条（平台底色、箭头、运行名、圆点分隔符、成员数、右侧状态），下面缩进 16px 是阶段列表，每个阶段又缩进 16px 列出成员行（24px 高、状态点 + 成员名 + 右对齐状态）。运行与阶段都按状态自动开合：运行中、失败、取消、中断的层级默认展开，已完成的保持收起。成员名可导航时走链接色并在悬停加虚线下划线，否则是普通次级文字。</p>
   <div class="specs">
@@ -67054,7 +67054,7 @@ button.c1-leading {
       <h3>后台任务列表</h3>
       <code class="var">JobListAction</code>
     </div>
-    <a class="src" href="../packages/client/ui-jobs/src/client/JobListAction.tsx#L337" target="_blank" rel="noreferrer">packages/client/ui-jobs/src/client/JobListAction.tsx:337</a>
+    <a class="src" href="https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/client/ui-jobs/src/client/JobListAction.tsx#L337" target="_blank" rel="noreferrer">packages/client/ui-jobs/src/client/JobListAction.tsx:337</a>
   </header>
   <p class="summary">会话标题栏的后台任务入口：一个 28px 高的触发器（运行中的转圈点 + 「N 个后台任务运行中」+ 12px 箭头），展开后是 500px 宽的浮层，按「进行中 / 已结束 N」分节。运行中的行包在带 <code>--dsw-alias-fill-l2</code> 底色的卡片里，显示等宽字体的命令、类型徽标、进度与实时耗时，右侧是 20px 的展开方块和两段式确认的停止按钮；已结束的行折在分节线下，静态行没有交互，有留存输出的行才带展开方块。</p>
   <div class="specs">
