@@ -937,6 +937,12 @@ body[data-ds-dark-theme] .iconbtn .i-moon { display: block; }
 .rail a:hover { background: var(--dsw-alias-interactive-bg-hover); color: var(--dsw-alias-label-primary); text-decoration: none; }
 .rail a .n { color: var(--dsw-alias-label-caption); float: right; font: var(--dsw-font-xxs-12); }
 .rail .home { font-weight: 500; color: var(--dsw-alias-label-primary); }
+.rail .home.is-active { background: var(--dsw-alias-interactive-bg-hover); }
+/* The sections of a page hang off it: a hairline runs down the branch, and the
+   one the reader is in is filled in. */
+.rail .leaves { margin: 0 0 6px 13px; padding-left: 6px; border-left: 0.5px solid var(--dsw-alias-border-l2); }
+.rail .leaf { padding: 3px 8px; font: var(--dsw-font-xxs-12); color: var(--dsw-alias-label-tertiary); }
+.rail .leaf.is-current { background: var(--dsw-alias-interactive-bg-hover); color: var(--dsw-alias-label-primary); font-weight: 500; }
 
 .toolbar { display: flex; gap: 10px; align-items: center; margin-bottom: 22px; flex-wrap: wrap; }
 .toolbar input[type=search] {
@@ -1074,9 +1080,50 @@ try { if (localStorage.getItem('dsh-uiux-theme') === 'dark') document.body.setAt
   </header>
   <nav class="rail">
     <h2>目录</h2>
-    <a class="home" href="index.html">总览</a><a class="home is-active" href="primitives.html" style="background:var(--dsw-alias-interactive-bg-hover)">基础组件库<span class="n">53</span></a><a class="home" href="product.html">产品组件<span class="n">63</span></a><a class="home" href="tokens.html">设计变量<span class="n">419</span></a><a class="home" href="inventory.html">全量清单<span class="n">601</span></a>
-    <h2>页面内</h2>
-    <div data-toc></div>
+    <a class="home" href="index.html">总览</a>
+    <div class="leaves">
+      <a class="leaf" href="index.html#what">这份目录是什么</a>
+      <a class="leaf" href="index.html#layers">组件分层</a>
+      <a class="leaf" href="index.html#conventions">界面约定</a>
+      <a class="leaf" href="index.html#reading">怎么读</a>
+      <a class="leaf" href="index.html#packages">包分布</a>
+      <a class="leaf" href="index.html#reproduce">复现方式</a>
+    </div>
+    <a class="home is-active" href="primitives.html" aria-current="page">基础组件库<span class="n">53</span></a>
+    <div class="leaves">
+      <a class="leaf" href="#g-controls" data-section="g-controls">控制 Controls<span class="n">10</span></a>
+      <a class="leaf" href="#g-display" data-section="g-display">展示 Display<span class="n">11</span></a>
+      <a class="leaf" href="#g-overlay" data-section="g-overlay">浮层 Overlay<span class="n">6</span></a>
+      <a class="leaf" href="#g-output" data-section="g-output">Agent 输出渲染 Agent output<span class="n">13</span></a>
+      <a class="leaf" href="#g-settings" data-section="g-settings">设置表单 Settings<span class="n">4</span></a>
+      <a class="leaf" href="#g-brand" data-section="g-brand">品牌与图标 Brand &amp; icons<span class="n">9</span></a>
+    </div>
+    <a class="home" href="product.html">产品组件<span class="n">63</span></a>
+    <div class="leaves">
+      <a class="leaf" href="product.html#g-conversation">会话流 Conversation<span class="n">21</span></a>
+      <a class="leaf" href="product.html#g-shell">外壳与布局 Shell<span class="n">10</span></a>
+      <a class="leaf" href="product.html#g-settings">设置页 Settings<span class="n">10</span></a>
+      <a class="leaf" href="product.html#g-panels">功能面板 Panels<span class="n">10</span></a>
+      <a class="leaf" href="product.html#g-overlays">浮层与对话 Overlays<span class="n">9</span></a>
+      <a class="leaf" href="product.html#g-agent">Agent 运行视图 Runtime<span class="n">3</span></a>
+    </div>
+    <a class="home" href="tokens.html">设计变量<span class="n">419</span></a>
+    <div class="leaves">
+      <a class="leaf" href="tokens.html#t-static">静态色板<span class="n">77</span></a>
+      <a class="leaf" href="tokens.html#t-alias">语义别名<span class="n">107</span></a>
+      <a class="leaf" href="tokens.html#t-specific">专属表面<span class="n">11</span></a>
+      <a class="leaf" href="tokens.html#t-radius">圆角<span class="n">6</span></a>
+      <a class="leaf" href="tokens.html#t-typography">字体排印<span class="n">182</span></a>
+      <a class="leaf" href="tokens.html#t-elevation">浮层描边与投影<span class="n">5</span></a>
+      <a class="leaf" href="tokens.html#t-shadow">阴影<span class="n">4</span></a>
+      <a class="leaf" href="tokens.html#t-gradient">渐变<span class="n">4</span></a>
+      <a class="leaf" href="tokens.html#t-material">遮罩<span class="n">3</span></a>
+      <a class="leaf" href="tokens.html#t-focus">焦点环<span class="n">2</span></a>
+      <a class="leaf" href="tokens.html#t-shape">圆角形状<span class="n">1</span></a>
+      <a class="leaf" href="tokens.html#t-host">宿主变量<span class="n">16</span></a>
+      <a class="leaf" href="tokens.html#t-upstream">上游提供、本仓库未声明<span class="n">13</span></a>
+    </div>
+    <a class="home" href="inventory.html">全量清单<span class="n">601</span></a>
   </nav>
   <main>
 <div class="toolbar">
@@ -23290,7 +23337,6 @@ html[data-platform='darwin'] .c1-backing {
   </div>
 </section>
 <p class="footnote">共 53 个组件详情，数据来自 <code>data/data/parts/*.json</code>。每个示例的样式表路径与源码行号写在卡片右上角。</p>
-<script>document.querySelector('[data-toc]').innerHTML = "<a href=\"#g-controls\">控制 Controls<span class=\"n\">10</span></a><a href=\"#g-display\">展示 Display<span class=\"n\">11</span></a><a href=\"#g-overlay\">浮层 Overlay<span class=\"n\">6</span></a><a href=\"#g-output\">Agent 输出渲染 Agent output<span class=\"n\">13</span></a><a href=\"#g-settings\">设置表单 Settings<span class=\"n\">4</span></a><a href=\"#g-brand\">品牌与图标 Brand &amp; icons<span class=\"n\">9</span></a>"</script>
   </main>
 </div>
 <script>(function () {
@@ -23320,6 +23366,30 @@ html[data-platform='darwin'] .c1-backing {
   if (input) input.addEventListener('input', apply);
   if (kindFilter) kindFilter.addEventListener('change', apply);
   if (pkgFilter) pkgFilter.addEventListener('change', apply);
+
+  // The rail lists every page's sections, so only the anchors of the page being
+  // read resolve to an element here; the rest are plain cross-page links. Mark
+  // the section the reader is in and keep it inside the rail's own scroll box.
+  var leaves = Array.prototype.slice.call(document.querySelectorAll('.rail .leaf[data-section]'));
+  var tracked = leaves.map(function (leaf) { return document.getElementById(leaf.getAttribute('data-section')); });
+  if (leaves.length) {
+    var ticking = false;
+    var markCurrent = function () {
+      ticking = false;
+      var current = -1;
+      for (var i = 0; i < tracked.length; i++) {
+        if (tracked[i] && tracked[i].getBoundingClientRect().top <= 120) current = i;
+      }
+      for (var j = 0; j < leaves.length; j++) leaves[j].classList.toggle('is-current', j === current);
+      if (current >= 0 && leaves[current].scrollIntoView) {
+        leaves[current].scrollIntoView({ block: 'nearest' });
+      }
+    };
+    window.addEventListener('scroll', function () {
+      if (!ticking) { ticking = true; requestAnimationFrame(markCurrent); }
+    }, { passive: true });
+    markCurrent();
+  }
 
   // Component CSS that targets the dark palette through a document selector
   // (a :global body[dark] rule) is rewritten into a :host([dark]) rule for the

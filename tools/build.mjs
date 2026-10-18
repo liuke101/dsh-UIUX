@@ -338,7 +338,9 @@ const CJK_RE = /[\u2018\u2019\u201c\u201d\u2026\u3000-\u303f\u4e00-\u9fff\uf900-
  * The subset is embedded as base64 so a page stays readable when copied alone.
  */
 function fontCss() {
-  const assets = join(ROOT, 'UIUX', 'assets')
+  // The subset belongs to the catalog, not to the checkout it documents, so it
+  // is read from beside this script even when --root points somewhere else.
+  const assets = join(CATALOG, 'assets')
   const faces = []
   for (const weight of ['400', '500']) {
     const path = join(assets, `cjk-${weight}.woff2`)
@@ -362,7 +364,7 @@ body {
  * A non-empty result means tools/font.mjs must run before the pages are final.
  */
 function missingGlyphs(pages) {
-  const assets = join(ROOT, 'UIUX', 'assets')
+  const assets = join(CATALOG, 'assets')
   const covered = new Set()
   const charsetPath = join(DATA, 'cjk-charset.txt')
   if (existsSync(charsetPath) && existsSync(join(assets, 'cjk-400.woff2'))) {
@@ -438,6 +440,12 @@ body[data-ds-dark-theme] .iconbtn .i-moon { display: block; }
 .rail a:hover { background: var(--dsw-alias-interactive-bg-hover); color: var(--dsw-alias-label-primary); text-decoration: none; }
 .rail a .n { color: var(--dsw-alias-label-caption); float: right; font: var(--dsw-font-xxs-12); }
 .rail .home { font-weight: 500; color: var(--dsw-alias-label-primary); }
+.rail .home.is-active { background: var(--dsw-alias-interactive-bg-hover); }
+/* The sections of a page hang off it: a hairline runs down the branch, and the
+   one the reader is in is filled in. */
+.rail .leaves { margin: 0 0 6px 13px; padding-left: 6px; border-left: 0.5px solid var(--dsw-alias-border-l2); }
+.rail .leaf { padding: 3px 8px; font: var(--dsw-font-xxs-12); color: var(--dsw-alias-label-tertiary); }
+.rail .leaf.is-current { background: var(--dsw-alias-interactive-bg-hover); color: var(--dsw-alias-label-primary); font-weight: 500; }
 
 .toolbar { display: flex; gap: 10px; align-items: center; margin-bottom: 22px; flex-wrap: wrap; }
 .toolbar input[type=search] {
@@ -592,6 +600,30 @@ const SCRIPT = `(function () {
   if (kindFilter) kindFilter.addEventListener('change', apply);
   if (pkgFilter) pkgFilter.addEventListener('change', apply);
 
+  // The rail lists every page's sections, so only the anchors of the page being
+  // read resolve to an element here; the rest are plain cross-page links. Mark
+  // the section the reader is in and keep it inside the rail's own scroll box.
+  var leaves = Array.prototype.slice.call(document.querySelectorAll('.rail .leaf[data-section]'));
+  var tracked = leaves.map(function (leaf) { return document.getElementById(leaf.getAttribute('data-section')); });
+  if (leaves.length) {
+    var ticking = false;
+    var markCurrent = function () {
+      ticking = false;
+      var current = -1;
+      for (var i = 0; i < tracked.length; i++) {
+        if (tracked[i] && tracked[i].getBoundingClientRect().top <= 120) current = i;
+      }
+      for (var j = 0; j < leaves.length; j++) leaves[j].classList.toggle('is-current', j === current);
+      if (current >= 0 && leaves[current].scrollIntoView) {
+        leaves[current].scrollIntoView({ block: 'nearest' });
+      }
+    };
+    window.addEventListener('scroll', function () {
+      if (!ticking) { ticking = true; requestAnimationFrame(markCurrent); }
+    }, { passive: true });
+    markCurrent();
+  }
+
   // Component CSS that targets the dark palette through a document selector
   // (a :global body[dark] rule) is rewritten into a :host([dark]) rule for the
   // shadow root, so each preview stage carries the attribute too. Token values
@@ -651,17 +683,37 @@ const THEME_BOOTSTRAP = `
 try { if (localStorage.getItem('dsh-uiux-theme') === 'dark') document.body.setAttribute('data-ds-dark-theme', ''); } catch (err) {}
 `
 
-/** Shared page shell. `toc` adds the in-page navigation seat a gallery fills. */
-function page({ title, description, body, active, toc = false }) {
-  const nav = [
-    ['index.html', '总览', ''],
-    ['primitives.html', '基础组件库', String(primitives.length)],
-    ['product.html', '产品组件', String(product.length)],
-    ['tokens.html', '设计变量', String(tokens?.totals.tokens ?? 0)],
-    ['inventory.html', '全量清单', String(inventory?.totals.components ?? 0)],
-  ]
-    .map(([href, label, n]) => `<a class="home${active === href ? ' is-active' : ''}" href="${href}"${active === href ? ' style="background:var(--dsw-alias-interactive-bg-hover)"' : ''}>${label}${n ? `<span class="n">${n}</span>` : ''}</a>`)
-    .join('')
+/**
+ * The catalog outline: every page with its in-page sections as children. It is
+ * built once and rendered identically into all five pages, so the rail keeps
+ * its shape while the reader walks the catalog — only the highlighted branch
+ * moves. Sections of the page being read link in-document; the rest carry the
+ * file name so one click still lands on the right anchor.
+ */
+function railTree(active) {
+  return SITE.map((node) => {
+    const here = node.href === active
+    const head = `<a class="home${here ? ' is-active' : ''}" href="${esc(node.href)}"${here ? ' aria-current="page"' : ''}>${esc(node.label)}${node.count ? `<span class="n">${esc(node.count)}</span>` : ''}</a>`
+    if (node.sections.length === 0) return `    ${head}`
+    const leaves = node.sections
+      .map(
+        (section) =>
+          // Only the page being read can resolve an anchor, so only its leaves
+          // carry the hook the scroll marker uses — ids like `g-settings` exist
+          // on two pages, and the other page's copy must not match this one's.
+          `<a class="leaf" href="${here ? '' : esc(node.href)}#${esc(section.id)}"${here ? ` data-section="${esc(section.id)}"` : ''}>${esc(section.label)}${section.count ? `<span class="n">${esc(section.count)}</span>` : ''}</a>`,
+      )
+      .join('\n      ')
+    return `    ${head}
+    <div class="leaves">
+      ${leaves}
+    </div>`
+  }).join('\n')
+}
+
+/** Shared page shell. */
+function page({ title, description, body, active }) {
+  const nav = railTree(active)
   return `<!doctype html>
 <html lang="zh-CN">
 <head>
@@ -697,8 +749,7 @@ function page({ title, description, body, active, toc = false }) {
   </header>
   <nav class="rail">
     <h2>目录</h2>
-    ${nav}
-    ${toc ? '<h2>页面内</h2>\n    <div data-toc></div>' : ''}
+${nav}
   </nav>
   <main>
 ${body}
@@ -727,7 +778,7 @@ function indexPage() {
     description:
       '把 DeepSeek Harness Web 客户端的全部 React UI 组件按名称、导出变量、外观与代码来源整理成可检索的目录。外观示例不是截图，而是直接加载组件自身的 CSS Module 源码重绘。',
     active: 'index.html',
-    body: `<section class="section">
+    body: `<section class="section" id="what">
   <h2>这份目录是什么</h2>
   <p class="lead">DeepSeek Harness 的 Web 界面由 <code>packages/client/</code> 下的 61 个客户端插件包组成，每个包通过插槽（Slot）把组件注册进界面。本目录扫描这些包的全部 <code>.tsx</code> 源码，抽取每个 React 组件的名称、导出变量名、代码位置、所属包、CSS Module 类名与它消费的 <code>--dsw-*</code> 设计变量，并为常用组件提供实时重绘的外观示例。</p>
   <div class="stats">
@@ -742,7 +793,7 @@ function indexPage() {
   <div class="callout"><b>覆盖范围。</b>清单页收录全部 ${inventory.totals.components} 个组件的元数据（名称、变量名、来源、设计变量、CSS 类名）。重绘页覆盖共 ${primitives.length + product.length} 个具代表性的组件：基础组件库的全部导出，加上产品层最常出现在用户视野里的组件。其余组件可在清单页按包与关键词定位到源码。</div>
 </section>
 
-<section class="section">
+<section class="section" id="layers">
   <h2>组件分层</h2>
   <p class="lead">按 <code>packages/client/AGENTS.md</code> 的层次约定划分：基础组件库是唯一可以跨功能包复用的组件来源，功能包不能互相导入组件，产品组件通过插槽组装成页面。</p>
   <div class="stats">
@@ -754,7 +805,7 @@ function indexPage() {
   </div>
 </section>
 
-<section class="section">
+<section class="section" id="conventions">
   <h2>界面约定</h2>
   <p class="lead">这些规则来自 <a href="${esc(sourceHref('docs/web-styling.md'))}" target="_blank" rel="noreferrer">docs/web-styling.md</a> 与 <code>packages/client/AGENTS.md</code>，是查阅这套组件时最容易判断错的地方。</p>
   <div class="cards">
@@ -769,7 +820,7 @@ function indexPage() {
   </div>
 </section>
 
-<section class="section">
+<section class="section" id="reading">
   <h2>怎么读</h2>
   <p class="lead">四张子页分别对应四种查阅路径。</p>
   <div class="cards">
@@ -784,7 +835,7 @@ function indexPage() {
   </div>
 </section>
 
-<section class="section">
+<section class="section" id="packages">
   <h2>包分布</h2>
   <p class="lead">按组件数量排序的全部 ${inventory.byPackage.length} 个客户端包，含图标与美术导出。</p>
   <div class="toolbar"><input type="search" data-filter placeholder="过滤包名…"><span class="count" data-count></span></div>
@@ -793,7 +844,7 @@ ${packageRows}
   </tbody></table>
 </section>
 
-<section class="section">
+<section class="section" id="reproduce">
   <h2>复现方式</h2>
   <p class="lead">目录由仓库源码生成，不手工维护数字。</p>
   <div class="card"><div class="props" style="margin:0">
@@ -807,6 +858,42 @@ node tools/build.mjs                # 组装 index / primitives / product / toke
 <p class="footnote">数据源：<code>packages/client/**/src/**/*.tsx</code>、<code>packages/experimental/**</code>、<code>packages/extensions/**</code> 与 <code>packages/client/ui-theme/src/styles/*.css</code>。源码快照日期 ${esc(inventory.sourceDate)}。${SOURCE_BASE == null ? '源码链接使用相对路径，在 deepseek-harness 检出中打开有效。' : `源码链接指向 <a href="${esc(SOURCE_BASE.replace(/blob\/[^/]+\/$/, ''))}" target="_blank" rel="noreferrer">${esc(SOURCE_BASE.replace(/^https:\/\/github\.com\//, '').replace(/\/blob\//, ' @ ').replace(/\/$/, ''))}</a>，即生成这份目录时的上游版本。`}语言：中文说明 + 英文标识符（与源码一致）。</p>`,
   })
 }
+
+const TOKEN_GROUPS = ['static', 'alias', 'specific', 'radius', 'typography', 'elevation', 'shadow', 'gradient', 'material', 'focus', 'shape', 'host']
+
+/** Sections of `tokens.html`, in the order the page lays them out. */
+function tokenSections() {
+  const groups = TOKEN_GROUPS.filter((key) => tokens.groups[key]).map((key) => ({
+    id: `t-${key}`,
+    label: tokens.groups[key].label,
+    count: tokens.groups[key].count,
+  }))
+  return [...groups, { id: 't-upstream', label: '上游提供、本仓库未声明', count: undeclared.length }]
+}
+
+/**
+ * Sections of a gallery page: the groups that actually hold entries, with the
+ * entry count each. `galleryPage` renders them and the rail links to them.
+ */
+function gallerySections(groups, entries) {
+  return groups
+    .filter((group) => entries.some((entry) => (entry.group ?? 'other') === group.key))
+    .map((group) => ({
+      id: `g-${group.key}`,
+      label: group.label,
+      count: entries.filter((entry) => (entry.group ?? 'other') === group.key).length,
+    }))
+}
+
+/** Sections of `index.html`, in reading order; the ids match its markup. */
+const INDEX_SECTIONS = [
+  { id: 'what', label: '这份目录是什么' },
+  { id: 'layers', label: '组件分层' },
+  { id: 'conventions', label: '界面约定' },
+  { id: 'reading', label: '怎么读' },
+  { id: 'packages', label: '包分布' },
+  { id: 'reproduce', label: '复现方式' },
+]
 
 /** Curated gallery page for one entry collection. */
 function galleryPage({ entries, title, description, file, groups, active }) {
@@ -824,28 +911,22 @@ ${items.map(card).join('\n')}
 </section>`
     })
     .join('\n')
-  const toc = groupDefs
-    .filter((group) => entries.some((entry) => (entry.group ?? 'other') === group.key))
-    .map((group) => `<a href="#g-${esc(group.key)}">${esc(group.label)}<span class="n">${entries.filter((e) => (e.group ?? 'other') === group.key).length}</span></a>`)
-    .join('')
   return page({
     title,
     description,
     active,
-    toc: true,
     body: `<div class="toolbar">
   <input type="search" data-filter placeholder="按组件名、中文名或设计变量过滤…">
   <span class="count" data-count></span>
 </div>
 ${sections}
-<p class="footnote">共 ${entries.length} 个组件详情，数据来自 <code>data/${esc(file)}</code>。每个示例的样式表路径与源码行号写在卡片右上角。</p>
-<script>document.querySelector('[data-toc]').innerHTML = ${JSON.stringify(toc)}</script>`,
+<p class="footnote">共 ${entries.length} 个组件详情，数据来自 <code>data/${esc(file)}</code>。每个示例的样式表路径与源码行号写在卡片右上角。</p>`,
   })
 }
 
 /** Token reference page. */
 function tokensPage() {
-  const groupOrder = ['static', 'alias', 'specific', 'radius', 'typography', 'elevation', 'shadow', 'gradient', 'material', 'focus', 'shape', 'host']
+  const groupOrder = TOKEN_GROUPS
   const sections = groupOrder
     .filter((key) => tokens.groups[key])
     .map((key) => {
@@ -883,15 +964,10 @@ function tokensPage() {
       return `<section class="section" id="t-${key}"><h2>${esc(group.label)} <span class="count">${group.count}</span></h2><p class="lead">${esc(group.description)}</p><div class="swatches">${swatches}</div></section>`
     })
     .join('')
-  const toc = groupOrder
-    .filter((key) => tokens.groups[key])
-    .map((key) => `<a href="#t-${key}">${esc(tokens.groups[key].label)}<span class="n">${tokens.groups[key].count}</span></a>`)
-    .join('')
   return page({
     title: '设计变量 · --dsw-*',
     description: `主题层在 <code>packages/client/ui-theme/src/styles/</code> 中声明的 ${tokens.totals.tokens} 个 CSS 自定义属性。功能组件只消费语义别名，浅色与深色各一套取值；色块直接读取真实变量，因此随主题切换。`,
     active: 'tokens.html',
-    toc: true,
     body: `<div class="callout"><b>命名约定。</b><code>--dsw-static-*</code> 是与主题无关的原始色阶；<code>--dsw-alias-*</code> 是按用途命名的语义别名，浅色与深色分别声明；<code>--dsw-specific-*</code> 是侧边栏、气泡、菜单等特定表面的填充；<code>--dsh-*</code> 是宿主层变量（字体栈、内容字号、滚动条）。<code>--dsw-font-*</code> 以 <code>字号 字重/行高 字族</code> 的简写形式整体消费。</div>
 <div class="toolbar"><input type="search" data-filter placeholder="过滤变量名或取值…"><span class="count" data-count></span></div>
 ${sections}
@@ -902,8 +978,7 @@ ${sections}
 ${undeclared.map((item) => `<tr data-search="${esc(`${item.token} ${item.components.join(' ')}`)}"><td class="mono">${esc(item.token)}</td><td>${esc(item.components.join('、'))}</td><td class="dim mono">${esc([...item.packages].slice(0, 3).join(' '))}</td></tr>`).join('\n')}
   </tbody></table>`}
 </section>
-<p class="footnote">共 ${tokens.totals.tokens} 个变量，其中 ${tokens.totals.used} 个被组件 CSS 直接引用。左侧色块为浅色取值，深色列显示 <code>body[data-ds-dark-theme]</code> 覆盖。</p>
-<script>document.querySelector('[data-toc]').innerHTML = ${JSON.stringify(toc)}</script>`,
+<p class="footnote">共 ${tokens.totals.tokens} 个变量，其中 ${tokens.totals.used} 个被组件 CSS 直接引用。左侧色块为浅色取值，深色列显示 <code>body[data-ds-dark-theme]</code> 覆盖。</p>`,
   })
 }
 
@@ -996,6 +1071,19 @@ const PRODUCT_GROUPS = [
   { key: 'panels', label: '功能面板 Panels', description: '任务计划、目标、交付物、插件市场、工作区等功能页。' },
   { key: 'overlays', label: '浮层与对话 Overlays', description: '对话框、确认框、选择菜单与消息反馈。' },
   { key: 'agent', label: 'Agent 运行视图 Runtime', description: '轨迹、子代理、工作流、后台任务等运行时视图。' },
+]
+
+/**
+ * The outline every page's rail renders: one node per page, its in-page
+ * sections underneath. Built before the pages so the tree a reader navigates
+ * by is the same on all five of them.
+ */
+const SITE = [
+  { href: 'index.html', label: '总览', count: '', sections: INDEX_SECTIONS },
+  { href: 'primitives.html', label: '基础组件库', count: String(primitives.length), sections: gallerySections(PRIMITIVE_GROUPS, primitives) },
+  { href: 'product.html', label: '产品组件', count: String(product.length), sections: gallerySections(PRODUCT_GROUPS, product) },
+  { href: 'tokens.html', label: '设计变量', count: tokens ? String(tokens.totals.tokens) : '', sections: tokens ? tokenSections() : [] },
+  { href: 'inventory.html', label: '全量清单', count: inventory ? String(inventory.totals.components) : '', sections: [] },
 ]
 
 const pages = [

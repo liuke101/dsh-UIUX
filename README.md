@@ -83,6 +83,8 @@ node <本目录>/tools/build.mjs
 
 目录同时发布在 <https://github.com/liuke101/dsh-UIUX>，并开启 GitHub Pages 在线浏览：<https://liuke101.github.io/dsh-UIUX/>。仓库根目录的 `.nojekyll` 关闭 Jekyll 处理，页面按字节原样提供。每张页面右上角有两个入口：GitHub 小猫图标指向本仓库，太阳 / 月亮图标切换浅色与深色。
 
+左侧目录是一棵站点树：五个页面各带自己的页内小节，当前页的分支高亮，读到哪一节就在树里标出哪一节（滚动时用 `scrollIntoView({ block: 'nearest' })` 把它带进侧栏自己的滚动区）。这棵树由 `build.mjs` 的 `SITE` 一次算出、原样写进五张页面，所以翻页时侧栏不会变形状，只有高亮的分支在移动。页内小节在所属页面里是纯锚点链接，在别的页面里带上文件名跨页跳转——原来单独一栏「页面内」因此取消。
+
 ## 数据字段
 
 `data/components.json` 的每个组件记录包含：`name`（组件名）、`exportName`（导出变量名）、`kind`（分层判定）、`package`、`file` 与 `line`（代码来源）、`propsType`、`doc`（源码 JSDoc）、`cssModule`、`cssClasses`、`tokens`（该组件 CSS 引用的设计变量）、`publicExport`（是否在包的 `src/index.ts` 中公开导出）。
