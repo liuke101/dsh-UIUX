@@ -1,0 +1,943 @@
+{
+ "schemaVersion": 1,
+ "note": "composer 与工具行条目。css 字段按依赖顺序列出：先列被组合的原语样式表，再列组件自己的模块，保证组件里的覆盖规则（例如 ToolRow 的 .readBody 覆盖 CodeCard 的 .card 外边距）在同名类逐字内联时仍然生效。",
+ "entries": [
+  {
+   "id": "input-bar",
+   "name": "InputBar",
+   "exportName": "InputBar",
+   "zh": "输入框",
+   "group": "conversation",
+   "summary": "常驻 composer 卡：<code>variant=\"hero\"</code> 居中空态，文本区下限 52px；<code>variant=\"composer\"</code> 停靠底部，下限 36px。卡片宽 <code>--dsh-composer-card-max-width</code>、圆角 <code>--dsw-radius-panel</code>，行内左侧是 28px 圆形「+」加权限 / 计划芯片，右侧是 34px 圆形发送按钮（运行中且草稿为空时同一座位变成停止）。文本区 14 行封顶后由 <code>.scroll</code> 单独滚动；无会话时同一份 DOM 转成工作区选择触发器，用内描边虚线取代 elevation 描边。",
+   "source": "packages/client/ui-conversation/src/client/skeleton/InputBar.tsx#L46",
+   "css": [
+    "packages/client/ui-plan/src/client/PlanModeControl.module.css",
+    "packages/client/ui-permission-presets/src/client/PermissionSelect.module.css",
+    "packages/client/ui-model-selection/src/client/ModelSelect.module.css",
+    "packages/client/ui-attachment/src/client/ComposerAttachments.module.css",
+    "packages/client/ui-conversation/src/client/skeleton/InputBar.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-module-platform",
+    "--dsw-alias-border-l1",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-border-l2-darkmode-thin",
+    "--dsw-alias-border-l4",
+    "--dsw-alias-button-contrast-fill",
+    "--dsw-alias-button-info-fill",
+    "--dsw-alias-button-info-hover",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-interactive-bg-hover-danger",
+    "--dsw-alias-interactive-bg-hover-solid",
+    "--dsw-alias-label-caption",
+    "--dsw-alias-label-dimmed",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-primary-inverted",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-menu-icon",
+    "--dsw-alias-scrollbar-bg-l2",
+    "--dsw-alias-scrollbar-hover-l2",
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-state-business-tertiary",
+    "--dsw-alias-state-error-primary",
+    "--dsw-alias-state-warn-label",
+    "--dsw-elevation-prominent",
+    "--dsw-elevation-soft",
+    "--dsw-elevation-stroke-color",
+    "--dsw-focus-ring-color",
+    "--dsw-focus-ring-width",
+    "--dsw-font-family",
+    "--dsw-radius-md",
+    "--dsw-radius-panel",
+    "--dsw-radius-sm",
+    "--dsw-radius-xl",
+    "--dsw-specific-input-major",
+    "--dsw-specific-selector"
+   ],
+   "specimens": [
+    {
+     "label": "hero：居中空态（52px 文本下限，空草稿的发送按钮 0.4 透明）",
+     "pad": "lg",
+     "html": "<div class=\"root hero\"><div class=\"card\" data-composer-card><div class=\"scroll\" data-input-scroll><div class=\"grow\"><div class=\"input\" contenteditable=\"false\" data-phase=\"inert\" data-placeholder=\"Describe what you want to build, / commands, @ files or sessions\" aria-label=\"Describe what you want to build, / commands, @ files or sessions\"><p><br></p></div><div class=\"placeholder\" data-composer-placeholder>Describe what you want to build, / commands, @ files or sessions</div></div></div><div class=\"row\"><div class=\"tools\"><button type=\"button\" class=\"add\" aria-label=\"Add files or run commands\" aria-haspopup=\"listbox\" aria-expanded=\"false\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1.3\" aria-hidden=\"true\"><path d=\"M8 2V14\" stroke=\"currentColor\"></path><path d=\"M2 8H14\" stroke=\"currentColor\"></path></svg></button><div class=\"modes\"><button type=\"button\" class=\"trigger\" aria-label=\"Access mode, current: Workspace Write\" title=\"Writes stay inside the session workspace\"><span class=\"triggerLabel\">Workspace Write</span><span class=\"chevron\" aria-hidden=\"true\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"></path></svg></span></button><span class=\"wrap\"><button type=\"button\" class=\"chip\" aria-label=\"Plan mode on — click to turn off (/plan off)\" title=\"Plan mode on — click to turn off (/plan off)\"><span class=\"glyph\" aria-hidden=\"true\"><svg class=\"restGlyph\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\"><path d=\"M4.9375 5.90295H11.0625\" stroke=\"currentColor\"></path><path d=\"M4.9375 9.02991H8.27841\" stroke=\"currentColor\"></path><path d=\"M12.5 1.32617C13.3039 1.32617 14 1.95171 14 2.77637V7.61328L13 8.68164V2.77637C13 2.55186 12.8007 2.32617 12.5 2.32617H3.5C3.1993 2.32617 3 2.55186 3 2.77637V13.2246C3.00044 13.4489 3.19963 13.6738 3.5 13.6738H8.32812L7.39258 14.6738H3.5C2.69637 14.6738 2.00042 14.0489 2 13.2246V2.77637C2 1.95171 2.69613 1.32617 3.5 1.32617H12.5Z\" fill=\"currentColor\"></path><path d=\"M8.97212 14.3693C9.17511 14.5723 9.37811 14.7753 9.5811 14.9783C9.67012 14.8953 9.75914 14.8123 9.84815 14.7293C11.4505 13.2352 13.0528 11.7411 14.6551 10.247C14.7441 10.164 14.8331 10.081 14.9221 9.99803C14.5989 9.6748 14.2756 9.35157 13.9524 9.02834C13.8694 9.11736 13.7864 9.20637 13.7034 9.29539C12.2093 10.8977 10.7152 12.5 9.22113 14.1023C9.13813 14.1913 9.05513 14.2803 8.97212 14.3693Z\" fill=\"currentColor\"></path><path d=\"M11.6323 13.7841C11.6323 14.0395 11.6323 14.295 11.6323 14.5504C11.6812 14.5523 11.7301 14.5543 11.779 14.5562C12.659 14.5913 13.539 14.6263 14.419 14.6614C14.4679 14.6633 14.5168 14.6653 14.5657 14.6672C14.5657 14.3339 14.5657 14.0006 14.5657 13.6672C14.5168 13.6692 14.4679 13.6711 14.419 13.6731C13.539 13.7081 12.659 13.7432 11.779 13.7783C11.7301 13.7802 11.6812 13.7821 11.6323 13.7841Z\" fill=\"currentColor\"></path></svg></span>Plan</button></span></div></div><div class=\"trailing\"><div class=\"standardControls\"><div class=\"c2-root\"><button type=\"button\" class=\"c2-trigger\" aria-label=\"Select model, current DeepSeek-V4.1-Flash\" aria-haspopup=\"menu\" aria-expanded=\"false\" title=\"DeepSeek-V4.1-Flash\"><svg class=\"c2-triggerIcon\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M7.8667 0.349609C8.96906 0.349634 10.0601 0.481272 11.0317 0.735352C11.9973 0.987845 12.8453 1.362 13.4644 1.84766C14.0744 2.32629 14.507 2.95539 14.5161 3.69336H14.5171V8.53516C14.0843 8.32076 13.6108 8.17679 13.1108 8.11816C13.1831 7.96848 13.2162 7.82856 13.2163 7.70312V5.76758C12.6269 6.16618 11.8739 6.47995 11.0317 6.7002C10.0602 6.95423 8.96896 7.08494 7.8667 7.08496C6.76461 7.08493 5.67411 6.95415 4.70264 6.7002C3.85994 6.48006 3.10694 6.1662 2.51709 5.76758V7.70312L2.521 7.78418C2.56374 8.19554 2.93361 8.74414 3.91357 9.23145C4.9281 9.73585 6.35004 10.0371 7.8667 10.0371C8.26373 10.0371 8.6543 10.0141 9.03271 9.97461C8.75596 10.3799 8.54664 10.8349 8.42041 11.3232C8.23666 11.3313 8.0518 11.3369 7.8667 11.3369C6.20108 11.3369 4.57025 11.01 3.33447 10.3955C3.04163 10.2499 2.76658 10.0836 2.51709 9.90039V11.6738C2.51728 12.1379 2.88589 12.7556 3.92236 13.292C4.93457 13.8157 6.35342 14.1289 7.8667 14.1289C8.12318 14.1289 8.37694 14.1161 8.62646 14.0986C8.82021 14.5535 9.08999 14.9682 9.41943 15.3271C8.91285 15.3934 8.39149 15.4287 7.8667 15.4287C6.19761 15.4287 4.56379 15.0869 3.32568 14.4463C2.11244 13.8185 1.21649 12.8562 1.21631 11.6738V3.76367C1.21595 3.74853 1.21438 3.733 1.21436 3.71777C1.21436 2.96917 1.65103 2.33053 2.26807 1.84668C2.88747 1.36112 3.73675 0.987685 4.70264 0.735352C5.67413 0.481376 6.76457 0.349636 7.8667 0.349609ZM7.8667 1.65039C6.86269 1.65042 5.88326 1.77028 5.03076 1.99316C4.17183 2.2176 3.50421 2.52956 3.06982 2.87012C2.65043 3.19909 2.52622 3.48898 2.51709 3.69336V3.74414C2.52719 3.94845 2.65185 4.23772 3.06982 4.56543C3.50425 4.90601 4.17172 5.21795 5.03076 5.44238C5.88326 5.66527 6.8627 5.78513 7.8667 5.78516C8.8707 5.78513 9.85015 5.66525 10.7026 5.44238C11.5611 5.21787 12.2286 4.9049 12.6626 4.56445C13.0982 4.22252 13.2163 3.9231 13.2163 3.71777L13.2104 3.63574C13.1818 3.43623 13.044 3.16941 12.6626 2.87012C12.2286 2.52957 11.5614 2.21773 10.7026 1.99316C9.85009 1.77025 8.8708 1.65041 7.8667 1.65039Z\" fill=\"currentColor\"></path><path d=\"M12.8936 10.0361L13.2061 10.5566C13.2296 10.5959 13.2651 10.6562 13.3027 10.707C13.3469 10.7666 13.4148 10.8431 13.5195 10.9023C13.6244 10.9617 13.725 10.9801 13.7988 10.9873C13.8619 10.9934 13.9318 10.9932 13.9775 10.9932H14.6162L14.8896 11.4502L14.5947 11.9443C14.5698 11.9859 14.5312 12.0483 14.5029 12.1084C14.4781 12.1611 14.4514 12.2312 14.4395 12.3164L14.4326 12.4072L14.4395 12.4971C14.4514 12.5825 14.4781 12.6532 14.5029 12.7061C14.5312 12.7661 14.5689 12.8287 14.5938 12.8701L14.8896 13.3633L14.6162 13.8213H13.9775C13.9318 13.8213 13.8619 13.821 13.7988 13.8271C13.7433 13.8326 13.6728 13.8442 13.5967 13.875L13.5195 13.9121C13.4148 13.9714 13.3469 14.0478 13.3027 14.1074C13.265 14.1583 13.2296 14.2186 13.2061 14.2578L12.8936 14.7783H12.3115L11.999 14.2578C11.9755 14.2186 11.9401 14.1583 11.9023 14.1074C11.8693 14.0628 11.823 14.0083 11.7578 13.959L11.6855 13.9121L11.6074 13.875C11.5316 13.8445 11.4615 13.8325 11.4062 13.8271C11.3432 13.821 11.2733 13.8213 11.2275 13.8213H10.5889L10.3135 13.3633L10.6104 12.8701C10.6352 12.8287 10.6739 12.7661 10.7021 12.7061C10.7352 12.6357 10.7724 12.534 10.7725 12.4072C10.7724 12.2804 10.7352 12.1788 10.7021 12.1084C10.6739 12.0483 10.6353 11.9859 10.6104 11.9443L10.3135 11.4502L10.5889 10.9932H11.2275C11.2733 10.9932 11.3432 10.9934 11.4062 10.9873C11.4801 10.9801 11.5808 10.9616 11.6855 10.9023C11.7903 10.843 11.8582 10.7666 11.9023 10.707C11.94 10.6562 11.9755 10.5959 11.999 10.5566L12.3115 10.0361H12.8936Z\" stroke=\"currentColor\" stroke-miterlimit=\"10\"></path></svg><span class=\"c2-triggerLabel\">DeepSeek-V4.1-Flash</span><svg class=\"c2-chevron\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"></path></svg></button></div></div><button type=\"button\" class=\"primary\" aria-label=\"Send message\" disabled><svg viewBox=\"0 0 16 16\" width=\"16\" height=\"16\" aria-hidden=\"true\"><path d=\"M8.3125 0.980183C8.66767 1.0531 8.97902 1.20418 9.2627 1.43233C9.48724 1.61297 9.73029 1.85793 9.97949 2.10714L14.707 6.83468L13.293 8.24874L9 3.95577V15.0417H7V3.95577L2.70703 8.24874L1.29297 6.83468L6.02051 2.10714C6.26971 1.85793 6.51277 1.61297 6.7373 1.43233C6.97662 1.23986 7.28445 1.04402 7.6875 0.980183C7.8973 0.947006 8.1031 0.95516 8.3125 0.980183Z\" fill=\"currentColor\"></path></svg></button></div></div></div><div class=\"dock\" data-composer-dock></div></div>"
+    },
+    {
+     "label": "composer：有草稿 + 附件轨 + 可发送的发送键",
+     "note": "缩略图右上角的移除按钮平时 opacity:0，此处为悬停模拟",
+     "pad": "lg",
+     "css": "/* 状态模拟：真实规则是 .imageItem:hover .remove / .remove:focus-visible */\n.rail .imageItem.forceHover .remove { opacity: 1; }",
+     "html": "<div class=\"root\"><div class=\"card\" data-composer-card><div class=\"rail\"><div class=\"imageItem forceHover\"><button type=\"button\" class=\"thumbnail\" title=\"Open the original image\"><img src=\"data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Crect width='64' height='64' fill='%23cfd8e3'/%3E%3C/svg%3E\" alt=\"pasted-image.png\"></button><button type=\"button\" class=\"remove\" aria-label=\"Remove pasted-image.png\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M15 8A7 7 0 1 1 1 8A7 7 0 1 1 15 8ZM6.409 10.652L5.348 9.591L6.939 8L5.348 6.409L6.409 5.348L8 6.939L9.591 5.348L10.652 6.409L9.061 8L10.652 9.591L9.591 10.652L8 9.061Z\" fill=\"currentColor\"></path></svg></button></div></div><div class=\"scroll\" data-input-scroll><div class=\"grow\"><div class=\"input\" contenteditable=\"false\" data-phase=\"plain\" aria-label=\"Message or run a task, / commands, @ files or sessions\"><p>把 QueueDock 的队列预览换成单行省略，并补一条排序说明</p></div></div></div><div class=\"row\"><div class=\"tools\"><button type=\"button\" class=\"add\" aria-label=\"Add files or run commands\" aria-haspopup=\"listbox\" aria-expanded=\"false\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1.3\" aria-hidden=\"true\"><path d=\"M8 2V14\" stroke=\"currentColor\"></path><path d=\"M2 8H14\" stroke=\"currentColor\"></path></svg></button><div class=\"modes\"><button type=\"button\" class=\"trigger\" aria-label=\"Access mode, current: Read Only\" title=\"Reads stay allowed; writes and commands ask first\"><span class=\"triggerLabel\">Read Only</span><span class=\"chevron\" aria-hidden=\"true\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"></path></svg></span></button></div></div><div class=\"trailing\"><div class=\"standardControls\"><div class=\"c2-root\"><button type=\"button\" class=\"c2-trigger\" aria-label=\"Select model, current DeepSeek-V4.1-Flash\" aria-haspopup=\"menu\" aria-expanded=\"false\" title=\"DeepSeek-V4.1-Flash\"><svg class=\"c2-triggerIcon\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M7.8667 0.349609C8.96906 0.349634 10.0601 0.481272 11.0317 0.735352C11.9973 0.987845 12.8453 1.362 13.4644 1.84766C14.0744 2.32629 14.507 2.95539 14.5161 3.69336H14.5171V8.53516C14.0843 8.32076 13.6108 8.17679 13.1108 8.11816C13.1831 7.96848 13.2162 7.82856 13.2163 7.70312V5.76758C12.6269 6.16618 11.8739 6.47995 11.0317 6.7002C10.0602 6.95423 8.96896 7.08494 7.8667 7.08496C6.76461 7.08493 5.67411 6.95415 4.70264 6.7002C3.85994 6.48006 3.10694 6.1662 2.51709 5.76758V7.70312L2.521 7.78418C2.56374 8.19554 2.93361 8.74414 3.91357 9.23145C4.9281 9.73585 6.35004 10.0371 7.8667 10.0371C8.26373 10.0371 8.6543 10.0141 9.03271 9.97461C8.75596 10.3799 8.54664 10.8349 8.42041 11.3232C8.23666 11.3313 8.0518 11.3369 7.8667 11.3369C6.20108 11.3369 4.57025 11.01 3.33447 10.3955C3.04163 10.2499 2.76658 10.0836 2.51709 9.90039V11.6738C2.51728 12.1379 2.88589 12.7556 3.92236 13.292C4.93457 13.8157 6.35342 14.1289 7.8667 14.1289C8.12318 14.1289 8.37694 14.1161 8.62646 14.0986C8.82021 14.5535 9.08999 14.9682 9.41943 15.3271C8.91285 15.3934 8.39149 15.4287 7.8667 15.4287C6.19761 15.4287 4.56379 15.0869 3.32568 14.4463C2.11244 13.8185 1.21649 12.8562 1.21631 11.6738V3.76367C1.21595 3.74853 1.21438 3.733 1.21436 3.71777C1.21436 2.96917 1.65103 2.33053 2.26807 1.84668C2.88747 1.36112 3.73675 0.987685 4.70264 0.735352C5.67413 0.481376 6.76457 0.349636 7.8667 0.349609ZM7.8667 1.65039C6.86269 1.65042 5.88326 1.77028 5.03076 1.99316C4.17183 2.2176 3.50421 2.52956 3.06982 2.87012C2.65043 3.19909 2.52622 3.48898 2.51709 3.69336V3.74414C2.52719 3.94845 2.65185 4.23772 3.06982 4.56543C3.50425 4.90601 4.17172 5.21795 5.03076 5.44238C5.88326 5.66527 6.8627 5.78513 7.8667 5.78516C8.8707 5.78513 9.85015 5.66525 10.7026 5.44238C11.5611 5.21787 12.2286 4.9049 12.6626 4.56445C13.0982 4.22252 13.2163 3.9231 13.2163 3.71777L13.2104 3.63574C13.1818 3.43623 13.044 3.16941 12.6626 2.87012C12.2286 2.52957 11.5614 2.21773 10.7026 1.99316C9.85009 1.77025 8.8708 1.65041 7.8667 1.65039Z\" fill=\"currentColor\"></path><path d=\"M12.8936 10.0361L13.2061 10.5566C13.2296 10.5959 13.2651 10.6562 13.3027 10.707C13.3469 10.7666 13.4148 10.8431 13.5195 10.9023C13.6244 10.9617 13.725 10.9801 13.7988 10.9873C13.8619 10.9934 13.9318 10.9932 13.9775 10.9932H14.6162L14.8896 11.4502L14.5947 11.9443C14.5698 11.9859 14.5312 12.0483 14.5029 12.1084C14.4781 12.1611 14.4514 12.2312 14.4395 12.3164L14.4326 12.4072L14.4395 12.4971C14.4514 12.5825 14.4781 12.6532 14.5029 12.7061C14.5312 12.7661 14.5689 12.8287 14.5938 12.8701L14.8896 13.3633L14.6162 13.8213H13.9775C13.9318 13.8213 13.8619 13.821 13.7988 13.8271C13.7433 13.8326 13.6728 13.8442 13.5967 13.875L13.5195 13.9121C13.4148 13.9714 13.3469 14.0478 13.3027 14.1074C13.265 14.1583 13.2296 14.2186 13.2061 14.2578L12.8936 14.7783H12.3115L11.999 14.2578C11.9755 14.2186 11.9401 14.1583 11.9023 14.1074C11.8693 14.0628 11.823 14.0083 11.7578 13.959L11.6855 13.9121L11.6074 13.875C11.5316 13.8445 11.4615 13.8325 11.4062 13.8271C11.3432 13.821 11.2733 13.8213 11.2275 13.8213H10.5889L10.3135 13.3633L10.6104 12.8701C10.6352 12.8287 10.6739 12.7661 10.7021 12.7061C10.7352 12.6357 10.7724 12.534 10.7725 12.4072C10.7724 12.2804 10.7352 12.1788 10.7021 12.1084C10.6739 12.0483 10.6353 11.9859 10.6104 11.9443L10.3135 11.4502L10.5889 10.9932H11.2275C11.2733 10.9932 11.3432 10.9934 11.4062 10.9873C11.4801 10.9801 11.5808 10.9616 11.6855 10.9023C11.7903 10.843 11.8582 10.7666 11.9023 10.707C11.94 10.6562 11.9755 10.5959 11.999 10.5566L12.3115 10.0361H12.8936Z\" stroke=\"currentColor\" stroke-miterlimit=\"10\"></path></svg><span class=\"c2-triggerLabel\">DeepSeek-V4.1-Flash</span><svg class=\"c2-chevron\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"></path></svg></button></div></div><button type=\"button\" class=\"primary\" aria-label=\"Send message\"><svg viewBox=\"0 0 16 16\" width=\"16\" height=\"16\" aria-hidden=\"true\"><path d=\"M8.3125 0.980183C8.66767 1.0531 8.97902 1.20418 9.2627 1.43233C9.48724 1.61297 9.73029 1.85793 9.97949 2.10714L14.707 6.83468L13.293 8.24874L9 3.95577V15.0417H7V3.95577L2.70703 8.24874L1.29297 6.83468L6.02051 2.10714C6.26971 1.85793 6.51277 1.61297 6.7373 1.43233C6.97662 1.23986 7.28445 1.04402 7.6875 0.980183C7.8973 0.947006 8.1031 0.95516 8.3125 0.980183Z\" fill=\"currentColor\"></path></svg></button></div></div></div><div class=\"dock\" data-composer-dock></div></div>"
+    },
+    {
+     "label": "无会话：工作区选择触发器（同一 DOM，虚线内描边）",
+     "note": "该状态下控件指针事件穿透到卡片本身，整卡是一个点击目标",
+     "pad": "lg",
+     "html": "<div class=\"root hero\"><div class=\"card cardWorkspaceTrigger\" data-composer-card><div class=\"scroll\" data-input-scroll><div class=\"grow\"><div class=\"input\" contenteditable=\"false\" data-phase=\"inert\" data-placeholder=\"Choose workspace\" aria-label=\"Choose workspace\" aria-haspopup=\"menu\" aria-expanded=\"false\" tabindex=\"0\"><p><br></p></div><div class=\"placeholder\" data-composer-placeholder>Choose workspace</div></div></div><div class=\"row\"><div class=\"tools\"><button type=\"button\" class=\"add\" aria-label=\"Add files or run commands\" disabled><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1.3\" aria-hidden=\"true\"><path d=\"M8 2V14\" stroke=\"currentColor\"></path><path d=\"M2 8H14\" stroke=\"currentColor\"></path></svg></button></div><div class=\"trailing\"><div class=\"standardControls\"></div><button type=\"button\" class=\"primary\" aria-label=\"Send message\" disabled><svg viewBox=\"0 0 16 16\" width=\"16\" height=\"16\" aria-hidden=\"true\"><path d=\"M8.3125 0.980183C8.66767 1.0531 8.97902 1.20418 9.2627 1.43233C9.48724 1.61297 9.73029 1.85793 9.97949 2.10714L14.707 6.83468L13.293 8.24874L9 3.95577V15.0417H7V3.95577L2.70703 8.24874L1.29297 6.83468L6.02051 2.10714C6.26971 1.85793 6.51277 1.61297 6.7373 1.43233C6.97662 1.23986 7.28445 1.04402 7.6875 0.980183C7.8973 0.947006 8.1031 0.95516 8.3125 0.980183Z\" fill=\"currentColor\"></path></svg></button></div></div></div><div class=\"dock\" data-composer-dock></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "variant",
+     "type": "'hero' | 'composer'",
+     "default": "—",
+     "desc": "hero 为居中空态（文本区 52px 下限），composer 为底部停靠（36px 下限）；只有 composer 会渲染 conversation.composer.dock 座。"
+    },
+    {
+     "name": "placeholder",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "占位文案；缺省时按父会话离线 / 不可用 / 可插话排队 / 计划模式 / 默认依次回落。"
+    },
+    {
+     "name": "disabled",
+     "type": "boolean",
+     "default": "false",
+     "desc": "锁住消息操作但保留同一实例；工作区触发器状态即由它加 onRequestWorkspace 组成。"
+    },
+    {
+     "name": "blocked",
+     "type": "{ reason: string } | undefined",
+     "default": "—",
+     "desc": "业务方给出的阻塞原因。被阻塞时输入只读，但模型座仍可用（阻塞都靠选模型解除）。"
+    },
+    {
+     "name": "workspacePickerOpen",
+     "type": "boolean",
+     "default": "false",
+     "desc": "工作区选择器是否展开，反映到编辑面的 aria-expanded。"
+    },
+    {
+     "name": "onRequestWorkspace",
+     "type": "(() => void) | undefined",
+     "default": "—",
+     "desc": "在无会话的触发器状态点击整卡或按 Enter / Space 时打开工作区选择。"
+    },
+    {
+     "name": "accessory",
+     "type": "ReactNode | undefined",
+     "default": "—",
+     "desc": "渲染在卡片顶部（草稿之上）的附属内容。"
+    },
+    {
+     "name": "useInput / useSession",
+     "type": "SnapshotSelectorHook",
+     "default": "—",
+     "desc": "标准座：草稿、附件 id、提交阶段与会话 running / removed / promptError 都从这里订阅。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'conversation'>",
+     "default": "—",
+     "desc": "会话字典座；占位、按钮 aria-label、提示都取自此。"
+    }
+   ],
+   "notes": "卡片自身是抬升表面：<code>border: 0</code>，靠 <code>--dsw-elevation-stroke-color: var(--dsw-alias-border-l2)</code> 把 1px 发丝描边画进 elevation 层（不占布局），底色用 <code>--dsw-specific-input-major</code>，阴影用 <code>--dsw-elevation-soft</code>；深色下即为输入表面材质。卡片还把 <code>--dsh-scrollbar-thumb/-hover</code> 重绑到 l2 一对，供内部 <code>.scroll</code> 滚动条继承。示例里的权限芯片、计划芯片、模型座与附件轨分别由 <code>conversation.input.permission</code>、<code>.plan</code>、<code>.model</code>、<code>conversation.input.attachments</code> 座的占用者渲染（ui-permission-presets / ui-plan / ui-model-selection / ui-attachment），因此 <code>css</code> 一并列出这四张真实样式表；模型座与权限芯片共用 <code>trigger</code> / <code>triggerLabel</code> / <code>chevron</code> 等类名，示例按样式表下标写成 <code>c2-*</code>。模型名用模型标签槽的 fallback（<code>model.name</code>），标签插件在官方 Flash 条目上追加的角标未包含。"
+  },
+  {
+   "id": "context-meter",
+   "name": "ContextMeter",
+   "exportName": "ContextMeter",
+   "zh": "上下文占用",
+   "group": "conversation",
+   "summary": "输入卡下方的上下文占用控件：14px 圆环（2px 描边、<code>stroke-linecap: round</code>，从 12 点方向起画）加 13px 等宽百分比，触发器只有 1px 8px 内边距和 <code>--dsw-radius-sm</code> 圆角。点击后在视口内弹出 264px 面板：标题拆成百分比与其两侧文案（空的一侧用 <code>.headline:empty</code> 折叠，所以各语言词序自由），右侧是 <code>~180K / 400K</code>，下面是 4px 分段条与 system / tools / messages 三行图例。没有 pressure 或容量投影时整块不渲染。",
+   "source": "packages/client/ui-conversation/src/client/skeleton/ContextMeter.tsx#L56",
+   "css": [
+    "packages/client/ui-conversation/src/client/skeleton/ContextMeter.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-border-l1",
+    "--dsw-alias-border-l3",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-elevation-prominent",
+    "--dsw-elevation-stroke-color",
+    "--dsw-menu-backdrop-filter",
+    "--dsw-radius-lg",
+    "--dsw-radius-sm",
+    "--dsw-specific-menu",
+    "--dsw-static-blue-450",
+    "--dsw-static-neutral-bluish-400"
+   ],
+   "specimens": [
+    {
+     "label": "触发器：默认 / 面板已展开（aria-expanded 同时换底色与文字色）",
+     "html": "<div style=\"display:flex;align-items:center;gap:24px\"><span class=\"root\"><button type=\"button\" class=\"trigger\" aria-label=\"45% of context used\" aria-haspopup=\"dialog\" aria-expanded=\"false\"><svg viewBox=\"0 0 14 14\" width=\"14\" height=\"14\" aria-hidden=\"true\"><circle class=\"track\" cx=\"7\" cy=\"7\" r=\"5.5\"></circle><circle class=\"fill\" cx=\"7\" cy=\"7\" r=\"5.5\" stroke-dasharray=\"15.55 34.56\" transform=\"rotate(-90 7 7)\"></circle></svg><span>45%</span></button></span><span class=\"root\"><button type=\"button\" class=\"trigger\" aria-label=\"45% of context used\" aria-haspopup=\"dialog\" aria-expanded=\"true\"><svg viewBox=\"0 0 14 14\" width=\"14\" height=\"14\" aria-hidden=\"true\"><circle class=\"track\" cx=\"7\" cy=\"7\" r=\"5.5\"></circle><circle class=\"fill\" cx=\"7\" cy=\"7\" r=\"5.5\" stroke-dasharray=\"15.55 34.56\" transform=\"rotate(-90 7 7)\"></circle></svg><span>45%</span></button></span></div>"
+    },
+    {
+     "label": "面板：45% 占用与 system / tools / messages 三段分解",
+     "note": "面板真实为 position:fixed + useAnchoredPosition 输出内联 left/top，示例改为随流布局",
+     "pad": "lg",
+     "css": "/* 静态呈现：真实面板由 useAnchoredPosition 给 fixed 坐标，示例取消 fixed 以免浮到页面左上角 */\n.panel { position: static; }",
+     "html": "<div class=\"panel\" role=\"dialog\" aria-label=\"of context used\"><div class=\"header\"><span class=\"headline\"></span><span class=\"percent\">45%</span><span class=\"headline\">of context used</span><span class=\"figures\">~180K / 400K</span></div><div class=\"bar\"><div class=\"segment colorSystem\" style=\"width:6.8%\"></div><div class=\"segment colorTools\" style=\"width:4.5%\"></div><div class=\"segment colorMessages\" style=\"width:33.7%\"></div></div><dl class=\"rows\"><div class=\"row\"><dt><span class=\"swatch colorSystem\" aria-hidden=\"true\"></span>System prompt</dt><dd>~27K</dd></div><div class=\"row\"><dt><span class=\"swatch colorTools\" aria-hidden=\"true\"></span>Tool definitions</dt><dd>~18K</dd></div><div class=\"row\"><dt><span class=\"swatch colorMessages\" aria-hidden=\"true\"></span>Messages</dt><dd>~135K</dd></div></dl></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "useProjection",
+     "type": "UseProjection",
+     "default": "—",
+     "desc": "读取 contextPressure 与 contextBreakdown 两个投影键。"
+    },
+    {
+     "name": "t",
+     "type": "ComposerBarProps['t']",
+     "default": "—",
+     "desc": "由所属输入条下传的会话字典座（aria 文案、图例与 K / M 数字模板）。"
+    }
+   ],
+   "notes": "圆环半径 5.5、周长 <code>2πr</code>，填充弧长按 <code>percent/100</code> 取 <code>stroke-dasharray</code>。分段条整体长度始终是 provider 给出的真实百分比，分解只按 system / tools / messages 的比例切色；宽度为 0 的段被丢弃（<code>.segment</code> 的 <code>min-width: 2px</code> 否则会在 0% 时画出一条实心条）。tools 段的紫色是字面 <code>rgb(167,139,250)</code>：设计平台没有对应的 static token。"
+  },
+  {
+   "id": "todo-panel",
+   "name": "TodoPanel",
+   "exportName": "TodoPanel",
+   "zh": "待办面板",
+   "group": "conversation",
+   "summary": "输入卡上方的待办条，默认折叠：一行 <code>aria-expanded</code> 头部，左侧清单字形、13/24 标题「To-dos」、中间是省略号截断的进度摘要，右侧是折叠态向上的箭头。展开后按状态列出条目，每行 16px 图标槽里放 <code>StateDot</code>（completed 绿点 / in_progress 旋转环 / pending 灰点），正文 13/20 单行省略，列表最高 180px 内滚动。宽度用 dock inset 从卡片宽度里扣出，材质是菜单底 + <code>--dsw-elevation-panel</code>。",
+   "source": "packages/client/ui-conversation/src/client/skeleton/TodoPanel.tsx#L65",
+   "css": [
+    "packages/client/ui-primitives/src/StateDot.module.css",
+    "packages/client/ui-conversation/src/client/skeleton/TodoPanel.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-border-l1",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-primary-foreground",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-scrollbar-bg-l2",
+    "--dsw-alias-scrollbar-hover-l2",
+    "--dsw-alias-state-error-primary",
+    "--dsw-alias-state-idle-primary",
+    "--dsw-alias-state-success-primary",
+    "--dsw-alias-state-warn-primary",
+    "--dsw-elevation-panel",
+    "--dsw-elevation-stroke-color",
+    "--dsw-menu-backdrop-filter",
+    "--dsw-radius-lg",
+    "--dsw-specific-menu"
+   ],
+   "specimens": [
+    {
+     "label": "折叠（默认）：计数摘要带「·」分隔，0 计数字段整段省略",
+     "pad": "lg",
+     "html": "<section class=\"root\" data-testid=\"todo-panel\" aria-label=\"To-dos\"><div class=\"body\"><button type=\"button\" class=\"header\" aria-expanded=\"false\"><span class=\"lead\" aria-hidden=\"true\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\"><path d=\"M3.75 6.25C4.7165 6.25 5.5 5.4665 5.5 4.5C5.5 3.5335 4.7165 2.75 3.75 2.75C2.7835 2.75 2 3.5335 2 4.5C2 5.4665 2.7835 6.25 3.75 6.25Z\" stroke=\"currentColor\"></path><path d=\"M7.5 4.5H13.5\" stroke=\"currentColor\"></path><path d=\"M3.75 13.25C4.7165 13.25 5.5 12.4665 5.5 11.5C5.5 10.5335 4.7165 9.75 3.75 9.75C2.7835 9.75 2 10.5335 2 11.5C2 12.4665 2.7835 13.25 3.75 13.25Z\" stroke=\"currentColor\"></path><path d=\"M7.5 11.5H13.5\" stroke=\"currentColor\"></path></svg></span><span class=\"title\">To-dos</span><span class=\"progress\">3 completed&ensp;·&ensp;1 in progress&ensp;·&ensp;2 pending</span><span class=\"chevron\" aria-hidden=\"true\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\"><path d=\"M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10\" stroke=\"currentColor\"></path></svg></span></button></div></section>"
+    },
+    {
+     "label": "展开：completed / in_progress / pending 三种标记",
+     "pad": "lg",
+     "html": "<section class=\"root\" data-testid=\"todo-panel\" aria-label=\"To-dos\"><div class=\"body\"><button type=\"button\" class=\"header\" aria-expanded=\"true\"><span class=\"lead\" aria-hidden=\"true\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\"><path d=\"M3.75 6.25C4.7165 6.25 5.5 5.4665 5.5 4.5C5.5 3.5335 4.7165 2.75 3.75 2.75C2.7835 2.75 2 3.5335 2 4.5C2 5.4665 2.7835 6.25 3.75 6.25Z\" stroke=\"currentColor\"></path><path d=\"M7.5 4.5H13.5\" stroke=\"currentColor\"></path><path d=\"M3.75 13.25C4.7165 13.25 5.5 12.4665 5.5 11.5C5.5 10.5335 4.7165 9.75 3.75 9.75C2.7835 9.75 2 10.5335 2 11.5C2 12.4665 2.7835 13.25 3.75 13.25Z\" stroke=\"currentColor\"></path><path d=\"M7.5 11.5H13.5\" stroke=\"currentColor\"></path></svg></span><span class=\"title\">To-dos</span><span class=\"progress\">1 completed&ensp;·&ensp;1 in progress&ensp;·&ensp;1 pending</span><span class=\"chevron\" aria-hidden=\"true\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"></path></svg></span></button><ul class=\"list\"><li class=\"item\" data-status=\"completed\"><span class=\"glyph\" role=\"img\" aria-label=\"Completed\"><span class=\"dot\" data-state=\"done\" style=\"width:10px;height:10px\" aria-hidden=\"true\"></span></span><span class=\"content\">读完 ui-conversation 的 README 与 locales</span></li><li class=\"item\" data-status=\"in_progress\"><span class=\"glyph\" role=\"img\" aria-label=\"In progress\"><svg class=\"spinner\" data-state=\"ongoing\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><g class=\"spinnerMotion\"><circle class=\"spinnerTrack\" cx=\"12\" cy=\"12\" r=\"9.5\"></circle><circle class=\"spinnerArc\" cx=\"12\" cy=\"12\" r=\"9.5\"></circle></g></svg></span><span class=\"content\">补 composer 与工具行条目</span></li><li class=\"item\" data-status=\"pending\"><span class=\"glyph\" role=\"img\" aria-label=\"Pending\"><span class=\"dot\" data-state=\"idle\" style=\"width:10px;height:10px\" aria-hidden=\"true\"></span></span><span class=\"content\">跑 node 自检并交回父会话</span></li></ul></div></section>"
+    }
+   ],
+   "props": [
+    {
+     "name": "todos",
+     "type": "readonly TodoItem[]",
+     "default": "—",
+     "desc": "当前计划；空数组直接渲染 null。"
+    },
+    {
+     "name": "t",
+     "type": "TodoDockProps['t']",
+     "default": "—",
+     "desc": "dock entry 的会话字典座，供标题、状态名与进度模板使用。"
+    }
+   ],
+   "notes": "状态映射固定：<code>completed → done</code>、<code>in_progress → ongoing</code>、<code>pending → idle</code>，闭集之外用 <code>assertNever</code> 兜底。每个标记都是装饰性的（<code>aria-hidden</code>），语义由外层 <code>role=\"img\"</code> 的 <code>aria-label</code> 承担。进度摘要里的分隔符是 U+2002 加 <code>·</code>：HTML 会折叠连续半角空格，只有宽空格能撑开间隔。"
+  },
+  {
+   "id": "queue-dock",
+   "name": "QueueDock",
+   "exportName": "QueueDock",
+   "zh": "队列停靠条",
+   "group": "conversation",
+   "summary": "贴在输入卡上沿的排队消息条：一条直接显示成行，多条默认折叠成「3 queued messages」计数头。面板只保留上圆角、底部不画描边，靠 <code>-3px</code> 负外边距塞到输入卡下面，读起来是一块连体表面；列表最高 180px 内滚动。每行至少 36px：附件缩略图或文件卡、单行省略的 UserText 预览、以及编辑 / 删除 / 插话三个 28px 圆形按钮；本地刚提交、还没等到 Host 队列行的 echo 行显示「Sending…」且三个按钮禁用。",
+   "source": "packages/client/ui-conversation/src/client/queue/QueueDock.tsx#L105",
+   "css": [
+    "packages/client/ui-conversation/src/client/queue/QueueDock.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-base",
+    "--dsw-alias-border-l1",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-primary-dimmed",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-scrollbar-bg-l2",
+    "--dsw-alias-scrollbar-hover-l2",
+    "--dsw-alias-state-business-primary",
+    "--dsw-focus-ring-color",
+    "--dsw-focus-ring-width",
+    "--dsw-font-family",
+    "--dsw-font-xs-13",
+    "--dsw-menu-backdrop-filter",
+    "--dsw-radius-lg",
+    "--dsw-radius-md",
+    "--dsw-radius-sm",
+    "--dsw-radius-xs",
+    "--dsw-specific-menu"
+   ],
+   "specimens": [
+    {
+     "label": "多条折叠：计数头 + 提交中的发送状态（列表 hidden）",
+     "pad": "lg",
+     "html": "<div class=\"dock\" data-queue-dock=\"\"><div class=\"panel\"><button type=\"button\" class=\"header\" aria-controls=\"queue-list\" aria-expanded=\"false\"><span class=\"lead\" aria-hidden=\"true\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\"><path d=\"M5 6.75H11\" stroke=\"currentColor\"></path><path d=\"M5 9H8\" stroke=\"currentColor\"></path><path d=\"M2.37067 11.2497C1.5872 9.89252 1.32042 8.29798 1.61945 6.7597C1.91847 5.22141 2.76317 3.84293 3.99801 2.87809C5.23285 1.91325 6.7747 1.427 8.33964 1.50888C9.90458 1.59076 11.3873 2.23526 12.5147 3.32369C13.6422 4.41232 14.3384 5.8717 14.4751 7.43304C14.6118 8.99438 14.1797 10.5525 13.2585 11.8205C12.3372 13.0885 10.9889 13.9809 9.4617 14.3334C8.18666 14.6277 6.8587 14.529 5.64964 14.0601C5.17095 13.8745 4.76937 13.4929 4.26509 13.3963C3.67389 13.2832 2.95232 13.5595 2.0377 14.3334\" stroke=\"currentColor\"></path></svg></span><span class=\"count\">3 queued messages</span><span class=\"status\" role=\"status\">Sending…</span><span class=\"chevron\" aria-hidden=\"true\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\"><path d=\"M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10\" stroke=\"currentColor\"></path></svg></span></button><ul id=\"queue-list\" class=\"list\" hidden></ul></div></div>"
+    },
+    {
+     "label": "展开：附件 + 预览 + 三个操作按钮，末行是本地发送中的 echo",
+     "note": "评审工具提示与确认弹窗未展开；按钮为默认态",
+     "pad": "lg",
+     "html": "<div class=\"dock\" data-queue-dock=\"\"><div class=\"panel\"><button type=\"button\" class=\"header\" aria-controls=\"queue-list\" aria-expanded=\"true\"><span class=\"lead\" aria-hidden=\"true\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\"><path d=\"M5 6.75H11\" stroke=\"currentColor\"></path><path d=\"M5 9H8\" stroke=\"currentColor\"></path><path d=\"M2.37067 11.2497C1.5872 9.89252 1.32042 8.29798 1.61945 6.7597C1.91847 5.22141 2.76317 3.84293 3.99801 2.87809C5.23285 1.91325 6.7747 1.427 8.33964 1.50888C9.90458 1.59076 11.3873 2.23526 12.5147 3.32369C13.6422 4.41232 14.3384 5.8717 14.4751 7.43304C14.6118 8.99438 14.1797 10.5525 13.2585 11.8205C12.3372 13.0885 10.9889 13.9809 9.4617 14.3334C8.18666 14.6277 6.8587 14.529 5.64964 14.0601C5.17095 13.8745 4.76937 13.4929 4.26509 13.3963C3.67389 13.2832 2.95232 13.5595 2.0377 14.3334\" stroke=\"currentColor\"></path></svg></span><span class=\"count\">2 queued messages</span><span class=\"chevron\" aria-hidden=\"true\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"></path></svg></span></button><ul id=\"queue-list\" class=\"list\"><li class=\"row\"><span class=\"attachments\"><img class=\"thumb\" src=\"data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23cfd8e3'/%3E%3C/svg%3E\" alt=\"Queued image\"></span><span class=\"preview\">这张截图里的间距是不是少了一档?</span><div class=\"actions\"><button type=\"button\" class=\"action\" aria-label=\"Edit queued message\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\"><path d=\"M8.85596 2.69971H4.19971C3.37141 2.69971 2.69992 3.37146 2.69971 4.19971V11.8003C2.69992 12.6285 3.37141 13.3003 4.19971 13.3003H11.8003C12.6283 13.2999 13.3001 12.6283 13.3003 11.8003V7.89893H14.3003V11.8003C14.3001 13.1806 13.1806 14.2999 11.8003 14.3003H4.19971C2.81913 14.3003 1.69992 13.1808 1.69971 11.8003V4.19971C1.69992 2.81918 2.81913 1.69971 4.19971 1.69971H8.85596V2.69971Z\" fill=\"currentColor\"></path><path d=\"M7.7849 8.23878L13.888 2.13574\" stroke=\"currentColor\"></path></svg></button><button type=\"button\" class=\"action\" aria-label=\"Remove queued message\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\"><path d=\"M1.28149 3.88831H14.7187\" stroke=\"currentColor\"></path><path d=\"M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833\" stroke=\"currentColor\"></path><path d=\"M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831\" stroke=\"currentColor\"></path><path d=\"M6.44946 6.98926V11.1238\" stroke=\"currentColor\"></path><path d=\"M9.55054 6.98926V11.1238\" stroke=\"currentColor\"></path></svg></button><button type=\"button\" class=\"action\" aria-label=\"Steer queued message\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\"><path d=\"M6.97211 1.94476C7.55785 1.35914 8.50767 1.35919 9.09343 1.94476L13.921 6.77228L13.2138 7.47939L8.38632 2.65187C8.19108 2.45682 7.87443 2.45677 7.67922 2.65187L2.74397 7.58711L2.03687 6.88L6.97211 1.94476Z\" fill=\"currentColor\"></path><path d=\"M7.97571 14.5732L8.02421 2.34139\" stroke=\"currentColor\"></path></svg></button></div></li><li class=\"row\"><span class=\"attachments\"><span class=\"file\" aria-label=\"Queued file ui-tool-notes.md\" title=\"ui-tool-notes.md\"><span class=\"fileIcon\" aria-hidden=\"true\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\"><path d=\"M4.9375 5.90295H11.0625\" stroke=\"currentColor\"></path><path d=\"M4.9375 9.02991H8.27841\" stroke=\"currentColor\"></path><path d=\"M12.5 1.32617C13.3039 1.32617 14 1.95171 14 2.77637V13.2246C13.9996 14.0489 13.3036 14.6738 12.5 14.6738H3.5C2.69637 14.6738 2.00042 14.0489 2 13.2246V2.77637C2 1.95171 2.69613 1.32617 3.5 1.32617H12.5ZM3.5 2.32617C3.1993 2.32617 3 2.55186 3 2.77637V13.2246C3.00044 13.4489 3.19963 13.6738 3.5 13.6738H12.5C12.8004 13.6738 12.9996 13.4489 13 13.2246V2.77637C13 2.55186 12.8007 2.32617 12.5 2.32617H3.5Z\" fill=\"currentColor\"></path></svg></span><span class=\"fileName\">ui-tool-notes.md</span><span class=\"fileSize\">12.4 KB</span></span></span><span class=\"preview\">顺便把这份笔记里的澄清项抄进 README</span><div class=\"actions\"><button type=\"button\" class=\"action\" aria-label=\"Edit queued message\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\"><path d=\"M8.85596 2.69971H4.19971C3.37141 2.69971 2.69992 3.37146 2.69971 4.19971V11.8003C2.69992 12.6285 3.37141 13.3003 4.19971 13.3003H11.8003C12.6283 13.2999 13.3001 12.6283 13.3003 11.8003V7.89893H14.3003V11.8003C14.3001 13.1806 13.1806 14.2999 11.8003 14.3003H4.19971C2.81913 14.3003 1.69992 13.1808 1.69971 11.8003V4.19971C1.69992 2.81918 2.81913 1.69971 4.19971 1.69971H8.85596V2.69971Z\" fill=\"currentColor\"></path><path d=\"M7.7849 8.23878L13.888 2.13574\" stroke=\"currentColor\"></path></svg></button><button type=\"button\" class=\"action\" aria-label=\"Remove queued message\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\"><path d=\"M1.28149 3.88831H14.7187\" stroke=\"currentColor\"></path><path d=\"M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833\" stroke=\"currentColor\"></path><path d=\"M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831\" stroke=\"currentColor\"></path><path d=\"M6.44946 6.98926V11.1238\" stroke=\"currentColor\"></path><path d=\"M9.55054 6.98926V11.1238\" stroke=\"currentColor\"></path></svg></button><button type=\"button\" class=\"action\" aria-label=\"Steer queued message\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\"><path d=\"M6.97211 1.94476C7.55785 1.35914 8.50767 1.35919 9.09343 1.94476L13.921 6.77228L13.2138 7.47939L8.38632 2.65187C8.19108 2.45682 7.87443 2.45677 7.67922 2.65187L2.74397 7.58711L2.03687 6.88L6.97211 1.94476Z\" fill=\"currentColor\"></path><path d=\"M7.97571 14.5732L8.02421 2.34139\" stroke=\"currentColor\"></path></svg></button></div></li><li class=\"row pendingRow\" data-submission-echo=\"true\"><span class=\"preview\">再补一句：把 Busy Enter 的两种投递写进说明</span><span class=\"status\" role=\"status\">Sending…</span><div class=\"actions\"><button type=\"button\" class=\"action\" aria-label=\"Edit queued message\" title=\"Sending…\" disabled><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\"><path d=\"M8.85596 2.69971H4.19971C3.37141 2.69971 2.69992 3.37146 2.69971 4.19971V11.8003C2.69992 12.6285 3.37141 13.3003 4.19971 13.3003H11.8003C12.6283 13.2999 13.3001 12.6283 13.3003 11.8003V7.89893H14.3003V11.8003C14.3001 13.1806 13.1806 14.2999 11.8003 14.3003H4.19971C2.81913 14.3003 1.69992 13.1808 1.69971 11.8003V4.19971C1.69992 2.81918 2.81913 1.69971 4.19971 1.69971H8.85596V2.69971Z\" fill=\"currentColor\"></path><path d=\"M7.7849 8.23878L13.888 2.13574\" stroke=\"currentColor\"></path></svg></button><button type=\"button\" class=\"action\" aria-label=\"Remove queued message\" title=\"Sending…\" disabled><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\"><path d=\"M1.28149 3.88831H14.7187\" stroke=\"currentColor\"></path><path d=\"M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833\" stroke=\"currentColor\"></path><path d=\"M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831\" stroke=\"currentColor\"></path><path d=\"M6.44946 6.98926V11.1238\" stroke=\"currentColor\"></path><path d=\"M9.55054 6.98926V11.1238\" stroke=\"currentColor\"></path></svg></button><button type=\"button\" class=\"action\" aria-label=\"Steer queued message\" title=\"Sending…\" disabled><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\"><path d=\"M6.97211 1.94476C7.55785 1.35914 8.50767 1.35919 9.09343 1.94476L13.921 6.77228L13.2138 7.47939L8.38632 2.65187C8.19108 2.45682 7.87443 2.45677 7.67922 2.65187L2.74397 7.58711L2.03687 6.88L6.97211 1.94476Z\" fill=\"currentColor\"></path><path d=\"M7.97571 14.5732L8.02421 2.34139\" stroke=\"currentColor\"></path></svg></button></div></li></ul></div></div>"
+    },
+    {
+     "label": "单条：没有计数头，队列字形移到行内",
+     "pad": "lg",
+     "html": "<div class=\"dock\" data-queue-dock=\"\"><div class=\"panel\"><ul class=\"list\"><li class=\"row\"><span class=\"lead\" aria-hidden=\"true\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\"><path d=\"M5 6.75H11\" stroke=\"currentColor\"></path><path d=\"M5 9H8\" stroke=\"currentColor\"></path><path d=\"M2.37067 11.2497C1.5872 9.89252 1.32042 8.29798 1.61945 6.7597C1.91847 5.22141 2.76317 3.84293 3.99801 2.87809C5.23285 1.91325 6.7747 1.427 8.33964 1.50888C9.90458 1.59076 11.3873 2.23526 12.5147 3.32369C13.6422 4.41232 14.3384 5.8717 14.4751 7.43304C14.6118 8.99438 14.1797 10.5525 13.2585 11.8205C12.3372 13.0885 10.9889 13.9809 9.4617 14.3334C8.18666 14.6277 6.8587 14.529 5.64964 14.0601C5.17095 13.8745 4.76937 13.4929 4.26509 13.3963C3.67389 13.2832 2.95232 13.5595 2.0377 14.3334\" stroke=\"currentColor\"></path></svg></span><span class=\"preview\">跑一遍 UIUX 的自检</span><div class=\"actions\"><button type=\"button\" class=\"action\" aria-label=\"Edit queued message\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\"><path d=\"M8.85596 2.69971H4.19971C3.37141 2.69971 2.69992 3.37146 2.69971 4.19971V11.8003C2.69992 12.6285 3.37141 13.3003 4.19971 13.3003H11.8003C12.6283 13.2999 13.3001 12.6283 13.3003 11.8003V7.89893H14.3003V11.8003C14.3001 13.1806 13.1806 14.2999 11.8003 14.3003H4.19971C2.81913 14.3003 1.69992 13.1808 1.69971 11.8003V4.19971C1.69992 2.81918 2.81913 1.69971 4.19971 1.69971H8.85596V2.69971Z\" fill=\"currentColor\"></path><path d=\"M7.7849 8.23878L13.888 2.13574\" stroke=\"currentColor\"></path></svg></button><button type=\"button\" class=\"action\" aria-label=\"Remove queued message\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\"><path d=\"M1.28149 3.88831H14.7187\" stroke=\"currentColor\"></path><path d=\"M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833\" stroke=\"currentColor\"></path><path d=\"M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831\" stroke=\"currentColor\"></path><path d=\"M6.44946 6.98926V11.1238\" stroke=\"currentColor\"></path><path d=\"M9.55054 6.98926V11.1238\" stroke=\"currentColor\"></path></svg></button><button type=\"button\" class=\"action\" aria-label=\"Steer queued message\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\"><path d=\"M6.97211 1.94476C7.55785 1.35914 8.50767 1.35919 9.09343 1.94476L13.921 6.77228L13.2138 7.47939L8.38632 2.65187C8.19108 2.45682 7.87443 2.45677 7.67922 2.65187L2.74397 7.58711L2.03687 6.88L6.97211 1.94476Z\" fill=\"currentColor\"></path><path d=\"M7.97571 14.5732L8.02421 2.34139\" stroke=\"currentColor\"></path></svg></button></div></li></ul></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "useProjection",
+     "type": "UseProjection",
+     "default": "—",
+     "desc": "读取 inbox 投影的 next-turn 队列（含冷恢复的消息）。"
+    },
+    {
+     "name": "useSession",
+     "type": "SnapshotSelectorHook",
+     "default": "—",
+     "desc": "取 pendingSubmissions、running 与 subagent 形态：一次性子代理把操作按钮整列去掉。"
+    },
+    {
+     "name": "updateQueue",
+     "type": "(itemId: MessageId, action: QueueAction) => Promise<void>",
+     "default": "—",
+     "desc": "编辑 / 删除 / 插话三个动作的唯一入口，失败时回滚并 notify。"
+    },
+    {
+     "name": "loadImage",
+     "type": "(attachment: ImageAttachmentRef) => Promise<string>",
+     "default": "—",
+     "desc": "把持久化图片引用解析成会话授权的浏览器 URL；失败保留空占位。"
+    },
+    {
+     "name": "notify",
+     "type": "(level: 'info' | 'error', text: string) => void",
+     "default": "—",
+     "desc": "把队列操作失败上报到输入条的通知面。"
+    },
+    {
+     "name": "renderFactorySlot",
+     "type": "PropsRenderFactories['renderFactorySlot']",
+     "default": "—",
+     "desc": "用 conversation.user.text Factory 渲染单行省略的预览。"
+    },
+    {
+     "name": "t",
+     "type": "PropsLocale<'conversation'>['t']",
+     "default": "—",
+     "desc": "会话字典座：计数、发送中、按钮名与失败文案。"
+    }
+   ],
+   "notes": "空队列渲染 <code>null</code>。折叠状态下如果还有本地 echo 未落到 Host 队列，计数头会挂一个 <code>role=\"status\"</code> 的「Sending…」。面板自身不画阴影，只把菜单底与模糊交给 <code>::before</code>、0.5px l1 描边交给 <code>::after</code>（底边留空，由输入卡自己的上边框闭合形状）。文件卡里的字形是 <code>FileTypeIcon</code>（按扩展名取不同图稿），示例用通用稿纸字形代替。"
+  },
+  {
+   "id": "user-text",
+   "name": "UserText",
+   "exportName": "UserText",
+   "zh": "用户文本",
+   "group": "conversation",
+   "summary": "已发送文本的统一渲染入口：把原文交给注册过的纯匹配规则切成 JSON 节点，业务节点走键控槽 <code>conversation.user.text.node</code>，没有渲染器时回退成原样的纯文本 run。默认 <code>.root</code> 是 <code>display: contents</code>，自身不产生盒子，只把行内节点交给宿主行盒；<code>ellipsis</code> 切换到单行省略（队列预览用）。整段文本不做截断，解析失败也会把完整原文显示出来并上报规则错误。",
+   "source": "packages/client/ui-conversation/src/client/user-text/UserText.tsx#L17",
+   "css": [
+    "packages/client/ui-primitives/src/user-text.module.css",
+    "packages/client/ui-conversation/src/client/user-text/UserText.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-state-business-primary",
+    "--dsw-font-markdown-code-font-family"
+   ],
+   "specimens": [
+    {
+     "label": "默认：纯文本 run 与会话引用节点在同一行内混排",
+     "html": "<div style=\"display:flex;flex-direction:column;gap:8px\"><span class=\"root\"><span class=\"plainRun\">接着把 </span><span class=\"refChip\" data-ref-chip=\"session\" title=\"@修复输入框\"><svg class=\"refIcon\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M5 6.75H11\" stroke=\"currentColor\"></path><path d=\"M5 9H8\" stroke=\"currentColor\"></path><path d=\"M2.37067 11.2497C1.5872 9.89252 1.32042 8.29798 1.61945 6.7597C1.91847 5.22141 2.76317 3.84293 3.99801 2.87809C5.23285 1.91325 6.7747 1.427 8.33964 1.50888C9.90458 1.59076 11.3873 2.23526 12.5147 3.32369C13.6422 4.41232 14.3384 5.8717 14.4751 7.43304C14.6118 8.99438 14.1797 10.5525 13.2585 11.8205C12.3372 13.0885 10.9889 13.9809 9.4617 14.3334C8.18666 14.6277 6.8587 14.529 5.64964 14.0601C5.17095 13.8745 4.76937 13.4929 4.26509 13.3963C3.67389 13.2832 2.95232 13.5595 2.0377 14.3334\" stroke=\"currentColor\"></path></svg>修复输入框</span><span class=\"plainRun\"> 的队列预览改成单行省略</span></span></div>"
+    },
+    {
+     "label": "ellipsis：队列预览的单行省略（文本不截断，只裁显示）",
+     "note": "外层容器限宽 260px",
+     "html": "<div style=\"display:flex;flex-direction:column;gap:8px\"><span class=\"ellipsis\" style=\"width:260px\"><span class=\"plainRun\">把 QueueDock 的队列预览换成单行省略，并补一条排序说明</span></span></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "text",
+     "type": "string",
+     "default": "—",
+     "desc": "原始 UTF-16 文本；匹配与显示都以它为准。"
+    },
+    {
+     "name": "facts",
+     "type": "Readonly<Partial<UserTextFacts>>",
+     "default": "—",
+     "desc": "确认过的业务事实快照（如 sessionLabels）；队列预览传 collapseWhitespace + trimWhitespace。"
+    },
+    {
+     "name": "interactive",
+     "type": "boolean",
+     "default": "false",
+     "desc": "允许引用渲染器带自己的动作；不传时引用保持只读。"
+    },
+    {
+     "name": "ellipsis",
+     "type": "boolean",
+     "default": "false",
+     "desc": "用 CSS 单行省略，而不是缩短源文本。"
+    }
+   ],
+   "notes": "节点按 <code>id</code> + 起点做 key，同一份文本重算会保留身份。未注册渲染器的业务节点回退为原始片段；<code>text</code> 节点使用 <code>data.display</code> 覆盖显示（空白折叠就是走这条路）。引用 chip 的样式来自 ui-primitives 的 <code>user-text.module.css</code>，因此 <code>css</code> 里一并列出。"
+  },
+  {
+   "id": "session-reference",
+   "name": "SessionReference",
+   "exportName": "SessionReference",
+   "zh": "会话引用",
+   "group": "conversation",
+   "summary": "已发送文本里的会话引用：渲染成 ui-primitives 的只读 <code>ReferenceChip appearance=\"session\"</code>，即一个 1em 的会话字形加标签，颜色走业务蓝、500 字重、左右各 2px 外边距。没有 <code>onActivate</code> 时是 <code>span</code> 而不是按钮，所以点选与复制都是普通文本行为；<code>title</code> 保留原文拼写。",
+   "source": "packages/client/ui-conversation/src/client/user-text/UserText.tsx#L62",
+   "css": [
+    "packages/client/ui-primitives/src/user-text.module.css",
+    "packages/client/ui-conversation/src/client/user-text/UserText.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-state-business-primary",
+    "--dsw-font-markdown-code-font-family"
+   ],
+   "specimens": [
+    {
+     "label": "行内：chip 与周围文本共用基线（字形按 -0.125em 下沉）",
+     "html": "<div style=\"display:flex;flex-direction:column;gap:8px\"><span style=\"display:block\">把 <span class=\"refChip\" data-ref-chip=\"session\" title=\"@修复输入框\"><svg class=\"refIcon\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M5 6.75H11\" stroke=\"currentColor\"></path><path d=\"M5 9H8\" stroke=\"currentColor\"></path><path d=\"M2.37067 11.2497C1.5872 9.89252 1.32042 8.29798 1.61945 6.7597C1.91847 5.22141 2.76317 3.84293 3.99801 2.87809C5.23285 1.91325 6.7747 1.427 8.33964 1.50888C9.90458 1.59076 11.3873 2.23526 12.5147 3.32369C13.6422 4.41232 14.3384 5.8717 14.4751 7.43304C14.6118 8.99438 14.1797 10.5525 13.2585 11.8205C12.3372 13.0885 10.9889 13.9809 9.4617 14.3334C8.18666 14.6277 6.8587 14.529 5.64964 14.0601C5.17095 13.8745 4.76937 13.4929 4.26509 13.3963C3.67389 13.2832 2.95232 13.5595 2.0377 14.3334\" stroke=\"currentColor\"></path></svg>修复输入框</span> 的进度同步一下</span></div>"
+    },
+    {
+     "label": "两种原文拼写落到同一 chip：裸 @标签 与显式线格式",
+     "note": "title 分别是 @修复输入框 与完整线格式",
+     "html": "<div style=\"display:flex;flex-direction:column;gap:8px\"><span style=\"display:block\"><span class=\"refChip\" data-ref-chip=\"session\" title=\"@修复输入框\"><svg class=\"refIcon\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M5 6.75H11\" stroke=\"currentColor\"></path><path d=\"M5 9H8\" stroke=\"currentColor\"></path><path d=\"M2.37067 11.2497C1.5872 9.89252 1.32042 8.29798 1.61945 6.7597C1.91847 5.22141 2.76317 3.84293 3.99801 2.87809C5.23285 1.91325 6.7747 1.427 8.33964 1.50888C9.90458 1.59076 11.3873 2.23526 12.5147 3.32369C13.6422 4.41232 14.3384 5.8717 14.4751 7.43304C14.6118 8.99438 14.1797 10.5525 13.2585 11.8205C12.3372 13.0885 10.9889 13.9809 9.4617 14.3334C8.18666 14.6277 6.8587 14.529 5.64964 14.0601C5.17095 13.8745 4.76937 13.4929 4.26509 13.3963C3.67389 13.2832 2.95232 13.5595 2.0377 14.3334\" stroke=\"currentColor\"></path></svg>修复输入框</span></span><span style=\"display:block\"><span class=\"refChip\" data-ref-chip=\"session\" title=\"@[修复输入框](dsh-session:s-4f21)\"><svg class=\"refIcon\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M5 6.75H11\" stroke=\"currentColor\"></path><path d=\"M5 9H8\" stroke=\"currentColor\"></path><path d=\"M2.37067 11.2497C1.5872 9.89252 1.32042 8.29798 1.61945 6.7597C1.91847 5.22141 2.76317 3.84293 3.99801 2.87809C5.23285 1.91325 6.7747 1.427 8.33964 1.50888C9.90458 1.59076 11.3873 2.23526 12.5147 3.32369C13.6422 4.41232 14.3384 5.8717 14.4751 7.43304C14.6118 8.99438 14.1797 10.5525 13.2585 11.8205C12.3372 13.0885 10.9889 13.9809 9.4617 14.3334C8.18666 14.6277 6.8587 14.529 5.64964 14.0601C5.17095 13.8745 4.76937 13.4929 4.26509 13.3963C3.67389 13.2832 2.95232 13.5595 2.0377 14.3334\" stroke=\"currentColor\"></path></svg>修复输入框</span></span></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "node",
+     "type": "UserTextNode<'session'>",
+     "default": "—",
+     "desc": "解析出的会话节点：半开区间 start/end 与 data.label。"
+    },
+    {
+     "name": "raw",
+     "type": "string",
+     "default": "—",
+     "desc": "命中的原文片段，作为 chip 的 title，不参与匹配。"
+    }
+   ],
+   "notes": "匹配有两条路：显式线格式 <code>@[标签](dsh-session:id)</code>，以及事实里 <code>sessionLabels</code> 命中的裸 <code>@标签</code>（同一起点取最长标签）。曲线刻意不给这个 chip 加导航动作，避免凭显示名猜会话目标；要点击跳转得由带 <code>onActivate</code> 的渲染器提供。"
+  },
+  {
+   "id": "tool-row",
+   "name": "ToolRow",
+   "exportName": "ToolRow",
+   "zh": "工具行",
+   "group": "conversation",
+   "summary": "工具调用的折叠摘要行加懒挂载展开体。行高 <code>calc(24px + 字体增量)</code>：[16px 图形槽 6px 间距][13/24 标题][2×2 分隔点][摘要，占满剩余宽度并省略]；失败与中断只改摘要颜色（<code>data-state</code>），带退出码胶囊时摘要保持普通灰。展开体按 card 优先级选终端卡、diff、read、image、search、web 或 IN/OUT 兜底卡，<code>inspect</code> 则在展开体左下角给一个 hover 才显形的 11px 药丸。",
+   "source": "packages/client/ui-tool/src/client/tool/components/ToolRow.tsx#L124",
+   "css": [
+    "packages/client/ui-primitives/src/CodeCard.module.css",
+    "packages/client/ui-primitives/src/ReadBlock.module.css",
+    "packages/client/ui-primitives/src/DisclosureRow.module.css",
+    "packages/client/ui-primitives/src/TextShimmer.module.css",
+    "packages/client/ui-tool/src/client/tool/components/ToolRow.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-base",
+    "--dsw-alias-border-l1",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-border-l3",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-interactive-bg-hover-solid",
+    "--dsw-alias-label-caption",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-shimmer",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-markdown-code-block",
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-state-error-primary",
+    "--dsw-alias-state-success-primary",
+    "--dsw-alias-state-warn-label",
+    "--dsw-focus-ring-color",
+    "--dsw-font-family",
+    "--dsw-font-markdown-code-block",
+    "--dsw-font-markdown-code-block-small",
+    "--dsw-font-xs-13",
+    "--dsw-radius-lg",
+    "--dsw-radius-sm"
+   ],
+   "specimens": [
+    {
+     "label": "折叠行：Read / Edit（+12 -4，悬停模拟）/ Bash / 通用",
+     "note": "Edit 行的增删数字平时无色，此处为悬停模拟",
+     "pad": "lg",
+     "css": "/* 状态模拟：真实规则是 .row:is(:hover, [aria-expanded='true']) .diffAdded / .diffRemoved */\n.row.forceHover .diffAdded { color: var(--dsw-alias-state-success-primary); }\n.row.forceHover .diffRemoved { color: var(--dsw-alias-state-error-primary); }",
+     "html": "<div style=\"display:flex;flex-direction:column;gap:2px\"><div class=\"root\" data-variant=\"read\" data-tool=\"read\" data-state=\"ok\"><div class=\"c2-root\"><div class=\"c2-header\" data-disclosure-header=\"true\"><div class=\"c2-row row\" data-disclosure-row=\"true\" data-expandable=\"true\" role=\"button\" tabindex=\"0\" aria-expanded=\"false\"><span class=\"c2-leading leading\"><span class=\"c2-iconIdle\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M4.9375 5.90295H11.0625\" stroke=\"currentColor\"></path><path d=\"M4.9375 9.02991H8.27841\" stroke=\"currentColor\"></path><path d=\"M12.5 1.32617C13.3039 1.32617 14 1.95171 14 2.77637V13.2246C13.9996 14.0489 13.3036 14.6738 12.5 14.6738H3.5C2.69637 14.6738 2.00042 14.0489 2 13.2246V2.77637C2 1.95171 2.69613 1.32617 3.5 1.32617H12.5ZM3.5 2.32617C3.1993 2.32617 3 2.55186 3 2.77637V13.2246C3.00044 13.4489 3.19963 13.6738 3.5 13.6738H12.5C12.8004 13.6738 12.9996 13.4489 13 13.2246V2.77637C13 2.55186 12.8007 2.32617 12.5 2.32617H3.5Z\" fill=\"currentColor\"></path></svg></span><svg class=\"c2-chevronHover\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"></path></svg></span><span class=\"c3-root\"><span class=\"c3-content\"><span class=\"c3-text c2-title title\">Read</span><span class=\"sep\" data-shimmer-decoration=\"true\" aria-hidden=\"true\"></span><button type=\"button\" class=\"fileLink\"><span class=\"c3-text\">packages/client/ui-tool/src/client/tool/components/ToolRow.tsx</span></button></span></span></div></div></div></div><div class=\"root\" data-variant=\"edit\" data-tool=\"edit\" data-state=\"ok\"><div class=\"c2-root\"><div class=\"c2-header\" data-disclosure-header=\"true\"><div class=\"c2-row row forceHover\" data-disclosure-row=\"true\" data-expandable=\"true\" role=\"button\" tabindex=\"0\" aria-expanded=\"false\"><span class=\"c2-leading leading\"><span class=\"c2-iconIdle\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M8.85596 2.69971H4.19971C3.37141 2.69971 2.69992 3.37146 2.69971 4.19971V11.8003C2.69992 12.6285 3.37141 13.3003 4.19971 13.3003H11.8003C12.6283 13.2999 13.3001 12.6283 13.3003 11.8003V7.89893H14.3003V11.8003C14.3001 13.1806 13.1806 14.2999 11.8003 14.3003H4.19971C2.81913 14.3003 1.69992 13.1808 1.69971 11.8003V4.19971C1.69992 2.81918 2.81913 1.69971 4.19971 1.69971H8.85596V2.69971Z\" fill=\"currentColor\"></path><path d=\"M7.7849 8.23878L13.888 2.13574\" stroke=\"currentColor\"></path></svg></span><svg class=\"c2-chevronHover\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"></path></svg></span><span class=\"c3-root\"><span class=\"c3-content\"><span class=\"c3-text c2-title title\">Edit</span><span class=\"sep\" data-shimmer-decoration=\"true\" aria-hidden=\"true\"></span><button type=\"button\" class=\"fileLink\"><span class=\"c3-text\">packages/client/ui-tool/src/client/tool/components/ToolRow.tsx</span></button><span class=\"summarySuffix diffStat\"><span class=\"diffAdded\">+12</span> <span class=\"diffRemoved\">-4</span></span></span></span></div></div></div></div><div class=\"root\" data-variant=\"bash\" data-tool=\"bash\" data-state=\"ok\"><div class=\"c2-root\"><div class=\"c2-header\" data-disclosure-header=\"true\"><div class=\"c2-row row\" data-disclosure-row=\"true\" data-expandable=\"true\" role=\"button\" tabindex=\"0\" aria-expanded=\"false\"><span class=\"c2-leading leading\"><span class=\"c2-iconIdle\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M3 4L7 8L3 12\" stroke=\"currentColor\"></path><path d=\"M9 12H13\" stroke=\"currentColor\"></path></svg></span><svg class=\"c2-chevronHover\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"></path></svg></span><span class=\"c3-root\"><span class=\"c3-content\"><span class=\"c3-text c2-title title\">Bash</span><span class=\"sep\" data-shimmer-decoration=\"true\" aria-hidden=\"true\"></span><span class=\"summary\"><span class=\"c3-text\">Run the GUI test suite</span></span></span></span></div></div></div></div><div class=\"root\" data-variant=\"others\" data-tool=\"subagent\" data-state=\"ok\"><div class=\"c2-root\"><div class=\"c2-header\" data-disclosure-header=\"true\"><div class=\"c2-row row\" data-disclosure-row=\"true\" data-expandable=\"true\" role=\"button\" tabindex=\"0\" aria-expanded=\"false\"><span class=\"c2-leading leading\"><span class=\"c2-iconIdle\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M5.875 3C5.875 6.33333 7.54167 8 10.875 8C7.54167 8 5.875 9.66667 5.875 13C5.875 9.66667 4.20833 8 0.875 8C4.20833 8 5.875 6.33333 5.875 3Z\" stroke=\"currentColor\"></path><path d=\"M12.375 1.55823C12.375 3.39156 13.2917 4.30823 15.125 4.30823C13.2917 4.30823 12.375 5.22489 12.375 7.05823C12.375 5.22489 11.4583 4.30823 9.625 4.30823C11.4583 4.30823 12.375 3.39156 12.375 1.55823Z\" stroke=\"currentColor\"></path><path d=\"M12.375 10.4418C12.375 11.7751 13.0417 12.4418 14.375 12.4418C13.0417 12.4418 12.375 13.1084 12.375 14.4418C12.375 13.1084 11.7083 12.4418 10.375 12.4418C11.7083 12.4418 12.375 11.7751 12.375 10.4418Z\" stroke=\"currentColor\"></path></svg></span><svg class=\"c2-chevronHover\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"></path></svg></span><span class=\"c3-root\"><span class=\"c3-content\"><span class=\"c3-text c2-title title\">Tool call</span><span class=\"sep\" data-shimmer-decoration=\"true\" aria-hidden=\"true\"></span><span class=\"summary\"><span class=\"c3-text\">subagent · 核对 b2-composer.json 的 11 条条目</span></span></span></span></div></div></div></div></div>"
+    },
+    {
+     "label": "失败 / 中断 / 运行中：颜色与扫光，版式不变",
+     "note": "运行态的行内扫光为静态近似（真实动画 1.5s 无限循环）",
+     "pad": "lg",
+     "css": "/* 状态模拟：真实动画是 1.5s steps(48, end) 无限循环；示例把扫光停在中段 */\n.sweep, .highlight { animation: none; transform: translateX(0); }",
+     "html": "<div style=\"display:flex;flex-direction:column;gap:2px\"><div class=\"root\" data-variant=\"others\" data-tool=\"workflow\" data-state=\"error\"><span class=\"visuallyHidden\">Failed</span><div class=\"c2-root\"><div class=\"c2-header\" data-disclosure-header=\"true\"><div class=\"c2-row row\" data-disclosure-row=\"true\" data-expandable=\"true\" role=\"button\" tabindex=\"0\" aria-expanded=\"false\"><span class=\"c2-leading leading\"><span class=\"c2-iconIdle\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M5.875 3C5.875 6.33333 7.54167 8 10.875 8C7.54167 8 5.875 9.66667 5.875 13C5.875 9.66667 4.20833 8 0.875 8C4.20833 8 5.875 6.33333 5.875 3Z\" stroke=\"currentColor\"></path><path d=\"M12.375 1.55823C12.375 3.39156 13.2917 4.30823 15.125 4.30823C13.2917 4.30823 12.375 5.22489 12.375 7.05823C12.375 5.22489 11.4583 4.30823 9.625 4.30823C11.4583 4.30823 12.375 3.39156 12.375 1.55823Z\" stroke=\"currentColor\"></path><path d=\"M12.375 10.4418C12.375 11.7751 13.0417 12.4418 14.375 12.4418C13.0417 12.4418 12.375 13.1084 12.375 14.4418C12.375 13.1084 11.7083 12.4418 10.375 12.4418C11.7083 12.4418 12.375 11.7751 12.375 10.4418Z\" stroke=\"currentColor\"></path></svg></span><svg class=\"c2-chevronHover\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"></path></svg></span><span class=\"c3-root\"><span class=\"c3-content\"><span class=\"c3-text c2-title title\">Tool call</span><span class=\"sep\" data-shimmer-decoration=\"true\" aria-hidden=\"true\"></span><span class=\"summary errorSummary\"><span class=\"c3-text\">workflow · script exited with status 1</span></span></span></span></div></div></div></div><div class=\"root\" data-variant=\"others\" data-tool=\"subagent\" data-state=\"stopped\"><span class=\"visuallyHidden\">Stopped</span><div class=\"c2-root\"><div class=\"c2-header\" data-disclosure-header=\"true\"><div class=\"c2-row row\" data-disclosure-row=\"true\" data-expandable=\"true\" role=\"button\" tabindex=\"0\" aria-expanded=\"false\"><span class=\"c2-leading leading\"><span class=\"c2-iconIdle\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M5.875 3C5.875 6.33333 7.54167 8 10.875 8C7.54167 8 5.875 9.66667 5.875 13C5.875 9.66667 4.20833 8 0.875 8C4.20833 8 5.875 6.33333 5.875 3Z\" stroke=\"currentColor\"></path><path d=\"M12.375 1.55823C12.375 3.39156 13.2917 4.30823 15.125 4.30823C13.2917 4.30823 12.375 5.22489 12.375 7.05823C12.375 5.22489 11.4583 4.30823 9.625 4.30823C11.4583 4.30823 12.375 3.39156 12.375 1.55823Z\" stroke=\"currentColor\"></path><path d=\"M12.375 10.4418C12.375 11.7751 13.0417 12.4418 14.375 12.4418C13.0417 12.4418 12.375 13.1084 12.375 14.4418C12.375 13.1084 11.7083 12.4418 10.375 12.4418C11.7083 12.4418 12.375 11.7751 12.375 10.4418Z\" stroke=\"currentColor\"></path></svg></span><svg class=\"c2-chevronHover\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"></path></svg></span><span class=\"c3-root\"><span class=\"c3-content\"><span class=\"c3-text c2-title title\">Tool call</span><span class=\"sep\" data-shimmer-decoration=\"true\" aria-hidden=\"true\"></span><span class=\"summary stoppedSummary\"><span class=\"c3-text\">subagent · 核对 b2-composer.json 的 11 条条目</span></span></span></span></div></div></div></div><div class=\"root\" data-variant=\"others\" data-tool=\"subagent\" data-state=\"running\"><span class=\"visuallyHidden\">Running</span><div class=\"c2-root\"><div class=\"c2-header\" data-disclosure-header=\"true\"><div class=\"c2-row row\" data-disclosure-row=\"true\" data-expandable=\"true\" role=\"button\" tabindex=\"0\" aria-expanded=\"false\"><span class=\"c2-leading leading\"><span class=\"c2-iconIdle\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M5.875 3C5.875 6.33333 7.54167 8 10.875 8C7.54167 8 5.875 9.66667 5.875 13C5.875 9.66667 4.20833 8 0.875 8C4.20833 8 5.875 6.33333 5.875 3Z\" stroke=\"currentColor\"></path><path d=\"M12.375 1.55823C12.375 3.39156 13.2917 4.30823 15.125 4.30823C13.2917 4.30823 12.375 5.22489 12.375 7.05823C12.375 5.22489 11.4583 4.30823 9.625 4.30823C11.4583 4.30823 12.375 3.39156 12.375 1.55823Z\" stroke=\"currentColor\"></path><path d=\"M12.375 10.4418C12.375 11.7751 13.0417 12.4418 14.375 12.4418C13.0417 12.4418 12.375 13.1084 12.375 14.4418C12.375 13.1084 11.7083 12.4418 10.375 12.4418C11.7083 12.4418 12.375 11.7751 12.375 10.4418Z\" stroke=\"currentColor\"></path></svg></span><svg class=\"c2-chevronHover\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"></path></svg></span><span class=\"c3-root\" data-shimmer=\"true\"><span class=\"c3-content\"><span class=\"c3-text c2-title title\">Tool call</span><span class=\"sep\" data-shimmer-decoration=\"true\" aria-hidden=\"true\"></span><span class=\"summary\"><span class=\"c3-text\">subagent · 核对 b2-composer.json 的 11 条条目</span></span></span><span class=\"c3-decoration\" aria-hidden=\"true\" inert=\"\"><span class=\"c3-sweep\"><span class=\"c3-content c3-highlight\"><span class=\"c3-text c2-title title\" data-shimmer-text=\"Tool call\"></span><span class=\"sep\" data-shimmer-decoration=\"true\" aria-hidden=\"true\"></span><span class=\"summary\"><span class=\"c3-text\" data-shimmer-text=\"subagent · 核对 b2-composer.json 的 11 条条目\"></span></span></span></span></span></span></div></div></div></div></div>"
+    },
+    {
+     "label": "展开：IN/OUT 兜底卡与 Inspect 药丸",
+     "note": "Inspect 平时 opacity:0，此处为悬停模拟",
+     "pad": "lg",
+     "css": "/* 状态模拟：真实规则是 .root:hover .inspectButton / .inspectButton:focus-visible */\n.root.forceHover .inspectButton { opacity: 1; }",
+     "html": "<div class=\"root forceHover\" data-variant=\"others\" data-tool=\"workflow\" data-state=\"error\"><span class=\"visuallyHidden\">Failed</span><div class=\"c2-root\"><div class=\"c2-header\" data-disclosure-header=\"true\"><div class=\"c2-row row\" data-disclosure-row=\"true\" data-expandable=\"true\" role=\"button\" tabindex=\"0\" aria-expanded=\"true\"><span class=\"c2-leading leading\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10\" stroke=\"currentColor\"></path></svg></span><span class=\"c3-root\"><span class=\"c3-content\"><span class=\"c3-text c2-title title\">Tool call</span><span class=\"sep\" data-shimmer-decoration=\"true\" aria-hidden=\"true\"></span><span class=\"summary errorSummary\"><span class=\"c3-text\">workflow · script exited with status 1</span></span></span></span></div></div><div class=\"bodyWrap\"><div class=\"ioCard\"><div class=\"ioSection\"><span class=\"ioLabel\">IN</span><span class=\"ioText\">{ \"script\": \"check-uiux-entries.mjs\", \"timeoutMs\": 120000 }</span></div><span class=\"ioDivider\" aria-hidden=\"true\"></span><div class=\"ioSection\"><span class=\"ioLabel\">OUT</span><span class=\"ioText\" data-error=\"true\">Error: b2-composer.json: entries[3].specimens[0] uses class &quot;wrap&quot; not found in QueueDock.module.css</span></div></div><button type=\"button\" class=\"inspectButton\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M4.67398 4.25061L1.36094 7.86484C1.29085 7.9413 1.29085 8.05866 1.36094 8.13513L4.67398 11.7494\" stroke=\"currentColor\"></path><path d=\"M11.3262 4.25061L14.6392 7.86484C14.7093 7.9413 14.7093 8.05866 14.6392 8.13513L11.3262 11.7494\" stroke=\"currentColor\"></path><path d=\"M9.56222 3.62573L6.43774 12.3743\" stroke=\"currentColor\"></path></svg>Inspect</button></div></div></div>"
+    },
+    {
+     "label": "展开：Read 卡（Showing 8 of 394 lines，源码前 8 行）",
+     "note": "ReadBlock 的 8 行窗口；表头语言取自 read 结果的 lang 提示",
+     "pad": "lg",
+     "html": "<div class=\"root\" data-variant=\"read\" data-tool=\"read\" data-state=\"ok\"><div class=\"c2-root\"><div class=\"c2-header\" data-disclosure-header=\"true\"><div class=\"c2-row row\" data-disclosure-row=\"true\" data-expandable=\"true\" role=\"button\" tabindex=\"0\" aria-expanded=\"true\"><span class=\"c2-leading leading\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10\" stroke=\"currentColor\"></path></svg></span><span class=\"c3-root\"><span class=\"c3-content\"><span class=\"c3-text c2-title title\">Read</span><span class=\"sep\" data-shimmer-decoration=\"true\" aria-hidden=\"true\"></span><button type=\"button\" class=\"fileLink\"><span class=\"c3-text\">packages/client/ui-tool/src/client/tool/components/ToolRow.tsx</span></button></span></span></div></div><div class=\"bodyWrap\"><div class=\"c0-card c1-block readBody\" data-read=\"true\" data-code-wrap=\"false\" style=\"--dsl-read-gutter:3ch\"><div class=\"c0-header\" data-code-block-banner=\"true\"><div class=\"c0-heading\"><span class=\"c0-language\">typescript</span><span class=\"c0-title\" title=\"packages/client/ui-tool/src/client/tool/components/ToolRow.tsx\">packages/client/ui-tool/src/client/tool/components/ToolRow.tsx</span></div><div class=\"c0-actions\"><span class=\"c0-status\">Showing 8 of 394 lines</span><button type=\"button\" class=\"c0-action\" aria-label=\"Enable wrapping\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M10.9999 8C10.9999 6.89543 10.1046 6 9 6H4.5V5H9C10.6568 5 11.9999 6.34315 11.9999 8C11.9999 9.65685 10.6568 11 9 11H6.20703L6.85351 11.6465L6.14648 12.3535L4.64652 10.8536C4.45126 10.6583 4.45126 10.3417 4.64652 10.1464L6.14648 8.64648L6.85351 9.35352L6.20703 10H9C10.1046 10 10.9999 9.10457 10.9999 8Z\" fill=\"currentColor\"></path><path d=\"M2 15H1V1H2V15Z\" fill=\"currentColor\"></path><path d=\"M15 15H14V1H15V15Z\" fill=\"currentColor\"></path></svg></button><button type=\"button\" class=\"c0-action\" aria-label=\"Copy\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><rect x=\"1.52075\" y=\"4.07373\" width=\"10.3932\" height=\"10.3932\" rx=\"2\" stroke=\"currentColor\"></rect><path d=\"M11.9792 1.53296C13.36 1.53296 14.4792 2.65225 14.4792 4.03296V9.42847C14.4792 10.3756 13.9521 11.1987 13.1755 11.6228V10.3298C13.3652 10.0787 13.4792 9.7674 13.4792 9.42847V4.03296C13.4792 3.20453 12.8077 2.53296 11.9792 2.53296H6.58374C6.27966 2.53301 5.99684 2.6235 5.7605 2.77905H4.42358C4.85652 2.03463 5.66056 1.53304 6.58374 1.53296H11.9792Z\" fill=\"currentColor\"></path></svg></button></div></div><div class=\"c0-body\"><div class=\"c1-line\"><span class=\"c1-gutter\" aria-hidden=\"true\">1</span><span class=\"c1-content\">import { memo, useCallback, useMemo, type KeyboardEvent, type MouseEvent, type ReactNode } from 'react'</span></div><div class=\"c1-line\"><span class=\"c1-gutter\" aria-hidden=\"true\">2</span><span class=\"c1-content\">import clsx from 'clsx'</span></div><div class=\"c1-line\"><span class=\"c1-gutter\" aria-hidden=\"true\">3</span><span class=\"c1-content\">import {</span></div><div class=\"c1-line\"><span class=\"c1-gutter\" aria-hidden=\"true\">4</span><span class=\"c1-content\">  CodeBlock, DiffBlock, DisclosureRow, IconInspectOutlineRegular, ReadBlock, SearchBlock,</span></div><div class=\"c1-line\"><span class=\"c1-gutter\" aria-hidden=\"true\">5</span><span class=\"c1-content\">  TerminalBlock, TextShimmer, WebBlock,</span></div><div class=\"c1-line\"><span class=\"c1-gutter\" aria-hidden=\"true\">6</span><span class=\"c1-content\">  diffTotals,</span></div><div class=\"c1-line\"><span class=\"c1-gutter\" aria-hidden=\"true\">7</span><span class=\"c1-content\">} from '@deepseek-ai/dsh-client-ui-primitives'</span></div><div class=\"c1-line\"><span class=\"c1-gutter\" aria-hidden=\"true\">8</span><span class=\"c1-content\">import type { PropsRenderSlots, TranslateNS } from '@deepseek-ai/dsh-client-ui-slots'</span></div></div></div></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "useDisclosure",
+     "type": "UseDisclosure",
+     "default": "—",
+     "desc": "行自己拥有的展开状态；每次调用独立，外层 Turn 折叠时重置。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'conversation'>",
+     "default": "—",
+     "desc": "工具行复用会话字典：标题、IN/OUT、Inspect、复制等。"
+    },
+    {
+     "name": "variant",
+     "type": "'search' | 'read' | 'bash' | 'write' | 'edit' | 'code' | 'others'",
+     "default": "—",
+     "desc": "线名分类，决定图形、摘要字段优先级与展开体形式。"
+    },
+    {
+     "name": "toolName",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "线工具名，落在 data-tool 上供工具自有样式（如 cordis_* 的 500 字重）使用。"
+    },
+    {
+     "name": "icon / title",
+     "type": "ReactNode / string",
+     "default": "—",
+     "desc": "16px 图形槽与 13/24 标题。"
+    },
+    {
+     "name": "summary",
+     "type": "string",
+     "default": "—",
+     "desc": "折叠摘要；为空的标题行不会留下分隔点。"
+    },
+    {
+     "name": "summarySuffix",
+     "type": "string | null | undefined",
+     "default": "—",
+     "desc": "留在摘要省略号之外的尾串（如写入体积），窄行时先裁摘要。"
+    },
+    {
+     "name": "bodyRaw / output",
+     "type": "string | null | undefined",
+     "default": "—",
+     "desc": "展开时才格式化的参数 JSON 与结果文本；单文件工具不给 bodyRaw。"
+    },
+    {
+     "name": "terminal / diff / read / image / search / web / details / askQuestion",
+     "type": "… | null | undefined",
+     "default": "—",
+     "desc": "互斥的 card 数据，按固定优先级取第一个非空者作展开体。"
+    },
+    {
+     "name": "state",
+     "type": "'preparing' | 'running' | 'ok' | 'error' | 'stopped'",
+     "default": "—",
+     "desc": "preparing 不可展开；error / stopped 只改摘要颜色。"
+    },
+    {
+     "name": "filePath / filePathLine / onOpenFile",
+     "type": "string / number / ((path, options?) => void) | undefined",
+     "default": "—",
+     "desc": "摘要变成可点路径；无处理回调时退回不可点的摘要文本。"
+    },
+    {
+     "name": "href",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "http(s) 链接摘要，新标签打开；error/stopped 行不渲染链接。"
+    },
+    {
+     "name": "inspect",
+     "type": "(() => void) | undefined",
+     "default": "—",
+     "desc": "给 Trajectory 视图的跳转回调；不传则展开体右上角也不为其留位。"
+    }
+   ],
+   "notes": "展开体的 card 优先级为 <code>askQuestion ?? terminal ?? diff ?? read ?? image ?? search ?? web ?? details</code>，都没有才用 <code>.ioCard</code> 的 IN/OUT 卡片。行内文字包在 <code>TextShimmer</code> 里（运行态扫光），示例保留该包裹层，扫光以静态近似呈现（真实动画 1.5s 无限循环）；<code>DisclosureRow</code> 的 <code>.header</code> 包装层同样已还原。同名类按样式表下标写成 <code>c0-</code>…<code>c3-</code> 前缀：<code>header</code> 同时属于代码卡与本行，<code>title</code> / <code>row</code> / <code>leading</code> 同时属于 DisclosureRow 与本组件，逐字内联时会互相污染，必须带前缀区分。示例里的 <code>ToolRow.module.css</code> 排在 primitives 之后，组件自己的覆盖规则（例如 <code>.readBody</code> 的 4px 缩进压过 <code>CodeCard</code> 的 16px 外边距）才能生效。<code>prefers-reduced-motion</code> 下悬停过渡关闭。"
+  },
+  {
+   "id": "tool-details",
+   "name": "ToolDetails",
+   "exportName": "ToolDetails",
+   "zh": "结果详情",
+   "group": "conversation",
+   "summary": "记录型工具结果的只读详情卡：l1 发丝描边、<code>--dsw-radius-lg</code> 圆角、代码块底色，<code>.list</code> 最高 320px 内滚动。每个条目内边距 10px / 14px，相邻条目由 0.5px l2 分隔；标题行可带状态字形（完成勾 / 进行中播放 / 待办空心方块）、<code>+</code> / <code>−</code> 变更字形、状态点徽标、可打开文件的路径按钮与右对齐的状态文字，下面依次是副标题、说明、字段网格、行列表、Markdown、代码块或可折叠分组。",
+   "source": "packages/client/ui-tool/src/client/tool/components/ToolDetails.tsx#L117",
+   "css": [
+    "packages/client/ui-tool/src/client/tool/components/ToolDetails.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-border-l1",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-label-caption",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-markdown-code-block",
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-state-error-primary",
+    "--dsw-alias-state-success-primary",
+    "--dsw-alias-state-warn-primary",
+    "--dsw-focus-ring-color",
+    "--dsw-focus-ring-width",
+    "--dsw-font-xs-13",
+    "--dsw-radius-lg"
+   ],
+   "specimens": [
+    {
+     "label": "字段型：状态字形 + 徽标 + 5.5em 标签列",
+     "note": "root 带 data-inspect 与 data-caption 时标题右侧预留 Inspect 位",
+     "pad": "lg",
+     "html": "<div class=\"root\" data-inspect=\"true\" data-caption=\"true\"><div class=\"caption\">Recorded result</div><ul class=\"list\"><li class=\"item\" data-change=\"updated\"><div class=\"heading\"><span class=\"status\" role=\"img\" aria-label=\"Completed\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\"><path d=\"M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4\" stroke=\"currentColor\"></path></svg></span><span class=\"text\">get_goal</span><span class=\"badge\" data-tone=\"info\">active</span><span class=\"statusText\"><span class=\"previous\">pending</span><span> → </span><span>Completed</span></span></div><div class=\"subtitle\">session goal</div><dl class=\"fields\"><div class=\"field\"><dt>Objective</dt><dd>为 UIUX 目录补齐 composer 与工具行条目</dd></div><div class=\"field\"><dt>Revision</dt><dd>3</dd></div><div class=\"field\"><dt>Max rounds</dt><dd>12</dd></div></dl></li></ul></div>"
+    },
+    {
+     "label": "列表型：新增 / 删除变更与行列表",
+     "note": "带 location 的标题渲染成可打开文件的 .path 按钮",
+     "pad": "lg",
+     "html": "<div class=\"root\"><ul class=\"list\"><li class=\"item\" data-change=\"added\"><div class=\"heading\"><span class=\"status\" role=\"img\" aria-label=\"Added\">+</span><button type=\"button\" class=\"path\">packages/client/ui-conversation/src/client/skeleton/InputBar.module.css</button><span class=\"statusText\"><span>Added</span></span></div><ul class=\"lines\"><li>+ 卡片描边走 --dsw-elevation-stroke-color: var(--dsw-alias-border-l2)</li><li>+ 阴影走 --dsw-elevation-soft</li></ul></li><li class=\"item\" data-change=\"removed\"><div class=\"heading\"><span class=\"status\" role=\"img\" aria-label=\"Removed\">−</span><span class=\"text\">composer.legacyBorder</span><span class=\"statusText\"><span>Removed</span></span></div></li><li class=\"item\"><div class=\"heading\"><span class=\"status\" role=\"img\" aria-label=\"Pending\"><span class=\"pending\"></span></span><span class=\"text\">b2-composer.json 自检</span><span class=\"statusText\"><span>Pending</span></span></div><p class=\"description\">等待 11 条条目全部通过 JSON 校验后再交回父会话。</p></li></ul></div>"
+    },
+    {
+     "label": "分组与未变更折叠（details 展开后箭头旋转 90°）",
+     "pad": "lg",
+     "html": "<div class=\"root\"><ul class=\"list\"><li class=\"item\"><div class=\"heading\"><span class=\"status\" role=\"img\" aria-label=\"In progress\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\"><path d=\"M8 14.5C11.5899 14.5 14.5 11.5899 14.5 8C14.5 4.41015 11.5899 1.5 8 1.5C4.41015 1.5 1.5 4.41015 1.5 8C1.5 11.5899 4.41015 14.5 8 14.5Z\" stroke=\"currentColor\"></path><path d=\"M10.3329 7.91346C10.3996 7.95195 10.3996 8.04818 10.3329 8.08667L6.78304 10.1362C6.71638 10.1747 6.63304 10.1266 6.63304 10.0496L6.63304 5.95055C6.63304 5.87357 6.71638 5.82546 6.78304 5.86395L10.3329 7.91346Z\" stroke=\"currentColor\"></path></svg></span><span class=\"text\">schedule_create</span></div><details class=\"group\" open><summary><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\"><path d=\"M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4\" stroke=\"currentColor\"></path></svg><span>Fields</span></summary><ul class=\"list\"><li class=\"item\"><div class=\"heading\"><span class=\"status\" role=\"img\" aria-label=\"Completed\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\"><path d=\"M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4\" stroke=\"currentColor\"></path></svg></span><span class=\"text\">wake in 30 minutes</span></div><dl class=\"fields\"><div class=\"field\"><dt>Kind</dt><dd>after</dd></div></dl></li></ul></details></li></ul><details class=\"unchanged\"><summary><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\"><path d=\"M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4\" stroke=\"currentColor\"></path></svg>12 unchanged fields</summary><ul class=\"list\"><li class=\"item\"><div class=\"heading\"><span class=\"text\">cwd</span></div></li></ul></details></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "model",
+     "type": "ToolDetailsModel",
+     "default": "—",
+     "desc": "items / summary / expandedSummary / empty / caption / unchanged；items 为空时渲染 empty 文案。"
+    },
+    {
+     "name": "hasInspect",
+     "type": "boolean",
+     "default": "false",
+     "desc": "为行右上角的 Inspect 按钮预留 88px 内边距，避免文字被药丸压住。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'conversation'>",
+     "default": "—",
+     "desc": "共享 Markdown 与代码块的标签来源。"
+    },
+    {
+     "name": "onOpenFile",
+     "type": "((path: string, options?: OpenFileOptions) => void) | undefined",
+     "default": "—",
+     "desc": "有 location 的条目标题变成可点路径；不传时退化为普通文本。"
+    },
+    {
+     "name": "ToolDetailItem",
+     "type": "{ title?, subtitle?, description?, badge?, status?, previousStatus?, change?, fields, lines?, markdown?, code?, location?, groups? }",
+     "default": "—",
+     "desc": "一个条目：状态字形与变更字形共用 heading 首位，徽标只取 semantic 四色。"
+    }
+   ],
+   "notes": "日期会带上查看者时区，状态反映调用时的结果而不是当前会话状态；分组标题用原生 <code>&lt;details&gt;</code>，展开时靠 CSS 旋转箭头。这是纯 Web 侧的推导结果：card 数据来自原始 call/result 事件与持久化的 <code>result.meta</code>，宿主 <code>presentCall</code> / <code>presentResult</code> 不进入浏览器。"
+  },
+  {
+   "id": "exit-code-badge",
+   "name": "ExitCodeBadge",
+   "exportName": "ExitCodeBadge",
+   "zh": "退出码胶囊",
+   "group": "conversation",
+   "summary": "已结算命令的退出状态胶囊：<code>Tag tone=\"neutral\"</code> 之外再挂 <code>.badge</code>（左外边距 8px、内部间隙 5px）与一个 4px 红点 <code>.dot</code>，所以它只有普通灰底加一个失败点，不把整行染红。只在退出码非 0、收到终止信号或明确缺退出码时出现；运行时、后台任务与成功命令都不渲染。",
+   "source": "packages/client/ui-tool/src/client/tool/components/ExitCodeBadge.tsx#L10",
+   "css": [
+    "packages/client/ui-primitives/src/Tag.module.css",
+    "packages/client/ui-tool/src/client/tool/components/ExitCodeBadge.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-layer-3",
+    "--dsw-alias-bg-module-platform",
+    "--dsw-alias-border-l4",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-state-error-primary",
+    "--dsw-alias-state-success-primary",
+    "--dsw-alias-state-warn-primary"
+   ],
+   "specimens": [
+    {
+     "label": "三种标签：退出码 / 终止信号 / 缺退出码",
+     "html": "<div style=\"display:flex;align-items:center;gap:20px\"><span class=\"tag badge\" data-tone=\"neutral\"><span class=\"dot\" aria-hidden=\"true\"></span>exit code 1</span><span class=\"tag badge\" data-tone=\"neutral\"><span class=\"dot\" aria-hidden=\"true\"></span>signal SIGKILL</span><span class=\"tag badge\" data-tone=\"neutral\"><span class=\"dot\" aria-hidden=\"true\"></span>no exit code</span></div>"
+    },
+    {
+     "label": "与命令描述同排：描述保持普通灰，胶囊紧随其后",
+     "html": "<div style=\"display:flex;align-items:center\">pnpm run test:gui<span class=\"tag badge\" data-tone=\"neutral\"><span class=\"dot\" aria-hidden=\"true\"></span>exit code 1</span></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "label",
+     "type": "string",
+     "default": "—",
+     "desc": "已本地化的退出状态文本（如 <code>exit code 1</code> / <code>signal SIGKILL</code> / <code>no exit code</code>），由调用方从 terminal 卡模型取出。"
+    }
+   ],
+   "notes": "红色只在 4px 圆点上，文字与底色保持中性：失败的退出状态是结果数据而不是调用失败（bash 工具的 <code>isError</code> 仍为 false），所以行必须能同时表达「命令跑完了」和「结果是失败的」。同一行里它会一路贴着摘要，摘要负责先省略。"
+  },
+  {
+   "id": "bash-row",
+   "name": "BashRow",
+   "exportName": "BashRow",
+   "zh": "Bash 行",
+   "group": "conversation",
+   "summary": "Bash / Pwsh / terminal_send 的行视图，注册在 <code>tool.call.toolview</code> 的 <code>bash</code> 键上：24px 摘要行加展开的终端卡，终端卡不可用时退回 IN/OUT 卡。可展开时字形在 100ms 内交叉淡入成下箭头；因为退出失败是结果数据（<code>isError</code> 仍为 false），失败行的描述保持普通灰，只由 ExitCodeBadge 的红点承担失败信号，红色摘要只在没有退出胶囊（例如命令被取消）时才用。",
+   "source": "packages/client/ui-tool/src/client/tool/toolviews/bash-sample.tsx#L46",
+   "css": [
+    "packages/client/ui-primitives/src/Tag.module.css",
+    "packages/client/ui-tool/src/client/tool/components/ExitCodeBadge.module.css",
+    "packages/client/ui-primitives/src/Pill.module.css",
+    "packages/client/ui-primitives/src/StateDot.module.css",
+    "packages/client/ui-primitives/src/CommandText.module.css",
+    "packages/client/ui-primitives/src/TerminalBlock.module.css",
+    "packages/client/ui-primitives/src/TextShimmer.module.css",
+    "packages/client/ui-tool/src/client/tool/toolviews/bash-sample.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-base",
+    "--dsw-alias-bg-layer-2",
+    "--dsw-alias-bg-layer-3",
+    "--dsw-alias-bg-module-platform",
+    "--dsw-alias-border-l1",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-border-l4",
+    "--dsw-alias-button-ghost-active-border",
+    "--dsw-alias-button-ghost-active-fill",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-interactive-bg-hover-solid",
+    "--dsw-alias-label-caption",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-primary-foreground",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-shimmer",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-markdown-code-block",
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-state-error-primary",
+    "--dsw-alias-state-idle-primary",
+    "--dsw-alias-state-success-primary",
+    "--dsw-alias-state-warn-label",
+    "--dsw-alias-state-warn-primary",
+    "--dsw-focus-ring-color",
+    "--dsw-focus-ring-width",
+    "--dsw-font-markdown-code-block",
+    "--dsw-font-markdown-code-block-small",
+    "--dsw-font-xs-13",
+    "--dsw-radius-lg",
+    "--dsw-radius-sm"
+   ],
+   "specimens": [
+    {
+     "label": "运行中：字形交叉淡入 + 行内扫光（描述取自流式参数）",
+     "note": "悬停与扫光均为静态近似：真实规则是 .root:hover .iconIdle / .chevronHover，真实动画 1.5s 无限循环",
+     "pad": "lg",
+     "css": "/* 状态模拟：真实规则是 .root:hover .iconIdle { opacity: 0 } / .root:hover .chevronHover { opacity: 1 } */\n.root.forceHover .iconIdle { opacity: 0; }\n.root.forceHover .chevronHover { opacity: 1; }\n/* 状态模拟：真实动画是 1.5s steps(48, end) 无限循环；示例把扫光停在中段 */\n.sweep, .highlight { animation: none; transform: translateX(0); }",
+     "html": "<div class=\"card\"><div class=\"root forceHover\" data-sample=\"bash\" data-variant=\"bash\" data-state=\"running\" data-expandable=\"true\" role=\"button\" tabindex=\"0\" aria-expanded=\"false\"><span class=\"leading\"><span class=\"iconIdle\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M3 4L7 8L3 12\" stroke=\"currentColor\"></path><path d=\"M9 12H13\" stroke=\"currentColor\"></path></svg></span><svg class=\"chevron chevronHover\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"></path></svg></span><span class=\"visuallyHidden\">Running</span><span class=\"c6-root\" data-shimmer=\"true\"><span class=\"c6-content\"><span class=\"c6-text title\">Bash</span><span class=\"sep\" data-shimmer-decoration=\"true\" aria-hidden=\"true\"></span><span class=\"summary\"><span class=\"c6-text\">Run the GUI test suite</span></span></span><span class=\"c6-decoration\" aria-hidden=\"true\" inert=\"\"><span class=\"c6-sweep\"><span class=\"c6-content c6-highlight\"><span class=\"c6-text title\" data-shimmer-text=\"Bash\"></span><span class=\"sep\" data-shimmer-decoration=\"true\" aria-hidden=\"true\"></span><span class=\"summary\"><span class=\"c6-text\" data-shimmer-text=\"Run the GUI test suite\"></span></span></span></span></span></span></div></div>"
+    },
+    {
+     "label": "失败：描述保持普通灰，exit code 1 由胶囊承担",
+     "pad": "lg",
+     "html": "<div class=\"card\"><div class=\"root\" data-sample=\"bash\" data-variant=\"bash\" data-state=\"error\" data-expandable=\"true\" role=\"button\" tabindex=\"0\" aria-expanded=\"false\"><span class=\"leading\"><span class=\"iconIdle\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M3 4L7 8L3 12\" stroke=\"currentColor\"></path><path d=\"M9 12H13\" stroke=\"currentColor\"></path></svg></span><svg class=\"chevron chevronHover\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"></path></svg></span><span class=\"visuallyHidden\">Failed</span><span class=\"c6-root\"><span class=\"c6-content\"><span class=\"c6-text title\">Bash</span><span class=\"sep\" data-shimmer-decoration=\"true\" aria-hidden=\"true\"></span><span class=\"summary\"><span class=\"c6-text\">Run the GUI test suite</span></span><span class=\"tag badge\" data-tone=\"neutral\"><span class=\"dot\" aria-hidden=\"true\"></span>exit code 1</span></span></span></div></div>"
+    },
+    {
+     "label": "展开：终端卡（终端提示行 + 运行状态点 + 状态胶囊）",
+     "note": "Inspect 平时 opacity:0，此处为悬停模拟",
+     "pad": "lg",
+     "css": "/* 状态模拟：真实规则是 .card:hover .inspectButton / .inspectButton:focus-visible */\n.card.forceHover .inspectButton { opacity: 1; }",
+     "html": "<div class=\"card forceHover\"><div class=\"root\" data-sample=\"bash\" data-variant=\"bash\" data-state=\"error\" data-expandable=\"true\" role=\"button\" tabindex=\"0\" aria-expanded=\"true\"><span class=\"leading\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10\" stroke=\"currentColor\"></path></svg></span><span class=\"visuallyHidden\">Failed</span><span class=\"c6-root\"><span class=\"c6-content\"><span class=\"c6-text title\">Bash</span><span class=\"sep\" data-shimmer-decoration=\"true\" aria-hidden=\"true\"></span><span class=\"summary\"><span class=\"c6-text\">Run the GUI test suite</span></span><span class=\"tag badge\" data-tone=\"neutral\"><span class=\"dot\" aria-hidden=\"true\"></span>exit code 1</span></span></span></div><div class=\"bodyWrap\"><div class=\"block terminal\" data-terminal=\"true\" data-body=\"true\"><div class=\"header\"><div class=\"prompt\"><span class=\"runStateLabel\">Failed</span><div class=\"promptLine\"><span class=\"c3-dot runState\" data-state=\"error\" style=\"width:10px;height:10px\" aria-hidden=\"true\"></span><span class=\"cwd\">deepseek-harness</span><span class=\"text command\" data-command-text=\"true\">pnpm run test:gui</span></div></div><span class=\"pill status\">exit code 1</span><button type=\"button\" class=\"copyButton\">Copy</button></div><div class=\"output\"><div class=\"line\">&gt; dsh@0.1.0 test:gui</div><div class=\"line\">&gt; vitest run --project gui</div><div class=\"line\"></div><div class=\"line\">FAIL  packages/client/ui-tool/tests/tool-row.client.spec.tsx &gt; renders the collapsed edit summary</div><div class=\"line\">AssertionError: expected '+12 -3' to be '+12 -4'</div><div class=\"line\"></div><div class=\"line\">  Expected: \"+12 -4\"</div><div class=\"line\">  Received: \"+12 -3\"</div><div class=\"line\"></div><div class=\"line\"> Test Files  1 failed (1)</div><div class=\"line\">      Tests  1 failed | 24 passed (25)</div></div></div><button type=\"button\" class=\"inspectButton\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M4.67398 4.25061L1.36094 7.86484C1.29085 7.9413 1.29085 8.05866 1.36094 8.13513L4.67398 11.7494\" stroke=\"currentColor\"></path><path d=\"M11.3262 4.25061L14.6392 7.86484C14.7093 7.9413 14.7093 8.05866 14.6392 8.13513L11.3262 11.7494\" stroke=\"currentColor\"></path><path d=\"M9.56222 3.62573L6.43774 12.3743\" stroke=\"currentColor\"></path></svg>Inspect</button></div></div>"
+    },
+    {
+     "label": "展开兜底：终端卡不可用时的 IN/OUT 卡（命令被取消）",
+     "note": "Inspect 平时 opacity:0，此处为悬停模拟",
+     "pad": "lg",
+     "css": "/* 状态模拟：真实规则是 .card:hover .inspectButton / .inspectButton:focus-visible */\n.card.forceHover .inspectButton { opacity: 1; }",
+     "html": "<div class=\"card forceHover\"><div class=\"root\" data-sample=\"bash\" data-variant=\"bash\" data-state=\"error\" data-expandable=\"true\" role=\"button\" tabindex=\"0\" aria-expanded=\"true\"><span class=\"leading\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10\" stroke=\"currentColor\"></path></svg></span><span class=\"visuallyHidden\">Failed</span><span class=\"c6-root\"><span class=\"c6-content\"><span class=\"c6-text title\">Bash</span><span class=\"sep\" data-shimmer-decoration=\"true\" aria-hidden=\"true\"></span><span class=\"summary errorSummary\"><span class=\"c6-text\">Run the GUI test suite</span></span></span></span></div><div class=\"bodyWrap\"><div class=\"ioCard\"><div class=\"ioSection\"><span class=\"ioLabel\">IN</span><span class=\"ioText\">{ \"command\": \"pnpm run test:gui\", \"description\": \"Run the GUI test suite\" }</span></div><span class=\"ioDivider\" aria-hidden=\"true\"></span><div class=\"ioSection\"><span class=\"ioLabel\">OUT</span><span class=\"ioText\" data-error=\"true\">Command cancelled before it settled</span></div></div><button type=\"button\" class=\"inspectButton\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M4.67398 4.25061L1.36094 7.86484C1.29085 7.9413 1.29085 8.05866 1.36094 8.13513L4.67398 11.7494\" stroke=\"currentColor\"></path><path d=\"M11.3262 4.25061L14.6392 7.86484C14.7093 7.9413 14.7093 8.05866 14.6392 8.13513L11.3262 11.7494\" stroke=\"currentColor\"></path><path d=\"M9.56222 3.62573L6.43774 12.3743\" stroke=\"currentColor\"></path></svg>Inspect</button></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "toolName",
+     "type": "string",
+     "default": "—",
+     "desc": "线工具名（bash / pwsh / terminal_send），决定是否走终端卡路径与标题键。"
+    },
+    {
+     "name": "block",
+     "type": "ToolCallBlock",
+     "default": "—",
+     "desc": "三个阶段之一的冻结切片；行模型与终端模型都从它纯推导。"
+    },
+    {
+     "name": "sessionId",
+     "type": "SessionId",
+     "default": "—",
+     "desc": "用于取会话 cwd，解析终端提示符里的目录。"
+    },
+    {
+     "name": "useSessions",
+     "type": "SnapshotSelectorHook",
+     "default": "—",
+     "desc": "读会话列表取 cwd；省略的 workdir 即会话工作区。"
+    },
+    {
+     "name": "useDisclosure",
+     "type": "UseDisclosure",
+     "default": "—",
+     "desc": "行自己的展开状态。"
+    },
+    {
+     "name": "inspect",
+     "type": "(() => void) | undefined",
+     "default": "—",
+     "desc": "展开体左下角的 Inspect 回调。"
+    },
+    {
+     "name": "t",
+     "type": "PropsLocale<'conversation'>['t']",
+     "default": "—",
+     "desc": "会话字典座：标题、终端标签、IN/OUT 与 Inspect。"
+    }
+   ],
+   "notes": "默认折叠（<code>expanded</code> 初始为 false），未展开时字形是业务图标加叠在同一个 16px 槽里的下箭头；展开后换成无类的上箭头。<code>data-state</code> 同时驱动错误摘要色与无障碍状态文本（<code>visuallyHidden</code>），颜色本身不是唯一信号。展开终端卡时的方括号标签与输出滚动都交给 ui-primitives 的 <code>TerminalBlock</code>：示例用 <code>maxLines={Infinity}</code>（<code>--dsl-terminal-output-max-height</code> 来自本组件的 <code>.terminal</code>），运行状态点用 <code>StateDot</code>、状态胶囊用 <code>Pill</code>，三者的样式表都在 <code>css</code> 里，运行状态点按 <code>c3-dot</code> 指定 StateDot 的同名类。"
+  },
+  {
+   "id": "tool-call-tree",
+   "name": "ToolCallTree",
+   "exportName": "ToolCallTree",
+   "zh": "工具调用树",
+   "group": "conversation",
+   "summary": "一次根工具调用及其 PTC 子调用的容器：根包装成 <code>.callRow</code>，带 <code>data-chat-anchor-key=\"call:&lt;id&gt;\"</code> 与 <code>data-chat-call-id</code> 供翻页与选中定位；每个原子调用按线工具名走键控槽 <code>tool.call.toolview</code>，未注册的名字用通用行。子调用放在 <code>.subCalls</code> 里：左缩进 22px、8px 内边距配 0.5px l2 竖线，行间 4px。",
+   "source": "packages/client/ui-tool/src/client/tool/ToolCallTree.tsx#L110",
+   "css": [
+    "packages/client/ui-primitives/src/DisclosureRow.module.css",
+    "packages/client/ui-primitives/src/TextShimmer.module.css",
+    "packages/client/ui-tool/src/client/tool/components/ToolRow.module.css",
+    "packages/client/ui-tool/src/client/tool/ToolCallTree.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-base",
+    "--dsw-alias-border-l1",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-border-l3",
+    "--dsw-alias-interactive-bg-hover-solid",
+    "--dsw-alias-label-caption",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-shimmer",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-markdown-code-block",
+    "--dsw-alias-state-error-primary",
+    "--dsw-alias-state-success-primary",
+    "--dsw-alias-state-warn-label",
+    "--dsw-font-markdown-code-block-small",
+    "--dsw-font-xs-13",
+    "--dsw-radius-lg",
+    "--dsw-radius-sm"
+   ],
+   "specimens": [
+    {
+     "label": "根调用 + 两个 PTC 子调用（缩进竖线）",
+     "pad": "lg",
+     "html": "<div class=\"callRow\" data-chat-anchor-key=\"call:call_root\" data-chat-call-id=\"call_root\"><div class=\"c2-root\" data-variant=\"code\" data-tool=\"run_code\" data-state=\"ok\"><div class=\"root\"><div class=\"header\" data-disclosure-header=\"true\"><div class=\"row c2-row\" data-disclosure-row=\"true\" data-expandable=\"true\" role=\"button\" tabindex=\"0\" aria-expanded=\"false\"><span class=\"leading c2-leading\"><span class=\"c0-iconIdle\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M4.67398 4.25061L1.36094 7.86484C1.29085 7.9413 1.29085 8.05866 1.36094 8.13513L4.67398 11.7494\" stroke=\"currentColor\"></path><path d=\"M11.3262 4.25061L14.6392 7.86484C14.7093 7.9413 14.7093 8.05866 14.6392 8.13513L11.3262 11.7494\" stroke=\"currentColor\"></path><path d=\"M9.56222 3.62573L6.43774 12.3743\" stroke=\"currentColor\"></path></svg></span><svg class=\"c0-chevronHover\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"></path></svg></span><span class=\"c1-root\"><span class=\"c1-content\"><span class=\"c1-text c2-title title\">Code</span><span class=\"c2-sep\" data-shimmer-decoration=\"true\" aria-hidden=\"true\"></span><span class=\"c2-summary\"><span class=\"c1-text\">核对 UIUX 的 composer 与工具行条目</span></span></span></span></div></div></div></div><div class=\"subCalls\" data-subcalls=\"true\"><div class=\"callRow\" data-chat-anchor-key=\"call:call_read\" data-chat-call-id=\"call_read\"><div class=\"c2-root\" data-variant=\"read\" data-tool=\"read\" data-state=\"ok\"><div class=\"root\"><div class=\"header\" data-disclosure-header=\"true\"><div class=\"row c2-row\" data-disclosure-row=\"true\" data-expandable=\"true\" role=\"button\" tabindex=\"0\" aria-expanded=\"false\"><span class=\"leading c2-leading\"><span class=\"c0-iconIdle\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M4.9375 5.90295H11.0625\" stroke=\"currentColor\"></path><path d=\"M4.9375 9.02991H8.27841\" stroke=\"currentColor\"></path><path d=\"M12.5 1.32617C13.3039 1.32617 14 1.95171 14 2.77637V13.2246C13.9996 14.0489 13.3036 14.6738 12.5 14.6738H3.5C2.69637 14.6738 2.00042 14.0489 2 13.2246V2.77637C2 1.95171 2.69613 1.32617 3.5 1.32617H12.5ZM3.5 2.32617C3.1993 2.32617 3 2.55186 3 2.77637V13.2246C3.00044 13.4489 3.19963 13.6738 3.5 13.6738H12.5C12.8004 13.6738 12.9996 13.4489 13 13.2246V2.77637C13 2.55186 12.8007 2.32617 12.5 2.32617H3.5Z\" fill=\"currentColor\"></path></svg></span><svg class=\"c0-chevronHover\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"></path></svg></span><span class=\"c1-root\"><span class=\"c1-content\"><span class=\"c1-text c2-title title\">Read</span><span class=\"c2-sep\" data-shimmer-decoration=\"true\" aria-hidden=\"true\"></span><button type=\"button\" class=\"c2-fileLink\"><span class=\"c1-text\">packages/client/ui-tool/src/client/tool/components/ToolRow.tsx</span></button></span></span></div></div></div></div></div><div class=\"callRow\" data-chat-anchor-key=\"call:call_edit\" data-chat-call-id=\"call_edit\"><div class=\"c2-root\" data-variant=\"edit\" data-tool=\"edit\" data-state=\"ok\"><div class=\"root\"><div class=\"header\" data-disclosure-header=\"true\"><div class=\"row c2-row\" data-disclosure-row=\"true\" data-expandable=\"true\" role=\"button\" tabindex=\"0\" aria-expanded=\"false\"><span class=\"leading c2-leading\"><span class=\"c0-iconIdle\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M8.85596 2.69971H4.19971C3.37141 2.69971 2.69992 3.37146 2.69971 4.19971V11.8003C2.69992 12.6285 3.37141 13.3003 4.19971 13.3003H11.8003C12.6283 13.2999 13.3001 12.6283 13.3003 11.8003V7.89893H14.3003V11.8003C14.3001 13.1806 13.1806 14.2999 11.8003 14.3003H4.19971C2.81913 14.3003 1.69992 13.1808 1.69971 11.8003V4.19971C1.69992 2.81918 2.81913 1.69971 4.19971 1.69971H8.85596V2.69971Z\" fill=\"currentColor\"></path><path d=\"M7.7849 8.23878L13.888 2.13574\" stroke=\"currentColor\"></path></svg></span><svg class=\"c0-chevronHover\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"></path></svg></span><span class=\"c1-root\"><span class=\"c1-content\"><span class=\"c1-text c2-title title\">Edit</span><span class=\"c2-sep\" data-shimmer-decoration=\"true\" aria-hidden=\"true\"></span><button type=\"button\" class=\"c2-fileLink\"><span class=\"c1-text\">packages/client/ui-tool/src/client/tool/toolviews/bash-sample.tsx</span></button><span class=\"c2-summarySuffix c2-diffStat\"><span class=\"c2-diffAdded\">+12</span> <span class=\"c2-diffRemoved\">-4</span></span></span></span></div></div></div></div></div></div></div>"
+    },
+    {
+     "label": "单个原子调用：没有子调用就没有缩进层",
+     "pad": "lg",
+     "html": "<div class=\"callRow\" data-chat-anchor-key=\"call:call_solo\" data-chat-call-id=\"call_solo\"><div class=\"c2-root\" data-variant=\"others\" data-tool=\"todo_write\" data-state=\"ok\"><div class=\"root\"><div class=\"header\" data-disclosure-header=\"true\"><div class=\"row c2-row\" data-disclosure-row=\"true\" data-expandable=\"true\" role=\"button\" tabindex=\"0\" aria-expanded=\"false\"><span class=\"leading c2-leading\"><span class=\"c0-iconIdle\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M5.875 3C5.875 6.33333 7.54167 8 10.875 8C7.54167 8 5.875 9.66667 5.875 13C5.875 9.66667 4.20833 8 0.875 8C4.20833 8 5.875 6.33333 5.875 3Z\" stroke=\"currentColor\"></path><path d=\"M12.375 1.55823C12.375 3.39156 13.2917 4.30823 15.125 4.30823C13.2917 4.30823 12.375 5.22489 12.375 7.05823C12.375 5.22489 11.4583 4.30823 9.625 4.30823C11.4583 4.30823 12.375 3.39156 12.375 1.55823Z\" stroke=\"currentColor\"></path><path d=\"M12.375 10.4418C12.375 11.7751 13.0417 12.4418 14.375 12.4418C13.0417 12.4418 12.375 13.1084 12.375 14.4418C12.375 13.1084 11.7083 12.4418 10.375 12.4418C11.7083 12.4418 12.375 11.7751 12.375 10.4418Z\" stroke=\"currentColor\"></path></svg></span><svg class=\"c0-chevronHover\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"></path></svg></span><span class=\"c1-root\"><span class=\"c1-content\"><span class=\"c1-text c2-title title\">To-dos</span><span class=\"c2-sep\" data-shimmer-decoration=\"true\" aria-hidden=\"true\"></span><span class=\"c2-summary\"><span class=\"c1-text\">4 items</span></span></span></span></div></div></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "node",
+     "type": "ConversationNodeData<'tool-call'>",
+     "default": "—",
+     "desc": "一个 tool-call 节点，根调用在 node.data.root，子调用挂在各分支的 subCalls 上。"
+    },
+    {
+     "name": "renderSlot",
+     "type": "PropsRenderSlots<'tool.call.toolview'>['renderSlot']",
+     "default": "—",
+     "desc": "按键控槽派发原子视图；未命中的键用通用行兜底，渲染槽时不会崩。"
+    },
+    {
+     "name": "useDisclosure",
+     "type": "UseDisclosure",
+     "default": "—",
+     "desc": "从 Chat 一路透传给每行；同一调用在三阶段保持同一 callId 与同一份展开状态。"
+    },
+    {
+     "name": "cwd / home",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "会话工作区与宿主 home，供路径摘要相对化与 ~ 缩写。"
+    },
+    {
+     "name": "openFile / inspectCall",
+     "type": "((path, options?) => void) / ((callId: string) => void) | undefined",
+     "default": "—",
+     "desc": "文件跳转与轨迹定位回调，原样交给原子视图。"
+    },
+    {
+     "name": "loadImage",
+     "type": "MessageImageLoader",
+     "default": "—",
+     "desc": "会话授权的图片加载器，给结果带图的调用使用。"
+    },
+    {
+     "name": "useHostInfo",
+     "type": "() => { home }",
+     "default": "—",
+     "desc": "注入座：只在这里读一次 home，再作为普通 prop 传下去。"
+    },
+    {
+     "name": "t",
+     "type": "PropsLocale<'conversation'>['t']",
+     "default": "—",
+     "desc": "会话字典座；工具视图复用同一个命名空间。"
+    }
+   ],
+   "notes": "运行时始终是 call/result 配对、生命周期与递归 <code>subCalls</code> 投影的唯一权威，客户端只负责把节点派发给注册过的视图，不重建 transcript。子调用容器 <code>.subCalls</code> 只在已派发（非 preparing）且确有子调用时渲染；prepare 阶段的调用没有子节点。示例的原子视图用通用 <code>ToolRow</code> 渲染；真实环境里每个工具名（例如 <code>bash</code>）会被它自己的视图顶替，但 <code>.callRow</code> 与 <code>data-chat-anchor-key</code> 这层包装由本组件保留。每行的展开头（DisclosureRow 的 <code>.header</code>）与行内文字外层的 <code>TextShimmer</code> 都在示例里还原，同名类（<code>root</code> / <code>row</code> / <code>leading</code> / <code>title</code>）按样式表下标带 <code>c0-</code>…<code>c2-</code> 前缀。"
+  }
+ ]
+}

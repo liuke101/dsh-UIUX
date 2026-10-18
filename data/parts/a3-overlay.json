@@ -1,0 +1,845 @@
+{
+ "schemaVersion": 1,
+ "note": "浮层、对话框、设置与输出卡片条目。css 字段指向真实 CSS Module 源码，构建时原文内联进 shadow root；浮层类示例用 specimen.css 里的 snapshotStatic / snapshotStack 附加类做静态近似，并在注释里注明。",
+ "entries": [
+  {
+   "id": "menu",
+   "name": "Menu",
+   "exportName": "Menu",
+   "zh": "下拉菜单",
+   "group": "overlay",
+   "summary": "锚定式下拉菜单：<code>anchor</code> 原地渲染触发器，卡片绝对定位在锚点下方 4px（<code>side</code> 可改为上方，<code>align</code> 控制贴左 / 贴右），<code>items</code> 提供数据行、分隔线与分组标题，<code>children</code> 追加 <code>MenuItemButton</code> 组件行，两类行共享同一次键盘遍历与选中后的焦点归还。卡片材质由 <code>MenuSurface</code> 提供（半透明 <code>--dsw-menu-surface-fill</code> 加 <code>--dsw-menu-backdrop-filter</code>），<code>Menu.module.css</code> 只负责几何与悬浮：4px 内边距、R16 外圆角、R12 行、<code>--dsw-elevation-prominent</code> 投影且 <code>border: 0</code>。行高 34px、13/20 字号，<code>dense</code> 压到 30px，<code>compact</code> 整体切到 24px 行 / R12 卡片 / 11px 字号。",
+   "source": "packages/client/ui-primitives/src/Menu.tsx#L168",
+   "css": [
+    "packages/client/ui-primitives/src/Menu.module.css",
+    "packages/client/ui-primitives/src/MenuSurface.module.css",
+    "packages/client/ui-primitives/src/ShortcutKeys.module.css",
+    "packages/client/ui-primitives/src/Button.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-border-l1",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-interactive-bg-hover-danger",
+    "--dsw-alias-label-caption",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-menu-icon",
+    "--dsw-alias-scrollbar-bg-l2",
+    "--dsw-alias-scrollbar-hover-l2",
+    "--dsw-alias-state-error-primary",
+    "--dsw-elevation-prominent",
+    "--dsw-radius-md",
+    "--dsw-radius-sm"
+   ],
+   "specimens": [
+    {
+     "label": "会话下拉：图标 / 快捷键 / 分隔线 / 禁用 / 危险 / 子菜单行",
+     "note": "展开态静态近似",
+     "css": "/* 静态快照：真实卡片是 createPortal 挂出的浮层（position: absolute，坐标由 JS 写入）；\n   snapshotStatic 让它回到文档流参与排布，宽度为示例尺寸补位。 */\n.root.snapshotStack { flex-direction: column; align-items: flex-start; gap: 4px; }\n.list.snapshotStatic { position: static; width: 240px; }",
+     "html": "<div style=\"display:flex;flex-direction:column;align-items:flex-start;width:260px\"><span class=\"root snapshotStack\"><button class=\"button ghost sm\" type=\"button\" aria-haspopup=\"menu\" aria-expanded=\"true\" aria-label=\"更多\"><span class=\"icon\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z\" fill=\"currentColor\"/><path d=\"M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z\" fill=\"currentColor\"/><path d=\"M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z\" fill=\"currentColor\"/></svg></span></button><div class=\"surface list snapshotStatic\" data-menu-material=\"translucent\" role=\"menu\" style=\"--dsh-menu-anchor:--dsh-menu-demo\"><div class=\"material\" aria-hidden=\"true\"></div><div class=\"viewport\" role=\"presentation\"><div class=\"itemWrap\"><button type=\"button\"role=\"menuitem\"class=\"item\"><span class=\"itemIcon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M9.96976 1.70572L13.1554 3.93629L10.9019 8.12317L11.5158 11.605L10.7192 12.7427L2.52767 7.00693L3.3243 5.86922L6.80612 5.25528L9.96976 1.70572Z\" fill=\"currentColor\" stroke=\"currentColor\" stroke-linejoin=\"round\"/><path d=\"M6.05285 9.47511C6.27284 9.16094 6.70586 9.08458 7.02003 9.30457C7.3342 9.52455 7.41055 9.95757 7.19057 10.2717L3.98587 14.4708L3.21223 13.9291L6.05285 9.47511Z\" fill=\"currentColor\"/></svg></span><span class=\"itemLabel\">置顶会话</span><svg class=\"check\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4\" stroke=\"currentColor\"/></svg></button></div><div class=\"itemWrap\"><button type=\"button\"role=\"menuitem\"class=\"item\" aria-keyshortcuts=\"Alt+Meta+G\"><span class=\"itemIcon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8.85596 2.69971H4.19971C3.37141 2.69971 2.69992 3.37146 2.69971 4.19971V11.8003C2.69992 12.6285 3.37141 13.3003 4.19971 13.3003H11.8003C12.6283 13.2999 13.3001 12.6283 13.3003 11.8003V7.89893H14.3003V11.8003C14.3001 13.1806 13.1806 14.2999 11.8003 14.3003H4.19971C2.81913 14.3003 1.69992 13.1808 1.69971 11.8003V4.19971C1.69992 2.81918 2.81913 1.69971 4.19971 1.69971H8.85596V2.69971Z\" fill=\"currentColor\"/><path d=\"M7.7849 8.23878L13.888 2.13574\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">重命名</span><span aria-hidden=\"true\" class=\"shortcut\"><span class=\"keys shortcutKeys\"><kbd class=\"key\">⌥</kbd><kbd class=\"key\">⌘</kbd><kbd class=\"key\">G</kbd></span></span></button></div><div class=\"itemWrap\"><button type=\"button\"role=\"menuitem\"class=\"item\" aria-keyshortcuts=\"Alt+Meta+F\"><span class=\"itemIcon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M1.01503 8.0001L5.6964 8.0001C6.41913 8.0001 6.78049 8.0001 7.12115 7.91951C7.4232 7.84804 7.71233 7.73014 7.97821 7.57C8.27809 7.38939 8.5364 7.13669 9.05303 6.63129L11.3281 4.40564\" stroke=\"currentColor\"/><path d=\"M1.01221 7.9999L5.6964 7.9999C6.41913 7.9999 6.78049 7.9999 7.12115 8.08049C7.4232 8.15196 7.71233 8.26986 7.97821 8.43C8.27809 8.61061 8.5364 8.86331 9.05303 9.36871L11.3281 11.5944\" stroke=\"currentColor\"/><circle cx=\"12.4502\" cy=\"3.3079\" r=\"1.56962\" stroke=\"currentColor\"/><circle cx=\"12.4502\" cy=\"12.6921\" r=\"1.56962\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">分叉会话</span><span aria-hidden=\"true\" class=\"shortcut\"><span class=\"keys shortcutKeys\"><kbd class=\"key\">⌥</kbd><kbd class=\"key\">⌘</kbd><kbd class=\"key\">F</kbd></span></span></button></div><div class=\"separator\" role=\"separator\"></div><div class=\"itemWrap\"><button type=\"button\"role=\"menuitem\"class=\"item\" aria-haspopup=\"menu\" aria-expanded=\"false\"><span class=\"itemIcon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M14 12.05c0 .8-.65 1.45-1.46 1.45H3.46C2.65 13.5 2 12.85 2 12.05v-8.1c0-.8.65-1.45 1.46-1.45h2.4c.49 0 .94.24 1.21.65l.5.73c.27.4.73.65 1.21.65h3.76c.8 0 1.46.65 1.46 1.45v6.02Z\" stroke=\"currentColor\"/><path d=\"M8.7 8.1v3M11.2 8.1v3\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">分组方式</span></button></div><div class=\"itemWrap\"><button type=\"button\"role=\"menuitem\"class=\"item\" disabled><span class=\"itemIcon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M12.5 2.5H3.5C2.94772 2.5 2.5 2.94772 2.5 3.5V12.5C2.5 13.0523 2.94772 13.5 3.5 13.5H12.5C13.0523 13.5 13.5 13.0523 13.5 12.5V3.5C13.5 2.94772 13.0523 2.5 12.5 2.5Z\" fill=\"currentColor\"/></svg></span><span class=\"itemLabel\">停止生成</span></button></div><div class=\"itemWrap\"><button type=\"button\"role=\"menuitem\"class=\"item danger\"><span class=\"itemIcon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M1.28149 3.88831H14.7187\" stroke=\"currentColor\"/><path d=\"M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833\" stroke=\"currentColor\"/><path d=\"M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831\" stroke=\"currentColor\"/><path d=\"M6.44946 6.98926V11.1238\" stroke=\"currentColor\"/><path d=\"M9.55054 6.98926V11.1238\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">删除工作区</span></button></div></div></div></span></div>"
+    },
+    {
+     "label": "子菜单静态展开（`.submenu` 卡片贴在父行右侧）",
+     "note": "子菜单展开态静态近似",
+     "css": "/* 静态快照：真实卡片是 createPortal 挂出的浮层（position: absolute，坐标由 JS 写入）；\n   snapshotStatic 让它回到文档流参与排布，宽度为示例尺寸补位。 */\n.root.snapshotStack { flex-direction: column; align-items: flex-start; gap: 4px; }\n.list.snapshotStatic { position: static; width: 240px; }",
+     "html": "<div style=\"display:flex;flex-direction:column;align-items:flex-start;width:470px\"><span class=\"root snapshotStack\"><button class=\"button ghost sm\" type=\"button\" aria-haspopup=\"menu\" aria-expanded=\"true\" aria-label=\"更多\"><span class=\"icon\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z\" fill=\"currentColor\"/><path d=\"M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z\" fill=\"currentColor\"/><path d=\"M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z\" fill=\"currentColor\"/></svg></span></button><div class=\"surface list snapshotStatic\" data-menu-material=\"translucent\" role=\"menu\" style=\"--dsh-menu-anchor:--dsh-menu-demo\"><div class=\"material\" aria-hidden=\"true\"></div><div class=\"viewport\" role=\"presentation\"><div class=\"itemWrap\"><button type=\"button\"role=\"menuitem\"class=\"item\"><span class=\"itemIcon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M9.96976 1.70572L13.1554 3.93629L10.9019 8.12317L11.5158 11.605L10.7192 12.7427L2.52767 7.00693L3.3243 5.86922L6.80612 5.25528L9.96976 1.70572Z\" fill=\"currentColor\" stroke=\"currentColor\" stroke-linejoin=\"round\"/><path d=\"M6.05285 9.47511C6.27284 9.16094 6.70586 9.08458 7.02003 9.30457C7.3342 9.52455 7.41055 9.95757 7.19057 10.2717L3.98587 14.4708L3.21223 13.9291L6.05285 9.47511Z\" fill=\"currentColor\"/></svg></span><span class=\"itemLabel\">置顶会话</span><svg class=\"check\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4\" stroke=\"currentColor\"/></svg></button></div><div class=\"itemWrap\"><button type=\"button\"role=\"menuitem\"class=\"item\" aria-keyshortcuts=\"Alt+Meta+G\"><span class=\"itemIcon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8.85596 2.69971H4.19971C3.37141 2.69971 2.69992 3.37146 2.69971 4.19971V11.8003C2.69992 12.6285 3.37141 13.3003 4.19971 13.3003H11.8003C12.6283 13.2999 13.3001 12.6283 13.3003 11.8003V7.89893H14.3003V11.8003C14.3001 13.1806 13.1806 14.2999 11.8003 14.3003H4.19971C2.81913 14.3003 1.69992 13.1808 1.69971 11.8003V4.19971C1.69992 2.81918 2.81913 1.69971 4.19971 1.69971H8.85596V2.69971Z\" fill=\"currentColor\"/><path d=\"M7.7849 8.23878L13.888 2.13574\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">重命名</span><span aria-hidden=\"true\" class=\"shortcut\"><span class=\"keys shortcutKeys\"><kbd class=\"key\">⌥</kbd><kbd class=\"key\">⌘</kbd><kbd class=\"key\">G</kbd></span></span></button></div><div class=\"itemWrap\"><button type=\"button\"role=\"menuitem\"class=\"item\" aria-keyshortcuts=\"Alt+Meta+F\"><span class=\"itemIcon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M1.01503 8.0001L5.6964 8.0001C6.41913 8.0001 6.78049 8.0001 7.12115 7.91951C7.4232 7.84804 7.71233 7.73014 7.97821 7.57C8.27809 7.38939 8.5364 7.13669 9.05303 6.63129L11.3281 4.40564\" stroke=\"currentColor\"/><path d=\"M1.01221 7.9999L5.6964 7.9999C6.41913 7.9999 6.78049 7.9999 7.12115 8.08049C7.4232 8.15196 7.71233 8.26986 7.97821 8.43C8.27809 8.61061 8.5364 8.86331 9.05303 9.36871L11.3281 11.5944\" stroke=\"currentColor\"/><circle cx=\"12.4502\" cy=\"3.3079\" r=\"1.56962\" stroke=\"currentColor\"/><circle cx=\"12.4502\" cy=\"12.6921\" r=\"1.56962\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">分叉会话</span><span aria-hidden=\"true\" class=\"shortcut\"><span class=\"keys shortcutKeys\"><kbd class=\"key\">⌥</kbd><kbd class=\"key\">⌘</kbd><kbd class=\"key\">F</kbd></span></span></button></div><div class=\"separator\" role=\"separator\"></div><div class=\"itemWrap\"><button type=\"button\"role=\"menuitem\"class=\"item\" aria-haspopup=\"menu\" aria-expanded=\"true\"><span class=\"itemIcon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M14 12.05c0 .8-.65 1.45-1.46 1.45H3.46C2.65 13.5 2 12.85 2 12.05v-8.1c0-.8.65-1.45 1.46-1.45h2.4c.49 0 .94.24 1.21.65l.5.73c.27.4.73.65 1.21.65h3.76c.8 0 1.46.65 1.46 1.45v6.02Z\" stroke=\"currentColor\"/><path d=\"M8.7 8.1v3M11.2 8.1v3\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">分组方式</span></button><div class=\"surface submenu\" data-menu-material=\"translucent\" role=\"menu\" style=\"--dsh-menu-anchor:--dsh-submenu-demo\"><div class=\"material\" aria-hidden=\"true\"></div><div class=\"itemWrap\"><button type=\"button\"role=\"menuitem\"class=\"item\"><span class=\"itemIcon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M1.50439 3.11059C1.50439 2.55831 1.95211 2.1106 2.50439 2.1106H5.43389C5.67773 2.1106 5.91318 2.19969 6.09593 2.36113L7.71649 3.79265C7.89924 3.95409 8.1347 4.04319 8.3785 4.04319H13.4958C14.0481 4.04319 14.4958 4.4909 14.4958 5.04319V12.8894C14.4958 13.4417 14.0481 13.8894 13.4958 13.8894H2.50439C1.95211 13.8894 1.50439 13.4417 1.50439 12.8894V4.04319V3.11059Z\" stroke=\"currentColor\"/><path d=\"M3.63501 7.66614H12.3647\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">按工作区</span></button></div><div class=\"itemWrap\"><button type=\"button\"role=\"menuitem\"class=\"item\"><span class=\"itemIcon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M14 12.05c0 .8-.65 1.45-1.46 1.45H3.46C2.65 13.5 2 12.85 2 12.05v-8.1c0-.8.65-1.45 1.46-1.45h2.4c.49 0 .94.24 1.21.65l.5.73c.27.4.73.65 1.21.65h3.76c.8 0 1.46.65 1.46 1.45v6.02Z\" stroke=\"currentColor\"/><path d=\"M8.7 8.1v3M11.2 8.1v3\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">按工作区树</span></button></div><div class=\"itemWrap\"><button type=\"button\"role=\"menuitem\"class=\"item\"><span class=\"itemIcon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\" stroke-linecap=\"round\"><path d=\"M6 3.5h7.5M6 8h7.5M6 12.5h7.5\" stroke=\"currentColor\"/><path d=\"M2.6 3.5h.01M2.6 8h.01M2.6 12.5h.01\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">单列表</span></button></div></div></div><div class=\"itemWrap\"><button type=\"button\"role=\"menuitem\"class=\"item\" disabled><span class=\"itemIcon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M12.5 2.5H3.5C2.94772 2.5 2.5 2.94772 2.5 3.5V12.5C2.5 13.0523 2.94772 13.5 3.5 13.5H12.5C13.0523 13.5 13.5 13.0523 13.5 12.5V3.5C13.5 2.94772 13.0523 2.5 12.5 2.5Z\" fill=\"currentColor\"/></svg></span><span class=\"itemLabel\">停止生成</span></button></div><div class=\"itemWrap\"><button type=\"button\"role=\"menuitem\"class=\"item danger\"><span class=\"itemIcon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M1.28149 3.88831H14.7187\" stroke=\"currentColor\"/><path d=\"M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833\" stroke=\"currentColor\"/><path d=\"M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831\" stroke=\"currentColor\"/><path d=\"M6.44946 6.98926V11.1238\" stroke=\"currentColor\"/><path d=\"M9.55054 6.98926V11.1238\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">删除工作区</span></button></div></div></div></span></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "open",
+     "type": "boolean",
+     "default": "—",
+     "desc": "是否显示列表，由调用方控制。"
+    },
+    {
+     "name": "anchor",
+     "type": "ReactNode",
+     "default": "—",
+     "desc": "原地渲染的触发器（通常是按钮）；关闭时焦点回到它的第一个可用按钮。"
+    },
+    {
+     "name": "onClose",
+     "type": "() => void",
+     "default": "—",
+     "desc": "外部点击、Escape，或指针离开宽限期后请求关闭。"
+    },
+    {
+     "name": "items",
+     "type": "readonly MenuEntry[]",
+     "default": "[]",
+     "desc": "数据行、`{ type: 'separator' }` 分隔线与 `{ type: 'label' }` 分组标题。"
+    },
+    {
+     "name": "children",
+     "type": "ReactNode",
+     "default": "—",
+     "desc": "追加在数据行之后的组件行，通常是 `MenuItemButton`。"
+    },
+    {
+     "name": "footer",
+     "type": "readonly MenuEntry[]",
+     "default": "—",
+     "desc": "固定在滚动区下方的行，与内容区之间有一条 0.5px 发丝线。"
+    },
+    {
+     "name": "selectedId",
+     "type": "string",
+     "default": "—",
+     "desc": "标记为选中的行 id（默认尾随对勾）。"
+    },
+    {
+     "name": "selectedIds",
+     "type": "readonly string[]",
+     "default": "—",
+     "desc": "多个独立选项组同时选中时的 id 集合。"
+    },
+    {
+     "name": "onSelect",
+     "type": "(id: string) => void",
+     "default": "—",
+     "desc": "数据行激活回调；禁用行与只打开子菜单的父行不触发。"
+    },
+    {
+     "name": "align",
+     "type": "'start' | 'end'",
+     "default": "'start'",
+     "desc": "卡片与锚点的左右对齐。"
+    },
+    {
+     "name": "side",
+     "type": "'bottom' | 'top' | 'right'",
+     "default": "'bottom'",
+     "desc": "在锚点下方、上方或右侧展开。"
+    },
+    {
+     "name": "portal",
+     "type": "boolean",
+     "default": "false",
+     "desc": "挂到 body 并按锚点矩形 fixed 定位（z-index 1100），用来避开祖先的 overflow 裁剪。"
+    },
+    {
+     "name": "getAnchorRect",
+     "type": "() => DOMRect | null",
+     "default": "—",
+     "desc": "portal 模式下直接给出锚点矩形；渲染属性锚点或 effect 定位的代理必须传，返回 null 表示该帧不放置。"
+    },
+    {
+     "name": "closeOnPointerLeave",
+     "type": "boolean",
+     "default": "false",
+     "desc": "指针离开触发器与列表（含 4px 间隙）并超过宽限期后关闭，回到区域内则取消。"
+    },
+    {
+     "name": "dense",
+     "type": "boolean",
+     "default": "false",
+     "desc": "行高 34px 压到 30px，不改变字体与卡片宽度。"
+    },
+    {
+     "name": "compact",
+     "type": "boolean",
+     "default": "false",
+     "desc": "整体紧凑：24px 行、11px 字号、R12 卡片与 R8 行。"
+    },
+    {
+     "name": "autoFocus",
+     "type": "boolean",
+     "default": "false",
+     "desc": "打开时聚焦第一行；方向键遍历与它无关，两种设置下都可用。"
+    },
+    {
+     "name": "selection",
+     "type": "'check' | 'fill'",
+     "default": "'check'",
+     "desc": "选中标记：尾随对勾，或保持悬停填充而不给对勾。"
+    },
+    {
+     "name": "className",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "加在锚点包裹层 `.root` 上的类。"
+    },
+    {
+     "name": "listClassName",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "加在卡片本身的类；portal 之后唯一能触达卡片的样式钩子。"
+    }
+   ],
+   "notes": "键盘：↑/↓（含 Home / End）在行间行走，Tab 结算当前行、从触发器按 Tab 进入列表，Escape 或 Shift+Tab 关闭并把焦点还给触发器；只有焦点在锚点或列表内时才拦截按键。<code>portal</code> 的卡片 z-index 1100，位于 modal 的 1000 之上。子菜单父行没有 chevron 指示符，靠 <code>aria-haspopup=\"menu\"</code> 与 <code>aria-expanded</code> 表达，卡片贴在 <code>left: calc(100% + 10px)</code>、<code>bottom: -4px</code>，<code>::before</code> 是跨越 10px 间隙的指针桥。<code>MenuSurface</code> 的半透明填充与背景模糊是主题契约，功能与平台 CSS 都不得覆盖。示例的会话行取自侧栏会话菜单，危险行取自工作区菜单。",
+   "keywords": [
+    "下拉",
+    "菜单",
+    "上下文菜单",
+    "dropdown",
+    "context menu",
+    "submenu",
+    "子菜单",
+    "listbox",
+    "快捷键"
+   ]
+  },
+  {
+   "id": "menu-item-button",
+   "name": "MenuItemButton",
+   "exportName": "MenuItemButton",
+   "zh": "菜单组件行",
+   "group": "overlay",
+   "summary": "Menu 的组件行：渲染一个 <code>role=\"menuitem\"</code> 的 34px 行（14px 图标槽、单行省略标签、右端快捷键、危险行错误色），与数据行同源同一个 <code>.item</code>，因此不需要共享状态就能加入列表的键盘遍历与选中后焦点归还。行本身不持有任何状态：是否在选中后关闭菜单由调用方在 <code>onSelect</code> 里决定。<code>separatorBefore</code> 在这行上方补一条与数据分隔行一致的发丝线，列表首行不画，紧跟数据分隔行时也不重复。",
+   "source": "packages/client/ui-primitives/src/Menu.tsx#L84",
+   "css": [
+    "packages/client/ui-primitives/src/Menu.module.css",
+    "packages/client/ui-primitives/src/MenuSurface.module.css",
+    "packages/client/ui-primitives/src/ShortcutKeys.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-border-l1",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-interactive-bg-hover-danger",
+    "--dsw-alias-label-caption",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-menu-icon",
+    "--dsw-alias-scrollbar-bg-l2",
+    "--dsw-alias-scrollbar-hover-l2",
+    "--dsw-alias-state-error-primary",
+    "--dsw-elevation-prominent",
+    "--dsw-radius-md",
+    "--dsw-radius-sm"
+   ],
+   "specimens": [
+    {
+     "label": "图标 + 快捷键，`separatorBefore` 起新组",
+     "note": "展开态静态近似",
+     "css": "/* 静态快照：真实卡片是 createPortal 挂出的浮层（position: absolute，坐标由 JS 写入）；\n   snapshotStatic 让它回到文档流参与排布，宽度为示例尺寸补位。 */\n.root.snapshotStack { flex-direction: column; align-items: flex-start; gap: 4px; }\n.list.snapshotStatic { position: static; width: 240px; }",
+     "html": "<div style=\"display:flex;flex-direction:column;align-items:flex-start;width:260px\"><div class=\"surface list snapshotStatic\" data-menu-material=\"translucent\" role=\"menu\" style=\"--dsh-menu-anchor:--dsh-menu-demo\"><div class=\"material\" aria-hidden=\"true\"></div><div class=\"viewport\" role=\"presentation\"><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item\" aria-keyshortcuts=\"Alt+Meta+G\"><span class=\"itemIcon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8.85596 2.69971H4.19971C3.37141 2.69971 2.69992 3.37146 2.69971 4.19971V11.8003C2.69992 12.6285 3.37141 13.3003 4.19971 13.3003H11.8003C12.6283 13.2999 13.3001 12.6283 13.3003 11.8003V7.89893H14.3003V11.8003C14.3001 13.1806 13.1806 14.2999 11.8003 14.3003H4.19971C2.81913 14.3003 1.69992 13.1808 1.69971 11.8003V4.19971C1.69992 2.81918 2.81913 1.69971 4.19971 1.69971H8.85596V2.69971Z\" fill=\"currentColor\"/><path d=\"M7.7849 8.23878L13.888 2.13574\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">重命名</span><span aria-hidden=\"true\" class=\"shortcut\"><span class=\"keys shortcutKeys\"><kbd class=\"key\">⌥</kbd><kbd class=\"key\">⌘</kbd><kbd class=\"key\">G</kbd></span></span></button></div><div class=\"itemWrap\"><div class=\"separator\" role=\"separator\"></div><button type=\"button\" role=\"menuitem\" class=\"item\" aria-keyshortcuts=\"Alt+Meta+F\"><span class=\"itemIcon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M1.01503 8.0001L5.6964 8.0001C6.41913 8.0001 6.78049 8.0001 7.12115 7.91951C7.4232 7.84804 7.71233 7.73014 7.97821 7.57C8.27809 7.38939 8.5364 7.13669 9.05303 6.63129L11.3281 4.40564\" stroke=\"currentColor\"/><path d=\"M1.01221 7.9999L5.6964 7.9999C6.41913 7.9999 6.78049 7.9999 7.12115 8.08049C7.4232 8.15196 7.71233 8.26986 7.97821 8.43C8.27809 8.61061 8.5364 8.86331 9.05303 9.36871L11.3281 11.5944\" stroke=\"currentColor\"/><circle cx=\"12.4502\" cy=\"3.3079\" r=\"1.56962\" stroke=\"currentColor\"/><circle cx=\"12.4502\" cy=\"12.6921\" r=\"1.56962\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">分叉会话</span><span aria-hidden=\"true\" class=\"shortcut\"><span class=\"keys shortcutKeys\"><kbd class=\"key\">⌥</kbd><kbd class=\"key\">⌘</kbd><kbd class=\"key\">F</kbd></span></span></button></div><div class=\"itemWrap\"><div class=\"separator\" role=\"separator\"></div><button type=\"button\" role=\"menuitem\" class=\"item danger\"><span class=\"itemIcon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M1.28149 3.88831H14.7187\" stroke=\"currentColor\"/><path d=\"M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833\" stroke=\"currentColor\"/><path d=\"M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831\" stroke=\"currentColor\"/><path d=\"M6.44946 6.98926V11.1238\" stroke=\"currentColor\"/><path d=\"M9.55054 6.98926V11.1238\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">删除工作区</span></button></div></div></div></div>"
+    },
+    {
+     "label": "禁用行与两种悬停填充",
+     "note": "悬停模拟",
+     "css": "/* 静态快照：真实卡片是 createPortal 挂出的浮层（position: absolute，坐标由 JS 写入）；\n   snapshotStatic 让它回到文档流参与排布，宽度为示例尺寸补位。 */\n.root.snapshotStack { flex-direction: column; align-items: flex-start; gap: 4px; }\n.list.snapshotStatic { position: static; width: 240px; }\n/* 悬停模拟：:hover 无法静态触发，下面两条按 Menu.module.css 的同名规则原样搬运。 */\n.item.forceHover:not(:disabled) { background: var(--dsw-alias-interactive-bg-hover); }\n.item.danger.forceHover:not(:disabled) { background: var(--dsw-alias-interactive-bg-hover-danger); }",
+     "html": "<div style=\"display:flex;flex-direction:column;align-items:flex-start;width:260px\"><div class=\"surface list snapshotStatic\" data-menu-material=\"translucent\" role=\"menu\" style=\"--dsh-menu-anchor:--dsh-menu-demo\"><div class=\"material\" aria-hidden=\"true\"></div><div class=\"viewport\" role=\"presentation\"><div class=\"itemWrap\"><button type=\"button\"role=\"menuitem\"class=\"item forceHover\"><span class=\"itemIcon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><rect x=\"1.52075\" y=\"4.07373\" width=\"10.3932\" height=\"10.3932\" rx=\"2\" stroke=\"currentColor\"/><path d=\"M11.9792 1.53296C13.36 1.53296 14.4792 2.65225 14.4792 4.03296V9.42847C14.4792 10.3756 13.9521 11.1987 13.1755 11.6228V10.3298C13.3652 10.0787 13.4792 9.7674 13.4792 9.42847V4.03296C13.4792 3.20453 12.8077 2.53296 11.9792 2.53296H6.58374C6.27966 2.53301 5.99684 2.6235 5.7605 2.77905H4.42358C4.85652 2.03463 5.66056 1.53304 6.58374 1.53296H11.9792Z\" fill=\"currentColor\"/></svg></span><span class=\"itemLabel\">复制 Session ID</span></button></div><div class=\"itemWrap\"><button type=\"button\"role=\"menuitem\"class=\"item\" disabled><span class=\"itemIcon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M12.5 2.5H3.5C2.94772 2.5 2.5 2.94772 2.5 3.5V12.5C2.5 13.0523 2.94772 13.5 3.5 13.5H12.5C13.0523 13.5 13.5 13.0523 13.5 12.5V3.5C13.5 2.94772 13.0523 2.5 12.5 2.5Z\" fill=\"currentColor\"/></svg></span><span class=\"itemLabel\">停止生成</span></button></div><div class=\"itemWrap\"><button type=\"button\"role=\"menuitem\"class=\"item danger forceHover\"><span class=\"itemIcon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M1.28149 3.88831H14.7187\" stroke=\"currentColor\"/><path d=\"M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833\" stroke=\"currentColor\"/><path d=\"M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831\" stroke=\"currentColor\"/><path d=\"M6.44946 6.98926V11.1238\" stroke=\"currentColor\"/><path d=\"M9.55054 6.98926V11.1238\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">删除工作区</span></button></div></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "children",
+     "type": "ReactNode",
+     "default": "—",
+     "desc": "行标签；单行省略，放多行内容需要自带布局类。"
+    },
+    {
+     "name": "onSelect",
+     "type": "() => void",
+     "default": "—",
+     "desc": "点击、Enter，或在聚焦行上按 Tab 结算时的回调。"
+    },
+    {
+     "name": "icon",
+     "type": "ReactNode",
+     "default": "—",
+     "desc": "前置 14px 图标槽，取 `--dsw-alias-menu-icon` 颜色。"
+    },
+    {
+     "name": "shortcut",
+     "type": "{ keys: readonly string[]; aria?: string }",
+     "default": "—",
+     "desc": "生效后的键位：`keys` 渲染成右端键帽，`aria` 写入 `aria-keyshortcuts`。"
+    },
+    {
+     "name": "disabled",
+     "type": "boolean",
+     "default": "false",
+     "desc": "不可激活：半透明，且方向键遍历会跳过它。"
+    },
+    {
+     "name": "danger",
+     "type": "boolean",
+     "default": "false",
+     "desc": "破坏性行：错误色文字与图标，悬停取 danger 填充。"
+    },
+    {
+     "name": "separatorBefore",
+     "type": "boolean",
+     "default": "false",
+     "desc": "在这行上方画分组发丝线；随行一起卸载，不会留下孤立线条。"
+    }
+   ],
+   "notes": "外观与数据行完全同源（同一个 <code>.item</code>），差别只在标签从哪里来。快捷键键帽由 <code>ShortcutKeys</code> 渲染，<code>.shortcutKeys</code> 把颜色压到 <code>--dsw-alias-label-caption</code>、字号 11/16；键位来自命令所有者解析后的绑定，例如 macOS 上 <code>⌥⌘G</code> 对应 <code>Alt+Meta+G</code>。父行若只负责打开子菜单，就不要在 <code>onSelect</code> 里关闭菜单。",
+   "keywords": [
+    "菜单行",
+    "menuitem",
+    "组件行",
+    "快捷键",
+    "破坏性操作",
+    "danger"
+   ]
+  },
+  {
+   "id": "menu-surface",
+   "name": "MenuSurface",
+   "exportName": "MenuSurface",
+   "zh": "菜单材质层",
+   "group": "overlay",
+   "summary": "菜单材质层，所有下拉、右键菜单、子菜单与自定义列表框共用的卡片外壳：半透明填充 <code>--dsw-menu-surface-fill</code> 与背景模糊 <code>--dsw-menu-backdrop-filter</code> 画在 <code>.material</code> 子层（<code>inset: 0; z-index: -1; border-radius: inherit</code>），<code>.surface</code> 自身只做 <code>isolation: isolate</code>、<code>anchor-name</code> 与 R16 外圆角（<code>compact</code> 切 R12）。内边距、宽度与 <code>--dsw-elevation-prominent</code> 投影（<code>border: 0</code>）由调用方类提供，产品里就是 <code>Menu.list</code> 与模型选择器的 <code>.menu</code>。macOS 上额外渲染一个由 CSS anchor 跟随卡片的 <code>.backing</code>，给 Chromium 提供不透明底，使原生 vibrancy 之上仍能模糊页面内容。",
+   "source": "packages/client/ui-primitives/src/MenuSurface.tsx#L20",
+   "css": [
+    "packages/client/ui-primitives/src/MenuSurface.module.css",
+    "packages/client/ui-primitives/src/Menu.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-base",
+    "--dsw-menu-backdrop-filter",
+    "--dsw-menu-surface-fill",
+    "--dsw-radius-lg",
+    "--dsw-radius-md"
+   ],
+   "specimens": [
+    {
+     "label": "标准卡片（R16 / 4px 内边距 / 布局类来自调用方）",
+     "note": "展开态静态近似",
+     "css": "/* 静态快照：真实卡片是 createPortal 挂出的浮层（position: absolute，坐标由 JS 写入）；\n   snapshotStatic 让它回到文档流参与排布，宽度为示例尺寸补位。 */\n.root.snapshotStack { flex-direction: column; align-items: flex-start; gap: 4px; }\n.list.snapshotStatic { position: static; width: 240px; }",
+     "html": "<div style=\"display:flex;flex-direction:column;align-items:flex-start;width:260px\"><div class=\"surface list snapshotStatic\" data-menu-material=\"translucent\" role=\"menu\" style=\"--dsh-menu-anchor:--dsh-menu-demo\"><div class=\"material\" aria-hidden=\"true\"></div><div class=\"viewport\" role=\"presentation\"><div class=\"itemWrap\"><button type=\"button\"role=\"menuitem\"class=\"item\"><span class=\"itemLabel\">deepseek-chat</span><svg class=\"check\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4\" stroke=\"currentColor\"/></svg></button></div><div class=\"itemWrap\"><button type=\"button\"role=\"menuitem\"class=\"item\"><span class=\"itemLabel\">deepseek-reasoner</span></button></div></div></div></div>"
+    },
+    {
+     "label": "compact：R12 卡片 / 24px 行 / 11px 字号",
+     "note": "展开态静态近似",
+     "css": "/* 静态快照：真实卡片是 createPortal 挂出的浮层（position: absolute，坐标由 JS 写入）；\n   snapshotStatic 让它回到文档流参与排布，宽度为示例尺寸补位。 */\n.root.snapshotStack { flex-direction: column; align-items: flex-start; gap: 4px; }\n.list.snapshotStatic { position: static; width: 240px; }",
+     "html": "<div style=\"display:flex;flex-direction:column;align-items:flex-start;width:260px\"><div class=\"surface compact list compactList snapshotStatic\" data-menu-material=\"translucent\" role=\"menu\" style=\"--dsh-menu-anchor:--dsh-menu-demo\"><div class=\"material\" aria-hidden=\"true\"></div><div class=\"viewport\" role=\"presentation\"><div class=\"itemWrap\"><button type=\"button\"role=\"menuitem\"class=\"item\"><span class=\"itemLabel\">deepseek-chat</span><svg class=\"check\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4\" stroke=\"currentColor\"/></svg></button></div><div class=\"itemWrap\"><button type=\"button\"role=\"menuitem\"class=\"item\"><span class=\"itemLabel\">gpt-5</span></button></div></div></div></div>"
+    },
+    {
+     "label": "只有材质层：没有调用方布局类",
+     "note": "内边距 / 投影 / 宽度由调用方类提供",
+     "css": "/* 静态快照：卡片在浮层里绝对定位，snapshotInline 让它回到文档流。 */\n.surface.snapshotInline { position: static; }",
+     "html": "<div style=\"display:flex;flex-direction:column;align-items:stretch;width:220px\"><div class=\"surface snapshotInline\" data-menu-material=\"translucent\" role=\"menu\" style=\"--dsh-menu-anchor:--dsh-menu-demo\"><div class=\"material\" aria-hidden=\"true\"></div><div class=\"viewport\" role=\"presentation\"><div class=\"itemWrap\"><button type=\"button\"role=\"menuitem\"class=\"item\"><span class=\"itemLabel\">deepseek-chat</span><svg class=\"check\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4\" stroke=\"currentColor\"/></svg></button></div><div class=\"itemWrap\"><button type=\"button\"role=\"menuitem\"class=\"item\"><span class=\"itemLabel\">deepseek-reasoner</span></button></div></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "compact",
+     "type": "boolean",
+     "default": "false",
+     "desc": "外圆角从 R16 切到 R12，与 compact 菜单的几何一致。"
+    },
+    {
+     "name": "className",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "调用方布局类，叠在 `.surface` 之后（定位、内边距、投影、宽度）。"
+    },
+    {
+     "name": "style",
+     "type": "CSSProperties | undefined",
+     "default": "—",
+     "desc": "内联样式；组件另外写入 `--dsh-menu-anchor` 供 CSS anchor 定位。"
+    },
+    {
+     "name": "...props",
+     "type": "ComponentPropsWithoutRef<'div'>",
+     "default": "—",
+     "desc": "透传 div 属性，例如 `role`、`aria-label`、`id`。"
+    },
+    {
+     "name": "ref",
+     "type": "Ref<HTMLDivElement>",
+     "default": "—",
+     "desc": "指向可见卡片本身（不含 macOS backing），用于测量宽高。"
+    },
+    {
+     "name": "children",
+     "type": "ReactNode",
+     "default": "—",
+     "desc": "卡片内容：Menu 放 `.viewport`，自定义列表放自己的滚动容器。"
+    }
+   ],
+   "notes": "主题校验会拒绝任何覆盖 <code>--dsw-menu-surface-fill</code> / <code>--dsw-menu-backdrop-filter</code> 的写法，也拒绝未包 <code>MenuSurface</code> 的菜单渲染器；需要自己的下拉或列表框时，把内容放进 <code>MenuSurface</code> 再补一个布局类。<code>.material</code> 的模糊只作用在这一层，所以嵌套菜单与 fixed 浮层不会产生新的 backdrop root 或包含块。<code>.backing</code> 默认 <code>display: none</code>，只在 <code>html[data-platform=&quot;darwin&quot;]</code> 下显示：它是 <code>aria-hidden</code>、<code>pointer-events: none</code> 的不透明底片，由 body 上的 CSS anchor 跟随卡片尺寸与位置，并随卡片一起卸载（依赖 Web shell 的 body 隔离层）。",
+   "keywords": [
+    "材质",
+    "半透明",
+    "模糊",
+    "backdrop-filter",
+    "菜单容器",
+    "listbox",
+    "popover"
+   ]
+  },
+  {
+   "id": "menu-group",
+   "name": "MenuGroup",
+   "exportName": "MenuGroup",
+   "zh": "菜单分组",
+   "group": "overlay",
+   "summary": "自定义菜单与列表框里的可访问分组：<code>role=\"group\"</code> 配 <code>aria-labelledby</code> 指向实例自有的 heading id，另有一个 1px 的不可见哨兵 <code>[data-menu-group-start]</code> 供观察器定位。heading 是 11/16、weight 500 的三级文字，<code>position: sticky; top: 0</code>，静止时背景透明；只有 <code>observeStickyMenuGroups</code> 观测到分组顶部越过滚动容器顶边并写入 <code>data-stuck</code> 时，才取 94% 不透明的 <code>--dsw-alias-menu-group-header-fill</code>。非 macOS 平台 heading 取 R12 圆角，相邻分组之间留 3px。",
+   "source": "packages/client/ui-primitives/src/MenuGroup.tsx#L10",
+   "css": [
+    "packages/client/ui-primitives/src/MenuGroup.module.css",
+    "packages/client/ui-primitives/src/MenuSurface.module.css",
+    "packages/client/ui-primitives/src/Menu.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-menu-group-header-fill",
+    "--dsw-radius-md"
+   ],
+   "specimens": [
+    {
+     "label": "两个分组：静止态 heading 透明",
+     "note": "展开态静态近似",
+     "css": "/* 静态快照：真实卡片是 createPortal 挂出的浮层（position: absolute，坐标由 JS 写入）；\n   snapshotStatic 让它回到文档流参与排布，宽度为示例尺寸补位。 */\n.root.snapshotStack { flex-direction: column; align-items: flex-start; gap: 4px; }\n.list.snapshotStatic { position: static; width: 240px; }",
+     "html": "<div style=\"display:flex;flex-direction:column;align-items:flex-start;width:260px\"><div class=\"surface list snapshotStatic\" data-menu-material=\"translucent\" role=\"menu\" style=\"--dsh-menu-anchor:--dsh-menu-demo\"><div class=\"material\" aria-hidden=\"true\"></div><div class=\"viewport\" role=\"presentation\"><section role=\"group\" aria-labelledby=\"menu-group-a\" data-menu-group=\"\" class=\"group\"><span aria-hidden=\"true\" data-menu-group-start=\"\" class=\"start\"></span><div id=\"menu-group-a\" data-menu-group-heading=\"\" class=\"heading\">DeepSeek</div><div class=\"itemWrap\"><button type=\"button\"role=\"menuitem\"class=\"item\"><span class=\"itemLabel\">deepseek-chat</span><svg class=\"check\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4\" stroke=\"currentColor\"/></svg></button></div><div class=\"itemWrap\"><button type=\"button\"role=\"menuitem\"class=\"item\"><span class=\"itemLabel\">deepseek-reasoner</span></button></div></section><section role=\"group\" aria-labelledby=\"menu-group-b\" data-menu-group=\"\" class=\"group\"><span aria-hidden=\"true\" data-menu-group-start=\"\" class=\"start\"></span><div id=\"menu-group-b\" data-menu-group-heading=\"\" class=\"heading\">OpenAI</div><div class=\"itemWrap\"><button type=\"button\"role=\"menuitem\"class=\"item\"><span class=\"itemLabel\">gpt-5</span></button></div></section></div></div></div>"
+    },
+    {
+     "label": "吸顶态：`data-stuck` 写入 94% 不透明填充",
+     "note": "吸顶模拟",
+     "css": "/* 静态快照：真实卡片是 createPortal 挂出的浮层（position: absolute，坐标由 JS 写入）；\n   snapshotStatic 让它回到文档流参与排布，宽度为示例尺寸补位。 */\n.root.snapshotStack { flex-direction: column; align-items: flex-start; gap: 4px; }\n.list.snapshotStatic { position: static; width: 240px; }",
+     "html": "<div style=\"display:flex;flex-direction:column;align-items:flex-start;width:260px\"><div class=\"surface list snapshotStatic\" data-menu-material=\"translucent\" role=\"menu\" style=\"--dsh-menu-anchor:--dsh-menu-demo\"><div class=\"material\" aria-hidden=\"true\"></div><div class=\"viewport\" role=\"presentation\"><section role=\"group\" aria-labelledby=\"menu-group-a\" data-menu-group=\"\" class=\"group\"><span aria-hidden=\"true\" data-menu-group-start=\"\" class=\"start\"></span><div id=\"menu-group-a\" data-menu-group-heading=\"\" class=\"heading\" data-stuck>DeepSeek</div><div class=\"itemWrap\"><button type=\"button\"role=\"menuitem\"class=\"item\"><span class=\"itemLabel\">deepseek-chat</span><svg class=\"check\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4\" stroke=\"currentColor\"/></svg></button></div><div class=\"itemWrap\"><button type=\"button\"role=\"menuitem\"class=\"item\"><span class=\"itemLabel\">deepseek-reasoner</span></button></div></section><section role=\"group\" aria-labelledby=\"menu-group-b\" data-menu-group=\"\" class=\"group\"><span aria-hidden=\"true\" data-menu-group-start=\"\" class=\"start\"></span><div id=\"menu-group-b\" data-menu-group-heading=\"\" class=\"heading\">OpenAI</div><div class=\"itemWrap\"><button type=\"button\"role=\"menuitem\"class=\"item\"><span class=\"itemLabel\">gpt-5</span></button></div></section></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "label",
+     "type": "string",
+     "default": "—",
+     "desc": "调用方本地化后的分组标题，同时是该 group 的可访问名称。"
+    },
+    {
+     "name": "children",
+     "type": "ReactNode",
+     "default": "—",
+     "desc": "分组内的行（菜单项或 listbox 选项）。"
+    }
+   ],
+   "notes": "渲染出这些分组之后，用一个普通 effect 调 <code>observeStickyMenuGroups(viewport)</code>：viewport 必须是不带内边距、没有边框的滚动容器，且它的直接子元素就是这些 <code>MenuGroup</code>。观察全部走原生 IntersectionObserver / ResizeObserver，没有同步布局读取，也没有滚动监听；缺少任一 API 时 heading 保持 CSS 吸顶但背景始终透明。分组成员在建立观察时就固定，过滤或重排后要先 dispose 再重新观察；卸载时清理会断开观察器并清掉它写入的 <code>data-stuck</code>。普通菜单里的静态小标题不用这个组件，用 <code>Menu</code> 的 <code>{ type: 'label' }</code> 数据行即可。",
+   "keywords": [
+    "分组",
+    "吸顶",
+    "sticky",
+    "listbox",
+    "aria-labelledby",
+    "group"
+   ]
+  },
+  {
+   "id": "modal",
+   "name": "Modal",
+   "exportName": "Modal",
+   "zh": "模态对话框",
+   "group": "overlay",
+   "summary": "居中对话框，portal 到 body：<code>.root</code> 是 z-index 1000 的全视口 fixed 层，四周至少 24px 留白，顶部改用 <code>--dsh-frame-overlay-top</code> 避开窗口标题栏。<code>.mask</code> 只画 <code>--dsw-alias-bg-mask-1</code> 半透明遮罩、不涂 Windows 标题栏区域，并保留主题的 <code>--dsw-mask-blur</code>（当前为 none）。卡片宽 <code>min(380px, 100%)</code>、R28（<code>--dsw-radius-panel</code>）、<code>--dsw-alias-bg-layer-2</code> 填充加 <code>--dsw-elevation-prominent</code> 投影，<code>border: 0</code>；头部内边距 22/14/12/24，标题 16/24/500，右上角是 28×28 关闭按钮。<code>headless</code> 时 children 直接放进卡片，遮罩、卡片、Escape 与 <code>aria-label</code> 仍由 Modal 负责。",
+   "source": "packages/client/ui-primitives/src/Modal.tsx#L48",
+   "css": [
+    "packages/client/ui-primitives/src/Modal.module.css",
+    "packages/client/ui-primitives/src/Button.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-layer-2",
+    "--dsw-alias-bg-mask-1",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-elevation-prominent",
+    "--dsw-mask-blur",
+    "--dsw-radius-panel",
+    "--dsw-radius-sm"
+   ],
+   "specimens": [
+    {
+     "label": "标准对话框：标题 / 描述 / 内容 / 底栏",
+     "note": "遮罩与卡片静态快照",
+     "css": "/* 静态快照：真实渲染由 createPortal 挂到 body，.root 是覆盖整个视口的 position: fixed；\n   snapshotStatic 让它回到文档流，交给外层定尺寸的容器，遮罩仍由 .mask 绝对定位铺满该容器。 */\n.root.snapshotStatic { position: absolute; }",
+     "html": "<div style=\"position:relative;width:480px;height:420px;overflow:hidden\"><div class=\"root snapshotStatic\" role=\"presentation\"><div class=\"mask\" aria-hidden=\"true\"></div><div class=\"dialog\" role=\"dialog\" aria-modal=\"true\" aria-label=\"删除此任务？\" tabindex=\"-1\"><div class=\"content\"><div class=\"header\"><h2 class=\"title\">删除此任务？</h2><button type=\"button\" class=\"close\" aria-label=\"关闭\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></div><p class=\"description\">任务将停止触发，并连同其已保存的任务运行记录一并删除。原会话及其消息仍然保留；已排队的消息不会被撤回。</p><div class=\"body\"><p style=\"margin:0\">每天 09:00 检查构建状态</p></div></div><div class=\"footer\"><button class=\"button outline md\" type=\"button\">取消</button><button class=\"button outline md\" type=\"button\">确认删除</button></div></div></div></div>"
+    },
+    {
+     "label": "headless：children 直接放进卡片，没有默认 chrome",
+     "note": "遮罩与卡片静态快照",
+     "css": "/* 静态快照：同上，.root 从 fixed 放回文档流。 */\n.root.snapshotStatic { position: absolute; }",
+     "html": "<div style=\"position:relative;width:400px;height:260px;overflow:hidden\"><div class=\"root snapshotStatic\" role=\"presentation\"><div class=\"mask\" aria-hidden=\"true\"></div><div class=\"dialog\" role=\"dialog\" aria-modal=\"true\" aria-label=\"图片预览\" tabindex=\"-1\"><div style=\"display:flex;flex-direction:column;gap:8px;padding:24px\"><strong>src/Menu.module.css</strong><span>按 Esc 关闭预览</span></div></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "open",
+     "type": "boolean",
+     "default": "—",
+     "desc": "关闭时返回 null，遮罩与卡片都不渲染。"
+    },
+    {
+     "name": "onClose",
+     "type": "() => void",
+     "default": "—",
+     "desc": "遮罩点击、Escape 或应用关闭命令触发；有菜单打开时 Escape 先归菜单。"
+    },
+    {
+     "name": "title",
+     "type": "string",
+     "default": "—",
+     "desc": "标题文本，同时作为对话框的 `aria-label`。"
+    },
+    {
+     "name": "closeLabel",
+     "type": "string",
+     "default": "—",
+     "desc": "关闭按钮的无障碍名称，非 headless 时必填。"
+    },
+    {
+     "name": "description",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "标题下的补充说明，14/22 主文字色。"
+    },
+    {
+     "name": "children",
+     "type": "ReactNode",
+     "default": "—",
+     "desc": "对话框内容；初始焦点控件标 `data-modal-autofocus`，不要用 React 的 `autoFocus`。"
+    },
+    {
+     "name": "footer",
+     "type": "ReactNode",
+     "default": "—",
+     "desc": "底部操作行，右对齐、8px 间距。"
+    },
+    {
+     "name": "className",
+     "type": "string",
+     "default": "—",
+     "desc": "加在卡片上的类，用来覆盖宽度或高度上限。"
+    },
+    {
+     "name": "contentClassName",
+     "type": "string",
+     "default": "—",
+     "desc": "加在内容区上的类；调用方用 `max-height: 100%` 限制卡片增长并让内容区自己滚动。"
+    },
+    {
+     "name": "headless",
+     "type": "boolean",
+     "default": "false",
+     "desc": "不渲染标题行 / 关闭按钮 / 内容区 / 底栏，children 直接进卡片。"
+    },
+    {
+     "name": "backdropBlur",
+     "type": "boolean",
+     "default": "true",
+     "desc": "调用方已经模糊背景页时置 false，遮罩改成 `backdrop-filter: none`。"
+    },
+    {
+     "name": "shortcutModal",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "写入 `data-shortcut-modal`，声明这个对话框允许的快捷键作用域。"
+    },
+    {
+     "name": "onKeyDownCapture",
+     "type": "KeyboardEventHandler",
+     "default": "—",
+     "desc": "在文档级 Escape 监听之前处理嵌套对话框的按键。"
+    }
+   ],
+   "notes": "Escape 与 Tab 的顶层处理、关闭后恢复上一个焦点，都由 <code>useModalLayer</code> 负责；从对话框容器按 Tab / Shift+Tab 会进入第一个 / 最后一个可聚焦控件。初始焦点用 <code>data-modal-autofocus</code> 标记，Modal 会先捕获打开它的控件再移焦点，并用 <code>focusWithoutRing</code> 抑制初始焦点环。<code>isBehindModal</code> 与 <code>closeTopModal</code> 让菜单和更上层的对话框先消费按键，所以菜单打开时 Escape 关的是菜单。卡片按遮罩的 padding box 定尺寸，调用方限制高度请用 <code>max-height: 100%</code>，不要自己算视口。遮罩保持深色半透明且不加背景模糊。",
+   "keywords": [
+    "对话框",
+    "弹窗",
+    "dialog",
+    "modal",
+    "遮罩",
+    "headless",
+    "焦点"
+   ]
+  },
+  {
+   "id": "risk-confirmation",
+   "name": "RiskConfirmation",
+   "exportName": "RiskConfirmation",
+   "zh": "风险确认",
+   "group": "overlay",
+   "summary": "风险确认对话框：在 Modal（宽 <code>min(440px, 100%)</code>，内容区可滚动）里放一个错误色警示图标加 14/22 的说明段落，下面是一个 16×16 原生 checkbox 的确认项（选中色取 <code>--dsw-alias-button-primary-fill</code>，焦点环用 <code>--dsw-focus-ring-*</code>）。底栏两个按钮：<code>outline</code> 取消（≥72px）与 <code>primary</code> 确认（≥136px），确认按钮在 <code>disabled || !acknowledged</code> 时不可用。它完全受控：勾选状态由调用方持有，文案与无障碍名称全部由调用方本地化后传入，组件自身不做任何确认判定。",
+   "source": "packages/client/ui-primitives/src/RiskConfirmation.tsx#L29",
+   "css": [
+    "packages/client/ui-primitives/src/RiskConfirmation.module.css",
+    "packages/client/ui-primitives/src/Modal.module.css",
+    "packages/client/ui-primitives/src/Button.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-button-primary-fill",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-state-error-primary",
+    "--dsw-focus-ring-color",
+    "--dsw-focus-ring-width"
+   ],
+   "specimens": [
+    {
+     "label": "未勾选：确认按钮禁用",
+     "note": "遮罩与卡片静态快照",
+     "css": "/* 静态快照：RiskConfirmation 内部就是 Modal，.root 原本是覆盖视口的 position: fixed；\n   snapshotStatic 让它回到文档流，交给外层定尺寸的容器。 */\n.root.snapshotStatic { position: absolute; }",
+     "html": "<div style=\"position:relative;width:480px;height:440px;overflow:hidden\"><div class=\"root snapshotStatic\" role=\"presentation\"><div class=\"mask\" aria-hidden=\"true\"></div><div class=\"dialog confirmation\" role=\"dialog\" aria-modal=\"true\" aria-label=\"确认启用完全权限？\" tabindex=\"-1\"><div class=\"content confirmationContent\"><div class=\"header\"><h2 class=\"title\">确认启用完全权限？</h2><button type=\"button\" class=\"close\" aria-label=\"关闭\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"body\"><div class=\"warning\"><span class=\"warningIcon\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 14.5C11.5899 14.5 14.5 11.5899 14.5 8C14.5 4.41015 11.5899 1.5 8 1.5C4.41015 1.5 1.5 4.41015 1.5 8C1.5 11.5899 4.41015 14.5 8 14.5Z\" stroke=\"currentColor\"/><path d=\"M8 4.29199V9.79199\" stroke=\"currentColor\"/><path d=\"M8 10.708V11.708\" stroke=\"currentColor\"/></svg></span><p>启用完全权限后，新会话将减少确认步骤，并且可以直接执行更多操作，包括敏感操作、文件修改或外部命令。仅建议在你信任后续任务时使用。</p></div><label class=\"acknowledgement\"><input type=\"checkbox\" data-modal-autofocus/><span>我已了解风险，并愿意继续</span></label></div></div><div class=\"footer\"><button class=\"button outline md modalAction\" type=\"button\">取消</button><button class=\"button primary md confirmAction\" type=\"button\" disabled>启用完全权限</button></div></div></div></div>"
+    },
+    {
+     "label": "已勾选：确认按钮可用",
+     "note": "遮罩与卡片静态快照",
+     "css": "/* 静态快照：同上，.root 从 fixed 放回文档流。 */\n.root.snapshotStatic { position: absolute; }",
+     "html": "<div style=\"position:relative;width:480px;height:440px;overflow:hidden\"><div class=\"root snapshotStatic\" role=\"presentation\"><div class=\"mask\" aria-hidden=\"true\"></div><div class=\"dialog confirmation\" role=\"dialog\" aria-modal=\"true\" aria-label=\"确认启用完全权限？\" tabindex=\"-1\"><div class=\"content confirmationContent\"><div class=\"header\"><h2 class=\"title\">确认启用完全权限？</h2><button type=\"button\" class=\"close\" aria-label=\"关闭\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"body\"><div class=\"warning\"><span class=\"warningIcon\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 14.5C11.5899 14.5 14.5 11.5899 14.5 8C14.5 4.41015 11.5899 1.5 8 1.5C4.41015 1.5 1.5 4.41015 1.5 8C1.5 11.5899 4.41015 14.5 8 14.5Z\" stroke=\"currentColor\"/><path d=\"M8 4.29199V9.79199\" stroke=\"currentColor\"/><path d=\"M8 10.708V11.708\" stroke=\"currentColor\"/></svg></span><p>启用完全权限后，新会话将减少确认步骤，并且可以直接执行更多操作，包括敏感操作、文件修改或外部命令。仅建议在你信任后续任务时使用。</p></div><label class=\"acknowledgement\"><input type=\"checkbox\" data-modal-autofocus checked/><span>我已了解风险，并愿意继续</span></label></div></div><div class=\"footer\"><button class=\"button outline md modalAction\" type=\"button\">取消</button><button class=\"button primary md confirmAction\" type=\"button\">启用完全权限</button></div></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "open",
+     "type": "boolean",
+     "default": "—",
+     "desc": "是否显示对话框。"
+    },
+    {
+     "name": "title",
+     "type": "string",
+     "default": "—",
+     "desc": "对话框标题，例如「确认启用完全权限？」。"
+    },
+    {
+     "name": "description",
+     "type": "string",
+     "default": "—",
+     "desc": "警示段落，说明后果与适用范围。"
+    },
+    {
+     "name": "acknowledgeLabel",
+     "type": "string",
+     "default": "—",
+     "desc": "确认项文本，例如「我已了解风险，并愿意继续」。"
+    },
+    {
+     "name": "cancelLabel",
+     "type": "string",
+     "default": "—",
+     "desc": "底栏取消按钮文案。"
+    },
+    {
+     "name": "closeLabel",
+     "type": "string",
+     "default": "—",
+     "desc": "右上角关闭按钮的无障碍名称。"
+    },
+    {
+     "name": "confirmLabel",
+     "type": "string",
+     "default": "—",
+     "desc": "底栏主操作文案，例如「启用完全权限」。"
+    },
+    {
+     "name": "acknowledged",
+     "type": "boolean",
+     "default": "—",
+     "desc": "调用方持有的勾选状态；false 时主操作禁用。"
+    },
+    {
+     "name": "disabled",
+     "type": "boolean",
+     "default": "false",
+     "desc": "写入进行中等场景下同时锁住勾选框与确认按钮。"
+    },
+    {
+     "name": "onAcknowledgedChange",
+     "type": "(acknowledged: boolean) => void",
+     "default": "—",
+     "desc": "勾选框变更回调（受控）。"
+    },
+    {
+     "name": "onCancel",
+     "type": "() => void",
+     "default": "—",
+     "desc": "取消按钮、关闭按钮、遮罩点击与 Escape 都走这里（经 Modal 的 onClose）。"
+    },
+    {
+     "name": "onConfirm",
+     "type": "() => void",
+     "default": "—",
+     "desc": "确认按钮回调；组件不校验 acknowledged，是否放行由调用方决定。"
+    }
+   ],
+   "notes": "勾选框带 <code>data-modal-autofocus</code>，打开后键盘直接落在确认项上。卡片高度上限走 <code>.confirmation</code> 的 <code>max-height: 100%</code>（支持 <code>100dvh</code> 时是 <code>calc(100dvh - 48px)</code>），超出的内容在 <code>.confirmationContent</code> 里滚动，并带 <code>overscroll-behavior: contain</code>。产品用例：权限预设的「完全权限 / 自动审查」启用确认，以及命令弹窗里需要显式勾选的破坏性命令。",
+   "keywords": [
+    "风险确认",
+    "二次确认",
+    "checkbox",
+    "危险操作",
+    "确认对话框"
+   ]
+  },
+  {
+   "id": "config-field",
+   "name": "ConfigField",
+   "exportName": "ConfigField",
+   "zh": "配置字段",
+   "group": "settings",
+   "summary": "配置表单里的受控字段：行头是 <code>label</code> 加可选的「重置」按钮，下面按 <code>choices</code> / <code>secret</code> 三选一渲染 <code>&lt;select&gt;</code>（首项是「继承」占位，选中它等于重置）、<code>&lt;input type=\"password\"&gt;</code>（<code>autoComplete=\"new-password\"</code>，拒绝浏览器回填）或随内容在 1–8 行之间自适应的 <code>&lt;textarea&gt;</code>。控件不持有 schema、草稿或持久化，只把文本变更交回调用方；<code>overridden</code> 决定是否显示重置入口，<code>invalid</code> 把描边切到 <code>--dsw-alias-state-error-primary</code> 并给出 <code>role=\"status\"</code> 的错误文案。相邻字段之间是 0.5px <code>--dsw-alias-border-l2</code> 发丝线，单个字段上下各 12px 留白。",
+   "source": "packages/client/ui-primitives/src/ConfigField.tsx#L33",
+   "css": [
+    "packages/client/ui-primitives/src/ConfigField.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-layer-3",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-border-l4",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-state-error-primary",
+    "--dsw-radius-md"
+   ],
+   "specimens": [
+    {
+     "label": "三种控件：select / textarea / password",
+     "html": "<div style=\"display:flex;flex-direction:column;width:360px\"><div class=\"field\"><div class=\"head\"><label for=\"cfg-provider\">provider</label></div><select id=\"cfg-provider\" aria-invalid=\"false\"><option value=\"\">继承默认值</option><option value=\"deepseek\" selected>deepseek</option><option value=\"openai\">openai</option><option value=\"anthropic\">anthropic</option></select></div><div class=\"field\"><div class=\"head\"><label for=\"cfg-model\">model</label><button type=\"button\">重置</button></div><textarea id=\"cfg-model\" aria-invalid=\"false\" rows=\"1\">deepseek-reasoner</textarea></div><div class=\"field\"><div class=\"head\"><label for=\"cfg-key\">apiKey</label></div><input id=\"cfg-key\" type=\"password\" autocomplete=\"new-password\" aria-invalid=\"false\" value=\"sk-4f9c1d7a2b\"/></div></div>"
+    },
+    {
+     "label": "校验失败与禁用态",
+     "html": "<div style=\"display:flex;flex-direction:column;width:360px\"><div class=\"field\"><div class=\"head\"><label for=\"cfg-timeout\">timeoutMs</label><button type=\"button\">重置</button></div><textarea id=\"cfg-timeout\" aria-invalid=\"true\" rows=\"1\">30s</textarea><p role=\"status\">请输入正整数毫秒数</p></div><div class=\"field\"><div class=\"head\"><label for=\"cfg-tokens\">maxOutputTokens</label></div><textarea id=\"cfg-tokens\" aria-invalid=\"false\" rows=\"1\" disabled>4096</textarea></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "label",
+     "type": "string",
+     "default": "—",
+     "desc": "字段显示名，来自持有表单的插件。"
+    },
+    {
+     "name": "value",
+     "type": "string",
+     "default": "—",
+     "desc": "当前文本；容器可以用 JSON。"
+    },
+    {
+     "name": "onChange",
+     "type": "(value: string) => void",
+     "default": "—",
+     "desc": "暂存新的文本值。"
+    },
+    {
+     "name": "onReset",
+     "type": "() => void",
+     "default": "—",
+     "desc": "请求移除用户覆盖（重置按钮，或 select 选中「继承」项）。"
+    },
+    {
+     "name": "choices",
+     "type": "readonly string[]",
+     "default": "—",
+     "desc": "有限选项；空数组时改用文本 / 密码控件。"
+    },
+    {
+     "name": "secret",
+     "type": "boolean",
+     "default": "—",
+     "desc": "隐藏输入文本并关闭浏览器的密码回填。"
+    },
+    {
+     "name": "disabled",
+     "type": "boolean",
+     "default": "—",
+     "desc": "只读态：控件与重置按钮一起禁用。"
+    },
+    {
+     "name": "overridden",
+     "type": "boolean",
+     "default": "—",
+     "desc": "该字段是否存在用户覆盖，决定是否显示重置入口。"
+    },
+    {
+     "name": "invalid",
+     "type": "boolean",
+     "default": "—",
+     "desc": "草稿是否校验失败。"
+    },
+    {
+     "name": "labels",
+     "type": "{ reset: string; inherited: string; invalid: string }",
+     "default": "—",
+     "desc": "本地化的重置 / 继承值 / 校验失败文案。"
+    }
+   ],
+   "notes": "这个控件不在 <code>src/index.ts</code> 的公开导出里：源码注释说明它服务「生成的配置表单与自定义表单」，当前仓库只有包内测试直接引用（<code>../src/ConfigField.tsx</code>），还没有产品调用方。除文案外它不依赖 Cordis，也不读 locale。三选一的顺序是 <code>choices</code> → <code>secret</code> → <code>textarea</code>：给了选项就一定是下拉框，密码字段永远不显示明文，其余走多行文本。label 与控件的绑定由 <code>useId</code> 生成，重复渲染安全。",
+   "keywords": [
+    "配置",
+    "表单",
+    "settings",
+    "password",
+    "select",
+    "textarea",
+    "override",
+    "重置"
+   ]
+  },
+  {
+   "id": "fold-toggle",
+   "name": "FoldToggle",
+   "exportName": "FoldToggle",
+   "zh": "折叠开关",
+   "group": "output",
+   "summary": "输出卡片的头尾折叠控件：一个铺满整行的「… 其余 N 行」/「收起」按钮，外观完全由调用方的 <code>className</code> 决定，产品里是四张输出卡片的 <code>.expand</code>（<code>display: block; width: 100%</code>、透明底、三级文字色，悬停转二级色；read 卡片把左内边距设为 <code>calc(var(--dsl-read-gutter) + 12px)</code> 对齐行号槽，diff 卡片固定 22px）。组件自身只做三件事：写入 <code>aria-expanded</code>、随状态切换可见文案与 <code>aria-label</code>（「展开其余 N 行」/「收起…」）、把点击交给 <code>onToggle</code>。TerminalBlock 与 SearchBlock 的同名折叠按钮是内联实现的同一外观。",
+   "source": "packages/client/ui-primitives/src/FoldToggle.tsx#L19",
+   "css": [
+    "packages/client/ui-primitives/src/ReadBlock.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-label-secondary"
+   ],
+   "specimens": [
+    {
+     "label": "折叠态：read 卡片的「… 其余 N 行」（左内边距对齐行号槽）",
+     "html": "<div style=\"width:320px;--dsl-read-gutter:3ch\"><button type=\"button\" class=\"expand\" aria-expanded=\"false\" aria-label=\"展开其余 42 行\">… 其余 42 行</button></div>"
+    },
+    {
+     "label": "展开态：同一位置的「收起」",
+     "html": "<div style=\"width:320px;--dsl-read-gutter:3ch\"><button type=\"button\" class=\"expand\" aria-expanded=\"true\" aria-label=\"收起内容\">收起</button></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "className",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "必填的调用方外观类；组件没有任何默认样式。"
+    },
+    {
+     "name": "expanded",
+     "type": "boolean",
+     "default": "—",
+     "desc": "当前是否已展开，写入 `aria-expanded` 并决定文案。"
+    },
+    {
+     "name": "hidden",
+     "type": "number",
+     "default": "—",
+     "desc": "被折叠的行数，用于可见文案与无障碍名称。"
+    },
+    {
+     "name": "labels",
+     "type": "{ collapseAria: string; expandAria: (hidden: number) => string; collapse: string; expand: (hidden: number) => string }",
+     "default": "—",
+     "desc": "调用方本地化的四种文案：收起 / 展开的无障碍名称与可见文本。"
+    },
+    {
+     "name": "onToggle",
+     "type": "() => void",
+     "default": "—",
+     "desc": "点击回调；展开状态仍由调用方持有。"
+    }
+   ],
+   "notes": "组件本身不导出（README 明确写它是 package-internal），因为折叠外观必须跟着卡片走。<code>hidden</code> 同时驱动可见文案与 <code>aria-label</code>，所以折叠行数与无障碍名称永远一致。四张输出卡片共用同一外观：read 与 diff 卡片走这个组件（read 把左内边距设为 <code>calc(var(--dsl-read-gutter) + 12px)</code> 对齐行号槽，diff 固定 22px），terminal 与 search 内联了同名按钮（分别为 0 与自己的内边距）。四个模块的 <code>.expand</code> 类名相同，而本目录会把 <code>css</code> 里的样式表逐字内联进同一个 shadow root，同名类只有最后一份生效，所以这里只声明 read 卡片的样式表，示例也只呈现这一种外观；真实构建里 CSS Modules 会给类名加哈希，四张卡片互不影响。",
+   "keywords": [
+    "折叠",
+    "展开",
+    "收起",
+    "fold",
+    "expand",
+    "输出卡片",
+    "maxLines"
+   ]
+  }
+ ]
+}

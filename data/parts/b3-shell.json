@@ -1,0 +1,905 @@
+{
+ "schemaVersion": 1,
+ "entries": [
+  {
+   "id": "app-frame",
+   "name": "AppFrame",
+   "exportName": "AppFrame",
+   "zh": "应用外框",
+   "group": "shell",
+   "summary": "三列应用外框：一行的 grid 轨道（sidebar | center | rightbar）加一行跨列的 shell.bottom、绝对定位的 overlay 层和两个窗口拖拽手柄。轨道由组件内联写入 <code>grid-template-columns</code>：中列是 <code>minmax(CENTER_MIN, 1fr)</code>，右列是 <code>minmax(0, rightbarMax)</code> —— 右栏是\"轨道而不是盒子\"，占用者把固定宽面板锚在 frame 右边缘，没有轨道时 0 宽列的面板照样挂在会话列之上。侧栏/右栏的开关只写 <code>data-sidebar-collapsed</code> / <code>data-rightbar-collapsed</code>，折叠缓动挂在 <code>data-animating</code>，尺寸全部由列解算（<code>columns.ts</code>）给出。",
+   "source": "packages/client/ui-layout/src/client/AppFrame.tsx#L121",
+   "css": [
+    "packages/client/ui-layout/src/client/AppFrame.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-base",
+    "--dsw-specific-sidebar-fill",
+    "--dsw-alias-border-l3"
+   ],
+   "specimens": [
+    {
+     "label": "三列栅格（920×320）",
+     "note": "轨道宽度是内联样式，这里给出真实解算结果 240 / 1fr / 260",
+     "html": "<div style=\"width:920px;height:320px\">\n  <div class=\"frame\" style=\"grid-template-columns:240px minmax(360px,1fr) 260px\">\n    <div class=\"sidebarCol\"><div style=\"padding:12px\">sidebar 列</div></div>\n    <div class=\"centerCol\"><div style=\"padding:12px\">main 列（会话 / 全局面板）</div></div>\n    <div class=\"rightbarCol\"><div style=\"padding:12px\">rightbar 列</div></div>\n    <div class=\"bottomRow\"><div style=\"padding:4px 12px\">shell.bottom 行（跨三列）</div></div>\n    <div class=\"overlayLayer\"></div>\n    <div class=\"handle\" data-side=\"sidebar\" style=\"left:240px\"></div>\n    <div class=\"handle\" data-side=\"rightbar\" style=\"left:660px\"></div>\n  </div>\n</div>"
+    },
+    {
+     "label": "侧栏收起：首轨 0px，中列贴到左缘",
+     "note": "收起态只写 data-sidebar-collapsed，轨道宽度仍由列解算决定",
+     "html": "<div style=\"width:920px;height:240px\">\n  <div class=\"frame\" data-sidebar-collapsed=\"true\" style=\"grid-template-columns:0px minmax(0,1fr) 260px\">\n    <div class=\"sidebarCol\"></div>\n    <div class=\"centerCol\"><div style=\"padding:12px\">main 列（左缘无分隔线）</div></div>\n    <div class=\"rightbarCol\"><div style=\"padding:12px\">rightbar 列</div></div>\n    <div class=\"handle\" data-side=\"rightbar\" style=\"left:660px\"></div>\n  </div>\n</div>"
+    },
+    {
+     "label": "右栏无轨：面板从 0 宽列挂到会话列之上",
+     "note": "rightbarCol 溢出可见、不裁剪，面板自锚 frame 右边缘",
+     "html": "<div style=\"width:920px;height:240px\">\n  <div class=\"frame\" data-rightbar-collapsed=\"true\" style=\"grid-template-columns:240px minmax(0,1fr) 0px\">\n    <div class=\"sidebarCol\"><div style=\"padding:12px\">sidebar 列</div></div>\n    <div class=\"centerCol\"><div style=\"padding:12px\">main 列（被右栏面板压住一段）</div></div>\n    <div class=\"rightbarCol\"><div style=\"position:absolute;top:0;right:0;bottom:0;width:260px;padding:12px\">右栏面板：260px，锚在 frame 右边缘</div></div>\n  </div>\n</div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "useStore",
+     "type": "PropsStore<createLayoutStore>",
+     "default": "—",
+     "desc": "布局快照（viewportWidth、sidebar、rightbar、rightbarTrack / Shown / Fullscreen），只有离散事实进列解算。"
+    },
+    {
+     "name": "useSessions",
+     "type": "PropsRuntime<'root'>",
+     "default": "—",
+     "desc": "转交 DocumentTitle，不订阅会话内容。"
+    },
+    {
+     "name": "usePanelInfo",
+     "type": "PropsRuntime<'root'>",
+     "default": "—",
+     "desc": "main 槽按 activePanelId 选 key，切换面板不重挂整列。"
+    },
+    {
+     "name": "actions",
+     "type": "LayoutActions",
+     "default": "—",
+     "desc": "setViewportWidth / setSidebar / setRightbar，拖拽时按指针节奏写入。"
+    },
+    {
+     "name": "renderSlot",
+     "type": "PropsRenderSlots<'sidebar' | 'main' | 'rightbar' | 'shell.bottom' | 'shell.overlay' | 'shell.leading'>",
+     "default": "—",
+     "desc": "六个子槽；sidebar 收到 collapsed 与 width，rightbar 收到 width / viewportWidth / canShow。"
+    }
+   ],
+   "notes": "frame 自己不做窗口拖拽：每条 chrome 行在自己盒子上声明 <code>data-window-drag</code>。平台差异全在 <code>:global</code> 规则里：Windows 标题栏给 frame 补 <code>padding-top: var(--dsh-windows-titlebar-height)</code> 并发布 <code>--dsh-frame-top-clearance</code>；macOS 让 frame 透明、侧栏半透明叠 vibrancy，并发布 48px 的 <code>--dsh-frame-top-clearance</code> 与 <code>--dsh-frame-leading-clearance</code>（收起 160px / 全屏 84px）。目录里的 shadow root 没有 <code>html[data-platform]</code>，因此示例只呈现基础平台的那一层。",
+   "keywords": [
+    "外框",
+    "三列",
+    "栅格",
+    "shell",
+    "grid",
+    "frame"
+   ]
+  },
+  {
+   "id": "sidebar-root",
+   "name": "SidebarRoot",
+   "exportName": "SidebarRoot",
+   "zh": "侧边栏列",
+   "group": "shell",
+   "summary": "侧栏整列：<code>flex-direction: column</code> 的 12px 内边距竖排，列底色是 <code>--dsw-specific-sidebar-fill</code>，从上到下依次是 60px 品牌行（含 28px 面板开关）、38px 的\"新会话\"条、全局面板行、占满剩余高度的浏览区，以及底部的设置座。收起态不换布局而是先整列淡出（<code>.fading</code>）再切成 56px 轨（<code>.collapsed</code>，控件 36×36、12px 圆角），轨道入场用 <code>.railIn</code> 从 49px 外平移进来；指针不在列内时 <code>.quietBars</code> 把嵌套滚动区的滚动条改绑成 transparent，只留 2 秒余晖。",
+   "source": "packages/client/ui-sidebar/src/client/SidebarRoot.tsx#L88",
+   "css": [
+    "packages/client/ui-workspace/src/client/rows/WorkspaceBrowser.module.css",
+    "packages/client/ui-workspace/src/client/rows/Rows.module.css",
+    "packages/client/ui-primitives/src/StateDot.module.css",
+    "packages/client/ui-settings-general/src/client/SettingsRoot.module.css",
+    "packages/client/ui-sidebar/src/client/SidebarRoot.module.css"
+   ],
+   "tokens": [
+    "--dsw-specific-sidebar-fill",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-state-warn-primary",
+    "--dsw-alias-state-idle-primary",
+    "--dsw-alias-label-primary-inverted",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-button-elevated-fill",
+    "--dsw-alias-button-floating-hover",
+    "--dsw-alias-border-l3",
+    "--dsw-radius-md",
+    "--dsw-radius-sm",
+    "--dsw-focus-ring-width",
+    "--dsw-focus-ring-color",
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-scrollbar-bg-l2",
+    "--dsw-alias-scrollbar-hover-l2",
+    "--dsw-specific-sidebar-nav-item-hover",
+    "--dsw-specific-sidebar-nav-item-active"
+   ],
+   "specimens": [
+    {
+     "label": "展开态整列（240px）",
+     "note": "浏览区里的区域头与会话行来自 ui-workspace，设置行来自 ui-settings；两个包的 .root 同名，浏览区外壳这里用无类名的薄容器代替",
+     "html": "<div style=\"width:240px;height:520px;display:flex\">\n  <div class=\"c4-root\">\n    <div class=\"logoRow\">\n      <button type=\"button\" class=\"brand wide\" aria-label=\"新建会话\"><span class=\"brandIdentity\"><span class=\"brandMark\"><svg width=\"24\" height=\"18\" viewBox=\"0 0 23.16 17.04\" fill=\"none\" aria-hidden=\"true\"><path d=\"M22.9168 1.43018C22.6713 1.31018 22.5658 1.53918 22.4223 1.65519C22.3733 1.69269 22.3318 1.74169 22.2903 1.78669C21.9317 2.1697 21.5127 2.42121 20.9657 2.39121C20.1657 2.34621 19.4827 2.59771 18.8787 3.20973C18.7502 2.45521 18.3236 2.0047 17.6746 1.71569C17.3351 1.56568 16.9916 1.41518 16.7536 1.08867C16.5876 0.856163 16.5421 0.597155 16.4591 0.341647C16.4061 0.187643 16.3536 0.0301382 16.1761 0.00363739C15.9836 -0.0263635 15.9081 0.135141 15.8326 0.270145C15.5306 0.822162 15.4136 1.43018 15.4251 2.0462C15.4516 3.43174 16.0366 4.53527 17.1991 5.3203C17.3311 5.4103 17.3651 5.5003 17.3236 5.63181C17.2441 5.90231 17.1501 6.16482 17.0671 6.43533C17.0141 6.60784 16.9351 6.64584 16.7501 6.57033C16.1121 6.30383 15.5611 5.90931 15.074 5.4328C14.2475 4.63328 13.5 3.75075 12.568 3.05973C12.349 2.89822 12.13 2.74822 11.9034 2.60522C10.9524 1.68169 12.028 0.923165 12.277 0.833162C12.5375 0.739159 12.3675 0.41615 11.5259 0.42015C10.6844 0.42365 9.91439 0.705658 8.93286 1.08117C8.78935 1.13767 8.63835 1.17867 8.48384 1.21267C7.59332 1.04367 6.66829 1.00617 5.70226 1.11517C3.88321 1.31768 2.43016 2.1777 1.36213 3.64575C0.0790928 5.4103 -0.222916 7.41536 0.146595 9.50642C0.535106 11.7105 1.66014 13.535 3.38869 14.9616C5.18125 16.4406 7.24581 17.1657 9.60138 17.0266C11.0319 16.9441 12.6245 16.7526 14.421 15.2321C14.874 15.4576 15.3496 15.5476 16.1381 15.6151C16.7456 15.6716 17.3306 15.5851 17.7836 15.4911C18.4931 15.3411 18.4441 14.6841 18.1876 14.5636C16.1081 13.595 16.5646 13.9891 16.1496 13.67C17.2061 12.42 18.8202 10.1979 19.3182 7.17235C19.3672 6.83834 19.4297 6.36783 19.4222 6.09732C19.4182 5.9312 19.4562 5.86831 19.6447 5.84931C20.1657 5.78931 20.6712 5.64681 21.1357 5.3913C22.4833 4.65528 23.0268 3.44624 23.1548 1.9972C23.1738 1.77569 23.1508 1.54668 22.9168 1.43018ZM11.1749 14.4736C9.15936 12.889 8.18184 12.3675 7.77832 12.39C7.40081 12.4125 7.46881 12.8445 7.55182 13.126C7.63882 13.404 7.75182 13.5955 7.91033 13.8396C8.01983 14.0011 8.09533 14.2411 7.80083 14.4216C7.15181 14.8231 6.02327 14.2866 5.97027 14.2601C4.65673 13.4865 3.5587 12.4655 2.78467 11.069C2.03715 9.72493 1.60314 8.28289 1.53164 6.74384C1.51264 6.37233 1.62214 6.24082 1.99215 6.17332C2.47916 6.08332 2.98118 6.06432 3.46769 6.13582C5.52476 6.43633 7.27581 7.35586 8.74385 8.8129C9.58188 9.64243 10.2159 10.634 10.8689 11.6025C11.5634 12.631 12.3105 13.611 13.262 14.4146C13.598 14.6961 13.866 14.9101 14.1225 15.0681C13.349 15.1546 12.058 15.1731 11.1749 14.4736ZM12.141 8.25988C12.141 8.09488 12.273 7.96338 12.439 7.96338C12.4765 7.96338 12.5105 7.97088 12.541 7.98188C12.5825 7.99688 12.6205 8.01938 12.6505 8.05338C12.7035 8.10588 12.7335 8.18088 12.7335 8.25988C12.7335 8.42489 12.6015 8.55639 12.4355 8.55639C12.2695 8.55639 12.141 8.42489 12.141 8.25988ZM15.1415 9.79893C14.949 9.87793 14.7565 9.94544 14.5715 9.95294C14.2845 9.96794 13.9715 9.85143 13.8015 9.70893C13.5375 9.48742 13.3485 9.36342 13.2695 8.97691C13.2355 8.8119 13.2545 8.55639 13.2845 8.40989C13.3525 8.09438 13.277 7.89187 13.0545 7.70787C12.8735 7.55786 12.643 7.51636 12.39 7.51636C12.2955 7.51636 12.209 7.47486 12.1445 7.44136C12.039 7.38886 11.9519 7.25735 12.035 7.09585C12.0615 7.04335 12.19 6.91584 12.22 6.89334C12.5635 6.69784 12.9595 6.76184 13.326 6.90834C13.6655 7.04735 13.9225 7.30236 14.292 7.66287C14.6695 8.09838 14.7375 8.21838 14.9525 8.54539C15.1225 8.8009 15.277 9.06341 15.3831 9.36392C15.4471 9.55142 15.3641 9.70493 15.1415 9.79893Z\" fill=\"currentColor\"/></svg></span><span class=\"brandName\"><span class=\"localBuildBrand\"><span class=\"localBuildTitle\">DSH 本地构建</span><span class=\"buildVersion\">0.4.1</span></span></span></span></button>\n      <button type=\"button\" class=\"c4-iconButton toggle\" aria-label=\"收起侧边栏\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z\" stroke=\"currentColor\"/><path d=\"M5.5 1.5V14.5\" stroke=\"currentColor\"/></svg></button>\n    </div>\n    <button type=\"button\" class=\"newSession\" aria-label=\"新建会话\"><span class=\"newSessionLabelMask\"><span class=\"newSessionContent\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.37091 11.2501C1.58745 9.89288 1.32067 8.29835 1.61969 6.76006C1.91872 5.22177 2.76342 3.8433 3.99826 2.87846C5.2331 1.91362 6.77494 1.42737 8.33988 1.50925C9.90482 1.59113 11.3875 2.23562 12.5149 3.32406C13.6425 4.41269 14.3387 5.87206 14.4754 7.4334C14.612 8.99474 14.18 10.5529 13.2587 11.8209C12.3375 13.0888 10.9891 13.9813 9.46194 14.3337C8.18691 14.628 6.85895 14.5294 5.64989 14.0605C5.1712 13.8748 4.76962 13.4932 4.26534 13.3967C3.67413 13.2835 2.95257 13.5598 2.03794 14.3337\" stroke=\"currentColor\"/><path d=\"M8 5V11\" stroke=\"currentColor\"/><path d=\"M5 8H11\" stroke=\"currentColor\"/></svg><span class=\"newSessionLabel wide\">新会话</span></span></span></button>\n    <nav class=\"panelList\" aria-label=\"全局面板\">\n      <button type=\"button\" class=\"panelRow panelActive\" aria-label=\"插件\" aria-current=\"page\"><span class=\"panelGlyph\" aria-hidden=\"true\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M5.54492 2.06738C5.91034 2.06754 6.26318 2.20149 6.53711 2.44336L7.94043 3.68164V4.7998C7.71462 4.74105 7.50367 4.63139 7.32617 4.47461L5.87598 3.19238C5.78477 3.11185 5.66658 3.06754 5.54492 3.06738H2.94922C2.67322 3.06738 2.44946 3.29145 2.44922 3.56738V12.4326C2.44927 12.7087 2.67311 12.9326 2.94922 12.9326H12.9326C13.2086 12.9325 13.4326 12.7086 13.4326 12.4326V8.53613H14.4326V12.4326C14.4326 13.2609 13.7609 13.9325 12.9326 13.9326H2.94922C2.12083 13.9326 1.44927 13.261 1.44922 12.4326V3.56738C1.44946 2.73916 2.12094 2.06738 2.94922 2.06738H5.54492Z\" fill=\"currentColor\"/><path d=\"M9.75977 4.50208H14.5509\" stroke=\"currentColor\"/><path d=\"M12.1492 6.89758L12.1492 2.10642\" stroke=\"currentColor\"/></svg></span><span class=\"panelTitle wide\">插件</span></button>\n      <button type=\"button\" class=\"panelRow\" aria-label=\"自动化任务\"><span class=\"panelGlyph\" aria-hidden=\"true\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\" stroke=\"currentColor\" stroke-linecap=\"round\"><path d=\"M2.3 5h5.85M12.05 5h1.65\"/><circle cx=\"9.95\" cy=\"5\" r=\"1.45\"/><path d=\"M2.3 11h1.65M7.85 11h5.85\"/><circle cx=\"5.75\" cy=\"11\" r=\"1.45\"/></svg></span><span class=\"panelTitle wide\">自动化任务</span></button>\n    </nav>\n    <div class=\"regionArea\">\n      <div class=\"c0-root\">\n        <div class=\"sectionHeader\">\n          <span class=\"sectionLabel wide\">工作区</span>\n          <div class=\"searchSlot\"><div class=\"search\"><button type=\"button\" class=\"searchButton\" aria-label=\"搜索会话\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M6.58727 11.8586C9.55061 11.8586 11.9529 9.45637 11.9529 6.49304C11.9529 3.5297 9.55061 1.12744 6.58727 1.12744C3.62394 1.12744 1.22168 3.5297 1.22168 6.49304C1.22168 9.45637 3.62394 11.8586 6.58727 11.8586Z\" stroke=\"currentColor\"/><path d=\"M10.2991 10.3933L14.7783 14.8725\" stroke=\"currentColor\"/></svg></button><input class=\"searchInput\" type=\"text\" placeholder=\"搜索会话名称\" tabindex=\"-1\"></div></div>\n          <div class=\"headerActions\"><button type=\"button\" class=\"c0-iconButton\" aria-label=\"视图选项\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\" stroke=\"currentColor\" stroke-linecap=\"round\"><path d=\"M2.3 5h5.85M12.05 5h1.65\"/><circle cx=\"9.95\" cy=\"5\" r=\"1.45\"/><path d=\"M2.3 11h1.65M7.85 11h5.85\"/><circle cx=\"5.75\" cy=\"11\" r=\"1.45\"/></svg></button><button type=\"button\" class=\"c0-iconButton\" aria-label=\"添加工作区\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M5.54492 2.06738C5.91034 2.06754 6.26318 2.20149 6.53711 2.44336L7.94043 3.68164V4.7998C7.71462 4.74105 7.50367 4.63139 7.32617 4.47461L5.87598 3.19238C5.78477 3.11185 5.66658 3.06754 5.54492 3.06738H2.94922C2.67322 3.06738 2.44946 3.29145 2.44922 3.56738V12.4326C2.44927 12.7087 2.67311 12.9326 2.94922 12.9326H12.9326C13.2086 12.9325 13.4326 12.7086 13.4326 12.4326V8.53613H14.4326V12.4326C14.4326 13.2609 13.7609 13.9325 12.9326 13.9326H2.94922C2.12083 13.9326 1.44927 13.261 1.44922 12.4326V3.56738C1.44946 2.73916 2.12094 2.06738 2.94922 2.06738H5.54492Z\" fill=\"currentColor\"/><path d=\"M9.75977 4.50208H14.5509\" stroke=\"currentColor\"/><path d=\"M12.1492 6.89758L12.1492 2.10642\" stroke=\"currentColor\"/></svg></button></div>\n        </div>\n        <div class=\"listArea\">\n          <div class=\"treeBody wide\">\n            <div class=\"list\">\n              <div class=\"groupSection\">\n                <div class=\"projectRow\" role=\"treeitem\" aria-expanded=\"true\" data-row-key=\"workspace:ws-deepseek-harness\">\n  <span class=\"slot folder folderActive\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.55912 7.93683C2.67584 7.49906 3.0723 7.19446 3.52536 7.19446H13.6491C14.3061 7.19446 14.7846 7.81725 14.6153 8.45209L13.4411 12.856C13.3244 13.2938 12.9279 13.5984 12.4748 13.5984H2.35113C1.69411 13.5984 1.21562 12.9756 1.38489 12.3407L2.55912 7.93683Z\" fill=\"currentColor\" opacity=\"0.16\"/><path d=\"M13.6491 6.69446C14.6346 6.69453 15.3522 7.62895 15.0983 8.58118L13.9245 12.9845C13.7494 13.6412 13.1539 14.0988 12.4743 14.0988H2.35126C1.36574 14.0988 0.648153 13.1643 0.902044 12.212L2.07587 7.80774C2.25102 7.15128 2.84567 6.69455 3.52509 6.69446H13.6491ZM3.52509 7.69446C3.29865 7.69455 3.10004 7.84674 3.04169 8.06555L1.86786 12.4698C1.78345 12.7872 2.02285 13.0988 2.35126 13.0988H12.4743C12.7007 13.0988 12.8992 12.9463 12.9577 12.7277L14.1325 8.32336C14.2171 8.00598 13.9776 7.69453 13.6491 7.69446H3.52509Z\" fill=\"currentColor\"/><path d=\"M4.7666 1.90137C5.13227 1.90144 5.48571 2.03525 5.75977 2.27734L7.27246 3.61328C7.36379 3.69382 7.48174 3.73828 7.60352 3.73828H12.3994C13.2276 3.73841 13.8993 4.41005 13.8994 5.23828V6.7168C13.8183 6.70327 13.735 6.69436 13.6494 6.69434H12.8994V5.23828C12.8993 4.96233 12.6754 4.73841 12.3994 4.73828H7.60352C7.23781 4.73828 6.88446 4.60438 6.61035 4.3623L5.09766 3.02637C5.00636 2.94576 4.88838 2.90144 4.7666 2.90137H2.0498C1.77366 2.90137 1.5498 3.12523 1.5498 3.40137V9.78223L0.902344 12.2119C0.648452 13.1642 1.36604 14.0986 2.35156 14.0986H2.0498C1.2214 14.0986 0.549838 13.427 0.549805 12.5986V3.40137C0.549805 2.57294 1.22138 1.90137 2.0498 1.90137H4.7666Z\" fill=\"currentColor\"/></svg></span>\n  <span class=\"slot chevron\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" class=\"arrow arrowOpen\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M5.5 4.5C5.5 4.40714 5.52586 4.31612 5.57467 4.23713C5.62349 4.15815 5.69334 4.09431 5.77639 4.05279C5.85945 4.01126 5.95242 3.99368 6.0449 4.00202C6.13738 4.01036 6.22572 4.04429 6.3 4.1L10.967 7.6C11.0291 7.64657 11.0795 7.70697 11.1142 7.77639C11.1489 7.84582 11.167 7.92238 11.167 8C11.167 8.07762 11.1489 8.15418 11.1142 8.22361C11.0795 8.29303 11.0291 8.35343 10.967 8.4L6.3 11.9C6.22572 11.9557 6.13738 11.9896 6.0449 11.998C5.95242 12.0063 5.85945 11.9887 5.77639 11.9472C5.69334 11.9057 5.62349 11.8419 5.57467 11.7629C5.52586 11.6839 5.5 11.5929 5.5 11.5V4.5Z\" fill=\"currentColor\"/></svg></span>\n  <span class=\"projectText\"><span class=\"title\">deepseek-harness</span></span>\n  <span class=\"rowActions\">\n    <button type=\"button\" class=\"c1-iconButton\" aria-label=\"工作区操作：deepseek-harness\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z\" fill=\"currentColor\"/><path d=\"M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z\" fill=\"currentColor\"/><path d=\"M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z\" fill=\"currentColor\"/></svg></button><button type=\"button\" class=\"c1-iconButton\" aria-label=\"在 deepseek-harness 中新建会话\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.37091 11.2501C1.58745 9.89288 1.32067 8.29835 1.61969 6.76006C1.91872 5.22177 2.76342 3.8433 3.99826 2.87846C5.2331 1.91362 6.77494 1.42737 8.33988 1.50925C9.90482 1.59113 11.3875 2.23562 12.5149 3.32406C13.6425 4.41269 14.3387 5.87206 14.4754 7.4334C14.612 8.99474 14.18 10.5529 13.2587 11.8209C12.3375 13.0888 10.9891 13.9813 9.46194 14.3337C8.18691 14.628 6.85895 14.5294 5.64989 14.0605C5.1712 13.8748 4.76962 13.4932 4.26534 13.3967C3.67413 13.2835 2.95257 13.5598 2.03794 14.3337\" stroke=\"currentColor\"/><path d=\"M8 5V11\" stroke=\"currentColor\"/><path d=\"M5 8H11\" stroke=\"currentColor\"/></svg></button>\n  </span>\n</div>\n                <div class=\"sessionRow selected\" role=\"treeitem\" aria-selected=\"true\" data-row-key=\"session:重构会话存储层\">\n  <span class=\"slot\"></span>\n  <span class=\"title\">重构会话存储层</span>\n  <span class=\"time\">5分钟</span>\n  \n  <span class=\"rowActions\"><button type=\"button\" class=\"c1-iconButton\" aria-label=\"会话操作：重构会话存储层\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z\" fill=\"currentColor\"/><path d=\"M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z\" fill=\"currentColor\"/><path d=\"M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z\" fill=\"currentColor\"/></svg></button></span>\n</div>\n                <div class=\"sessionRow hoverRow\" role=\"treeitem\" aria-selected=\"false\" data-row-key=\"session:统一按钮圆角\">\n  <span class=\"slot\"></span>\n  <span class=\"title\">统一按钮圆角</span>\n  <span class=\"time\">1小时</span>\n  \n  <span class=\"rowActions\"><button type=\"button\" class=\"c1-iconButton\" aria-label=\"会话操作：统一按钮圆角\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z\" fill=\"currentColor\"/><path d=\"M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z\" fill=\"currentColor\"/><path d=\"M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z\" fill=\"currentColor\"/></svg></button></span>\n</div>\n                <div class=\"sessionRow\" role=\"treeitem\" aria-selected=\"false\" data-row-key=\"session:修复 Windows 标题栏留白\">\n  <span class=\"slot\"><svg class=\"spinner\" data-state=\"ongoing\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><g class=\"spinnerMotion\"><circle class=\"spinnerTrack\" cx=\"12\" cy=\"12\" r=\"9.5\"/><circle class=\"spinnerArc\" cx=\"12\" cy=\"12\" r=\"9.5\"/></g></svg></span>\n  <span class=\"title\">修复 Windows 标题栏留白</span>\n  <span class=\"time\">刚刚</span>\n  \n  <span class=\"rowActions\"><button type=\"button\" class=\"c1-iconButton\" aria-label=\"会话操作：修复 Windows 标题栏留白\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z\" fill=\"currentColor\"/><path d=\"M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z\" fill=\"currentColor\"/><path d=\"M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z\" fill=\"currentColor\"/></svg></button></span>\n</div>\n                <button type=\"button\" class=\"sessionOverflowButton\">展开其余 2 个会话</button>\n              </div>\n            </div>\n            <span class=\"fade\"></span>\n          </div>\n        </div>\n      </div>\n    </div>\n    <div class=\"footArea\">\n      <div class=\"footerActions\"></div>\n      <div class=\"settingsArea\"><div class=\"triggerRow\"><button type=\"button\" class=\"trigger\" aria-haspopup=\"dialog\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 9.75012C8.9665 9.75012 9.75 8.96662 9.75 8.00012C9.75 7.03362 8.9665 6.25012 8 6.25012C7.0335 6.25012 6.25 7.03362 6.25 8.00012C6.25 8.96662 7.0335 9.75012 8 9.75012Z\" stroke=\"currentColor\"/><path d=\"M13.0107 7.79377C12.9505 7.89401 12.9205 7.94413 12.9205 7.99951C12.9205 8.0549 12.9505 8.10502 13.0106 8.20528L13.9849 9.83006C14.045 9.93029 14.0751 9.9804 14.0751 10.0358C14.0751 10.0911 14.045 10.1413 13.9849 10.2415L13.0037 11.8777C12.9468 11.9726 12.9184 12.0201 12.8725 12.0461C12.8267 12.072 12.7713 12.072 12.6607 12.072H10.6704C10.5598 12.072 10.5045 12.072 10.4586 12.098C10.4128 12.1239 10.3843 12.1714 10.3274 12.2662L9.33825 13.9142C9.28133 14.009 9.25287 14.0564 9.20703 14.0823C9.16118 14.1083 9.10588 14.1083 8.99529 14.1083H7.00486C6.89426 14.1083 6.83896 14.1083 6.79312 14.0823C6.74727 14.0564 6.71881 14.009 6.6619 13.9142L5.67273 12.2662C5.61581 12.1714 5.58735 12.1239 5.54151 12.098C5.49566 12.072 5.44036 12.072 5.32977 12.072H3.33945C3.2288 12.072 3.17347 12.072 3.12761 12.0461C3.08176 12.0201 3.0533 11.9726 2.9964 11.8777L2.0152 10.2415C1.9551 10.1413 1.92505 10.0911 1.92505 10.0358C1.92505 9.9804 1.9551 9.93029 2.0152 9.83006L2.98951 8.20528C3.04963 8.10502 3.07969 8.0549 3.07969 7.99951C3.07968 7.94413 3.04961 7.89401 2.98946 7.79377L2.01529 6.17011C1.95514 6.06987 1.92507 6.01975 1.92507 5.96437C1.92506 5.90899 1.95512 5.85886 2.01524 5.7586L2.9964 4.1224C3.0533 4.0275 3.08176 3.98005 3.12761 3.95408C3.17347 3.92811 3.2288 3.92811 3.33945 3.92811H5.32977C5.44036 3.92811 5.49566 3.92811 5.54151 3.90216C5.58735 3.87621 5.61581 3.82879 5.67273 3.73397L6.6619 2.08599C6.71881 1.99116 6.74727 1.94375 6.79312 1.9178C6.83896 1.89185 6.89426 1.89185 7.00486 1.89185H8.99529C9.10588 1.89185 9.16118 1.89185 9.20703 1.9178C9.25287 1.94375 9.28133 1.99116 9.33825 2.08599L10.3274 3.73397C10.3843 3.82879 10.4128 3.87621 10.4586 3.90216C10.5045 3.92811 10.5598 3.92811 10.6704 3.92811H12.6607C12.7713 3.92811 12.8267 3.92811 12.8725 3.95408C12.9184 3.98005 12.9468 4.0275 13.0037 4.1224L13.9849 5.7586C14.045 5.85886 14.0751 5.90899 14.0751 5.96437C14.0751 6.01975 14.045 6.06987 13.9849 6.17011L13.0107 7.79377Z\" stroke=\"currentColor\" stroke-miterlimit=\"10\"/></svg><span class=\"triggerLabel\">设置</span></button></div></div>\n    </div>\n  </div>\n</div>",
+     "css": "/* 状态模拟：:hover 无法静态触发，下面是 Rows.module.css 中 `.sessionRow:hover` / `.sessionRow.menuOpen` / `.projectRow:hover` 相关规则的原样副本，挂在 .hoverRow 上。 */\n.sessionRow.hoverRow { background: var(--dsw-alias-interactive-bg-hover); }\n.sessionRow.hoverRow .rowActions { display: inline-flex; }\n.sessionRow.hoverRow .time,\n.sessionRow.hoverRow .pinIndicator { display: none; }\n.sessionRow.hoverRow .title { text-overflow: clip; }\n\n.projectRow.hoverRow { background: var(--dsw-alias-interactive-bg-hover); }\n.projectRow.hoverRow .chevron { display: inline-flex; }\n.projectRow.hoverRow .folder { display: none; }\n.projectRow.hoverRow .rowActions { display: inline-flex; }\n\n.searchResultRow.hoverRow { background: var(--dsw-alias-interactive-bg-hover); }\n.searchResultRow.hoverRow .rowActions { display: inline-flex; }"
+    },
+    {
+     "label": "会话行三态：选中 / 悬停 / 进行中，外加项目组头",
+     "note": "悬停模拟",
+     "html": "<div style=\"width:240px\"><div class=\"list\" style=\"padding:8px 0\">\n  <div class=\"projectRow\" role=\"treeitem\" aria-expanded=\"true\" data-row-key=\"workspace:ws-deepseek-harness\">\n  <span class=\"slot folder folderActive\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.55912 7.93683C2.67584 7.49906 3.0723 7.19446 3.52536 7.19446H13.6491C14.3061 7.19446 14.7846 7.81725 14.6153 8.45209L13.4411 12.856C13.3244 13.2938 12.9279 13.5984 12.4748 13.5984H2.35113C1.69411 13.5984 1.21562 12.9756 1.38489 12.3407L2.55912 7.93683Z\" fill=\"currentColor\" opacity=\"0.16\"/><path d=\"M13.6491 6.69446C14.6346 6.69453 15.3522 7.62895 15.0983 8.58118L13.9245 12.9845C13.7494 13.6412 13.1539 14.0988 12.4743 14.0988H2.35126C1.36574 14.0988 0.648153 13.1643 0.902044 12.212L2.07587 7.80774C2.25102 7.15128 2.84567 6.69455 3.52509 6.69446H13.6491ZM3.52509 7.69446C3.29865 7.69455 3.10004 7.84674 3.04169 8.06555L1.86786 12.4698C1.78345 12.7872 2.02285 13.0988 2.35126 13.0988H12.4743C12.7007 13.0988 12.8992 12.9463 12.9577 12.7277L14.1325 8.32336C14.2171 8.00598 13.9776 7.69453 13.6491 7.69446H3.52509Z\" fill=\"currentColor\"/><path d=\"M4.7666 1.90137C5.13227 1.90144 5.48571 2.03525 5.75977 2.27734L7.27246 3.61328C7.36379 3.69382 7.48174 3.73828 7.60352 3.73828H12.3994C13.2276 3.73841 13.8993 4.41005 13.8994 5.23828V6.7168C13.8183 6.70327 13.735 6.69436 13.6494 6.69434H12.8994V5.23828C12.8993 4.96233 12.6754 4.73841 12.3994 4.73828H7.60352C7.23781 4.73828 6.88446 4.60438 6.61035 4.3623L5.09766 3.02637C5.00636 2.94576 4.88838 2.90144 4.7666 2.90137H2.0498C1.77366 2.90137 1.5498 3.12523 1.5498 3.40137V9.78223L0.902344 12.2119C0.648452 13.1642 1.36604 14.0986 2.35156 14.0986H2.0498C1.2214 14.0986 0.549838 13.427 0.549805 12.5986V3.40137C0.549805 2.57294 1.22138 1.90137 2.0498 1.90137H4.7666Z\" fill=\"currentColor\"/></svg></span>\n  <span class=\"slot chevron\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" class=\"arrow arrowOpen\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M5.5 4.5C5.5 4.40714 5.52586 4.31612 5.57467 4.23713C5.62349 4.15815 5.69334 4.09431 5.77639 4.05279C5.85945 4.01126 5.95242 3.99368 6.0449 4.00202C6.13738 4.01036 6.22572 4.04429 6.3 4.1L10.967 7.6C11.0291 7.64657 11.0795 7.70697 11.1142 7.77639C11.1489 7.84582 11.167 7.92238 11.167 8C11.167 8.07762 11.1489 8.15418 11.1142 8.22361C11.0795 8.29303 11.0291 8.35343 10.967 8.4L6.3 11.9C6.22572 11.9557 6.13738 11.9896 6.0449 11.998C5.95242 12.0063 5.85945 11.9887 5.77639 11.9472C5.69334 11.9057 5.62349 11.8419 5.57467 11.7629C5.52586 11.6839 5.5 11.5929 5.5 11.5V4.5Z\" fill=\"currentColor\"/></svg></span>\n  <span class=\"projectText\"><span class=\"title\">deepseek-harness</span></span>\n  <span class=\"rowActions\">\n    <button type=\"button\" class=\"c1-iconButton\" aria-label=\"工作区操作：deepseek-harness\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z\" fill=\"currentColor\"/><path d=\"M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z\" fill=\"currentColor\"/><path d=\"M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z\" fill=\"currentColor\"/></svg></button><button type=\"button\" class=\"c1-iconButton\" aria-label=\"在 deepseek-harness 中新建会话\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.37091 11.2501C1.58745 9.89288 1.32067 8.29835 1.61969 6.76006C1.91872 5.22177 2.76342 3.8433 3.99826 2.87846C5.2331 1.91362 6.77494 1.42737 8.33988 1.50925C9.90482 1.59113 11.3875 2.23562 12.5149 3.32406C13.6425 4.41269 14.3387 5.87206 14.4754 7.4334C14.612 8.99474 14.18 10.5529 13.2587 11.8209C12.3375 13.0888 10.9891 13.9813 9.46194 14.3337C8.18691 14.628 6.85895 14.5294 5.64989 14.0605C5.1712 13.8748 4.76962 13.4932 4.26534 13.3967C3.67413 13.2835 2.95257 13.5598 2.03794 14.3337\" stroke=\"currentColor\"/><path d=\"M8 5V11\" stroke=\"currentColor\"/><path d=\"M5 8H11\" stroke=\"currentColor\"/></svg></button>\n  </span>\n</div>\n  <div class=\"sessionRow selected\" role=\"treeitem\" aria-selected=\"true\" data-row-key=\"session:重构会话存储层\">\n  <span class=\"slot\"></span>\n  <span class=\"title\">重构会话存储层</span>\n  <span class=\"time\">5分钟</span>\n  \n  <span class=\"rowActions\"><button type=\"button\" class=\"c1-iconButton\" aria-label=\"会话操作：重构会话存储层\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z\" fill=\"currentColor\"/><path d=\"M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z\" fill=\"currentColor\"/><path d=\"M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z\" fill=\"currentColor\"/></svg></button></span>\n</div>\n  <div class=\"sessionRow hoverRow\" role=\"treeitem\" aria-selected=\"false\" data-row-key=\"session:统一按钮圆角\">\n  <span class=\"slot\"></span>\n  <span class=\"title\">统一按钮圆角</span>\n  <span class=\"time\">1小时</span>\n  \n  <span class=\"rowActions\"><button type=\"button\" class=\"c1-iconButton\" aria-label=\"会话操作：统一按钮圆角\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z\" fill=\"currentColor\"/><path d=\"M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z\" fill=\"currentColor\"/><path d=\"M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z\" fill=\"currentColor\"/></svg></button></span>\n</div>\n  <div class=\"sessionRow\" role=\"treeitem\" aria-selected=\"false\" data-row-key=\"session:修复 Windows 标题栏留白\">\n  <span class=\"slot\"><svg class=\"spinner\" data-state=\"ongoing\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><g class=\"spinnerMotion\"><circle class=\"spinnerTrack\" cx=\"12\" cy=\"12\" r=\"9.5\"/><circle class=\"spinnerArc\" cx=\"12\" cy=\"12\" r=\"9.5\"/></g></svg></span>\n  <span class=\"title\">修复 Windows 标题栏留白</span>\n  <span class=\"time\">刚刚</span>\n  \n  <span class=\"rowActions\"><button type=\"button\" class=\"c1-iconButton\" aria-label=\"会话操作：修复 Windows 标题栏留白\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z\" fill=\"currentColor\"/><path d=\"M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z\" fill=\"currentColor\"/><path d=\"M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z\" fill=\"currentColor\"/></svg></button></span>\n</div>\n  <div class=\"sessionRow\" role=\"treeitem\" aria-selected=\"false\" data-row-key=\"session:补全 ui-workspace README\">\n  <span class=\"slot\"><span class=\"c2-dot\" data-state=\"warning\" style=\"width:10px;height:10px\"></span></span>\n  <span class=\"title\">补全 ui-workspace README</span>\n  <span class=\"time\">2小时</span>\n  <span class=\"pinIndicator\" role=\"img\" aria-label=\"已置顶\" title=\"已置顶\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M9.96976 1.70572L13.1554 3.93629L10.9019 8.12317L11.5158 11.605L10.7192 12.7427L2.52767 7.00693L3.3243 5.86922L6.80612 5.25528L9.96976 1.70572Z\" fill=\"currentColor\" stroke=\"currentColor\" stroke-linejoin=\"round\"/><path d=\"M6.05285 9.47511C6.27284 9.16094 6.70586 9.08458 7.02003 9.30457C7.3342 9.52455 7.41055 9.95757 7.19057 10.2717L3.98587 14.4708L3.21223 13.9291L6.05285 9.47511Z\" fill=\"currentColor\"/></svg></span>\n  <span class=\"rowActions\"><button type=\"button\" class=\"c1-iconButton\" aria-label=\"会话操作：补全 ui-workspace README\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z\" fill=\"currentColor\"/><path d=\"M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z\" fill=\"currentColor\"/><path d=\"M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z\" fill=\"currentColor\"/></svg></button></span>\n</div>\n  <div class=\"sessionRow\" role=\"treeitem\" aria-selected=\"false\" data-row-key=\"session:新会话\">\n  <span class=\"slot\"></span>\n  <span class=\"title\">新会话</span>\n  \n  \n  \n</div>\n  <div class=\"projectRow\" role=\"treeitem\" aria-expanded=\"false\" data-row-key=\"workspace:ws-deepseek-harness\">\n  <span class=\"slot folder\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M1.50439 3.11059C1.50439 2.55831 1.95211 2.1106 2.50439 2.1106H5.43389C5.67773 2.1106 5.91318 2.19969 6.09593 2.36113L7.71649 3.79265C7.89924 3.95409 8.1347 4.04319 8.3785 4.04319H13.4958C14.0481 4.04319 14.4958 4.4909 14.4958 5.04319V12.8894C14.4958 13.4417 14.0481 13.8894 13.4958 13.8894H2.50439C1.95211 13.8894 1.50439 13.4417 1.50439 12.8894V4.04319V3.11059Z\" stroke=\"currentColor\"/><path d=\"M3.63501 7.66614H12.3647\" stroke=\"currentColor\"/></svg></span>\n  <span class=\"slot chevron\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" class=\"arrow arrowOpen\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M5.5 4.5C5.5 4.40714 5.52586 4.31612 5.57467 4.23713C5.62349 4.15815 5.69334 4.09431 5.77639 4.05279C5.85945 4.01126 5.95242 3.99368 6.0449 4.00202C6.13738 4.01036 6.22572 4.04429 6.3 4.1L10.967 7.6C11.0291 7.64657 11.0795 7.70697 11.1142 7.77639C11.1489 7.84582 11.167 7.92238 11.167 8C11.167 8.07762 11.1489 8.15418 11.1142 8.22361C11.0795 8.29303 11.0291 8.35343 10.967 8.4L6.3 11.9C6.22572 11.9557 6.13738 11.9896 6.0449 11.998C5.95242 12.0063 5.85945 11.9887 5.77639 11.9472C5.69334 11.9057 5.62349 11.8419 5.57467 11.7629C5.52586 11.6839 5.5 11.5929 5.5 11.5V4.5Z\" fill=\"currentColor\"/></svg></span>\n  <span class=\"projectText\"><span class=\"title\">未分组</span></span>\n  <span class=\"rowActions\">\n    <button type=\"button\" class=\"c1-iconButton\" aria-label=\"工作区操作：未分组\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z\" fill=\"currentColor\"/><path d=\"M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z\" fill=\"currentColor\"/><path d=\"M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z\" fill=\"currentColor\"/></svg></button><button type=\"button\" class=\"c1-iconButton\" aria-label=\"在 未分组 中新建会话\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.37091 11.2501C1.58745 9.89288 1.32067 8.29835 1.61969 6.76006C1.91872 5.22177 2.76342 3.8433 3.99826 2.87846C5.2331 1.91362 6.77494 1.42737 8.33988 1.50925C9.90482 1.59113 11.3875 2.23562 12.5149 3.32406C13.6425 4.41269 14.3387 5.87206 14.4754 7.4334C14.612 8.99474 14.18 10.5529 13.2587 11.8209C12.3375 13.0888 10.9891 13.9813 9.46194 14.3337C8.18691 14.628 6.85895 14.5294 5.64989 14.0605C5.1712 13.8748 4.76962 13.4932 4.26534 13.3967C3.67413 13.2835 2.95257 13.5598 2.03794 14.3337\" stroke=\"currentColor\"/><path d=\"M8 5V11\" stroke=\"currentColor\"/><path d=\"M5 8H11\" stroke=\"currentColor\"/></svg></button>\n  </span>\n</div>\n  <div class=\"sessionRow\" role=\"treeitem\" aria-selected=\"false\" data-row-key=\"session:未命名\">\n  <span class=\"slot\"></span>\n  <span class=\"title\">未命名</span>\n  <span class=\"time\">3天</span>\n  \n  <span class=\"rowActions\"><button type=\"button\" class=\"c1-iconButton\" aria-label=\"会话操作：未命名\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z\" fill=\"currentColor\"/><path d=\"M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z\" fill=\"currentColor\"/><path d=\"M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z\" fill=\"currentColor\"/></svg></button></span>\n</div>\n</div></div>",
+     "css": "/* 状态模拟：:hover 无法静态触发，下面是 Rows.module.css 中 `.sessionRow:hover` / `.sessionRow.menuOpen` / `.projectRow:hover` 相关规则的原样副本，挂在 .hoverRow 上。 */\n.sessionRow.hoverRow { background: var(--dsw-alias-interactive-bg-hover); }\n.sessionRow.hoverRow .rowActions { display: inline-flex; }\n.sessionRow.hoverRow .time,\n.sessionRow.hoverRow .pinIndicator { display: none; }\n.sessionRow.hoverRow .title { text-overflow: clip; }\n\n.projectRow.hoverRow { background: var(--dsw-alias-interactive-bg-hover); }\n.projectRow.hoverRow .chevron { display: inline-flex; }\n.projectRow.hoverRow .folder { display: none; }\n.projectRow.hoverRow .rowActions { display: inline-flex; }\n\n.searchResultRow.hoverRow { background: var(--dsw-alias-interactive-bg-hover); }\n.searchResultRow.hoverRow .rowActions { display: inline-flex; }"
+    },
+    {
+     "label": "收起轨（56px）：36×36 控件 + 鲸鱼标",
+     "note": "轨道静息态，悬停时鲸鱼标换成面板图标",
+     "html": "<div style=\"width:56px;height:400px;display:flex\">\n  <div class=\"c4-root collapsed\">\n    <div class=\"logoRow\">\n      <button type=\"button\" class=\"c4-iconButton toggle\" aria-label=\"打开侧边栏\"><span class=\"railMark\" aria-hidden=\"true\"><svg width=\"24\" height=\"18\" viewBox=\"0 0 23.16 17.04\" fill=\"none\" aria-hidden=\"true\"><path d=\"M22.9168 1.43018C22.6713 1.31018 22.5658 1.53918 22.4223 1.65519C22.3733 1.69269 22.3318 1.74169 22.2903 1.78669C21.9317 2.1697 21.5127 2.42121 20.9657 2.39121C20.1657 2.34621 19.4827 2.59771 18.8787 3.20973C18.7502 2.45521 18.3236 2.0047 17.6746 1.71569C17.3351 1.56568 16.9916 1.41518 16.7536 1.08867C16.5876 0.856163 16.5421 0.597155 16.4591 0.341647C16.4061 0.187643 16.3536 0.0301382 16.1761 0.00363739C15.9836 -0.0263635 15.9081 0.135141 15.8326 0.270145C15.5306 0.822162 15.4136 1.43018 15.4251 2.0462C15.4516 3.43174 16.0366 4.53527 17.1991 5.3203C17.3311 5.4103 17.3651 5.5003 17.3236 5.63181C17.2441 5.90231 17.1501 6.16482 17.0671 6.43533C17.0141 6.60784 16.9351 6.64584 16.7501 6.57033C16.1121 6.30383 15.5611 5.90931 15.074 5.4328C14.2475 4.63328 13.5 3.75075 12.568 3.05973C12.349 2.89822 12.13 2.74822 11.9034 2.60522C10.9524 1.68169 12.028 0.923165 12.277 0.833162C12.5375 0.739159 12.3675 0.41615 11.5259 0.42015C10.6844 0.42365 9.91439 0.705658 8.93286 1.08117C8.78935 1.13767 8.63835 1.17867 8.48384 1.21267C7.59332 1.04367 6.66829 1.00617 5.70226 1.11517C3.88321 1.31768 2.43016 2.1777 1.36213 3.64575C0.0790928 5.4103 -0.222916 7.41536 0.146595 9.50642C0.535106 11.7105 1.66014 13.535 3.38869 14.9616C5.18125 16.4406 7.24581 17.1657 9.60138 17.0266C11.0319 16.9441 12.6245 16.7526 14.421 15.2321C14.874 15.4576 15.3496 15.5476 16.1381 15.6151C16.7456 15.6716 17.3306 15.5851 17.7836 15.4911C18.4931 15.3411 18.4441 14.6841 18.1876 14.5636C16.1081 13.595 16.5646 13.9891 16.1496 13.67C17.2061 12.42 18.8202 10.1979 19.3182 7.17235C19.3672 6.83834 19.4297 6.36783 19.4222 6.09732C19.4182 5.9312 19.4562 5.86831 19.6447 5.84931C20.1657 5.78931 20.6712 5.64681 21.1357 5.3913C22.4833 4.65528 23.0268 3.44624 23.1548 1.9972C23.1738 1.77569 23.1508 1.54668 22.9168 1.43018ZM11.1749 14.4736C9.15936 12.889 8.18184 12.3675 7.77832 12.39C7.40081 12.4125 7.46881 12.8445 7.55182 13.126C7.63882 13.404 7.75182 13.5955 7.91033 13.8396C8.01983 14.0011 8.09533 14.2411 7.80083 14.4216C7.15181 14.8231 6.02327 14.2866 5.97027 14.2601C4.65673 13.4865 3.5587 12.4655 2.78467 11.069C2.03715 9.72493 1.60314 8.28289 1.53164 6.74384C1.51264 6.37233 1.62214 6.24082 1.99215 6.17332C2.47916 6.08332 2.98118 6.06432 3.46769 6.13582C5.52476 6.43633 7.27581 7.35586 8.74385 8.8129C9.58188 9.64243 10.2159 10.634 10.8689 11.6025C11.5634 12.631 12.3105 13.611 13.262 14.4146C13.598 14.6961 13.866 14.9101 14.1225 15.0681C13.349 15.1546 12.058 15.1731 11.1749 14.4736ZM12.141 8.25988C12.141 8.09488 12.273 7.96338 12.439 7.96338C12.4765 7.96338 12.5105 7.97088 12.541 7.98188C12.5825 7.99688 12.6205 8.01938 12.6505 8.05338C12.7035 8.10588 12.7335 8.18088 12.7335 8.25988C12.7335 8.42489 12.6015 8.55639 12.4355 8.55639C12.2695 8.55639 12.141 8.42489 12.141 8.25988ZM15.1415 9.79893C14.949 9.87793 14.7565 9.94544 14.5715 9.95294C14.2845 9.96794 13.9715 9.85143 13.8015 9.70893C13.5375 9.48742 13.3485 9.36342 13.2695 8.97691C13.2355 8.8119 13.2545 8.55639 13.2845 8.40989C13.3525 8.09438 13.277 7.89187 13.0545 7.70787C12.8735 7.55786 12.643 7.51636 12.39 7.51636C12.2955 7.51636 12.209 7.47486 12.1445 7.44136C12.039 7.38886 11.9519 7.25735 12.035 7.09585C12.0615 7.04335 12.19 6.91584 12.22 6.89334C12.5635 6.69784 12.9595 6.76184 13.326 6.90834C13.6655 7.04735 13.9225 7.30236 14.292 7.66287C14.6695 8.09838 14.7375 8.21838 14.9525 8.54539C15.1225 8.8009 15.277 9.06341 15.3831 9.36392C15.4471 9.55142 15.3641 9.70493 15.1415 9.79893Z\" fill=\"currentColor\"/></svg></span><svg width=\"18\" height=\"18\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z\" stroke=\"currentColor\"/><path d=\"M5.5 1.5V14.5\" stroke=\"currentColor\"/></svg></button>\n    </div>\n    <button type=\"button\" class=\"newSession\" aria-label=\"新建会话\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.37091 11.2501C1.58745 9.89288 1.32067 8.29835 1.61969 6.76006C1.91872 5.22177 2.76342 3.8433 3.99826 2.87846C5.2331 1.91362 6.77494 1.42737 8.33988 1.50925C9.90482 1.59113 11.3875 2.23562 12.5149 3.32406C13.6425 4.41269 14.3387 5.87206 14.4754 7.4334C14.612 8.99474 14.18 10.5529 13.2587 11.8209C12.3375 13.0888 10.9891 13.9813 9.46194 14.3337C8.18691 14.628 6.85895 14.5294 5.64989 14.0605C5.1712 13.8748 4.76962 13.4932 4.26534 13.3967C3.67413 13.2835 2.95257 13.5598 2.03794 14.3337\" stroke=\"currentColor\"/><path d=\"M8 5V11\" stroke=\"currentColor\"/><path d=\"M5 8H11\" stroke=\"currentColor\"/></svg></button>\n    <nav class=\"panelList\" aria-label=\"全局面板\">\n      <button type=\"button\" class=\"panelRow panelActive\" aria-label=\"插件\" aria-current=\"page\"><span class=\"panelGlyph\" aria-hidden=\"true\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M5.54492 2.06738C5.91034 2.06754 6.26318 2.20149 6.53711 2.44336L7.94043 3.68164V4.7998C7.71462 4.74105 7.50367 4.63139 7.32617 4.47461L5.87598 3.19238C5.78477 3.11185 5.66658 3.06754 5.54492 3.06738H2.94922C2.67322 3.06738 2.44946 3.29145 2.44922 3.56738V12.4326C2.44927 12.7087 2.67311 12.9326 2.94922 12.9326H12.9326C13.2086 12.9325 13.4326 12.7086 13.4326 12.4326V8.53613H14.4326V12.4326C14.4326 13.2609 13.7609 13.9325 12.9326 13.9326H2.94922C2.12083 13.9326 1.44927 13.261 1.44922 12.4326V3.56738C1.44946 2.73916 2.12094 2.06738 2.94922 2.06738H5.54492Z\" fill=\"currentColor\"/><path d=\"M9.75977 4.50208H14.5509\" stroke=\"currentColor\"/><path d=\"M12.1492 6.89758L12.1492 2.10642\" stroke=\"currentColor\"/></svg></span></button>\n      <button type=\"button\" class=\"panelRow\" aria-label=\"自动化任务\"><span class=\"panelGlyph\" aria-hidden=\"true\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\" stroke=\"currentColor\" stroke-linecap=\"round\"><path d=\"M2.3 5h5.85M12.05 5h1.65\"/><circle cx=\"9.95\" cy=\"5\" r=\"1.45\"/><path d=\"M2.3 11h1.65M7.85 11h5.85\"/><circle cx=\"5.75\" cy=\"11\" r=\"1.45\"/></svg></span></button>\n    </nav>\n    <div class=\"regionArea\"></div>\n    <div class=\"footArea\"><div class=\"settingsArea\"><div class=\"triggerRow railRow\"><button type=\"button\" class=\"trigger c3-rail\" aria-label=\"设置\" aria-haspopup=\"dialog\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 9.75012C8.9665 9.75012 9.75 8.96662 9.75 8.00012C9.75 7.03362 8.9665 6.25012 8 6.25012C7.0335 6.25012 6.25 7.03362 6.25 8.00012C6.25 8.96662 7.0335 9.75012 8 9.75012Z\" stroke=\"currentColor\"/><path d=\"M13.0107 7.79377C12.9505 7.89401 12.9205 7.94413 12.9205 7.99951C12.9205 8.0549 12.9505 8.10502 13.0106 8.20528L13.9849 9.83006C14.045 9.93029 14.0751 9.9804 14.0751 10.0358C14.0751 10.0911 14.045 10.1413 13.9849 10.2415L13.0037 11.8777C12.9468 11.9726 12.9184 12.0201 12.8725 12.0461C12.8267 12.072 12.7713 12.072 12.6607 12.072H10.6704C10.5598 12.072 10.5045 12.072 10.4586 12.098C10.4128 12.1239 10.3843 12.1714 10.3274 12.2662L9.33825 13.9142C9.28133 14.009 9.25287 14.0564 9.20703 14.0823C9.16118 14.1083 9.10588 14.1083 8.99529 14.1083H7.00486C6.89426 14.1083 6.83896 14.1083 6.79312 14.0823C6.74727 14.0564 6.71881 14.009 6.6619 13.9142L5.67273 12.2662C5.61581 12.1714 5.58735 12.1239 5.54151 12.098C5.49566 12.072 5.44036 12.072 5.32977 12.072H3.33945C3.2288 12.072 3.17347 12.072 3.12761 12.0461C3.08176 12.0201 3.0533 11.9726 2.9964 11.8777L2.0152 10.2415C1.9551 10.1413 1.92505 10.0911 1.92505 10.0358C1.92505 9.9804 1.9551 9.93029 2.0152 9.83006L2.98951 8.20528C3.04963 8.10502 3.07969 8.0549 3.07969 7.99951C3.07968 7.94413 3.04961 7.89401 2.98946 7.79377L2.01529 6.17011C1.95514 6.06987 1.92507 6.01975 1.92507 5.96437C1.92506 5.90899 1.95512 5.85886 2.01524 5.7586L2.9964 4.1224C3.0533 4.0275 3.08176 3.98005 3.12761 3.95408C3.17347 3.92811 3.2288 3.92811 3.33945 3.92811H5.32977C5.44036 3.92811 5.49566 3.92811 5.54151 3.90216C5.58735 3.87621 5.61581 3.82879 5.67273 3.73397L6.6619 2.08599C6.71881 1.99116 6.74727 1.94375 6.79312 1.9178C6.83896 1.89185 6.89426 1.89185 7.00486 1.89185H8.99529C9.10588 1.89185 9.16118 1.89185 9.20703 1.9178C9.25287 1.94375 9.28133 1.99116 9.33825 2.08599L10.3274 3.73397C10.3843 3.82879 10.4128 3.87621 10.4586 3.90216C10.5045 3.92811 10.5598 3.92811 10.6704 3.92811H12.6607C12.7713 3.92811 12.8267 3.92811 12.8725 3.95408C12.9184 3.98005 12.9468 4.0275 13.0037 4.1224L13.9849 5.7586C14.045 5.85886 14.0751 5.90899 14.0751 5.96437C14.0751 6.01975 14.045 6.06987 13.9849 6.17011L13.0107 7.79377Z\" stroke=\"currentColor\" stroke-miterlimit=\"10\"/></svg></button></div></div></div>\n  </div>\n</div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "collapsed",
+     "type": "boolean",
+     "default": "—",
+     "desc": "列是否收起；组件据此在 150ms 后卸载宽内容并切成轨道布局。"
+    },
+    {
+     "name": "width",
+     "type": "number",
+     "default": "—",
+     "desc": "展开宽度（像素），收起过程中用内联 width 冻结在最后一帧的展开宽度。"
+    },
+    {
+     "name": "startSession",
+     "type": "() => void",
+     "default": "—",
+     "desc": "品牌行（非 macOS）与\"新会话\"条共用的新会话入口。"
+    },
+    {
+     "name": "toggleSidebar",
+     "type": "() => void",
+     "default": "—",
+     "desc": "面板开关；轨道态下它就是展开按钮。"
+    },
+    {
+     "name": "selectPanel",
+     "type": "(id: MainPanelId) => void",
+     "default": "—",
+     "desc": "全局面板行的选择回调，由 owner 转交布局服务。"
+    },
+    {
+     "name": "usePanels / usePanelInfo / useShortcuts",
+     "type": "框架 hook 座",
+     "default": "—",
+     "desc": "面板列表、当前选中面板、快捷键目录；每一行只订阅自己的选中态。"
+    },
+    {
+     "name": "t / renderSlot",
+     "type": "PropsLocale<'sidebar'> / PropsRenderSlots",
+     "default": "—",
+     "desc": "副本与六个子槽（brand.mark / brand.name / panellist / workspaces / settings / footer.action / toggle.badge）。"
+    }
+   ],
+   "notes": "会话行与项目行的底色不是 <code>--dsw-specific-sidebar-nav-item-*</code>：那是 ui-settings 面板内导航（<code>SettingsRoot .navCell</code>）用的族。侧栏里的行由 ui-workspace 画，悬停/选中都用 <code>--dsw-alias-interactive-bg-hover</code>，文件夹高亮用 <code>--dsw-alias-state-business-primary</code>。<code>.quietBars</code> 只改绑滚动条变量、不动布局，因此露出滚动条不会让行位移。",
+   "keywords": [
+    "侧栏",
+    "侧边栏",
+    "导航列",
+    "sidebar",
+    "rail",
+    "rail 轨"
+   ]
+  },
+  {
+   "id": "header-leading-controls",
+   "name": "HeaderLeadingControls",
+   "exportName": "HeaderLeadingControls",
+   "zh": "窗口控制",
+   "group": "shell",
+   "summary": "macOS 桌面把侧栏整列藏起来时，补回\"打开侧栏\"和\"新建会话\"的两个 28×28 控件：<code>flex</code> 横排、8px 间距，与对话头部右侧控件同一节奏。定位（<code>top: 11px</code> / <code>left: 88px</code>、窗口拖拽扣除）全部由 AppFrame 的 <code>.leadingSeat</code> 负责，这个盒子只管排队；图标 16px，颜色 <code>--dsw-alias-label-secondary</code>，悬停铺 <code>--dsw-alias-interactive-bg-hover</code>。",
+   "source": "packages/client/ui-sidebar/src/client/HeaderLeadingControls.tsx#L26",
+   "css": [
+    "packages/client/ui-sidebar/src/client/HeaderLeadingControls.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-secondary",
+    "--dsw-radius-sm"
+   ],
+   "specimens": [
+    {
+     "label": "两个 28×28 控件（8px 间距）",
+     "html": "<div class=\"controls\"><button type=\"button\" class=\"iconButton\" aria-label=\"打开侧边栏\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z\" stroke=\"currentColor\"/><path d=\"M5.5 1.5V14.5\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"iconButton\" aria-label=\"新建会话\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.37091 11.2501C1.58745 9.89288 1.32067 8.29835 1.61969 6.76006C1.91872 5.22177 2.76342 3.8433 3.99826 2.87846C5.2331 1.91362 6.77494 1.42737 8.33988 1.50925C9.90482 1.59113 11.3875 2.23562 12.5149 3.32406C13.6425 4.41269 14.3387 5.87206 14.4754 7.4334C14.612 8.99474 14.18 10.5529 13.2587 11.8209C12.3375 13.0888 10.9891 13.9813 9.46194 14.3337C8.18691 14.628 6.85895 14.5294 5.64989 14.0605C5.1712 13.8748 4.76962 13.4932 4.26534 13.3967C3.67413 13.2835 2.95257 13.5598 2.03794 14.3337\" stroke=\"currentColor\"/><path d=\"M8 5V11\" stroke=\"currentColor\"/><path d=\"M5 8H11\" stroke=\"currentColor\"/></svg></button></div>"
+    },
+    {
+     "label": "悬停模拟",
+     "note": "悬停模拟",
+     "html": "<div class=\"controls\"><button type=\"button\" class=\"iconButton forceHover\" aria-label=\"打开侧边栏\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z\" stroke=\"currentColor\"/><path d=\"M5.5 1.5V14.5\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"iconButton\" aria-label=\"新建会话\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.37091 11.2501C1.58745 9.89288 1.32067 8.29835 1.61969 6.76006C1.91872 5.22177 2.76342 3.8433 3.99826 2.87846C5.2331 1.91362 6.77494 1.42737 8.33988 1.50925C9.90482 1.59113 11.3875 2.23562 12.5149 3.32406C13.6425 4.41269 14.3387 5.87206 14.4754 7.4334C14.612 8.99474 14.18 10.5529 13.2587 11.8209C12.3375 13.0888 10.9891 13.9813 9.46194 14.3337C8.18691 14.628 6.85895 14.5294 5.64989 14.0605C5.1712 13.8748 4.76962 13.4932 4.26534 13.3967C3.67413 13.2835 2.95257 13.5598 2.03794 14.3337\" stroke=\"currentColor\"/><path d=\"M8 5V11\" stroke=\"currentColor\"/><path d=\"M5 8H11\" stroke=\"currentColor\"/></svg></button></div>",
+     "css": "/* 状态模拟：:hover 无法静态触发，下面是 HeaderLeadingControls.module.css 中 `.iconButton:hover` 的原样副本。 */\n.iconButton.forceHover { background: var(--dsw-alias-interactive-bg-hover); }"
+    },
+    {
+     "label": "在 shell.leading 座位上的位置",
+     "note": "座位几何来自 AppFrame .leadingSeat（top 11 / left 88）",
+     "html": "<div style=\"position:relative;width:420px;height:60px\"><div style=\"position:absolute;top:11px;left:88px\"><div class=\"controls\"><button type=\"button\" class=\"iconButton\" aria-label=\"打开侧边栏\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z\" stroke=\"currentColor\"/><path d=\"M5.5 1.5V14.5\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"iconButton\" aria-label=\"新建会话\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.37091 11.2501C1.58745 9.89288 1.32067 8.29835 1.61969 6.76006C1.91872 5.22177 2.76342 3.8433 3.99826 2.87846C5.2331 1.91362 6.77494 1.42737 8.33988 1.50925C9.90482 1.59113 11.3875 2.23562 12.5149 3.32406C13.6425 4.41269 14.3387 5.87206 14.4754 7.4334C14.612 8.99474 14.18 10.5529 13.2587 11.8209C12.3375 13.0888 10.9891 13.9813 9.46194 14.3337C8.18691 14.628 6.85895 14.5294 5.64989 14.0605C5.1712 13.8748 4.76962 13.4932 4.26534 13.3967C3.67413 13.2835 2.95257 13.5598 2.03794 14.3337\" stroke=\"currentColor\"/><path d=\"M8 5V11\" stroke=\"currentColor\"/><path d=\"M5 8H11\" stroke=\"currentColor\"/></svg></button></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "toggleSidebar",
+     "type": "() => void",
+     "default": "—",
+     "desc": "注入的侧栏开关；座位只在侧栏收起时挂载，所以按钮语义恒为\"打开\"。"
+    },
+    {
+     "name": "startSession",
+     "type": "() => void",
+     "default": "—",
+     "desc": "注入的新会话入口。"
+    },
+    {
+     "name": "useShortcuts",
+     "type": "框架 hook 座",
+     "default": "—",
+     "desc": "读取 sidebar.left.toggle 与 session.new 的键位，进 tooltip 与 aria-keyshortcuts。"
+    },
+    {
+     "name": "t",
+     "type": "PropsLocale<'sidebar'>",
+     "default": "—",
+     "desc": "toggle.open 与 session.new.label 两个文案。"
+    }
+   ],
+   "notes": "无障碍名称是必填项：两个按钮都用 <code>aria-label</code> 命名并带 <code>aria-keyshortcuts</code>。同一个控件在展开态属于侧栏（<code>SidebarRoot .logoRow</code>），这里只是窗口 chrome 里的复本，两处间距都取 8px。",
+   "keywords": [
+    "窗口控制",
+    "标题栏",
+    "traffic light",
+    "leading",
+    "macOS"
+   ]
+  },
+  {
+   "id": "rightbar-seat",
+   "name": "RightbarSeat",
+   "exportName": "RightbarSeat",
+   "zh": "右侧栏",
+   "group": "shell",
+   "summary": "右侧栏在 frame 右列里的坐席与它画出的面板。<code>.panel</code> 绝对定位并锚在 frame 右边缘（top/right/bottom 0），内部 <code>.panelBody</code> 交给 ui-dockkit 的 <code>.surface</code> / <code>.tabLayout</code>；标签轨就是 dockkit 的 38px 行（28px 高 + 10px 上内边距，与对话头部同高），轨道里是 28px 的 chip（激活 chip 底色 <code>--dsw-alias-markdown-tag</code>）、10px 的 slot 分隔条、28px 的加号，末端 <code>.stripChrome</code> 放嵌入方的两个 28px 控件（全屏切换 + 收起）。内容区 <code>.paneBody</code> 自己滚动，面板底色取 <code>--dsw-alias-bg-base</code>。收起时 docked 内容不卸载，只按 <code>--dsh-sidebar-width</code> 平移到 frame 右边缘之外；全屏把 dock 层从 10 提到 40 并把宽度写成 100vw。",
+   "source": "packages/client/ui-sidebar-right/src/client/shell/SidebarRight.tsx#L352",
+   "css": [
+    "packages/client/ui-dockkit/src/components/dockkit.module.css",
+    "packages/client/ui-sidebar-right/src/client/shell/SidebarRight.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-base",
+    "--dsw-alias-border-l4",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-markdown-tag",
+    "--dsw-alias-brand-primary-new-colorprimary-new-color",
+    "--dsw-radius-sm",
+    "--dsw-radius-md",
+    "--dsw-alias-scrollbar-bg-l2",
+    "--dsw-alias-scrollbar-hover-l2"
+   ],
+   "specimens": [
+    {
+     "label": "展开的面板（380px）：38px 标签轨 + 内容区",
+     "html": "<div style=\"width:380px;height:300px;position:relative\"><div class=\"panel\" data-sidebar-right-open=\"true\" data-sidebar-right-panel=\"push\" style=\"width:380px;--dsh-sidebar-width:380px\">\n  <div class=\"panelBody\">\n    <div class=\"surface\">\n      <div class=\"tabLayout\" style=\"grid-template-columns:minmax(0,1fr)\">\n        <div class=\"tabCell\" data-dockkit-host=\"dock\" data-dockkit-column=\"0\" style=\"grid-column:1;grid-row:1\">\n          <section class=\"tabHost pane\" data-dockkit-pane=\"pane-1\" data-dockkit-pane-active=\"true\">\n            <div class=\"tabHostHeader\">\n              <div class=\"tabStrip\" role=\"tablist\" data-dockkit-strip=\"pane-1\">\n                <div class=\"stripTabs\">\n                  <div class=\"tab tabActive\" role=\"tab\" aria-selected=\"true\" tabindex=\"0\" data-dockkit-tab=\"tab-files\"><span class=\"c0-tabTitle\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M1.50439 3.11059C1.50439 2.55831 1.95211 2.1106 2.50439 2.1106H5.43389C5.67773 2.1106 5.91318 2.19969 6.09593 2.36113L7.71649 3.79265C7.89924 3.95409 8.1347 4.04319 8.3785 4.04319H13.4958C14.0481 4.04319 14.4958 4.4909 14.4958 5.04319V12.8894C14.4958 13.4417 14.0481 13.8894 13.4958 13.8894H2.50439C1.95211 13.8894 1.50439 13.4417 1.50439 12.8894V4.04319V3.11059Z\" stroke=\"currentColor\"/><path d=\"M3.63501 7.66614H12.3647\" stroke=\"currentColor\"/></svg><span>文件</span></span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭文件\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div>\n                  <div class=\"slot\"></div>\n                  <div class=\"tab\" role=\"tab\" aria-selected=\"false\" tabindex=\"-1\" data-dockkit-tab=\"tab-terminal\"><span class=\"c0-tabTitle\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z\" stroke=\"currentColor\"/><path d=\"M5.5 1.5V14.5\" stroke=\"currentColor\"/></svg><span>终端</span></span></div>\n                </div>\n                <div class=\"stripFill\"></div>\n                <button type=\"button\" class=\"addTab\" aria-label=\"新建标签\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M5.54492 2.06738C5.91034 2.06754 6.26318 2.20149 6.53711 2.44336L7.94043 3.68164V4.7998C7.71462 4.74105 7.50367 4.63139 7.32617 4.47461L5.87598 3.19238C5.78477 3.11185 5.66658 3.06754 5.54492 3.06738H2.94922C2.67322 3.06738 2.44946 3.29145 2.44922 3.56738V12.4326C2.44927 12.7087 2.67311 12.9326 2.94922 12.9326H12.9326C13.2086 12.9325 13.4326 12.7086 13.4326 12.4326V8.53613H14.4326V12.4326C14.4326 13.2609 13.7609 13.9325 12.9326 13.9326H2.94922C2.12083 13.9326 1.44927 13.261 1.44922 12.4326V3.56738C1.44946 2.73916 2.12094 2.06738 2.94922 2.06738H5.54492Z\" fill=\"currentColor\"/><path d=\"M9.75977 4.50208H14.5509\" stroke=\"currentColor\"/><path d=\"M12.1492 6.89758L12.1492 2.10642\" stroke=\"currentColor\"/></svg></button>\n                <div class=\"stripChrome\" data-dockkit-strip-chrome=\"true\">\n                  <button type=\"button\" class=\"c1-iconButton\" aria-label=\"全屏\" data-sidebar-right-mode=\"fullscreen\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M2.33203 10.4054V13.1681C2.33229 13.444 2.55605 13.6681 2.83203 13.6681H5.49512V14.6681H2.83203C2.00376 14.6681 1.33229 13.9963 1.33203 13.1681V10.4054H2.33203ZM14.6689 13.1681C14.6687 13.996 13.9968 14.6676 13.1689 14.6681H10.4951V13.6681H13.1689C13.4445 13.6676 13.6687 13.4437 13.6689 13.1681V10.4054H14.6689V13.1681ZM13.1689 1.33118C13.9969 1.33163 14.6688 2.00315 14.6689 2.83118V5.4054H13.6689V2.83118C13.6688 2.55544 13.4446 2.33162 13.1689 2.33118H10.4951V1.33118H13.1689ZM5.49512 2.33118H2.83203C2.55598 2.33118 2.33218 2.55516 2.33203 2.83118V5.4054H1.33203V2.83118C1.33218 2.00288 2.00369 1.33118 2.83203 1.33118H5.49512V2.33118Z\" fill=\"currentColor\"/></svg></button>\n                  <button type=\"button\" class=\"c1-iconButton\" aria-label=\"收起右侧边栏\"><span class=\"collapseGlyph\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z\" stroke=\"currentColor\"/><path d=\"M5.5 1.5V14.5\" stroke=\"currentColor\"/></svg></span></button>\n                </div>\n              </div>\n            </div>\n            <div class=\"tabHostBody paneBody\">\n              <div class=\"tabBody\" data-sidebar-right-tab=\"tab-files\"><div style=\"padding:12px\">文件树内容（FilesBody）</div></div>\n            </div>\n          </section>\n        </div>\n      </div>\n    </div>\n  </div>\n</div></div>"
+    },
+    {
+     "label": "轨道末端的两个控件",
+     "note": "收起控件用 .collapseGlyph 做水平镜像，与展开按钮同一个字形",
+     "html": "<div class=\"stripChrome\" data-dockkit-strip-chrome=\"true\" style=\"height:38px\"><button type=\"button\" class=\"c1-iconButton\" aria-label=\"全屏\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M2.33203 10.4054V13.1681C2.33229 13.444 2.55605 13.6681 2.83203 13.6681H5.49512V14.6681H2.83203C2.00376 14.6681 1.33229 13.9963 1.33203 13.1681V10.4054H2.33203ZM14.6689 13.1681C14.6687 13.996 13.9968 14.6676 13.1689 14.6681H10.4951V13.6681H13.1689C13.4445 13.6676 13.6687 13.4437 13.6689 13.1681V10.4054H14.6689V13.1681ZM13.1689 1.33118C13.9969 1.33163 14.6688 2.00315 14.6689 2.83118V5.4054H13.6689V2.83118C13.6688 2.55544 13.4446 2.33162 13.1689 2.33118H10.4951V1.33118H13.1689ZM5.49512 2.33118H2.83203C2.55598 2.33118 2.33218 2.55516 2.33203 2.83118V5.4054H1.33203V2.83118C1.33218 2.00288 2.00369 1.33118 2.83203 1.33118H5.49512V2.33118Z\" fill=\"currentColor\"/></svg></button><button type=\"button\" class=\"c1-iconButton\" aria-label=\"收起右侧边栏\"><span class=\"collapseGlyph\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z\" stroke=\"currentColor\"/><path d=\"M5.5 1.5V14.5\" stroke=\"currentColor\"/></svg></span></button></div>"
+    },
+    {
+     "label": "标签类型没有注册者时的占位",
+     "note": "会话日志里的 tab 类型随插件卸载后就是这个状态",
+     "html": "<div class=\"tabBody\" style=\"height:80px\"><p class=\"unavailable\">这类内容还没有可用的查看方式。</p></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "sessionId",
+     "type": "SessionId",
+     "default": "—",
+     "desc": "这个坐席画的会话；每个会话一份 surface store。"
+    },
+    {
+     "name": "width",
+     "type": "number",
+     "default": "—",
+     "desc": "frame 算出的正常宽度，写进 .panel 的 width 与 --dsh-sidebar-width。"
+    },
+    {
+     "name": "viewportWidth / canShow",
+     "type": "number / boolean",
+     "default": "—",
+     "desc": "小于 768px 自动全屏；canShow 为假时收起面板而不留空轨道。"
+    },
+    {
+     "name": "syncPresentation",
+     "type": "(p: SidebarRightPresentation) => void",
+     "default": "—",
+     "desc": "把 shown / track / fullscreen 三个事实报给 frame；卸载时回报全 false 交还轨道。"
+    },
+    {
+     "name": "toggleFullscreen / splitPane / measureRoom",
+     "type": "注入回调",
+     "default": "—",
+     "desc": "全屏切换、分屏请求与房间测量，全部经注入面而非 ctx。"
+    },
+    {
+     "name": "useStore / actions / t / renderSlot",
+     "type": "组合座",
+     "default": "—",
+     "desc": "surface store、绑定到会话的动作、副本，以及 tab 体/标题/菜单三个子槽。"
+    }
+   ],
+   "notes": "面板自己不带标题栏：两个控件挂在 dockkit 的 strip 末端，所以标签轨就是面板的整个上边缘。<code>.session</code> 只做 <code>display: contents</code>（隐藏时 <code>display: none</code>），全屏时 <code>.panel</code> 的 <code>--dsh-dockkit-dock-layer</code> 从 10 提到 40，仍低于独立浮层（60）。",
+   "keywords": [
+    "右侧栏",
+    "右栏",
+    "标签轨",
+    "dockkit",
+    "rightbar",
+    "tab strip"
+   ]
+  },
+  {
+   "id": "files-body",
+   "name": "FilesBody",
+   "exportName": "FilesBody",
+   "zh": "文件树",
+   "group": "shell",
+   "summary": "右侧栏文件标签的主体：38px 表头（<code>PathLabel</code> 根路径 + 28px 重新读取按钮 + <code>sidebar.right.tab.files.actions</code> 槽）压在一条 0.5px 分隔线上，下面是唯一滚动区，逐层列出会话工作区根目录。目录行是 <code>aria-expanded</code> 的按钮（展开时换成打开状态的文件夹图标），文件行走 <code>FileTypeIcon</code>，既不是文件也不是目录的条目灰化且拒绝打开；嵌套层级每层缩进 18px，行内边距 5px/10px、圆角 <code>--dsw-radius-md</code>。",
+   "source": "packages/client/ui-sidebar-files/src/client/FilesBody.tsx#L140",
+   "css": [
+    "packages/client/ui-primitives/src/PathLabel.module.css",
+    "packages/client/ui-primitives/src/FileTypeIcon.module.css",
+    "packages/client/ui-sidebar-files/src/client/FilesBody.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-border-l3",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-radius-md",
+    "--dsw-radius-sm",
+    "--dsw-static-deepseek-500",
+    "--dsw-static-neutral-300",
+    "--dsw-static-neutral-400",
+    "--dsw-static-neutral-00"
+   ],
+   "specimens": [
+    {
+     "label": "树：根路径表头 + 逐层展开",
+     "note": "代码文件在真实界面走 CodeFileIcon 的彩色语言图标，这里用通用 code 字形表示",
+     "html": "<div style=\"width:300px;height:330px;display:flex\"><div class=\"root\">\n  <div class=\"header\">\n    <span class=\"c0-path c2-path\" title=\"/home/lk/deepseek-harness\" data-path-label=\"\"><span class=\"text\"><span class=\"directory\">/home/lk/</span><span class=\"c0-name\">deepseek-harness</span></span></span>\n    <button type=\"button\" class=\"tool\" aria-label=\"重新读取\"><svg width=\"15\" height=\"15\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M14.5001 8C14.5 9.28552 14.1188 10.5422 13.4045 11.611C12.6903 12.6799 11.6752 13.5129 10.4875 14.0049C9.29982 14.4968 7.99295 14.6255 6.73212 14.3747C5.4713 14.124 4.31314 13.505 3.4041 12.596C2.49514 11.687 1.87614 10.5288 1.62537 9.26798C1.37459 8.00716 1.50331 6.70028 1.99525 5.51261C2.48719 4.32494 3.32025 3.30981 4.3891 2.59557C5.45795 1.88134 6.71458 1.50008 8.0001 1.5C9.9001 1.5 11.7001 2.3 13.0001 3.6L14.5001 5.1\" stroke=\"currentColor\"/><path d=\"M14.4999 1.5V5.1H10.8999\" stroke=\"currentColor\"/></svg></button>\n  </div>\n  <div class=\"body\" data-files-body=\"\">\n    <ul class=\"level\">\n      <li class=\"item\" data-files-entry=\"directory\" data-files-path=\"/home/lk/deepseek-harness/packages\">\n        <button type=\"button\" class=\"row\" aria-expanded=\"true\"><svg class=\"c2-icon\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.55912 7.93683C2.67584 7.49906 3.0723 7.19446 3.52536 7.19446H13.6491C14.3061 7.19446 14.7846 7.81725 14.6153 8.45209L13.4411 12.856C13.3244 13.2938 12.9279 13.5984 12.4748 13.5984H2.35113C1.69411 13.5984 1.21562 12.9756 1.38489 12.3407L2.55912 7.93683Z\" fill=\"currentColor\" opacity=\"0.16\"/><path d=\"M13.6491 6.69446C14.6346 6.69453 15.3522 7.62895 15.0983 8.58118L13.9245 12.9845C13.7494 13.6412 13.1539 14.0988 12.4743 14.0988H2.35126C1.36574 14.0988 0.648153 13.1643 0.902044 12.212L2.07587 7.80774C2.25102 7.15128 2.84567 6.69455 3.52509 6.69446H13.6491ZM3.52509 7.69446C3.29865 7.69455 3.10004 7.84674 3.04169 8.06555L1.86786 12.4698C1.78345 12.7872 2.02285 13.0988 2.35126 13.0988H12.4743C12.7007 13.0988 12.8992 12.9463 12.9577 12.7277L14.1325 8.32336C14.2171 8.00598 13.9776 7.69453 13.6491 7.69446H3.52509Z\" fill=\"currentColor\"/><path d=\"M4.7666 1.90137C5.13227 1.90144 5.48571 2.03525 5.75977 2.27734L7.27246 3.61328C7.36379 3.69382 7.48174 3.73828 7.60352 3.73828H12.3994C13.2276 3.73841 13.8993 4.41005 13.8994 5.23828V6.7168C13.8183 6.70327 13.735 6.69436 13.6494 6.69434H12.8994V5.23828C12.8993 4.96233 12.6754 4.73841 12.3994 4.73828H7.60352C7.23781 4.73828 6.88446 4.60438 6.61035 4.3623L5.09766 3.02637C5.00636 2.94576 4.88838 2.90144 4.7666 2.90137H2.0498C1.77366 2.90137 1.5498 3.12523 1.5498 3.40137V9.78223L0.902344 12.2119C0.648452 13.1642 1.36604 14.0986 2.35156 14.0986H2.0498C1.2214 14.0986 0.549838 13.427 0.549805 12.5986V3.40137C0.549805 2.57294 1.22138 1.90137 2.0498 1.90137H4.7666Z\" fill=\"currentColor\"/></svg><span class=\"c2-name\">packages</span></button>\n        <ul class=\"level\">\n          <li class=\"item\" data-files-entry=\"directory\" data-files-path=\"/home/lk/deepseek-harness/packages/client\">\n            <button type=\"button\" class=\"row\" aria-expanded=\"true\"><svg class=\"c2-icon\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.55912 7.93683C2.67584 7.49906 3.0723 7.19446 3.52536 7.19446H13.6491C14.3061 7.19446 14.7846 7.81725 14.6153 8.45209L13.4411 12.856C13.3244 13.2938 12.9279 13.5984 12.4748 13.5984H2.35113C1.69411 13.5984 1.21562 12.9756 1.38489 12.3407L2.55912 7.93683Z\" fill=\"currentColor\" opacity=\"0.16\"/><path d=\"M13.6491 6.69446C14.6346 6.69453 15.3522 7.62895 15.0983 8.58118L13.9245 12.9845C13.7494 13.6412 13.1539 14.0988 12.4743 14.0988H2.35126C1.36574 14.0988 0.648153 13.1643 0.902044 12.212L2.07587 7.80774C2.25102 7.15128 2.84567 6.69455 3.52509 6.69446H13.6491ZM3.52509 7.69446C3.29865 7.69455 3.10004 7.84674 3.04169 8.06555L1.86786 12.4698C1.78345 12.7872 2.02285 13.0988 2.35126 13.0988H12.4743C12.7007 13.0988 12.8992 12.9463 12.9577 12.7277L14.1325 8.32336C14.2171 8.00598 13.9776 7.69453 13.6491 7.69446H3.52509Z\" fill=\"currentColor\"/><path d=\"M4.7666 1.90137C5.13227 1.90144 5.48571 2.03525 5.75977 2.27734L7.27246 3.61328C7.36379 3.69382 7.48174 3.73828 7.60352 3.73828H12.3994C13.2276 3.73841 13.8993 4.41005 13.8994 5.23828V6.7168C13.8183 6.70327 13.735 6.69436 13.6494 6.69434H12.8994V5.23828C12.8993 4.96233 12.6754 4.73841 12.3994 4.73828H7.60352C7.23781 4.73828 6.88446 4.60438 6.61035 4.3623L5.09766 3.02637C5.00636 2.94576 4.88838 2.90144 4.7666 2.90137H2.0498C1.77366 2.90137 1.5498 3.12523 1.5498 3.40137V9.78223L0.902344 12.2119C0.648452 13.1642 1.36604 14.0986 2.35156 14.0986H2.0498C1.2214 14.0986 0.549838 13.427 0.549805 12.5986V3.40137C0.549805 2.57294 1.22138 1.90137 2.0498 1.90137H4.7666Z\" fill=\"currentColor\"/></svg><span class=\"c2-name\">client</span></button>\n            <ul class=\"level\">\n              <li class=\"item\" data-files-entry=\"directory\" data-files-path=\"/home/lk/deepseek-harness/packages/client/ui-workspace\">\n                <button type=\"button\" class=\"row\" aria-expanded=\"false\"><svg class=\"c2-icon\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M1.50439 3.11059C1.50439 2.55831 1.95211 2.1106 2.50439 2.1106H5.43389C5.67773 2.1106 5.91318 2.19969 6.09593 2.36113L7.71649 3.79265C7.89924 3.95409 8.1347 4.04319 8.3785 4.04319H13.4958C14.0481 4.04319 14.4958 4.4909 14.4958 5.04319V12.8894C14.4958 13.4417 14.0481 13.8894 13.4958 13.8894H2.50439C1.95211 13.8894 1.50439 13.4417 1.50439 12.8894V4.04319V3.11059Z\" stroke=\"currentColor\"/><path d=\"M3.63501 7.66614H12.3647\" stroke=\"currentColor\"/></svg><span class=\"c2-name\">ui-workspace</span></button>\n              </li>\n              <li class=\"item\" data-files-entry=\"file\" data-files-path=\"/home/lk/deepseek-harness/packages/client/tsconfig.json\">\n                <button type=\"button\" class=\"row\"><svg class=\"c1-icon code fileIcon\" width=\"16\" height=\"16\" viewBox=\"0 0 28 28\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M8.48924 28H19.5108C21.6479 28 22.7165 28 23.5594 27.6509C24.6833 27.1853 25.5762 26.2924 26.0417 25.1685C26.3909 24.3256 26.3909 23.257 26.3909 21.1199V8.79443C26.3909 8.32877 26.3909 8.09593 26.3471 7.87507C26.2887 7.58058 26.173 7.30042 26.0067 7.05048C25.882 6.86303 25.7177 6.69799 25.3893 6.36792L20.0611 1.01354C19.7304 0.681235 19.5651 0.515081 19.3769 0.38885C19.126 0.220541 18.8443 0.103463 18.5481 0.0443412C18.3259 0 18.0915 0 17.6226 0H8.48924C6.35209 0 5.28351 0 4.4406 0.349145C3.31672 0.814671 2.4238 1.70759 1.95828 2.83147C1.60913 3.67438 1.60913 4.74296 1.60913 6.88011V21.1199C1.60913 23.257 1.60913 24.3256 1.95828 25.1685C2.4238 26.2924 3.31672 27.1853 4.4406 27.6509C5.28351 28 6.35209 28 8.48924 28Z\" fill=\"currentColor\"/><path d=\"M26.3909 7.37445L19.0525 0V3.77445C19.0525 4.89271 19.0525 5.45184 19.2352 5.89289C19.4788 6.48096 19.946 6.94818 20.5341 7.19176C20.9751 7.37445 21.5342 7.37445 22.6525 7.37445H26.3909Z\" fill=\"var(--dsw-static-neutral-00)\" fill-opacity=\".7\"/><g color=\"var(--dsw-static-neutral-00)\" data-file-type-mark transform=\"translate(14 16) scale(1.12) translate(-14 -16)\"><path d=\"M10.0053 13.126L7.0236 16.3788C6.96052 16.4476 6.96052 16.5532 7.0236 16.622L10.0053 19.8748\" stroke=\"currentColor\" stroke-width=\"1.35\"/><path d=\"M17.9941 13.126L20.9759 16.3788C21.039 16.4476 21.039 16.5532 20.9759 16.622L17.9941 19.8748\" stroke=\"currentColor\" stroke-width=\"1.35\"/><path d=\"M15.2652 12.957L12.7344 20.0433\" stroke=\"currentColor\" stroke-width=\"1.35\"/></g></svg><span class=\"c2-name\">tsconfig.json</span></button>\n              </li>\n            </ul>\n          </li>\n          <li class=\"item\" data-files-entry=\"file\" data-files-path=\"/home/lk/deepseek-harness/packages/README.md\">\n            <button type=\"button\" class=\"row\"><svg class=\"c1-icon markdown fileIcon\" width=\"16\" height=\"16\" viewBox=\"0 0 28 28\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M8.48924 28H19.5108C21.6479 28 22.7165 28 23.5594 27.6509C24.6833 27.1853 25.5762 26.2924 26.0417 25.1685C26.3909 24.3256 26.3909 23.257 26.3909 21.1199V8.79443C26.3909 8.32877 26.3909 8.09593 26.3471 7.87507C26.2887 7.58058 26.173 7.30042 26.0067 7.05048C25.882 6.86303 25.7177 6.69799 25.3893 6.36792L20.0611 1.01354C19.7304 0.681235 19.5651 0.515081 19.3769 0.38885C19.126 0.220541 18.8443 0.103463 18.5481 0.0443412C18.3259 0 18.0915 0 17.6226 0H8.48924C6.35209 0 5.28351 0 4.4406 0.349145C3.31672 0.814671 2.4238 1.70759 1.95828 2.83147C1.60913 3.67438 1.60913 4.74296 1.60913 6.88011V21.1199C1.60913 23.257 1.60913 24.3256 1.95828 25.1685C2.4238 26.2924 3.31672 27.1853 4.4406 27.6509C5.28351 28 6.35209 28 8.48924 28Z\" fill=\"currentColor\"/><path d=\"M26.3909 7.37445L19.0525 0V3.77445C19.0525 4.89271 19.0525 5.45184 19.2352 5.89289C19.4788 6.48096 19.946 6.94818 20.5341 7.19176C20.9751 7.37445 21.5342 7.37445 22.6525 7.37445H26.3909Z\" fill=\"var(--dsw-static-neutral-00)\" fill-opacity=\".7\"/><g color=\"var(--dsw-static-neutral-00)\" data-file-type-mark transform=\"translate(14 16) scale(1.22) translate(-14 -16)\">M8.7588 19.5V14.6H9.8998L11.9298 17.932H11.3278L13.3018 14.6H14.4428L14.4568 19.5H13.1828L13.1688 16.539H13.3858L11.9088 19.017H11.2928L9.7738 16.539H10.0398V19.5H8.7588ZM15.4375 19.5V14.6H17.7545C18.2958 14.6 18.7718 14.7003 19.1825 14.901C19.5932 15.1017 19.9128 15.384 20.1415 15.748C20.3748 16.112 20.4915 16.546 20.4915 17.05C20.4915 17.5493 20.3748 17.9833 20.1415 18.352C19.9128 18.716 19.5932 18.9983 19.1825 19.199C18.7718 19.3997 18.2958 19.5 17.7545 19.5H15.4375ZM16.8235 18.394H17.6985C17.9785 18.394 18.2212 18.3427 18.4265 18.24C18.6365 18.1327 18.7998 17.9787 18.9165 17.778C19.0332 17.5727 19.0915 17.33 19.0915 17.05C19.0915 16.7653 19.0332 16.5227 18.9165 16.322C18.7998 16.1213 18.6365 15.9697 18.4265 15.867C18.2212 15.7597 17.9785 15.706 17.6985 15.706H16.8235V18.394Z</g></svg><span class=\"c2-name\">README.md</span></button>\n          </li>\n        </ul>\n      </li>\n      <li class=\"item\" data-files-entry=\"directory\" data-files-path=\"/home/lk/deepseek-harness/scripts\">\n        <button type=\"button\" class=\"row\" aria-expanded=\"false\"><svg class=\"c2-icon\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M1.50439 3.11059C1.50439 2.55831 1.95211 2.1106 2.50439 2.1106H5.43389C5.67773 2.1106 5.91318 2.19969 6.09593 2.36113L7.71649 3.79265C7.89924 3.95409 8.1347 4.04319 8.3785 4.04319H13.4958C14.0481 4.04319 14.4958 4.4909 14.4958 5.04319V12.8894C14.4958 13.4417 14.0481 13.8894 13.4958 13.8894H2.50439C1.95211 13.8894 1.50439 13.4417 1.50439 12.8894V4.04319V3.11059Z\" stroke=\"currentColor\"/><path d=\"M3.63501 7.66614H12.3647\" stroke=\"currentColor\"/></svg><span class=\"c2-name\">scripts</span></button>\n      </li>\n      <li class=\"item\" data-files-entry=\"file\" data-files-path=\"/home/lk/deepseek-harness/README.md\">\n        <button type=\"button\" class=\"row\"><svg class=\"c1-icon markdown fileIcon\" width=\"16\" height=\"16\" viewBox=\"0 0 28 28\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M8.48924 28H19.5108C21.6479 28 22.7165 28 23.5594 27.6509C24.6833 27.1853 25.5762 26.2924 26.0417 25.1685C26.3909 24.3256 26.3909 23.257 26.3909 21.1199V8.79443C26.3909 8.32877 26.3909 8.09593 26.3471 7.87507C26.2887 7.58058 26.173 7.30042 26.0067 7.05048C25.882 6.86303 25.7177 6.69799 25.3893 6.36792L20.0611 1.01354C19.7304 0.681235 19.5651 0.515081 19.3769 0.38885C19.126 0.220541 18.8443 0.103463 18.5481 0.0443412C18.3259 0 18.0915 0 17.6226 0H8.48924C6.35209 0 5.28351 0 4.4406 0.349145C3.31672 0.814671 2.4238 1.70759 1.95828 2.83147C1.60913 3.67438 1.60913 4.74296 1.60913 6.88011V21.1199C1.60913 23.257 1.60913 24.3256 1.95828 25.1685C2.4238 26.2924 3.31672 27.1853 4.4406 27.6509C5.28351 28 6.35209 28 8.48924 28Z\" fill=\"currentColor\"/><path d=\"M26.3909 7.37445L19.0525 0V3.77445C19.0525 4.89271 19.0525 5.45184 19.2352 5.89289C19.4788 6.48096 19.946 6.94818 20.5341 7.19176C20.9751 7.37445 21.5342 7.37445 22.6525 7.37445H26.3909Z\" fill=\"var(--dsw-static-neutral-00)\" fill-opacity=\".7\"/><g color=\"var(--dsw-static-neutral-00)\" data-file-type-mark transform=\"translate(14 16) scale(1.22) translate(-14 -16)\">M8.7588 19.5V14.6H9.8998L11.9298 17.932H11.3278L13.3018 14.6H14.4428L14.4568 19.5H13.1828L13.1688 16.539H13.3858L11.9088 19.017H11.2928L9.7738 16.539H10.0398V19.5H8.7588ZM15.4375 19.5V14.6H17.7545C18.2958 14.6 18.7718 14.7003 19.1825 14.901C19.5932 15.1017 19.9128 15.384 20.1415 15.748C20.3748 16.112 20.4915 16.546 20.4915 17.05C20.4915 17.5493 20.3748 17.9833 20.1415 18.352C19.9128 18.716 19.5932 18.9983 19.1825 19.199C18.7718 19.3997 18.2958 19.5 17.7545 19.5H15.4375ZM16.8235 18.394H17.6985C17.9785 18.394 18.2212 18.3427 18.4265 18.24C18.6365 18.1327 18.7998 17.9787 18.9165 17.778C19.0332 17.5727 19.0915 17.33 19.0915 17.05C19.0915 16.7653 19.0332 16.5227 18.9165 16.322C18.7998 16.1213 18.6365 15.9697 18.4265 15.867C18.2212 15.7597 17.9785 15.706 17.6985 15.706H16.8235V18.394Z</g></svg><span class=\"c2-name\">README.md</span></button>\n      </li>\n      <li class=\"item\" data-files-entry=\"other\" data-files-path=\"/home/lk/deepseek-harness/.env.local\">\n        <span class=\"row c2-other\" aria-disabled=\"true\" title=\"这不是文件或目录，没法打开。\"><span class=\"c2-name\">.env.local</span></span>\n      </li>\n      <li class=\"note\" data-files-row=\"truncated\">条目太多，只显示了一部分。</li>\n    </ul>\n  </div>\n</div></div>"
+    },
+    {
+     "label": "状态行：正在读取 / 空目录 / 读取失败",
+     "html": "<div style=\"width:300px\"><div class=\"body\" style=\"display:block\"><ul class=\"level\">\n  <li class=\"item\"><button type=\"button\" class=\"row\" aria-expanded=\"true\"><svg class=\"c2-icon\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.55912 7.93683C2.67584 7.49906 3.0723 7.19446 3.52536 7.19446H13.6491C14.3061 7.19446 14.7846 7.81725 14.6153 8.45209L13.4411 12.856C13.3244 13.2938 12.9279 13.5984 12.4748 13.5984H2.35113C1.69411 13.5984 1.21562 12.9756 1.38489 12.3407L2.55912 7.93683Z\" fill=\"currentColor\" opacity=\"0.16\"/><path d=\"M13.6491 6.69446C14.6346 6.69453 15.3522 7.62895 15.0983 8.58118L13.9245 12.9845C13.7494 13.6412 13.1539 14.0988 12.4743 14.0988H2.35126C1.36574 14.0988 0.648153 13.1643 0.902044 12.212L2.07587 7.80774C2.25102 7.15128 2.84567 6.69455 3.52509 6.69446H13.6491ZM3.52509 7.69446C3.29865 7.69455 3.10004 7.84674 3.04169 8.06555L1.86786 12.4698C1.78345 12.7872 2.02285 13.0988 2.35126 13.0988H12.4743C12.7007 13.0988 12.8992 12.9463 12.9577 12.7277L14.1325 8.32336C14.2171 8.00598 13.9776 7.69453 13.6491 7.69446H3.52509Z\" fill=\"currentColor\"/><path d=\"M4.7666 1.90137C5.13227 1.90144 5.48571 2.03525 5.75977 2.27734L7.27246 3.61328C7.36379 3.69382 7.48174 3.73828 7.60352 3.73828H12.3994C13.2276 3.73841 13.8993 4.41005 13.8994 5.23828V6.7168C13.8183 6.70327 13.735 6.69436 13.6494 6.69434H12.8994V5.23828C12.8993 4.96233 12.6754 4.73841 12.3994 4.73828H7.60352C7.23781 4.73828 6.88446 4.60438 6.61035 4.3623L5.09766 3.02637C5.00636 2.94576 4.88838 2.90144 4.7666 2.90137H2.0498C1.77366 2.90137 1.5498 3.12523 1.5498 3.40137V9.78223L0.902344 12.2119C0.648452 13.1642 1.36604 14.0986 2.35156 14.0986H2.0498C1.2214 14.0986 0.549838 13.427 0.549805 12.5986V3.40137C0.549805 2.57294 1.22138 1.90137 2.0498 1.90137H4.7666Z\" fill=\"currentColor\"/></svg><span class=\"c2-name\">ui-workspace</span></button>\n    <ul class=\"level\">\n      <li class=\"note\" data-files-row=\"loading\">正在读取…</li>\n    </ul>\n  </li>\n  <li class=\"item\"><button type=\"button\" class=\"row\" aria-expanded=\"true\"><svg class=\"c2-icon\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.55912 7.93683C2.67584 7.49906 3.0723 7.19446 3.52536 7.19446H13.6491C14.3061 7.19446 14.7846 7.81725 14.6153 8.45209L13.4411 12.856C13.3244 13.2938 12.9279 13.5984 12.4748 13.5984H2.35113C1.69411 13.5984 1.21562 12.9756 1.38489 12.3407L2.55912 7.93683Z\" fill=\"currentColor\" opacity=\"0.16\"/><path d=\"M13.6491 6.69446C14.6346 6.69453 15.3522 7.62895 15.0983 8.58118L13.9245 12.9845C13.7494 13.6412 13.1539 14.0988 12.4743 14.0988H2.35126C1.36574 14.0988 0.648153 13.1643 0.902044 12.212L2.07587 7.80774C2.25102 7.15128 2.84567 6.69455 3.52509 6.69446H13.6491ZM3.52509 7.69446C3.29865 7.69455 3.10004 7.84674 3.04169 8.06555L1.86786 12.4698C1.78345 12.7872 2.02285 13.0988 2.35126 13.0988H12.4743C12.7007 13.0988 12.8992 12.9463 12.9577 12.7277L14.1325 8.32336C14.2171 8.00598 13.9776 7.69453 13.6491 7.69446H3.52509Z\" fill=\"currentColor\"/><path d=\"M4.7666 1.90137C5.13227 1.90144 5.48571 2.03525 5.75977 2.27734L7.27246 3.61328C7.36379 3.69382 7.48174 3.73828 7.60352 3.73828H12.3994C13.2276 3.73841 13.8993 4.41005 13.8994 5.23828V6.7168C13.8183 6.70327 13.735 6.69436 13.6494 6.69434H12.8994V5.23828C12.8993 4.96233 12.6754 4.73841 12.3994 4.73828H7.60352C7.23781 4.73828 6.88446 4.60438 6.61035 4.3623L5.09766 3.02637C5.00636 2.94576 4.88838 2.90144 4.7666 2.90137H2.0498C1.77366 2.90137 1.5498 3.12523 1.5498 3.40137V9.78223L0.902344 12.2119C0.648452 13.1642 1.36604 14.0986 2.35156 14.0986H2.0498C1.2214 14.0986 0.549838 13.427 0.549805 12.5986V3.40137C0.549805 2.57294 1.22138 1.90137 2.0498 1.90137H4.7666Z\" fill=\"currentColor\"/></svg><span class=\"c2-name\">scripts</span></button>\n    <ul class=\"level\"><li class=\"note\" data-files-row=\"empty\">空目录</li></ul>\n  </li>\n  <li class=\"item\"><button type=\"button\" class=\"row\" aria-expanded=\"true\"><svg class=\"c2-icon\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.55912 7.93683C2.67584 7.49906 3.0723 7.19446 3.52536 7.19446H13.6491C14.3061 7.19446 14.7846 7.81725 14.6153 8.45209L13.4411 12.856C13.3244 13.2938 12.9279 13.5984 12.4748 13.5984H2.35113C1.69411 13.5984 1.21562 12.9756 1.38489 12.3407L2.55912 7.93683Z\" fill=\"currentColor\" opacity=\"0.16\"/><path d=\"M13.6491 6.69446C14.6346 6.69453 15.3522 7.62895 15.0983 8.58118L13.9245 12.9845C13.7494 13.6412 13.1539 14.0988 12.4743 14.0988H2.35126C1.36574 14.0988 0.648153 13.1643 0.902044 12.212L2.07587 7.80774C2.25102 7.15128 2.84567 6.69455 3.52509 6.69446H13.6491ZM3.52509 7.69446C3.29865 7.69455 3.10004 7.84674 3.04169 8.06555L1.86786 12.4698C1.78345 12.7872 2.02285 13.0988 2.35126 13.0988H12.4743C12.7007 13.0988 12.8992 12.9463 12.9577 12.7277L14.1325 8.32336C14.2171 8.00598 13.9776 7.69453 13.6491 7.69446H3.52509Z\" fill=\"currentColor\"/><path d=\"M4.7666 1.90137C5.13227 1.90144 5.48571 2.03525 5.75977 2.27734L7.27246 3.61328C7.36379 3.69382 7.48174 3.73828 7.60352 3.73828H12.3994C13.2276 3.73841 13.8993 4.41005 13.8994 5.23828V6.7168C13.8183 6.70327 13.735 6.69436 13.6494 6.69434H12.8994V5.23828C12.8993 4.96233 12.6754 4.73841 12.3994 4.73828H7.60352C7.23781 4.73828 6.88446 4.60438 6.61035 4.3623L5.09766 3.02637C5.00636 2.94576 4.88838 2.90144 4.7666 2.90137H2.0498C1.77366 2.90137 1.5498 3.12523 1.5498 3.40137V9.78223L0.902344 12.2119C0.648452 13.1642 1.36604 14.0986 2.35156 14.0986H2.0498C1.2214 14.0986 0.549838 13.427 0.549805 12.5986V3.40137C0.549805 2.57294 1.22138 1.90137 2.0498 1.90137H4.7666Z\" fill=\"currentColor\"/></svg><span class=\"c2-name\">vendor</span></button>\n    <ul class=\"level\"><li class=\"note\" data-files-row=\"failed\" data-files-code=\"workspace-file/not-found\">这个目录不在了。可能已被移动或删除。</li></ul>\n  </li>\n</ul></div></div>"
+    },
+    {
+     "label": "会话没有工作区目录",
+     "html": "<div style=\"width:300px\"><div class=\"status\" data-files-state=\"no-workspace\"><p class=\"statusLine\">这个会话没有工作区目录。</p></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "useTabInfo",
+     "type": "框架 hook 座",
+     "default": "—",
+     "desc": "取当前 tab 的 id、signal、tabActions 与 refreshShortcut；刷新命令在挂载时绑定。"
+    },
+    {
+     "name": "sessionId / useSessions",
+     "type": "SessionId / 框架 hook 座",
+     "default": "—",
+     "desc": "会话 id 用来把行地址写成 session 相对路径；cwd 为空时渲染无工作区提示。"
+    },
+    {
+     "name": "useStore / actions",
+     "type": "PropsStore<createFilesStore> / 动作",
+     "default": "—",
+     "desc": "按 tab 分桶的树状态（levels、expanded、scrollTop）与 scrolled / toggle / setAutoRefresh 写入。"
+    },
+    {
+     "name": "start / refresh / toggle",
+     "type": "注入回调",
+     "default": "—",
+     "desc": "列目录、重新读取、展开或折叠一层，全部经注入面（face.ts）。"
+    },
+    {
+     "name": "renderSlot",
+     "type": "PropsRenderSlots<'sidebar.right.tab.files.actions'>",
+     "default": "—",
+     "desc": "表头尾部的额外动作槽，owner 传入绝对路径。"
+    }
+   ],
+   "notes": "打开文件不在这里实现：行只调用 <code>tabActions.openResource(fileAddressFor(sessionId, root, path))</code>，由 <code>file:</code> 查看器认领。滚动位置只在卸载时写回 store，因此滚动本身既不重渲染树、也不会在 owner 中止后再写。",
+   "keywords": [
+    "文件",
+    "目录树",
+    "工作区文件",
+    "file tree",
+    "files"
+   ]
+  },
+  {
+   "id": "workspace-picker",
+   "name": "WorkspacePicker",
+   "exportName": "WorkspacePicker",
+   "zh": "工作区选择",
+   "group": "shell",
+   "summary": "会话空态里的工作区选择/添加流程：一个 144–360px 的菜单卡（<code>.list</code>，4px 内边距 + 34px 行高 + 12px 圆角），已注册工作区各占一行（文件夹图标、当前项尾部打勾），\"添加工作区…\"用发丝线与滚动区隔开钉在卡底（<code>.footer</code>）。选目录本身交给组合进来的 directoryFlow 占位者；采纳失败时弹一个 380px 的 Modal 卡片，正文用 <code>--dsw-alias-state-error-primary</code> 报错，页脚两个 72px 最小宽度的按钮可重试。",
+   "source": "packages/client/ui-workspace/src/client/WorkspacePicker.tsx#L230",
+   "css": [
+    "packages/client/ui-primitives/src/MenuSurface.module.css",
+    "packages/client/ui-primitives/src/Menu.module.css",
+    "packages/client/ui-primitives/src/Modal.module.css",
+    "packages/client/ui-primitives/src/Button.module.css",
+    "packages/client/ui-workspace/src/client/WorkspacePicker.module.css"
+   ],
+   "tokens": [
+    "--dsw-menu-surface-fill",
+    "--dsw-menu-backdrop-filter",
+    "--dsw-elevation-prominent",
+    "--dsw-alias-border-l1",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-border-l3",
+    "--dsw-alias-border-l4",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-menu-icon",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-state-error-primary",
+    "--dsw-alias-bg-layer-2",
+    "--dsw-radius-lg",
+    "--dsw-radius-md",
+    "--dsw-radius-panel",
+    "--dsw-radius-sm",
+    "--dsw-alias-button-primary-fill",
+    "--dsw-alias-button-primary-hover"
+   ],
+   "specimens": [
+    {
+     "label": "选择菜单：工作区列表 + 钉在底部的添加行",
+     "html": "<div style=\"width:240px\"><div class=\"surface\" style=\"position:relative;display:inline-block\" data-menu-material=\"translucent\"><div aria-hidden=\"true\" class=\"material\"></div><div class=\"list\" role=\"menu\" style=\"position:static;display:flex\">\n  <div class=\"viewport\" role=\"presentation\">\n    <div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item\"><span class=\"itemIcon\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M1.50439 3.11059C1.50439 2.55831 1.95211 2.1106 2.50439 2.1106H5.43389C5.67773 2.1106 5.91318 2.19969 6.09593 2.36113L7.71649 3.79265C7.89924 3.95409 8.1347 4.04319 8.3785 4.04319H13.4958C14.0481 4.04319 14.4958 4.4909 14.4958 5.04319V12.8894C14.4958 13.4417 14.0481 13.8894 13.4958 13.8894H2.50439C1.95211 13.8894 1.50439 13.4417 1.50439 12.8894V4.04319V3.11059Z\" stroke=\"currentColor\"/><path d=\"M3.63501 7.66614H12.3647\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">deepseek-harness</span><span class=\"check\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4\" stroke=\"currentColor\"/></svg></span></button></div>\n    <div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item\"><span class=\"itemIcon\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M1.50439 3.11059C1.50439 2.55831 1.95211 2.1106 2.50439 2.1106H5.43389C5.67773 2.1106 5.91318 2.19969 6.09593 2.36113L7.71649 3.79265C7.89924 3.95409 8.1347 4.04319 8.3785 4.04319H13.4958C14.0481 4.04319 14.4958 4.4909 14.4958 5.04319V12.8894C14.4958 13.4417 14.0481 13.8894 13.4958 13.8894H2.50439C1.95211 13.8894 1.50439 13.4417 1.50439 12.8894V4.04319V3.11059Z\" stroke=\"currentColor\"/><path d=\"M3.63501 7.66614H12.3647\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">ui-primitives</span></button></div>\n    <div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item\"><span class=\"itemIcon\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M1.50439 3.11059C1.50439 2.55831 1.95211 2.1106 2.50439 2.1106H5.43389C5.67773 2.1106 5.91318 2.19969 6.09593 2.36113L7.71649 3.79265C7.89924 3.95409 8.1347 4.04319 8.3785 4.04319H13.4958C14.0481 4.04319 14.4958 4.4909 14.4958 5.04319V12.8894C14.4958 13.4417 14.0481 13.8894 13.4958 13.8894H2.50439C1.95211 13.8894 1.50439 13.4417 1.50439 12.8894V4.04319V3.11059Z\" stroke=\"currentColor\"/><path d=\"M3.63501 7.66614H12.3647\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">dsh-local-build</span></button></div>\n  </div>\n  <div class=\"footer\" role=\"presentation\"><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item\"><span class=\"itemIcon\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M5.54492 2.06738C5.91034 2.06754 6.26318 2.20149 6.53711 2.44336L7.94043 3.68164V4.7998C7.71462 4.74105 7.50367 4.63139 7.32617 4.47461L5.87598 3.19238C5.78477 3.11185 5.66658 3.06754 5.54492 3.06738H2.94922C2.67322 3.06738 2.44946 3.29145 2.44922 3.56738V12.4326C2.44927 12.7087 2.67311 12.9326 2.94922 12.9326H12.9326C13.2086 12.9325 13.4326 12.7086 13.4326 12.4326V8.53613H14.4326V12.4326C14.4326 13.2609 13.7609 13.9325 12.9326 13.9326H2.94922C2.12083 13.9326 1.44927 13.261 1.44922 12.4326V3.56738C1.44946 2.73916 2.12094 2.06738 2.94922 2.06738H5.54492Z\" fill=\"currentColor\"/><path d=\"M9.75977 4.50208H14.5509\" stroke=\"currentColor\"/><path d=\"M12.1492 6.89758L12.1492 2.10642\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">添加工作区…</span></button></div></div>\n</div></div></div>"
+    },
+    {
+     "label": "等待工作区基线时的状态行",
+     "note": "菜单仍在，加载文案挂在菜单外的 role=status 上",
+     "html": "<div style=\"width:240px\"><div class=\"menuStatus\" role=\"status\">正在加载工作区…</div></div>",
+     "bg": "sidebar"
+    },
+    {
+     "label": "采纳目录失败：380px 错误卡片",
+     "note": "只渲染 .dialog 卡片；真实的 .root/.mask 是全屏固定层，示例里会盖住整页",
+     "html": "<div class=\"dialog\" style=\"width:380px\">\n  <div class=\"content\">\n    <div class=\"header\"><h2 class=\"title\">无法打开文件夹</h2><button type=\"button\" class=\"close\" aria-label=\"关闭\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div>\n    <div class=\"body\"><div class=\"modalError\" role=\"alert\">EPERM: operation not permitted, scandir '/root/.ssh'</div></div>\n  </div>\n  <div class=\"c2-footer\" style=\"display:flex;justify-content:flex-end;gap:8px;padding:0 24px\"><button type=\"button\" class=\"button outline md modalAction\">取消</button><button type=\"button\" class=\"button primary md modalAction\">重新选择</button></div>\n</div>",
+     "pad": "lg"
+    }
+   ],
+   "props": [
+    {
+     "name": "open",
+     "type": "boolean",
+     "default": "—",
+     "desc": "菜单是否展开；只有一行可加且列表已就绪时，展开动作直接进目录流程而不显示菜单。"
+    },
+    {
+     "name": "anchorRef",
+     "type": "RefObject<HTMLElement | null>",
+     "default": "—",
+     "desc": "菜单定位锚点；返回 null 时列表保持隐藏，避免先画错位置再跳。"
+    },
+    {
+     "name": "useWorkspaces",
+     "type": "框架 hook 座",
+     "default": "—",
+     "desc": "工作区快照（items 与 phase），phase 未 ready 时菜单里给加载状态。"
+    },
+    {
+     "name": "createWorkspace",
+     "type": "(input: { path: string }) => Promise<WorkspaceView>",
+     "default": "—",
+     "desc": "采纳一个目录为真实工作区；失败进错误卡片而不是静默丢弃。"
+    },
+    {
+     "name": "useDirectoryFlow",
+     "type": "SnapshotSelectorHook<boolean>",
+     "default": "—",
+     "desc": "目录流程占位的占用状态；空占位时这个面没有添加动作。"
+    },
+    {
+     "name": "selectedId / onPick / onClose",
+     "type": "WorkspaceId / 回调",
+     "default": "—",
+     "desc": "当前工作区（尾部打勾）、选中回调与关闭手势。"
+    },
+    {
+     "name": "renderSlot",
+     "type": "PropsRenderSlots<'conversation.hero.workspace.directoryFlow'>",
+     "default": "—",
+     "desc": "把选目录交互渲染进本面的 directoryFlow 洞。"
+    }
+   ],
+   "notes": "一次只允许一个选目录交互：流程打开或目录正在采纳时，菜单里所有行都 <code>disabled</code>（<code>opacity: .4</code> + <code>cursor: not-allowed</code>）。添加工作区只有\"选一个宿主目录\"这一条路——新建文件夹由占位者自己的动作覆盖。",
+   "keywords": [
+    "工作区",
+    "选择工作区",
+    "添加工作区",
+    "目录",
+    "workspace picker"
+   ]
+  },
+  {
+   "id": "project-row-item",
+   "name": "ProjectRowItem",
+   "exportName": "ProjectRowItem",
+   "zh": "工作区行",
+   "group": "shell",
+   "summary": "工作区（项目）分组头：34px 一行，8px 内边距 + <code>--dsw-radius-md</code>，左侧 16px 槽放文件夹图标（包含当前会话时转成 <code>--dsw-alias-state-business-primary</code>），悬停时文件夹让位给展开箭头，尾部浮出\"⋯\"与\"新建会话\"两个 16px 图标按钮。行本身是 <code>role=\"treeitem\"</code>，<code>aria-expanded</code> 表示展开；真实工作区停驻 800ms 会出悬停卡（标题 + 缩略路径 + 创建时间），\"未分组\"桶没有卡也没有菜单。",
+   "source": "packages/client/ui-workspace/src/client/rows/Rows.tsx#L219",
+   "css": [
+    "packages/client/ui-workspace/src/client/rows/Rows.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-label-caption",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-state-business-primary",
+    "--dsw-radius-md",
+    "--dsw-radius-xs"
+   ],
+   "specimens": [
+    {
+     "label": "展开 / 折叠 / 未分组",
+     "note": "未分组桶没有工作区标题，标签来自字典",
+     "html": "<div style=\"width:240px\">\n  <div class=\"projectRow\" role=\"treeitem\" aria-expanded=\"true\" data-row-key=\"workspace:ws-deepseek-harness\">\n  <span class=\"slot folder folderActive\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.55912 7.93683C2.67584 7.49906 3.0723 7.19446 3.52536 7.19446H13.6491C14.3061 7.19446 14.7846 7.81725 14.6153 8.45209L13.4411 12.856C13.3244 13.2938 12.9279 13.5984 12.4748 13.5984H2.35113C1.69411 13.5984 1.21562 12.9756 1.38489 12.3407L2.55912 7.93683Z\" fill=\"currentColor\" opacity=\"0.16\"/><path d=\"M13.6491 6.69446C14.6346 6.69453 15.3522 7.62895 15.0983 8.58118L13.9245 12.9845C13.7494 13.6412 13.1539 14.0988 12.4743 14.0988H2.35126C1.36574 14.0988 0.648153 13.1643 0.902044 12.212L2.07587 7.80774C2.25102 7.15128 2.84567 6.69455 3.52509 6.69446H13.6491ZM3.52509 7.69446C3.29865 7.69455 3.10004 7.84674 3.04169 8.06555L1.86786 12.4698C1.78345 12.7872 2.02285 13.0988 2.35126 13.0988H12.4743C12.7007 13.0988 12.8992 12.9463 12.9577 12.7277L14.1325 8.32336C14.2171 8.00598 13.9776 7.69453 13.6491 7.69446H3.52509Z\" fill=\"currentColor\"/><path d=\"M4.7666 1.90137C5.13227 1.90144 5.48571 2.03525 5.75977 2.27734L7.27246 3.61328C7.36379 3.69382 7.48174 3.73828 7.60352 3.73828H12.3994C13.2276 3.73841 13.8993 4.41005 13.8994 5.23828V6.7168C13.8183 6.70327 13.735 6.69436 13.6494 6.69434H12.8994V5.23828C12.8993 4.96233 12.6754 4.73841 12.3994 4.73828H7.60352C7.23781 4.73828 6.88446 4.60438 6.61035 4.3623L5.09766 3.02637C5.00636 2.94576 4.88838 2.90144 4.7666 2.90137H2.0498C1.77366 2.90137 1.5498 3.12523 1.5498 3.40137V9.78223L0.902344 12.2119C0.648452 13.1642 1.36604 14.0986 2.35156 14.0986H2.0498C1.2214 14.0986 0.549838 13.427 0.549805 12.5986V3.40137C0.549805 2.57294 1.22138 1.90137 2.0498 1.90137H4.7666Z\" fill=\"currentColor\"/></svg></span>\n  <span class=\"slot chevron\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" class=\"arrow arrowOpen\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M5.5 4.5C5.5 4.40714 5.52586 4.31612 5.57467 4.23713C5.62349 4.15815 5.69334 4.09431 5.77639 4.05279C5.85945 4.01126 5.95242 3.99368 6.0449 4.00202C6.13738 4.01036 6.22572 4.04429 6.3 4.1L10.967 7.6C11.0291 7.64657 11.0795 7.70697 11.1142 7.77639C11.1489 7.84582 11.167 7.92238 11.167 8C11.167 8.07762 11.1489 8.15418 11.1142 8.22361C11.0795 8.29303 11.0291 8.35343 10.967 8.4L6.3 11.9C6.22572 11.9557 6.13738 11.9896 6.0449 11.998C5.95242 12.0063 5.85945 11.9887 5.77639 11.9472C5.69334 11.9057 5.62349 11.8419 5.57467 11.7629C5.52586 11.6839 5.5 11.5929 5.5 11.5V4.5Z\" fill=\"currentColor\"/></svg></span>\n  <span class=\"projectText\"><span class=\"title\">deepseek-harness</span></span>\n  <span class=\"rowActions\">\n    <button type=\"button\" class=\"iconButton\" aria-label=\"工作区操作：deepseek-harness\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z\" fill=\"currentColor\"/><path d=\"M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z\" fill=\"currentColor\"/><path d=\"M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z\" fill=\"currentColor\"/></svg></button><button type=\"button\" class=\"iconButton\" aria-label=\"在 deepseek-harness 中新建会话\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.37091 11.2501C1.58745 9.89288 1.32067 8.29835 1.61969 6.76006C1.91872 5.22177 2.76342 3.8433 3.99826 2.87846C5.2331 1.91362 6.77494 1.42737 8.33988 1.50925C9.90482 1.59113 11.3875 2.23562 12.5149 3.32406C13.6425 4.41269 14.3387 5.87206 14.4754 7.4334C14.612 8.99474 14.18 10.5529 13.2587 11.8209C12.3375 13.0888 10.9891 13.9813 9.46194 14.3337C8.18691 14.628 6.85895 14.5294 5.64989 14.0605C5.1712 13.8748 4.76962 13.4932 4.26534 13.3967C3.67413 13.2835 2.95257 13.5598 2.03794 14.3337\" stroke=\"currentColor\"/><path d=\"M8 5V11\" stroke=\"currentColor\"/><path d=\"M5 8H11\" stroke=\"currentColor\"/></svg></button>\n  </span>\n</div>\n  <div class=\"projectRow\" role=\"treeitem\" aria-expanded=\"false\" data-row-key=\"workspace:ws-deepseek-harness\">\n  <span class=\"slot folder\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M1.50439 3.11059C1.50439 2.55831 1.95211 2.1106 2.50439 2.1106H5.43389C5.67773 2.1106 5.91318 2.19969 6.09593 2.36113L7.71649 3.79265C7.89924 3.95409 8.1347 4.04319 8.3785 4.04319H13.4958C14.0481 4.04319 14.4958 4.4909 14.4958 5.04319V12.8894C14.4958 13.4417 14.0481 13.8894 13.4958 13.8894H2.50439C1.95211 13.8894 1.50439 13.4417 1.50439 12.8894V4.04319V3.11059Z\" stroke=\"currentColor\"/><path d=\"M3.63501 7.66614H12.3647\" stroke=\"currentColor\"/></svg></span>\n  <span class=\"slot chevron\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" class=\"arrow arrowOpen\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M5.5 4.5C5.5 4.40714 5.52586 4.31612 5.57467 4.23713C5.62349 4.15815 5.69334 4.09431 5.77639 4.05279C5.85945 4.01126 5.95242 3.99368 6.0449 4.00202C6.13738 4.01036 6.22572 4.04429 6.3 4.1L10.967 7.6C11.0291 7.64657 11.0795 7.70697 11.1142 7.77639C11.1489 7.84582 11.167 7.92238 11.167 8C11.167 8.07762 11.1489 8.15418 11.1142 8.22361C11.0795 8.29303 11.0291 8.35343 10.967 8.4L6.3 11.9C6.22572 11.9557 6.13738 11.9896 6.0449 11.998C5.95242 12.0063 5.85945 11.9887 5.77639 11.9472C5.69334 11.9057 5.62349 11.8419 5.57467 11.7629C5.52586 11.6839 5.5 11.5929 5.5 11.5V4.5Z\" fill=\"currentColor\"/></svg></span>\n  <span class=\"projectText\"><span class=\"title\">ui-primitives</span></span>\n  <span class=\"rowActions\">\n    <button type=\"button\" class=\"iconButton\" aria-label=\"工作区操作：ui-primitives\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z\" fill=\"currentColor\"/><path d=\"M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z\" fill=\"currentColor\"/><path d=\"M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z\" fill=\"currentColor\"/></svg></button><button type=\"button\" class=\"iconButton\" aria-label=\"在 ui-primitives 中新建会话\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.37091 11.2501C1.58745 9.89288 1.32067 8.29835 1.61969 6.76006C1.91872 5.22177 2.76342 3.8433 3.99826 2.87846C5.2331 1.91362 6.77494 1.42737 8.33988 1.50925C9.90482 1.59113 11.3875 2.23562 12.5149 3.32406C13.6425 4.41269 14.3387 5.87206 14.4754 7.4334C14.612 8.99474 14.18 10.5529 13.2587 11.8209C12.3375 13.0888 10.9891 13.9813 9.46194 14.3337C8.18691 14.628 6.85895 14.5294 5.64989 14.0605C5.1712 13.8748 4.76962 13.4932 4.26534 13.3967C3.67413 13.2835 2.95257 13.5598 2.03794 14.3337\" stroke=\"currentColor\"/><path d=\"M8 5V11\" stroke=\"currentColor\"/><path d=\"M5 8H11\" stroke=\"currentColor\"/></svg></button>\n  </span>\n</div>\n  <div class=\"projectRow\" role=\"treeitem\" aria-expanded=\"true\" data-row-key=\"workspace:ws-deepseek-harness\">\n  <span class=\"slot folder\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.55912 7.93683C2.67584 7.49906 3.0723 7.19446 3.52536 7.19446H13.6491C14.3061 7.19446 14.7846 7.81725 14.6153 8.45209L13.4411 12.856C13.3244 13.2938 12.9279 13.5984 12.4748 13.5984H2.35113C1.69411 13.5984 1.21562 12.9756 1.38489 12.3407L2.55912 7.93683Z\" fill=\"currentColor\" opacity=\"0.16\"/><path d=\"M13.6491 6.69446C14.6346 6.69453 15.3522 7.62895 15.0983 8.58118L13.9245 12.9845C13.7494 13.6412 13.1539 14.0988 12.4743 14.0988H2.35126C1.36574 14.0988 0.648153 13.1643 0.902044 12.212L2.07587 7.80774C2.25102 7.15128 2.84567 6.69455 3.52509 6.69446H13.6491ZM3.52509 7.69446C3.29865 7.69455 3.10004 7.84674 3.04169 8.06555L1.86786 12.4698C1.78345 12.7872 2.02285 13.0988 2.35126 13.0988H12.4743C12.7007 13.0988 12.8992 12.9463 12.9577 12.7277L14.1325 8.32336C14.2171 8.00598 13.9776 7.69453 13.6491 7.69446H3.52509Z\" fill=\"currentColor\"/><path d=\"M4.7666 1.90137C5.13227 1.90144 5.48571 2.03525 5.75977 2.27734L7.27246 3.61328C7.36379 3.69382 7.48174 3.73828 7.60352 3.73828H12.3994C13.2276 3.73841 13.8993 4.41005 13.8994 5.23828V6.7168C13.8183 6.70327 13.735 6.69436 13.6494 6.69434H12.8994V5.23828C12.8993 4.96233 12.6754 4.73841 12.3994 4.73828H7.60352C7.23781 4.73828 6.88446 4.60438 6.61035 4.3623L5.09766 3.02637C5.00636 2.94576 4.88838 2.90144 4.7666 2.90137H2.0498C1.77366 2.90137 1.5498 3.12523 1.5498 3.40137V9.78223L0.902344 12.2119C0.648452 13.1642 1.36604 14.0986 2.35156 14.0986H2.0498C1.2214 14.0986 0.549838 13.427 0.549805 12.5986V3.40137C0.549805 2.57294 1.22138 1.90137 2.0498 1.90137H4.7666Z\" fill=\"currentColor\"/></svg></span>\n  <span class=\"slot chevron\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" class=\"arrow arrowOpen\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M5.5 4.5C5.5 4.40714 5.52586 4.31612 5.57467 4.23713C5.62349 4.15815 5.69334 4.09431 5.77639 4.05279C5.85945 4.01126 5.95242 3.99368 6.0449 4.00202C6.13738 4.01036 6.22572 4.04429 6.3 4.1L10.967 7.6C11.0291 7.64657 11.0795 7.70697 11.1142 7.77639C11.1489 7.84582 11.167 7.92238 11.167 8C11.167 8.07762 11.1489 8.15418 11.1142 8.22361C11.0795 8.29303 11.0291 8.35343 10.967 8.4L6.3 11.9C6.22572 11.9557 6.13738 11.9896 6.0449 11.998C5.95242 12.0063 5.85945 11.9887 5.77639 11.9472C5.69334 11.9057 5.62349 11.8419 5.57467 11.7629C5.52586 11.6839 5.5 11.5929 5.5 11.5V4.5Z\" fill=\"currentColor\"/></svg></span>\n  <span class=\"projectText\"><span class=\"title\">未分组</span></span>\n  <span class=\"rowActions\">\n    \n  </span>\n</div>\n</div>"
+    },
+    {
+     "label": "悬停：文件夹换成箭头，尾部浮出动作",
+     "note": "悬停模拟",
+     "html": "<div style=\"width:240px\"><div class=\"projectRow hoverRow\" role=\"treeitem\" aria-expanded=\"false\" data-row-key=\"workspace:ws-deepseek-harness\">\n  <span class=\"slot folder\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M1.50439 3.11059C1.50439 2.55831 1.95211 2.1106 2.50439 2.1106H5.43389C5.67773 2.1106 5.91318 2.19969 6.09593 2.36113L7.71649 3.79265C7.89924 3.95409 8.1347 4.04319 8.3785 4.04319H13.4958C14.0481 4.04319 14.4958 4.4909 14.4958 5.04319V12.8894C14.4958 13.4417 14.0481 13.8894 13.4958 13.8894H2.50439C1.95211 13.8894 1.50439 13.4417 1.50439 12.8894V4.04319V3.11059Z\" stroke=\"currentColor\"/><path d=\"M3.63501 7.66614H12.3647\" stroke=\"currentColor\"/></svg></span>\n  <span class=\"slot chevron\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" class=\"arrow arrowOpen\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M5.5 4.5C5.5 4.40714 5.52586 4.31612 5.57467 4.23713C5.62349 4.15815 5.69334 4.09431 5.77639 4.05279C5.85945 4.01126 5.95242 3.99368 6.0449 4.00202C6.13738 4.01036 6.22572 4.04429 6.3 4.1L10.967 7.6C11.0291 7.64657 11.0795 7.70697 11.1142 7.77639C11.1489 7.84582 11.167 7.92238 11.167 8C11.167 8.07762 11.1489 8.15418 11.1142 8.22361C11.0795 8.29303 11.0291 8.35343 10.967 8.4L6.3 11.9C6.22572 11.9557 6.13738 11.9896 6.0449 11.998C5.95242 12.0063 5.85945 11.9887 5.77639 11.9472C5.69334 11.9057 5.62349 11.8419 5.57467 11.7629C5.52586 11.6839 5.5 11.5929 5.5 11.5V4.5Z\" fill=\"currentColor\"/></svg></span>\n  <span class=\"projectText\"><span class=\"title\">deepseek-harness</span></span>\n  <span class=\"rowActions\">\n    <button type=\"button\" class=\"iconButton\" aria-label=\"工作区操作：deepseek-harness\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z\" fill=\"currentColor\"/><path d=\"M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z\" fill=\"currentColor\"/><path d=\"M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z\" fill=\"currentColor\"/></svg></button><button type=\"button\" class=\"iconButton\" aria-label=\"在 deepseek-harness 中新建会话\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.37091 11.2501C1.58745 9.89288 1.32067 8.29835 1.61969 6.76006C1.91872 5.22177 2.76342 3.8433 3.99826 2.87846C5.2331 1.91362 6.77494 1.42737 8.33988 1.50925C9.90482 1.59113 11.3875 2.23562 12.5149 3.32406C13.6425 4.41269 14.3387 5.87206 14.4754 7.4334C14.612 8.99474 14.18 10.5529 13.2587 11.8209C12.3375 13.0888 10.9891 13.9813 9.46194 14.3337C8.18691 14.628 6.85895 14.5294 5.64989 14.0605C5.1712 13.8748 4.76962 13.4932 4.26534 13.3967C3.67413 13.2835 2.95257 13.5598 2.03794 14.3337\" stroke=\"currentColor\"/><path d=\"M8 5V11\" stroke=\"currentColor\"/><path d=\"M5 8H11\" stroke=\"currentColor\"/></svg></button>\n  </span>\n</div></div>",
+     "css": "/* 状态模拟：:hover 无法静态触发，下面是 Rows.module.css 中 `.sessionRow:hover` / `.sessionRow.menuOpen` / `.projectRow:hover` 相关规则的原样副本，挂在 .hoverRow 上。 */\n.sessionRow.hoverRow { background: var(--dsw-alias-interactive-bg-hover); }\n.sessionRow.hoverRow .rowActions { display: inline-flex; }\n.sessionRow.hoverRow .time,\n.sessionRow.hoverRow .pinIndicator { display: none; }\n.sessionRow.hoverRow .title { text-overflow: clip; }\n\n.projectRow.hoverRow { background: var(--dsw-alias-interactive-bg-hover); }\n.projectRow.hoverRow .chevron { display: inline-flex; }\n.projectRow.hoverRow .folder { display: none; }\n.projectRow.hoverRow .rowActions { display: inline-flex; }\n\n.searchResultRow.hoverRow { background: var(--dsw-alias-interactive-bg-hover); }\n.searchResultRow.hoverRow .rowActions { display: inline-flex; }"
+    },
+    {
+     "label": "菜单打开：行保持悬停底色",
+     "note": "menuOpen 同时把尾部动作钉住",
+     "html": "<div style=\"width:240px\"><div class=\"projectRow menuOpen\" role=\"treeitem\" aria-expanded=\"true\" data-row-key=\"workspace:ws-deepseek-harness\">\n  <span class=\"slot folder\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.55912 7.93683C2.67584 7.49906 3.0723 7.19446 3.52536 7.19446H13.6491C14.3061 7.19446 14.7846 7.81725 14.6153 8.45209L13.4411 12.856C13.3244 13.2938 12.9279 13.5984 12.4748 13.5984H2.35113C1.69411 13.5984 1.21562 12.9756 1.38489 12.3407L2.55912 7.93683Z\" fill=\"currentColor\" opacity=\"0.16\"/><path d=\"M13.6491 6.69446C14.6346 6.69453 15.3522 7.62895 15.0983 8.58118L13.9245 12.9845C13.7494 13.6412 13.1539 14.0988 12.4743 14.0988H2.35126C1.36574 14.0988 0.648153 13.1643 0.902044 12.212L2.07587 7.80774C2.25102 7.15128 2.84567 6.69455 3.52509 6.69446H13.6491ZM3.52509 7.69446C3.29865 7.69455 3.10004 7.84674 3.04169 8.06555L1.86786 12.4698C1.78345 12.7872 2.02285 13.0988 2.35126 13.0988H12.4743C12.7007 13.0988 12.8992 12.9463 12.9577 12.7277L14.1325 8.32336C14.2171 8.00598 13.9776 7.69453 13.6491 7.69446H3.52509Z\" fill=\"currentColor\"/><path d=\"M4.7666 1.90137C5.13227 1.90144 5.48571 2.03525 5.75977 2.27734L7.27246 3.61328C7.36379 3.69382 7.48174 3.73828 7.60352 3.73828H12.3994C13.2276 3.73841 13.8993 4.41005 13.8994 5.23828V6.7168C13.8183 6.70327 13.735 6.69436 13.6494 6.69434H12.8994V5.23828C12.8993 4.96233 12.6754 4.73841 12.3994 4.73828H7.60352C7.23781 4.73828 6.88446 4.60438 6.61035 4.3623L5.09766 3.02637C5.00636 2.94576 4.88838 2.90144 4.7666 2.90137H2.0498C1.77366 2.90137 1.5498 3.12523 1.5498 3.40137V9.78223L0.902344 12.2119C0.648452 13.1642 1.36604 14.0986 2.35156 14.0986H2.0498C1.2214 14.0986 0.549838 13.427 0.549805 12.5986V3.40137C0.549805 2.57294 1.22138 1.90137 2.0498 1.90137H4.7666Z\" fill=\"currentColor\"/></svg></span>\n  <span class=\"slot chevron\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" class=\"arrow arrowOpen\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M5.5 4.5C5.5 4.40714 5.52586 4.31612 5.57467 4.23713C5.62349 4.15815 5.69334 4.09431 5.77639 4.05279C5.85945 4.01126 5.95242 3.99368 6.0449 4.00202C6.13738 4.01036 6.22572 4.04429 6.3 4.1L10.967 7.6C11.0291 7.64657 11.0795 7.70697 11.1142 7.77639C11.1489 7.84582 11.167 7.92238 11.167 8C11.167 8.07762 11.1489 8.15418 11.1142 8.22361C11.0795 8.29303 11.0291 8.35343 10.967 8.4L6.3 11.9C6.22572 11.9557 6.13738 11.9896 6.0449 11.998C5.95242 12.0063 5.85945 11.9887 5.77639 11.9472C5.69334 11.9057 5.62349 11.8419 5.57467 11.7629C5.52586 11.6839 5.5 11.5929 5.5 11.5V4.5Z\" fill=\"currentColor\"/></svg></span>\n  <span class=\"projectText\"><span class=\"title\">deepseek-harness</span></span>\n  <span class=\"rowActions\">\n    <button type=\"button\" class=\"iconButton\" aria-label=\"工作区操作：deepseek-harness\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z\" fill=\"currentColor\"/><path d=\"M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z\" fill=\"currentColor\"/><path d=\"M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z\" fill=\"currentColor\"/></svg></button><button type=\"button\" class=\"iconButton\" aria-label=\"在 deepseek-harness 中新建会话\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.37091 11.2501C1.58745 9.89288 1.32067 8.29835 1.61969 6.76006C1.91872 5.22177 2.76342 3.8433 3.99826 2.87846C5.2331 1.91362 6.77494 1.42737 8.33988 1.50925C9.90482 1.59113 11.3875 2.23562 12.5149 3.32406C13.6425 4.41269 14.3387 5.87206 14.4754 7.4334C14.612 8.99474 14.18 10.5529 13.2587 11.8209C12.3375 13.0888 10.9891 13.9813 9.46194 14.3337C8.18691 14.628 6.85895 14.5294 5.64989 14.0605C5.1712 13.8748 4.76962 13.4932 4.26534 13.3967C3.67413 13.2835 2.95257 13.5598 2.03794 14.3337\" stroke=\"currentColor\"/><path d=\"M8 5V11\" stroke=\"currentColor\"/><path d=\"M5 8H11\" stroke=\"currentColor\"/></svg></button>\n  </span>\n</div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "group",
+     "type": "GroupNode",
+     "default": "—",
+     "desc": "派生出的分组节点：label、key、workspaceId、expanded、containsCurrent 与 hover 卡用的 cwd / createdAt。"
+    },
+    {
+     "name": "containsCurrentDescendant",
+     "type": "boolean",
+     "default": "false",
+     "desc": "子树里（哪怕已折叠）含当前会话时保持文件夹高亮。"
+    },
+    {
+     "name": "onToggle",
+     "type": "() => void",
+     "default": "—",
+     "desc": "整行的点击语义：展开或折叠该组。"
+    },
+    {
+     "name": "onCreate",
+     "type": "() => void",
+     "default": "—",
+     "desc": "尾部\"新建会话\"按钮：展开分组并在这个工作区里起会话。"
+    },
+    {
+     "name": "actions",
+     "type": "{ rename: () => void; delete: () => void } | undefined",
+     "default": "—",
+     "desc": "真实工作区才有的重命名/删除；未分组桶因此不显示\"⋯\"菜单。"
+    },
+    {
+     "name": "drag",
+     "type": "WorkspaceRowDragProps | undefined",
+     "default": "—",
+     "desc": "分组视图里的工作区行拖拽接线；只对真实工作区传入，拖拽只改同级顺序。"
+    },
+    {
+     "name": "home",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "宿主账户 home，悬停卡里的 POSIX 路径缩写成 ~。"
+    },
+    {
+     "name": "newShortcut / t",
+     "type": "ShortcutCatalogEntry / 翻译座",
+     "default": "—",
+     "desc": "新会话按钮的键位与全部副本。"
+    }
+   ],
+   "notes": "菜单只有 Rename / Delete 两个真实动作，其余行是视觉占位；未知 id 在分发前直接返回，不会落到\"删除\"分支。删除工作区只移除注册，会话转为\"未分组\"，文件夹与会话记录都保留。",
+   "keywords": [
+    "工作区行",
+    "项目行",
+    "分组头",
+    "project row",
+    "workspace"
+   ]
+  },
+  {
+   "id": "session-node-item",
+   "name": "SessionNodeItem",
+   "exportName": "SessionNodeItem",
+   "zh": "会话行",
+   "group": "shell",
+   "summary": "32px 的会话行：8px 内边距 + 16px 状态槽 + 4px 间隔的标题，尾随 10px 的更新时间。状态槽优先显示待交互（warning 点 + 把时间换成\"待审批/计划待审/待回答\"）、其次自身或子智能体活动（14px 加载环），完成态用 done 点，空闲不画点而把槽让给 <code>sidebar.session.row.leading</code> 占位者。悬停时把标题当跑马灯滚到远端并让时间位换成\"⋯\"与行动作条，置顶行带 14px 图钉；拖拽插入用行边缘的 2px 蓝色标线表示。",
+   "source": "packages/client/ui-workspace/src/client/rows/Rows.tsx#L545",
+   "css": [
+    "packages/client/ui-primitives/src/StateDot.module.css",
+    "packages/client/ui-workspace/src/client/rows/Rows.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-label-caption",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-state-success-primary",
+    "--dsw-alias-state-warn-primary",
+    "--dsw-alias-state-error-primary",
+    "--dsw-alias-state-idle-primary",
+    "--dsw-radius-md",
+    "--dsw-radius-xs"
+   ],
+   "specimens": [
+    {
+     "label": "行态：选中 / 空闲 / 进行中 / 待审批 / 已置顶 / 空白新会话",
+     "note": "空白行既没有时间也没有行动作",
+     "html": "<div style=\"width:240px\">\n  <div class=\"sessionRow selected\" role=\"treeitem\" aria-selected=\"true\" data-row-key=\"session:重构会话存储层\">\n  <span class=\"slot\"></span>\n  <span class=\"title\">重构会话存储层</span>\n  <span class=\"time\">5分钟</span>\n  \n  <span class=\"rowActions\"><button type=\"button\" class=\"iconButton\" aria-label=\"会话操作：重构会话存储层\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z\" fill=\"currentColor\"/><path d=\"M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z\" fill=\"currentColor\"/><path d=\"M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z\" fill=\"currentColor\"/></svg></button></span>\n</div>\n  <div class=\"sessionRow\" role=\"treeitem\" aria-selected=\"false\" data-row-key=\"session:统一按钮圆角\">\n  <span class=\"slot\"></span>\n  <span class=\"title\">统一按钮圆角</span>\n  <span class=\"time\">1小时</span>\n  \n  <span class=\"rowActions\"><button type=\"button\" class=\"iconButton\" aria-label=\"会话操作：统一按钮圆角\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z\" fill=\"currentColor\"/><path d=\"M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z\" fill=\"currentColor\"/><path d=\"M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z\" fill=\"currentColor\"/></svg></button></span>\n</div>\n  <div class=\"sessionRow\" role=\"treeitem\" aria-selected=\"false\" data-row-key=\"session:修复 Windows 标题栏留白\">\n  <span class=\"slot\"><svg class=\"spinner\" data-state=\"ongoing\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><g class=\"spinnerMotion\"><circle class=\"spinnerTrack\" cx=\"12\" cy=\"12\" r=\"9.5\"/><circle class=\"spinnerArc\" cx=\"12\" cy=\"12\" r=\"9.5\"/></g></svg></span>\n  <span class=\"title\">修复 Windows 标题栏留白</span>\n  <span class=\"time\">刚刚</span>\n  \n  <span class=\"rowActions\"><button type=\"button\" class=\"iconButton\" aria-label=\"会话操作：修复 Windows 标题栏留白\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z\" fill=\"currentColor\"/><path d=\"M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z\" fill=\"currentColor\"/><path d=\"M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z\" fill=\"currentColor\"/></svg></button></span>\n</div>\n  <div class=\"sessionRow\" role=\"treeitem\" aria-selected=\"false\" data-row-key=\"session:补全 ui-workspace README\">\n  <span class=\"slot\"><span class=\"c0-dot\" data-state=\"warning\" style=\"width:10px;height:10px\"></span></span>\n  <span class=\"title\">补全 ui-workspace README</span>\n  <span class=\"time\">待审批</span>\n  <span class=\"pinIndicator\" role=\"img\" aria-label=\"已置顶\" title=\"已置顶\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M9.96976 1.70572L13.1554 3.93629L10.9019 8.12317L11.5158 11.605L10.7192 12.7427L2.52767 7.00693L3.3243 5.86922L6.80612 5.25528L9.96976 1.70572Z\" fill=\"currentColor\" stroke=\"currentColor\" stroke-linejoin=\"round\"/><path d=\"M6.05285 9.47511C6.27284 9.16094 6.70586 9.08458 7.02003 9.30457C7.3342 9.52455 7.41055 9.95757 7.19057 10.2717L3.98587 14.4708L3.21223 13.9291L6.05285 9.47511Z\" fill=\"currentColor\"/></svg></span>\n  <span class=\"rowActions\"><button type=\"button\" class=\"iconButton\" aria-label=\"会话操作：补全 ui-workspace README\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z\" fill=\"currentColor\"/><path d=\"M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z\" fill=\"currentColor\"/><path d=\"M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z\" fill=\"currentColor\"/></svg></button></span>\n</div>\n  <div class=\"sessionRow\" role=\"treeitem\" aria-selected=\"false\" data-row-key=\"session:新会话\">\n  <span class=\"slot\"></span>\n  <span class=\"title\">新会话</span>\n  \n  \n  \n</div>\n</div>"
+    },
+    {
+     "label": "悬停：时间与图钉让位给动作条",
+     "note": "悬停模拟",
+     "html": "<div style=\"width:240px\"><div class=\"sessionRow hoverRow\" role=\"treeitem\" aria-selected=\"false\" data-row-key=\"session:统一按钮圆角\">\n  <span class=\"slot\"></span>\n  <span class=\"title\">统一按钮圆角</span>\n  <span class=\"time\">1小时</span>\n  \n  <span class=\"rowActions\"><button type=\"button\" class=\"iconButton\" aria-label=\"会话操作：统一按钮圆角\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z\" fill=\"currentColor\"/><path d=\"M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z\" fill=\"currentColor\"/><path d=\"M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z\" fill=\"currentColor\"/></svg></button></span>\n</div></div>",
+     "css": "/* 状态模拟：:hover 无法静态触发，下面是 Rows.module.css 中 `.sessionRow:hover` / `.sessionRow.menuOpen` / `.projectRow:hover` 相关规则的原样副本，挂在 .hoverRow 上。 */\n.sessionRow.hoverRow { background: var(--dsw-alias-interactive-bg-hover); }\n.sessionRow.hoverRow .rowActions { display: inline-flex; }\n.sessionRow.hoverRow .time,\n.sessionRow.hoverRow .pinIndicator { display: none; }\n.sessionRow.hoverRow .title { text-overflow: clip; }\n\n.projectRow.hoverRow { background: var(--dsw-alias-interactive-bg-hover); }\n.projectRow.hoverRow .chevron { display: inline-flex; }\n.projectRow.hoverRow .folder { display: none; }\n.projectRow.hoverRow .rowActions { display: inline-flex; }\n\n.searchResultRow.hoverRow { background: var(--dsw-alias-interactive-bg-hover); }\n.searchResultRow.hoverRow .rowActions { display: inline-flex; }"
+    },
+    {
+     "label": "归档行与拖拽插入标线",
+     "note": "归档行状态槽留空，灰色标题承载全部\"不可打开\"的含义",
+     "html": "<div style=\"width:240px;padding:8px 0\">\n  <div class=\"sessionRow archived\" role=\"treeitem\" aria-selected=\"false\" data-row-key=\"session:整理会话导出脚本\">\n  <span class=\"slot\"></span>\n  <span class=\"title\">整理会话导出脚本</span>\n  <span class=\"time\">2天</span>\n  \n  <span class=\"rowActions\"><button type=\"button\" class=\"iconButton\" aria-label=\"会话操作：整理会话导出脚本\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z\" fill=\"currentColor\"/><path d=\"M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z\" fill=\"currentColor\"/><path d=\"M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z\" fill=\"currentColor\"/></svg></button></span>\n</div>\n  <div class=\"sessionRow dropBefore\" role=\"treeitem\" aria-selected=\"false\" data-row-key=\"session:统一按钮圆角\">\n  <span class=\"slot\"></span>\n  <span class=\"title\">统一按钮圆角</span>\n  <span class=\"time\">1小时</span>\n  \n  <span class=\"rowActions\"><button type=\"button\" class=\"iconButton\" aria-label=\"会话操作：统一按钮圆角\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z\" fill=\"currentColor\"/><path d=\"M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z\" fill=\"currentColor\"/><path d=\"M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z\" fill=\"currentColor\"/></svg></button></span>\n</div>\n  <div class=\"sessionRow\" role=\"treeitem\" aria-selected=\"false\" data-row-key=\"session:重构会话存储层\">\n  <span class=\"slot\"></span>\n  <span class=\"title\">重构会话存储层</span>\n  <span class=\"time\">5分钟</span>\n  \n  <span class=\"rowActions\"><button type=\"button\" class=\"iconButton\" aria-label=\"会话操作：重构会话存储层\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z\" fill=\"currentColor\"/><path d=\"M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z\" fill=\"currentColor\"/><path d=\"M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z\" fill=\"currentColor\"/></svg></button></span>\n</div>\n</div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "node",
+     "type": "SessionNode",
+     "default": "—",
+     "desc": "派生行数据：id、title、blank、archived、pinned、updatedAt 与 pendingInteraction / running / runningSubagentCount / completed 四个状态事实。"
+    },
+    {
+     "name": "currentId",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "当前选中会话；全局面板打开时调用方传 undefined，行不显示选中态。"
+    },
+    {
+     "name": "now",
+     "type": "number",
+     "default": "—",
+     "desc": "相对时间的基准毫秒；行本身不取时钟。"
+    },
+    {
+     "name": "onOpen / onRenameRequest / onReveal",
+     "type": "回调",
+     "default": "—",
+     "desc": "打开会话、标题双击进重命名、搜索导航后滚入视口并回执。"
+    },
+    {
+     "name": "drag",
+     "type": "RowDragProps | undefined",
+     "default": "—",
+     "desc": "重排接线：插入标记 before / after，空白行与归档行不可拖。"
+    },
+    {
+     "name": "renderSlot",
+     "type": "PropsRenderSlots<…menu.item | …row.action | …row.leading | …row.hover>",
+     "default": "—",
+     "desc": "四个子槽；菜单项经 hookContext 拿到这一行的菜单开合状态。"
+    }
+   ],
+   "notes": "状态优先级固定：待交互 &gt; 自身/子智能体活动 &gt; 完成未读 &gt; 空闲，所以一行永远不会同时出现状态点与 leading 占位者。归档行整行灰化、状态槽留空，实时状态只在悬停卡里出现。标题跑马灯在 <code>prefers-reduced-motion</code> 下直接跳到远端，溢出不超过 8px 时不动。",
+   "keywords": [
+    "会话行",
+    "session row",
+    "状态点",
+    "置顶",
+    "归档"
+   ]
+  },
+  {
+   "id": "search-result-item",
+   "name": "SearchResultItem",
+   "exportName": "SearchResultItem",
+   "zh": "搜索结果",
+   "group": "shell",
+   "summary": "搜索态下的一条结果：至少 48px 高、16px 圆角的双行卡，上行是 16px 状态槽 + 14px 标题（选中或归档时整卡铺 <code>--dsw-alias-interactive-bg-hover</code>），下行从状态槽下方 20px 起排，先是 12px 的工作区名（最多占 40% 宽，没有摘要时占满），再是 <code>--dsw-alias-label-secondary</code> 的内容片段。归档结果整段降到 caption 灰并在右上角浮出\"取消归档\"按钮——搜索是它们唯一的恢复入口。",
+   "source": "packages/client/ui-workspace/src/client/rows/Rows.tsx#L472",
+   "css": [
+    "packages/client/ui-primitives/src/StateDot.module.css",
+    "packages/client/ui-workspace/src/client/rows/Rows.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-label-caption",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-state-warn-primary",
+    "--dsw-alias-state-idle-primary",
+    "--dsw-radius-lg",
+    "--dsw-radius-xs"
+   ],
+   "specimens": [
+    {
+     "label": "标题 + 工作区 + 内容片段",
+     "html": "<div style=\"width:268px\">\n  <div class=\"searchResultRow\" role=\"treeitem\" aria-selected=\"false\">\n  <span class=\"searchResultHeading\">\n    <span class=\"slot\"></span>\n    <span class=\"searchResultTitle\">重构会话存储层</span>\n    \n  </span>\n  <span class=\"searchResultMeta\">\n    <span class=\"searchResultWorkspace\">deepseek-harness</span>\n    <span class=\"searchResultSnippet\">把会话快照改成按 turn 分片，重放时不再全量反序列化。</span>\n  </span>\n</div>\n  <div class=\"searchResultRow selected\" role=\"treeitem\" aria-selected=\"true\">\n  <span class=\"searchResultHeading\">\n    <span class=\"slot\"></span>\n    <span class=\"searchResultTitle\">补全 ui-workspace README</span>\n    \n  </span>\n  <span class=\"searchResultMeta\">\n    <span class=\"searchResultWorkspace\">deepseek-harness</span>\n    <span class=\"searchResultSnippet\">会话列表的水位线一节需要补充\"展开其余 N 个会话\"的行为。</span>\n  </span>\n</div>\n</div>"
+    },
+    {
+     "label": "只有工作区元信息的标题命中",
+     "note": "没有片段时工作区名独占整行",
+     "html": "<div style=\"width:268px\"><div class=\"searchResultRow\" role=\"treeitem\" aria-selected=\"false\">\n  <span class=\"searchResultHeading\">\n    <span class=\"slot\"></span>\n    <span class=\"searchResultTitle\">统一按钮圆角</span>\n    \n  </span>\n  <span class=\"searchResultMeta\">\n    <span class=\"searchResultWorkspace\">deepseek-harness</span>\n    \n  </span>\n</div></div>"
+    },
+    {
+     "label": "归档结果与待审批结果",
+     "note": "归档行灰化并带取消归档按钮",
+     "html": "<div style=\"width:268px\">\n  <div class=\"searchResultRow archived\" role=\"treeitem\" aria-selected=\"false\">\n  <span class=\"searchResultHeading\">\n    <span class=\"slot\"></span>\n    <span class=\"searchResultTitle\">整理会话导出脚本</span>\n    <span class=\"rowActions\"><button type=\"button\" class=\"iconButton\" aria-label=\"取消归档\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\" viewBox=\"0 0 16 16\"><path d=\"M12.8867 1.86719C13.079 1.86719 13.2672 1.88383 13.4482 1.91602C13.8637 1.98936 14.2419 2.17972 14.5391 2.46191C14.8621 2.76847 15.0766 3.16608 15.1533 3.59863C15.1848 3.7783 15.2002 3.96507 15.2002 4.15625V5.68652C15.2002 6.30458 14.9929 6.87342 14.6445 7.32812C14.646 7.3541 14.6494 7.37983 14.6494 7.40625V13.2861C14.6494 13.7967 14.6494 14.2159 14.6211 14.5547C14.5915 14.9097 14.5264 15.2345 14.3643 15.5352C14.1164 16.0016 13.7485 16.3864 13.2988 16.6553C12.9795 16.8461 12.6458 16.9173 12.2676 16.9492C11.9057 16.9797 11.4606 16.9805 10.9199 16.9805H5.15234C4.61168 16.9805 4.16652 16.9797 3.80469 16.9492C3.42654 16.9173 3.0928 16.8461 2.77344 16.6553C2.32382 16.3864 1.95678 16.0016 1.70898 15.5352C1.54676 15.2344 1.48076 14.9098 1.45117 14.5547C1.42288 14.2159 1.42285 13.7967 1.42285 13.2861V7.40625C1.42285 7.38001 1.42629 7.35396 1.42773 7.32812C1.07936 6.87342 0.87207 6.30458 0.87207 5.68652V4.15625C0.87207 3.96508 0.887483 3.77829 0.918945 3.59863C0.995608 3.16602 1.21003 2.7685 1.5332 2.46191C1.83045 2.17975 2.20773 1.98935 2.62305 1.91602C2.80411 1.88381 2.9931 1.86719 3.18555 1.86719H12.8867ZM2.56348 8.52637V13.2861C2.56348 13.8142 2.56362 14.1347 2.58398 14.3779C2.60339 14.6096 2.63514 14.7145 2.66406 14.7686C2.78912 15.0034 2.97199 15.1984 3.19629 15.3311C3.24886 15.3615 3.35251 15.3943 3.58398 15.4131C3.82628 15.4335 4.14524 15.4346 4.67383 15.4346H11.3975C11.9261 15.4346 12.2449 15.4335 12.4873 15.4131C12.7188 15.3943 12.8234 15.3615 12.876 15.3311C13.1003 15.1984 13.2832 15.0034 13.4082 14.7686C13.4371 14.7145 13.4681 14.6098 13.4873 14.3779C13.5077 14.1347 13.5088 13.8142 13.5088 13.2861V8.52637C13.3001 8.57239 13.0872 8.60156 12.876 8.60156H3.19629C2.98506 8.60156 2.77217 8.57239 2.56348 8.52637ZM12.876 3.41309H3.19629C2.68841 3.41309 2.27637 3.82486 2.27637 4.33203V5.68652C2.27637 6.1937 2.68841 6.60547 3.19629 6.60547H12.876C13.3839 6.60547 13.7959 6.1937 13.7959 5.68652V4.33203C13.7959 3.82486 13.3839 3.41309 12.876 3.41309Z\" fill=\"currentColor\"/><path d=\"M8 12.4V9.4M6.4 10.9L8 9.3L9.6 10.9\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></button></span>\n  </span>\n  <span class=\"searchResultMeta\">\n    <span class=\"searchResultWorkspace\">deepseek-harness</span>\n    <span class=\"searchResultSnippet\">导出 JSON 时带上 tool 结果的截断标记。</span>\n  </span>\n</div>\n  <div class=\"searchResultRow\" role=\"treeitem\" aria-selected=\"false\">\n  <span class=\"searchResultHeading\">\n    <span class=\"slot\"><span class=\"c0-dot\" data-state=\"warning\" style=\"width:10px;height:10px\"></span></span>\n    <span class=\"searchResultTitle\">修复 Windows 标题栏留白</span>\n    \n  </span>\n  <span class=\"searchResultMeta\">\n    <span class=\"searchResultWorkspace\">deepseek-harness</span>\n    <span class=\"searchResultSnippet\">标题栏高度变量在 Windows 上还没生效。</span>\n  </span>\n</div>\n</div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "result",
+     "type": "SearchResultNode",
+     "default": "—",
+     "desc": "合并本地与内容搜索后的行：id、title、workspace、可选 snippet、archived 与状态字段。"
+    },
+    {
+     "name": "currentId",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "当前打开的会话；相等即选中态，全局面板打开时调用方传 undefined。"
+    },
+    {
+     "name": "onOpen",
+     "type": "(id) => void",
+     "default": "—",
+     "desc": "打开结果会话：清空并收起搜索、按浏览模式展开所在工作区并把行滚入视口。"
+    },
+    {
+     "name": "onUnarchive",
+     "type": "(id) => void",
+     "default": "—",
+     "desc": "归档结果行上的取消归档动作；归档行点击不导航，只解释原因。"
+    },
+    {
+     "name": "t",
+     "type": "翻译座",
+     "default": "—",
+     "desc": "未命名、未分组、取消归档与\"归档不可打开\"等副本。"
+    }
+   ],
+   "notes": "结果列表上限 20 条，内容搜索是 250ms 防抖的宿主请求，失败只保留元数据命中、不额外报警。搜索导航不定位到具体事件：打开会话就结束。",
+   "keywords": [
+    "搜索",
+    "结果",
+    "search result",
+    "取消归档"
+   ]
+  },
+  {
+   "id": "workspace-browser",
+   "name": "WorkspaceBrowser",
+   "exportName": "WorkspaceBrowser",
+   "zh": "工作区浏览",
+   "group": "shell",
+   "summary": "侧栏浏览区：36px 区域头（\"工作区/会话\"标题、就地展开的搜索框、视图选项与添加工作区两个 28px 按钮）+ 唯一滚动区。分组视图按工作区渲染 <code>.groupSection</code>（组头 + 子工作区 + 本组会话行，组间 4px 间距、行间 2px），底部压一层 24px 的 <code>.fade</code> 渐隐到侧栏底色；搜索态换成扁平的 <code>.searchTree</code> 结果列表，加载中给骨架行。收起成轨时用 <code>.rail</code>：控件变 36×36、12px 圆角，列表整体卸载。",
+   "source": "packages/client/ui-workspace/src/client/rows/WorkspaceBrowser.tsx#L896",
+   "css": [
+    "packages/client/ui-primitives/src/StateDot.module.css",
+    "packages/client/ui-workspace/src/client/rows/Rows.module.css",
+    "packages/client/ui-workspace/src/client/rows/WorkspaceBrowser.module.css"
+   ],
+   "tokens": [
+    "--dsw-specific-sidebar-fill",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-label-caption",
+    "--dsw-alias-label-dimmed",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-border-l4",
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-bg-skeleton",
+    "--dsw-radius-sm",
+    "--dsw-radius-md",
+    "--dsw-radius-lg",
+    "--dsw-focus-ring-width",
+    "--dsw-focus-ring-color"
+   ],
+   "specimens": [
+    {
+     "label": "分组视图：区域头 + 工作区组 + 会话行",
+     "html": "<div style=\"width:240px;height:330px;display:flex;flex-direction:column\"><div class=\"root\">\n  <div class=\"sectionHeader\">\n    <span class=\"sectionLabel wide\">工作区</span>\n    <div class=\"searchSlot\"><div class=\"search\"><button type=\"button\" class=\"searchButton\" aria-label=\"搜索会话\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M6.58727 11.8586C9.55061 11.8586 11.9529 9.45637 11.9529 6.49304C11.9529 3.5297 9.55061 1.12744 6.58727 1.12744C3.62394 1.12744 1.22168 3.5297 1.22168 6.49304C1.22168 9.45637 3.62394 11.8586 6.58727 11.8586Z\" stroke=\"currentColor\"/><path d=\"M10.2991 10.3933L14.7783 14.8725\" stroke=\"currentColor\"/></svg></button><input class=\"searchInput\" type=\"text\" placeholder=\"搜索会话名称\" tabindex=\"-1\"></div></div>\n    <div class=\"headerActions\"><button type=\"button\" class=\"c2-iconButton\" aria-label=\"视图选项\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\" stroke=\"currentColor\" stroke-linecap=\"round\"><path d=\"M2.3 5h5.85M12.05 5h1.65\"/><circle cx=\"9.95\" cy=\"5\" r=\"1.45\"/><path d=\"M2.3 11h1.65M7.85 11h5.85\"/><circle cx=\"5.75\" cy=\"11\" r=\"1.45\"/></svg></button><button type=\"button\" class=\"c2-iconButton\" aria-label=\"添加工作区\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M5.54492 2.06738C5.91034 2.06754 6.26318 2.20149 6.53711 2.44336L7.94043 3.68164V4.7998C7.71462 4.74105 7.50367 4.63139 7.32617 4.47461L5.87598 3.19238C5.78477 3.11185 5.66658 3.06754 5.54492 3.06738H2.94922C2.67322 3.06738 2.44946 3.29145 2.44922 3.56738V12.4326C2.44927 12.7087 2.67311 12.9326 2.94922 12.9326H12.9326C13.2086 12.9325 13.4326 12.7086 13.4326 12.4326V8.53613H14.4326V12.4326C14.4326 13.2609 13.7609 13.9325 12.9326 13.9326H2.94922C2.12083 13.9326 1.44927 13.261 1.44922 12.4326V3.56738C1.44946 2.73916 2.12094 2.06738 2.94922 2.06738H5.54492Z\" fill=\"currentColor\"/><path d=\"M9.75977 4.50208H14.5509\" stroke=\"currentColor\"/><path d=\"M12.1492 6.89758L12.1492 2.10642\" stroke=\"currentColor\"/></svg></button></div>\n  </div>\n  <div class=\"listArea\">\n    <div class=\"treeBody wide\">\n      <div class=\"list\">\n        <div class=\"groupSection\">\n          <div class=\"projectRow\" role=\"treeitem\" aria-expanded=\"true\" data-row-key=\"workspace:ws-deepseek-harness\">\n  <span class=\"slot folder folderActive\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.55912 7.93683C2.67584 7.49906 3.0723 7.19446 3.52536 7.19446H13.6491C14.3061 7.19446 14.7846 7.81725 14.6153 8.45209L13.4411 12.856C13.3244 13.2938 12.9279 13.5984 12.4748 13.5984H2.35113C1.69411 13.5984 1.21562 12.9756 1.38489 12.3407L2.55912 7.93683Z\" fill=\"currentColor\" opacity=\"0.16\"/><path d=\"M13.6491 6.69446C14.6346 6.69453 15.3522 7.62895 15.0983 8.58118L13.9245 12.9845C13.7494 13.6412 13.1539 14.0988 12.4743 14.0988H2.35126C1.36574 14.0988 0.648153 13.1643 0.902044 12.212L2.07587 7.80774C2.25102 7.15128 2.84567 6.69455 3.52509 6.69446H13.6491ZM3.52509 7.69446C3.29865 7.69455 3.10004 7.84674 3.04169 8.06555L1.86786 12.4698C1.78345 12.7872 2.02285 13.0988 2.35126 13.0988H12.4743C12.7007 13.0988 12.8992 12.9463 12.9577 12.7277L14.1325 8.32336C14.2171 8.00598 13.9776 7.69453 13.6491 7.69446H3.52509Z\" fill=\"currentColor\"/><path d=\"M4.7666 1.90137C5.13227 1.90144 5.48571 2.03525 5.75977 2.27734L7.27246 3.61328C7.36379 3.69382 7.48174 3.73828 7.60352 3.73828H12.3994C13.2276 3.73841 13.8993 4.41005 13.8994 5.23828V6.7168C13.8183 6.70327 13.735 6.69436 13.6494 6.69434H12.8994V5.23828C12.8993 4.96233 12.6754 4.73841 12.3994 4.73828H7.60352C7.23781 4.73828 6.88446 4.60438 6.61035 4.3623L5.09766 3.02637C5.00636 2.94576 4.88838 2.90144 4.7666 2.90137H2.0498C1.77366 2.90137 1.5498 3.12523 1.5498 3.40137V9.78223L0.902344 12.2119C0.648452 13.1642 1.36604 14.0986 2.35156 14.0986H2.0498C1.2214 14.0986 0.549838 13.427 0.549805 12.5986V3.40137C0.549805 2.57294 1.22138 1.90137 2.0498 1.90137H4.7666Z\" fill=\"currentColor\"/></svg></span>\n  <span class=\"slot chevron\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" class=\"arrow arrowOpen\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M5.5 4.5C5.5 4.40714 5.52586 4.31612 5.57467 4.23713C5.62349 4.15815 5.69334 4.09431 5.77639 4.05279C5.85945 4.01126 5.95242 3.99368 6.0449 4.00202C6.13738 4.01036 6.22572 4.04429 6.3 4.1L10.967 7.6C11.0291 7.64657 11.0795 7.70697 11.1142 7.77639C11.1489 7.84582 11.167 7.92238 11.167 8C11.167 8.07762 11.1489 8.15418 11.1142 8.22361C11.0795 8.29303 11.0291 8.35343 10.967 8.4L6.3 11.9C6.22572 11.9557 6.13738 11.9896 6.0449 11.998C5.95242 12.0063 5.85945 11.9887 5.77639 11.9472C5.69334 11.9057 5.62349 11.8419 5.57467 11.7629C5.52586 11.6839 5.5 11.5929 5.5 11.5V4.5Z\" fill=\"currentColor\"/></svg></span>\n  <span class=\"projectText\"><span class=\"title\">deepseek-harness</span></span>\n  <span class=\"rowActions\">\n    <button type=\"button\" class=\"c1-iconButton\" aria-label=\"工作区操作：deepseek-harness\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z\" fill=\"currentColor\"/><path d=\"M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z\" fill=\"currentColor\"/><path d=\"M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z\" fill=\"currentColor\"/></svg></button><button type=\"button\" class=\"c1-iconButton\" aria-label=\"在 deepseek-harness 中新建会话\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.37091 11.2501C1.58745 9.89288 1.32067 8.29835 1.61969 6.76006C1.91872 5.22177 2.76342 3.8433 3.99826 2.87846C5.2331 1.91362 6.77494 1.42737 8.33988 1.50925C9.90482 1.59113 11.3875 2.23562 12.5149 3.32406C13.6425 4.41269 14.3387 5.87206 14.4754 7.4334C14.612 8.99474 14.18 10.5529 13.2587 11.8209C12.3375 13.0888 10.9891 13.9813 9.46194 14.3337C8.18691 14.628 6.85895 14.5294 5.64989 14.0605C5.1712 13.8748 4.76962 13.4932 4.26534 13.3967C3.67413 13.2835 2.95257 13.5598 2.03794 14.3337\" stroke=\"currentColor\"/><path d=\"M8 5V11\" stroke=\"currentColor\"/><path d=\"M5 8H11\" stroke=\"currentColor\"/></svg></button>\n  </span>\n</div>\n          <div class=\"sessionRow selected\" role=\"treeitem\" aria-selected=\"true\" data-row-key=\"session:重构会话存储层\">\n  <span class=\"slot\"></span>\n  <span class=\"title\">重构会话存储层</span>\n  <span class=\"time\">5分钟</span>\n  \n  <span class=\"rowActions\"><button type=\"button\" class=\"c1-iconButton\" aria-label=\"会话操作：重构会话存储层\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z\" fill=\"currentColor\"/><path d=\"M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z\" fill=\"currentColor\"/><path d=\"M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z\" fill=\"currentColor\"/></svg></button></span>\n</div>\n          <div class=\"sessionRow\" role=\"treeitem\" aria-selected=\"false\" data-row-key=\"session:统一按钮圆角\">\n  <span class=\"slot\"></span>\n  <span class=\"title\">统一按钮圆角</span>\n  <span class=\"time\">1小时</span>\n  \n  <span class=\"rowActions\"><button type=\"button\" class=\"c1-iconButton\" aria-label=\"会话操作：统一按钮圆角\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z\" fill=\"currentColor\"/><path d=\"M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z\" fill=\"currentColor\"/><path d=\"M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z\" fill=\"currentColor\"/></svg></button></span>\n</div>\n          <div class=\"sessionRow\" role=\"treeitem\" aria-selected=\"false\" data-row-key=\"session:修复 Windows 标题栏留白\">\n  <span class=\"slot\"><svg class=\"spinner\" data-state=\"ongoing\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><g class=\"spinnerMotion\"><circle class=\"spinnerTrack\" cx=\"12\" cy=\"12\" r=\"9.5\"/><circle class=\"spinnerArc\" cx=\"12\" cy=\"12\" r=\"9.5\"/></g></svg></span>\n  <span class=\"title\">修复 Windows 标题栏留白</span>\n  <span class=\"time\">刚刚</span>\n  \n  <span class=\"rowActions\"><button type=\"button\" class=\"c1-iconButton\" aria-label=\"会话操作：修复 Windows 标题栏留白\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z\" fill=\"currentColor\"/><path d=\"M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z\" fill=\"currentColor\"/><path d=\"M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z\" fill=\"currentColor\"/></svg></button></span>\n</div>\n          <button type=\"button\" class=\"sessionOverflowButton\">展开其余 3 个会话</button>\n        </div>\n        <div class=\"groupSection\">\n          <div class=\"projectRow\" role=\"treeitem\" aria-expanded=\"false\" data-row-key=\"workspace:ws-deepseek-harness\">\n  <span class=\"slot folder\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M1.50439 3.11059C1.50439 2.55831 1.95211 2.1106 2.50439 2.1106H5.43389C5.67773 2.1106 5.91318 2.19969 6.09593 2.36113L7.71649 3.79265C7.89924 3.95409 8.1347 4.04319 8.3785 4.04319H13.4958C14.0481 4.04319 14.4958 4.4909 14.4958 5.04319V12.8894C14.4958 13.4417 14.0481 13.8894 13.4958 13.8894H2.50439C1.95211 13.8894 1.50439 13.4417 1.50439 12.8894V4.04319V3.11059Z\" stroke=\"currentColor\"/><path d=\"M3.63501 7.66614H12.3647\" stroke=\"currentColor\"/></svg></span>\n  <span class=\"slot chevron\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" class=\"arrow arrowOpen\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M5.5 4.5C5.5 4.40714 5.52586 4.31612 5.57467 4.23713C5.62349 4.15815 5.69334 4.09431 5.77639 4.05279C5.85945 4.01126 5.95242 3.99368 6.0449 4.00202C6.13738 4.01036 6.22572 4.04429 6.3 4.1L10.967 7.6C11.0291 7.64657 11.0795 7.70697 11.1142 7.77639C11.1489 7.84582 11.167 7.92238 11.167 8C11.167 8.07762 11.1489 8.15418 11.1142 8.22361C11.0795 8.29303 11.0291 8.35343 10.967 8.4L6.3 11.9C6.22572 11.9557 6.13738 11.9896 6.0449 11.998C5.95242 12.0063 5.85945 11.9887 5.77639 11.9472C5.69334 11.9057 5.62349 11.8419 5.57467 11.7629C5.52586 11.6839 5.5 11.5929 5.5 11.5V4.5Z\" fill=\"currentColor\"/></svg></span>\n  <span class=\"projectText\"><span class=\"title\">ui-primitives</span></span>\n  <span class=\"rowActions\">\n    <button type=\"button\" class=\"c1-iconButton\" aria-label=\"工作区操作：ui-primitives\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z\" fill=\"currentColor\"/><path d=\"M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z\" fill=\"currentColor\"/><path d=\"M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z\" fill=\"currentColor\"/></svg></button><button type=\"button\" class=\"c1-iconButton\" aria-label=\"在 ui-primitives 中新建会话\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.37091 11.2501C1.58745 9.89288 1.32067 8.29835 1.61969 6.76006C1.91872 5.22177 2.76342 3.8433 3.99826 2.87846C5.2331 1.91362 6.77494 1.42737 8.33988 1.50925C9.90482 1.59113 11.3875 2.23562 12.5149 3.32406C13.6425 4.41269 14.3387 5.87206 14.4754 7.4334C14.612 8.99474 14.18 10.5529 13.2587 11.8209C12.3375 13.0888 10.9891 13.9813 9.46194 14.3337C8.18691 14.628 6.85895 14.5294 5.64989 14.0605C5.1712 13.8748 4.76962 13.4932 4.26534 13.3967C3.67413 13.2835 2.95257 13.5598 2.03794 14.3337\" stroke=\"currentColor\"/><path d=\"M8 5V11\" stroke=\"currentColor\"/><path d=\"M5 8H11\" stroke=\"currentColor\"/></svg></button>\n  </span>\n</div>\n        </div>\n      </div>\n      <span class=\"fade\"></span>\n    </div>\n  </div>\n</div></div>"
+    },
+    {
+     "label": "搜索展开：输入框铺满 + 结果列表",
+     "html": "<div style=\"width:240px\"><div class=\"root\">\n  <div class=\"sectionHeader\">\n    <span class=\"sectionLabel wide sectionLabelHidden\">工作区</span>\n    <div class=\"searchSlot searchSlotExpanded\"><div class=\"search searchExpanded\"><button type=\"button\" class=\"searchButton\" aria-label=\"搜索会话\"><svg width=\"11\" height=\"11\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M6.58727 11.8586C9.55061 11.8586 11.9529 9.45637 11.9529 6.49304C11.9529 3.5297 9.55061 1.12744 6.58727 1.12744C3.62394 1.12744 1.22168 3.5297 1.22168 6.49304C1.22168 9.45637 3.62394 11.8586 6.58727 11.8586Z\" stroke=\"currentColor\"/><path d=\"M10.2991 10.3933L14.7783 14.8725\" stroke=\"currentColor\"/></svg></button><input class=\"searchInput\" type=\"text\" placeholder=\"搜索会话名称\" value=\"存储层\"><button type=\"button\" class=\"clearButton\" aria-label=\"清除搜索\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div></div>\n    <div class=\"headerActions headerActionsHidden\"><button type=\"button\" class=\"c2-iconButton\" aria-label=\"视图选项\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\" stroke=\"currentColor\" stroke-linecap=\"round\"><path d=\"M2.3 5h5.85M12.05 5h1.65\"/><circle cx=\"9.95\" cy=\"5\" r=\"1.45\"/><path d=\"M2.3 11h1.65M7.85 11h5.85\"/><circle cx=\"5.75\" cy=\"11\" r=\"1.45\"/></svg></button></div>\n  </div>\n  <div class=\"listArea\"><div class=\"treeBody wide\"><div class=\"list\"><div class=\"searchTree\" role=\"tree\" aria-label=\"搜索结果\">\n    <div class=\"searchResultRow selected\" role=\"treeitem\" aria-selected=\"true\">\n  <span class=\"searchResultHeading\">\n    <span class=\"slot\"></span>\n    <span class=\"searchResultTitle\">重构会话存储层</span>\n    \n  </span>\n  <span class=\"searchResultMeta\">\n    <span class=\"searchResultWorkspace\">deepseek-harness</span>\n    <span class=\"searchResultSnippet\">把会话快照改成按 turn 分片。</span>\n  </span>\n</div>\n    <div class=\"searchResultRow\" role=\"treeitem\" aria-selected=\"false\">\n  <span class=\"searchResultHeading\">\n    <span class=\"slot\"></span>\n    <span class=\"searchResultTitle\">补全 ui-workspace README</span>\n    \n  </span>\n  <span class=\"searchResultMeta\">\n    <span class=\"searchResultWorkspace\">deepseek-harness</span>\n    <span class=\"searchResultSnippet\">会话列表的水位线一节需要补充说明。</span>\n  </span>\n</div>\n  </div></div><span class=\"fade\"></span></div></div>\n</div></div>"
+    },
+    {
+     "label": "收起轨（.rail）：36×36 图标 + 搜索",
+     "html": "<div style=\"width:56px\"><div class=\"root rail\">\n  <div class=\"sectionHeader\"><div class=\"headerActions\"><button type=\"button\" class=\"c2-iconButton\" aria-label=\"视图选项\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\" stroke=\"currentColor\" stroke-linecap=\"round\"><path d=\"M2.3 5h5.85M12.05 5h1.65\"/><circle cx=\"9.95\" cy=\"5\" r=\"1.45\"/><path d=\"M2.3 11h1.65M7.85 11h5.85\"/><circle cx=\"5.75\" cy=\"11\" r=\"1.45\"/></svg></button><button type=\"button\" class=\"c2-iconButton\" aria-label=\"添加工作区\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M5.54492 2.06738C5.91034 2.06754 6.26318 2.20149 6.53711 2.44336L7.94043 3.68164V4.7998C7.71462 4.74105 7.50367 4.63139 7.32617 4.47461L5.87598 3.19238C5.78477 3.11185 5.66658 3.06754 5.54492 3.06738H2.94922C2.67322 3.06738 2.44946 3.29145 2.44922 3.56738V12.4326C2.44927 12.7087 2.67311 12.9326 2.94922 12.9326H12.9326C13.2086 12.9325 13.4326 12.7086 13.4326 12.4326V8.53613H14.4326V12.4326C14.4326 13.2609 13.7609 13.9325 12.9326 13.9326H2.94922C2.12083 13.9326 1.44927 13.261 1.44922 12.4326V3.56738C1.44946 2.73916 2.12094 2.06738 2.94922 2.06738H5.54492Z\" fill=\"currentColor\"/><path d=\"M9.75977 4.50208H14.5509\" stroke=\"currentColor\"/><path d=\"M12.1492 6.89758L12.1492 2.10642\" stroke=\"currentColor\"/></svg></button></div></div>\n  <div class=\"search\"><button type=\"button\" class=\"searchButton\" aria-label=\"搜索会话\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M6.58727 11.8586C9.55061 11.8586 11.9529 9.45637 11.9529 6.49304C11.9529 3.5297 9.55061 1.12744 6.58727 1.12744C3.62394 1.12744 1.22168 3.5297 1.22168 6.49304C1.22168 9.45637 3.62394 11.8586 6.58727 11.8586Z\" stroke=\"currentColor\"/><path d=\"M10.2991 10.3933L14.7783 14.8725\" stroke=\"currentColor\"/></svg></button></div>\n  <div class=\"listArea\"></div>\n</div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "wide",
+     "type": "boolean",
+     "default": "—",
+     "desc": "展开（true）还是 56px 轨道（false）；轨道下列表整体不渲染。"
+    },
+    {
+     "name": "useSessions / useSessionStatus / useWorkspaces",
+     "type": "框架 hook 座",
+     "default": "—",
+     "desc": "会话清单、实时状态与工作区快照；行序在渲染期由这三个源派生。"
+    },
+    {
+     "name": "useStore / actions",
+     "type": "PropsStore / 动作",
+     "default": "—",
+     "desc": "浏览器本地视图状态（groupBy / orderBy / archivedFilter / 展开表 / 会话顺序）与写入。"
+    },
+    {
+     "name": "open / startSession / requestSessionRename",
+     "type": "注入回调",
+     "default": "—",
+     "desc": "导航与新建：归档行点击只提示不可打开，不导航。"
+    },
+    {
+     "name": "renameWorkspace / deleteWorkspace / insertWorkspaceBefore / unarchiveSession",
+     "type": "注入回调",
+     "default": "—",
+     "desc": "工作区与会话的管理动作，对话框由本包自己的 shell.overlay 条目承载。"
+    },
+    {
+     "name": "useDirectoryFlow / createWorkspace / setDirectoryBusy",
+     "type": "目录流程座",
+     "default": "—",
+     "desc": "占位是否有人认领决定区域头是否显示\"添加工作区\"；采纳走 WorkspacePickFlow。"
+    },
+    {
+     "name": "requestSearch / requestAddWorkspace / closeAddWorkspace / expandSidebar",
+     "type": "回调",
+     "default": "—",
+     "desc": "快捷键通道与轨道展开请求（轨道里点搜索会先把侧栏展开）。"
+    },
+    {
+     "name": "renderSlot / t",
+     "type": "PropsRenderSlots / 翻译座",
+     "default": "—",
+     "desc": "把行菜单项、行动作、leading 与 hover 四个子槽透传给每一行。"
+    }
+   ],
+   "notes": "列表是唯一滚动区：<code>scrollbar-gutter: stable</code> + 5px 滚动条 + 2px 偏移，滚动条出现或消失都不会让行位移；<code>.fade</code> 在 macOS 桌面（侧栏半透明）会被关掉，因为不透明渐变会在玻璃上糊出一道实色。待交互行不会点亮折叠分组：折叠组没有聚合指示器。",
+   "keywords": [
+    "工作区浏览",
+    "会话列表",
+    "侧栏列表",
+    "workspace browser",
+    "搜索"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,934 @@
+{
+ "schemaVersion": 1,
+ "note": "面板类条目：自动化任务页与其创建卡片、时钟选择面板、会话目标条与停靠适配器、交付文件卡、改动文件卡、计划开关与计划预览、轨迹工具栏。css 数组列出各条目真实渲染路径上的 CSS Module（含原子组件与 portal 子组件的样式表），构建时逐字内联进该条目的 shadow root。",
+ "entries": [
+  {
+   "id": "task-manager-page",
+   "name": "TaskManagerPage",
+   "exportName": "TaskManagerPage",
+   "zh": "任务管理页",
+   "group": "panels",
+   "summary": "跨会话提醒的「自动化任务」全局页：左栏 <code>flex:1</code> 可滚动，内容列 <code>max-width:960px</code> 居中、内边距 <code>0 clamp(24px,4vw,48px) 48px</code>；标题 20px/28px/500，右侧是 32px 高的「新建」胶囊（13px 文字、16px 圆角）。向下依次是 28px 高的状态筛选 chip（全部 / 已开启 / 已结束，14px/22px、<code>0 10px</code> 内边距、14px 圆角，选中态与 <code>:hover</code> 同用 <code>--dsw-alias-interactive-bg-hover</code>）、36px 高的搜索框（0.5px <code>--dsw-alias-border-l3</code> 描边、12px 圆角，聚焦转品牌色）和任务行列表（整宽按钮：8px 内边距、12px 圆角、<code>flex-start</code>，16px 时钟图标 + 500 字重标题 + 13px/21px 摘要行，行间 2px）。选中任务后右侧出现 <code>flex:0 0 47%</code> 的详情栏，左缘一条 0.5px <code>--dsw-alias-border-l4</code>；≤760px 时列表让位、只留详情。页面自身不建任务——「新建」开一个新会话，由模型在那里调用 <code>schedule_create</code>。",
+   "source": "packages/client/ui-schedule/src/client/TaskManagerPage.tsx#L41",
+   "css": [
+    "packages/client/ui-primitives/src/Button.module.css",
+    "packages/client/ui-primitives/src/Input.module.css",
+    "packages/client/ui-schedule/src/client/TaskManagerPage.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-base",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-label-caption",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-border-l3",
+    "--dsw-alias-border-l4",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-button-primary-fill",
+    "--dsw-alias-label-primary-foreground",
+    "--dsw-specific-sidebar-fill",
+    "--dsw-focus-ring-color"
+   ],
+   "specimens": [
+    {
+     "label": "列表页：状态筛选「全部」，两条任务按时序排列",
+     "note": "行按 <code>scheduledAt</code> 升序，因此已逾期的单次任务排在前；这一屏没有搜索词，所以没有清空按钮",
+     "pad": "lg",
+     "html": "<div style=\"width:880px;height:440px\"><section class=\"page\" aria-label=\"自动化任务\" data-testid=\"task-manager-page\"><div class=\"listPane\"><div class=\"pageScroll\"><div class=\"pageContent\"><div class=\"pageHeading\"><h1 tabindex=\"-1\">自动化任务</h1><div class=\"creationActions\"><button type=\"button\" class=\"button primary sm newButton\"><span class=\"icon\"><svg width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 2V14\" stroke=\"currentColor\"/><path d=\"M2 8H14\" stroke=\"currentColor\"/></svg></span>新建</button></div></div><div class=\"filters\"><div class=\"filterTabs\" role=\"group\" aria-label=\"任务状态\"><button type=\"button\" class=\"filterTab filterTabActive\" aria-pressed=\"true\">全部</button><button type=\"button\" class=\"filterTab\" aria-pressed=\"false\">已开启</button><button type=\"button\" class=\"filterTab\" aria-pressed=\"false\">已结束</button></div></div><div class=\"searchField\"><span class=\"wrap\"><span class=\"icon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M6.58727 11.8586C9.55061 11.8586 11.9529 9.45637 11.9529 6.49304C11.9529 3.5297 9.55061 1.12744 6.58727 1.12744C3.62394 1.12744 1.22168 3.5297 1.22168 6.49304C1.22168 9.45637 3.62394 11.8586 6.58727 11.8586Z\" stroke=\"currentColor\"/><path d=\"M10.2991 10.3933L14.7783 14.8725\" stroke=\"currentColor\"/></svg></span><input class=\"input\" type=\"search\" aria-label=\"搜索任务\" placeholder=\"搜索自动化任务\"></span></div><div class=\"list\"><ul class=\"listRows\" aria-label=\"任务列表\" aria-busy=\"false\"><li><button type=\"button\" class=\"button ghost md row\" aria-label=\"今天 18:00 提醒我提交 PR\" aria-expanded=\"false\"><svg width=\"16\" height=\"16\" class=\"rowGlyph\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z\" stroke=\"currentColor\"/><path d=\"M8 4.31V8.46L11 10.08\" stroke=\"currentColor\"/></svg><span class=\"rowContent\"><span class=\"rowTitle\">今天 18:00 提醒我提交 PR</span><span class=\"rowSummary\"><span class=\"metadata\">仅一次</span><span class=\"metadata\">下次计划时间：<time datetime=\"2026-10-18T10:00:00.000Z\">2026年10月18日 18:00</time> <span class=\"nextRunRelative\">(已逾期 2 小时)</span></span></span></span></button></li><li><button type=\"button\" class=\"button ghost md row\" aria-label=\"每天 09:30 运行 pnpm run test:gui\" aria-expanded=\"false\"><svg width=\"16\" height=\"16\" class=\"rowGlyph\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z\" stroke=\"currentColor\"/><path d=\"M8 4.31V8.46L11 10.08\" stroke=\"currentColor\"/></svg><span class=\"rowContent\"><span class=\"rowTitle\">每天 09:30 运行 pnpm run test:gui</span><span class=\"rowSummary\"><span class=\"metadata\">每天 09:30</span><span class=\"metadata\">下次计划时间：<time datetime=\"2026-10-19T01:30:00.000Z\">2026年10月19日 09:30</time> <span class=\"nextRunRelative\">(14 小时后)</span></span></span></span></button></li></ul></div></div></div></div></section></div>"
+    },
+    {
+     "label": "搜索「test:gui」：只剩匹配行 + 清空按钮",
+     "note": "搜索匹配存储的标题、指令与内部会话 id；清空按钮只在有关键词时渲染",
+     "pad": "lg",
+     "html": "<div style=\"width:880px;height:320px\"><section class=\"page\" aria-label=\"自动化任务\" data-testid=\"task-manager-page\"><div class=\"listPane\"><div class=\"pageScroll\"><div class=\"pageContent\"><div class=\"pageHeading\"><h1 tabindex=\"-1\">自动化任务</h1><div class=\"creationActions\"><button type=\"button\" class=\"button primary sm newButton\"><span class=\"icon\"><svg width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 2V14\" stroke=\"currentColor\"/><path d=\"M2 8H14\" stroke=\"currentColor\"/></svg></span>新建</button></div></div><div class=\"filters\"><div class=\"filterTabs\" role=\"group\" aria-label=\"任务状态\"><button type=\"button\" class=\"filterTab filterTabActive\" aria-pressed=\"true\">全部</button><button type=\"button\" class=\"filterTab\" aria-pressed=\"false\">已开启</button><button type=\"button\" class=\"filterTab\" aria-pressed=\"false\">已结束</button></div></div><div class=\"searchField\"><span class=\"wrap\"><span class=\"icon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M6.58727 11.8586C9.55061 11.8586 11.9529 9.45637 11.9529 6.49304C11.9529 3.5297 9.55061 1.12744 6.58727 1.12744C3.62394 1.12744 1.22168 3.5297 1.22168 6.49304C1.22168 9.45637 3.62394 11.8586 6.58727 11.8586Z\" stroke=\"currentColor\"/><path d=\"M10.2991 10.3933L14.7783 14.8725\" stroke=\"currentColor\"/></svg></span><input class=\"input\" type=\"search\" aria-label=\"搜索任务\" placeholder=\"搜索自动化任务\" value=\"test:gui\"></span><button type=\"button\" class=\"button ghost sm searchClear\" aria-label=\"清空搜索\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"list\"><ul class=\"listRows\" aria-label=\"任务列表\" aria-busy=\"false\"><li><button type=\"button\" class=\"button ghost md row\" aria-label=\"每天 09:30 运行 pnpm run test:gui\" aria-expanded=\"false\"><svg width=\"16\" height=\"16\" class=\"rowGlyph\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z\" stroke=\"currentColor\"/><path d=\"M8 4.31V8.46L11 10.08\" stroke=\"currentColor\"/></svg><span class=\"rowContent\"><span class=\"rowTitle\">每天 09:30 运行 pnpm run test:gui</span><span class=\"rowSummary\"><span class=\"metadata\">每天 09:30</span><span class=\"metadata\">下次计划时间：<time datetime=\"2026-10-19T01:30:00.000Z\">2026年10月19日 09:30</time> <span class=\"nextRunRelative\">(14 小时后)</span></span></span></span></button></li></ul></div></div></div></div></section></div>"
+    },
+    {
+     "label": "状态筛选「已结束」：结束的任务整行转淡",
+     "note": "<code>.endedRow</code> 把标题降到 tertiary、摘要降到 caption，悬停或选中时回到常规墨色",
+     "pad": "lg",
+     "html": "<div style=\"width:760px\"><section class=\"page\" aria-label=\"自动化任务\" data-testid=\"task-manager-page\"><div class=\"listPane\"><div class=\"pageScroll\"><div class=\"pageContent\"><div class=\"filters\"><div class=\"filterTabs\" role=\"group\" aria-label=\"任务状态\"><button type=\"button\" class=\"filterTab\" aria-pressed=\"false\">全部</button><button type=\"button\" class=\"filterTab\" aria-pressed=\"false\">已开启</button><button type=\"button\" class=\"filterTab filterTabActive\" aria-pressed=\"true\">已结束</button></div></div><div class=\"searchField\"><span class=\"wrap\"><span class=\"icon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M6.58727 11.8586C9.55061 11.8586 11.9529 9.45637 11.9529 6.49304C11.9529 3.5297 9.55061 1.12744 6.58727 1.12744C3.62394 1.12744 1.22168 3.5297 1.22168 6.49304C1.22168 9.45637 3.62394 11.8586 6.58727 11.8586Z\" stroke=\"currentColor\"/><path d=\"M10.2991 10.3933L14.7783 14.8725\" stroke=\"currentColor\"/></svg></span><input class=\"input\" type=\"search\" aria-label=\"搜索任务\" placeholder=\"搜索自动化任务\"></span></div><div class=\"list\"><ul class=\"listRows\" aria-label=\"任务列表\" aria-busy=\"false\"><li><button type=\"button\" class=\"button ghost md row endedRow\" aria-label=\"今天 18:00 提醒我提交 PR\" aria-expanded=\"false\"><svg width=\"16\" height=\"16\" class=\"rowGlyph\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z\" stroke=\"currentColor\"/><path d=\"M8 4.31V8.46L11 10.08\" stroke=\"currentColor\"/></svg><span class=\"rowContent\"><span class=\"rowTitle\">今天 18:00 提醒我提交 PR</span><span class=\"rowSummary\"><span class=\"metadata\">已结束</span><span class=\"metadata\">仅一次</span></span></span></button></li></ul></div></div></div></div></section></div>"
+    },
+    {
+     "label": "空状态：状态筛选「已结束」且目录里没有已结束任务",
+     "note": "<code>emptyInactive</code> 是它自己的空状态；一般目录为空或无匹配时换用另两条文案",
+     "pad": "lg",
+     "html": "<div style=\"width:640px\"><section class=\"page\" aria-label=\"自动化任务\" data-testid=\"task-manager-page\"><div class=\"listPane\"><div class=\"pageScroll\"><div class=\"pageContent\"><div class=\"filters\"><div class=\"filterTabs\" role=\"group\" aria-label=\"任务状态\"><button type=\"button\" class=\"filterTab\" aria-pressed=\"false\">全部</button><button type=\"button\" class=\"filterTab\" aria-pressed=\"false\">已开启</button><button type=\"button\" class=\"filterTab filterTabActive\" aria-pressed=\"true\">已结束</button></div></div><div class=\"list\"><div class=\"empty\" role=\"status\"><svg width=\"24\" height=\"24\" class=\"emptyGlyph\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z\" stroke=\"currentColor\"/><path d=\"M8 4.31V8.46L11 10.08\" stroke=\"currentColor\"/></svg><h2>没有已结束的自动化任务</h2><button type=\"button\" class=\"button outline md emptyAction\">新建自动化任务</button></div></div></div></div></div></section></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "useCatalog",
+     "type": "SessionScheduleCatalogHook",
+     "default": "—",
+     "desc": "共享 Host 任务目录上的 selector hook；行、空状态与失败提示都从它派生。"
+    },
+    {
+     "name": "hooks.catalog",
+     "type": "HostObservable<CatalogSnapshot<ScheduleCatalogEntry>>",
+     "default": "—",
+     "desc": "目录快照源（records / status / readRequest / readSettled）；行按 scheduledAt 升序，再按状态与关键词过滤。"
+    },
+    {
+     "name": "onNewTask",
+     "type": "() => void",
+     "default": "—",
+     "desc": "「新建」动作：开一个新会话，提醒由模型在该会话里创建；页面本身没有创建表单。"
+    },
+    {
+     "name": "onRetry",
+     "type": "(since?: number) => Promise<void>",
+     "default": "—",
+     "desc": "重新读取目录；失败提示里的「重试」传给 CatalogFeedback。"
+    },
+    {
+     "name": "onDelete / onOpenSession / onUpdateTiming / loadHistory",
+     "type": "TaskDetailInjected",
+     "default": "—",
+     "desc": "选中任务后透传给右侧 TaskDetail 的删除、打开原会话、改时间与读取运行记录动作。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'schedule.manager'>",
+     "default": "—",
+     "desc": "schedule.manager 词典；标题、筛选、空状态与搜索占位都走它。"
+    }
+   ],
+   "notes": "列表按 <code>scheduledAt</code> 升序，逾期未投递的单次任务因此排在最前；摘要行里的绝对时刻用 <code>time[datetime]</code> 带出机器可读的 UTC 值，括号里是共享时钟算出的相对距离（未来向上取整、逾期向下取整）。列表行整行是一个 <code>Button</code>（原子类 + <code>.row</code>），因此键盘焦点、禁用与 <code>aria-expanded</code> 都落在同一元素上；<code>aria-describedby</code> 指向行内摘要，供读屏读出状态与下次时间。目录加载用居中的 <code>StateDot state=\"ongoing\"</code>，读取失败在有内容时退化为 <code>.notice</code> 横条、无内容时用同一套 <code>.empty</code> 并配 <code>IconWarningOutlineRegular</code>。删除结果不进这张页面，而是由 shell 全局 notice 播报。",
+   "keywords": [
+    "自动化任务",
+    "Automation tasks",
+    "提醒列表",
+    "任务详情",
+    "task list",
+    "panel"
+   ]
+  },
+  {
+   "id": "schedule-create-card",
+   "name": "ScheduleCreateCard",
+   "exportName": "ScheduleCreateCard",
+   "zh": "任务卡片",
+   "group": "panels",
+   "summary": "<code>schedule_create</code> 调用在回合尾部渲染的「已创建任务」卡：整宽、<code>8px 10px</code> 内边距、0.5px <code>--dsw-alias-border-l1</code> 描边、<code>--dsw-radius-lg</code> 圆角，底色浅色主题 <code>--dsw-static-neutral-50</code>、深色 <code>850</code>，悬停再换一档（只对可打开的卡生效）。左侧 40×40、R10 的图标砖里放 18px 时钟；中间标题 13px/20px/500，下面一行 10px/16px tertiary 的本地化频率；尾部是原子 <code>Button variant=\"outline\" size=\"sm\"</code> 的「打开」。可打开时整卡铺一层透明 <code>.cardOpen</code> 按钮承接点击（行本身 <code>pointer-events:none</code>，「打开」按钮单独恢复），结果读不成完整任务时只留标题与原始结果文本 <code>.fallback</code>（11px/16px、<code>pre-wrap</code>）。",
+   "source": "packages/client/ui-schedule/src/client/ScheduleCreateCard.tsx#L46",
+   "css": [
+    "packages/client/ui-primitives/src/Button.module.css",
+    "packages/client/ui-schedule/src/client/ScheduleCreateCard.module.css"
+   ],
+   "tokens": [
+    "--dsw-static-neutral-50",
+    "--dsw-static-neutral-100",
+    "--dsw-static-neutral-850",
+    "--dsw-static-neutral-800",
+    "--dsw-static-neutral-00",
+    "--dsw-alias-border-l1",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-radius-lg",
+    "--dsw-radius-sm",
+    "--dsw-focus-ring-color",
+    "--dsw-alias-state-business-primary"
+   ],
+   "specimens": [
+    {
+     "label": "已创建：每天 09:30 运行 pnpm run test:gui",
+     "note": "整卡可点，尾部「打开」按钮在右 Sidebar 打开该任务的详情",
+     "html": "<div style=\"width:520px\"><div class=\"card\" data-tool=\"schedule_create\"><button type=\"button\" class=\"cardOpen\" aria-label=\"打开任务详情：每天 09:30 运行 pnpm run test:gui\"></button><div class=\"row\"><span class=\"leading\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z\" stroke=\"currentColor\"/><path d=\"M8 4.31V8.46L11 10.08\" stroke=\"currentColor\"/></svg></span><span class=\"body\"><span class=\"title\">每天 09:30 运行 pnpm run test:gui</span><span class=\"frequency\">每天 09:30</span></span><button type=\"button\" class=\"button outline sm openButton\">打开</button></div></div></div>"
+    },
+    {
+     "label": "已删除：目录里已没有该任务",
+     "note": "频率行换成「已删除」，同时撤掉整卡覆盖层与「打开」按钮",
+     "html": "<div style=\"width:520px\"><div class=\"card\" data-tool=\"schedule_create\"><div class=\"row\"><span class=\"leading\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z\" stroke=\"currentColor\"/><path d=\"M8 4.31V8.46L11 10.08\" stroke=\"currentColor\"/></svg></span><span class=\"body\"><span class=\"title\">每天 09:30 运行 pnpm run test:gui</span><span class=\"frequency\">已删除</span></span></div></div></div>"
+    },
+    {
+     "label": "回退：结果读不成完整任务（运行中 / 失败 / 旧日志）",
+     "note": "结果只有一个文本块时原样显示；没有身份就不给「打开」",
+     "html": "<div style=\"width:520px\"><div class=\"card\" data-tool=\"schedule_create\"><div class=\"row\"><span class=\"leading\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z\" stroke=\"currentColor\"/><path d=\"M8 4.31V8.46L11 10.08\" stroke=\"currentColor\"/></svg></span><span class=\"body\"><span class=\"title\">今天 18:00 提醒我提交 PR</span></span></div><pre class=\"fallback\">schedule_create failed: could not resolve \"今天 18:00\" to an instant. Pass an ISO 8601 time or a time zone.</pre></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "block",
+     "type": "ToolCallViewProps['block']",
+     "default": "—",
+     "desc": "这一条工具调用块：<code>tool-result</code> 时从结果 JSON 里收窄出任务，运行中则没有任务。"
+    },
+    {
+     "name": "toolName",
+     "type": "string",
+     "default": "—",
+     "desc": "wire 工具名，模型侧结果完全不可读时作为标题兜底。"
+    },
+    {
+     "name": "currentTask",
+     "type": "ScheduleRecord | null | undefined",
+     "default": "undefined",
+     "desc": "目录读回的任务：undefined = 目录还没确认（用结果里的值），null = 目录里已没有该任务（显示「已删除」）。"
+    },
+    {
+     "name": "callId",
+     "type": "string",
+     "default": "—",
+     "desc": "这一条调用的 id，随工具块一起传入。"
+    },
+    {
+     "name": "openTaskDetail",
+     "type": "(id: ScheduleId) => void",
+     "default": "—",
+     "desc": "在右 Sidebar 打开该任务的详情；卡片不激活会话。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'schedule.manager'>",
+     "default": "—",
+     "desc": "schedule.manager 词典：卡片自身的「打开」「已删除」与频率文案。"
+    }
+   ],
+   "notes": "整卡覆盖层与行内「打开」按钮是两个独立目标：覆盖层 <code>inset:0</code>、<code>z-index:1</code>，行的内容在 <code>z-index:2</code> 且 <code>pointer-events:none</code>，只有 <code>.openButton</code> 恢复指针事件，所以点按钮不会连带触发整卡点击。它出现在 <code>conversation.chat.turnTail</code>（回合收尾处），不是工具调用组里的通用行；结果里没有 <code>title</code> 字段的旧会话日志会用指令首行当标题。",
+   "keywords": [
+    "schedule_create",
+    "提醒卡片",
+    "创建任务",
+    "turn tail",
+    "transcript card"
+   ]
+  },
+  {
+   "id": "clock-picker",
+   "name": "ClockPicker",
+   "exportName": "ClockPicker",
+   "group": "panels",
+   "zh": "时钟选择",
+   "summary": "一个暂存「运行时间」的滚动时钟面板：时 / 分 / 秒三列，每列 52px 宽、<code>max-height:216px</code> 可滚动，列内每行最小 32px、10px 圆角、13px 等宽数字。值所在行是每列唯一的 <code>tabindex=0</code> 行：上下键在列内走位、左右键换列、Home/End 到两端、Enter 或空格拾取，拾取合成 <code>HH:MM:SS</code> 并回写暂存值；<code>.selected</code> 用 <code>--dsw-alias-button-ghost-active-fill</code> 填充加 1px 内描边标记当前值。外观由共享的 <code>PickerPopover</code> <code>.panel</code> 承担：body portal、<code>position:fixed</code>、<code>z-index:1100</code>、16px 圆角、<code>--dsw-specific-menu</code> 菜单材质加 <code>--dsw-menu-backdrop-filter</code>、<code>role=\"dialog\"</code>。<code>seconds={false}</code> 时（cron 行没有秒字段）只留时、分两列，拾取保留原有秒数。",
+   "source": "packages/client/ui-schedule/src/client/ClockPicker.tsx#L100",
+   "css": [
+    "packages/client/ui-schedule/src/client/ClockPicker.module.css",
+    "packages/client/ui-schedule/src/client/PickerPopover.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-label-primary",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-button-ghost-active-fill",
+    "--dsw-alias-button-ghost-active-border",
+    "--dsw-specific-menu",
+    "--dsw-menu-backdrop-filter",
+    "--dsw-elevation-prominent",
+    "--dsw-alias-border-l1",
+    "--dsw-alias-scrollbar-bg-l2",
+    "--dsw-alias-scrollbar-hover-l2",
+    "--dsw-focus-ring-color",
+    "--dsw-alias-state-business-primary"
+   ],
+   "specimens": [
+    {
+     "label": "三列：暂存值 09:30:00，秒列可见",
+     "note": "列只截取选中值附近的窗口；真实列各含 00–23 / 00–59 / 00–59 全量并滚到选中值",
+     "bg": "platform",
+     "pad": "lg",
+     "css": "/* 静态快照：真实面板由 PickerPopover 用 createPortal 挂到 body，position: fixed 且坐标由 JS 写入；这里让 .panel 回到文档流参与排布，菜单材质、16px 圆角、阴影与列内滚动仍由真实样式表决定。 */\n.panel.snapshotStatic { position: static; }",
+     "html": "<div class=\"panel clock snapshotStatic\" role=\"dialog\" aria-label=\"时间\"><div class=\"column\" role=\"listbox\" aria-label=\"时\"><div class=\"option\" role=\"option\" aria-selected=\"false\" tabindex=\"-1\">08</div><div class=\"option selected\" role=\"option\" aria-selected=\"true\" tabindex=\"0\">09</div><div class=\"option\" role=\"option\" aria-selected=\"false\" tabindex=\"-1\">10</div><div class=\"option\" role=\"option\" aria-selected=\"false\" tabindex=\"-1\">11</div><div class=\"option\" role=\"option\" aria-selected=\"false\" tabindex=\"-1\">12</div><div class=\"option\" role=\"option\" aria-selected=\"false\" tabindex=\"-1\">13</div></div><div class=\"column\" role=\"listbox\" aria-label=\"分\"><div class=\"option\" role=\"option\" aria-selected=\"false\" tabindex=\"-1\">28</div><div class=\"option\" role=\"option\" aria-selected=\"false\" tabindex=\"-1\">29</div><div class=\"option selected\" role=\"option\" aria-selected=\"true\" tabindex=\"0\">30</div><div class=\"option\" role=\"option\" aria-selected=\"false\" tabindex=\"-1\">31</div><div class=\"option\" role=\"option\" aria-selected=\"false\" tabindex=\"-1\">32</div><div class=\"option\" role=\"option\" aria-selected=\"false\" tabindex=\"-1\">33</div></div><div class=\"column\" role=\"listbox\" aria-label=\"秒\"><div class=\"option selected\" role=\"option\" aria-selected=\"true\" tabindex=\"0\">00</div><div class=\"option\" role=\"option\" aria-selected=\"false\" tabindex=\"-1\">01</div><div class=\"option\" role=\"option\" aria-selected=\"false\" tabindex=\"-1\">02</div><div class=\"option\" role=\"option\" aria-selected=\"false\" tabindex=\"-1\">03</div><div class=\"option\" role=\"option\" aria-selected=\"false\" tabindex=\"-1\">04</div><div class=\"option\" role=\"option\" aria-selected=\"false\" tabindex=\"-1\">05</div></div></div>"
+    },
+    {
+     "label": "seconds={false}：cron 行只有时、分两列",
+     "note": "拾取只改时与分，暂存值原有的秒数保持不变",
+     "bg": "platform",
+     "pad": "lg",
+     "css": "/* 静态快照：真实面板由 PickerPopover 用 createPortal 挂到 body，position: fixed 且坐标由 JS 写入；这里让 .panel 回到文档流参与排布，菜单材质、16px 圆角、阴影与列内滚动仍由真实样式表决定。 */\n.panel.snapshotStatic { position: static; }",
+     "html": "<div class=\"panel clock snapshotStatic\" role=\"dialog\" aria-label=\"时间\"><div class=\"column\" role=\"listbox\" aria-label=\"时\"><div class=\"option\" role=\"option\" aria-selected=\"false\" tabindex=\"-1\">01</div><div class=\"option\" role=\"option\" aria-selected=\"false\" tabindex=\"-1\">02</div><div class=\"option selected\" role=\"option\" aria-selected=\"true\" tabindex=\"0\">03</div><div class=\"option\" role=\"option\" aria-selected=\"false\" tabindex=\"-1\">04</div><div class=\"option\" role=\"option\" aria-selected=\"false\" tabindex=\"-1\">05</div><div class=\"option\" role=\"option\" aria-selected=\"false\" tabindex=\"-1\">06</div></div><div class=\"column\" role=\"listbox\" aria-label=\"分\"><div class=\"option\" role=\"option\" aria-selected=\"false\" tabindex=\"-1\">14</div><div class=\"option selected\" role=\"option\" aria-selected=\"true\" tabindex=\"0\">15</div><div class=\"option\" role=\"option\" aria-selected=\"false\" tabindex=\"-1\">16</div><div class=\"option\" role=\"option\" aria-selected=\"false\" tabindex=\"-1\">17</div><div class=\"option\" role=\"option\" aria-selected=\"false\" tabindex=\"-1\">18</div><div class=\"option\" role=\"option\" aria-selected=\"false\" tabindex=\"-1\">19</div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "open",
+     "type": "boolean",
+     "default": "—",
+     "desc": "面板是否显示；关闭时返回 null，不开 portal。"
+    },
+    {
+     "name": "anchorRef",
+     "type": "RefObject<HTMLButtonElement | null>",
+     "default": "—",
+     "desc": "行的只读值按钮：既是面板锚点，也算面板内的一侧（点它不算外部点击）。"
+    },
+    {
+     "name": "value",
+     "type": "string",
+     "default": "—",
+     "desc": "暂存的钟点文本；不成形的值从 00:00:00 起算，第一次拾取仍能提交一个完整钟点。"
+    },
+    {
+     "name": "onPick",
+     "type": "(time: string) => void",
+     "default": "—",
+     "desc": "拾取一个 <code>HH:MM:SS</code>；只回写暂存值，落库仍由行的 Save 决定。"
+    },
+    {
+     "name": "onClose",
+     "type": "() => void",
+     "default": "—",
+     "desc": "关闭面板（Escape、外部点击）；行的守卫负责把焦点还给那一行。"
+    },
+    {
+     "name": "seconds",
+     "type": "boolean",
+     "default": "true",
+     "desc": "是否给出秒列；cron 规则没有秒字段，其表单传 false。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'schedule.manager'>",
+     "default": "—",
+     "desc": "schedule.manager 词典：三列的无障碍名（时 / 分 / 秒）。"
+    }
+   ],
+   "notes": "这是 <code>docs/web-styling.md</code>「Component rules」里与 <code>TaskMenu</code> 并列的显式例外：它保留自己的 <code>.panel</code> 容器与菜单材质，不套 <code>MenuSurface</code>。面板打开时两件事同时发生——每列把选中值 <code>scrollIntoView</code>，且焦点被搬到当前光标行，所以键盘留在面板里；列高固定 216px，列内自带滚动与 <code>overscroll-behavior:contain</code>，面板本身不滚。",
+   "keywords": [
+    "时钟",
+    "时间选择",
+    "time picker",
+    "HH:MM:SS",
+    "cron seconds",
+    "MenuSurface exception"
+   ]
+  },
+  {
+   "id": "goal-bar",
+   "name": "GoalBar",
+   "exportName": "GoalBar",
+   "zh": "目标条",
+   "group": "panels",
+   "summary": "输入框上方常驻的目标卡（Todo 之后、Queue 之前）：<code>.bar</code> 固定 36px 高、<code>4px 5px 4px 12px</code> 内边距、10px 元素间距、<code>--dsw-radius-md</code> 圆角，靠 <code>--dsw-elevation-panel</code> 出高度、<code>--dsw-elevation-stroke-color</code> 给 0.5px 内描边，底色是 <code>--dsw-specific-menu</code> 加 <code>--dsw-menu-backdrop-filter</code> 的菜单材质。内容依次是 14px 目标图标、13px/24px/500 的阶段词（进行中的目标 / 已暂停的目标 / 受阻的目标）、13px/20px 单行省略的目标文本，右侧 10px 间距的 28px 圆形图标按钮组：armed 的进行中给「暂停」，已暂停或 active-disarmed 给「恢复」，编辑与清除常在。编辑态换成 <code>.editBar</code>（高度自适应、底对齐）里的 <code>InlineEditor</code> 加保存 / 取消。目标为加载中、无目标或已完结时整条不渲染；失败信息在目标文本右侧以 12px 错误色就地显示。",
+   "source": "packages/client/ui-goal/src/client/GoalBar.tsx#L42",
+   "css": [
+    "packages/client/ui-goal/src/client/GoalBar.module.css",
+    "packages/client/ui-primitives/src/InlineEditor.module.css"
+   ],
+   "tokens": [
+    "--dsw-specific-menu",
+    "--dsw-menu-backdrop-filter",
+    "--dsw-elevation-panel",
+    "--dsw-alias-border-l1",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-primary-dimmed",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-state-error-primary",
+    "--dsw-radius-md",
+    "--dsw-radius-sm",
+    "--dsw-alias-scrollbar-bg-l2",
+    "--dsw-alias-scrollbar-hover-l2"
+   ],
+   "specimens": [
+    {
+     "label": "进行中（armed）：暂停 / 编辑 / 清除",
+     "note": "图标按钮悬停时用 500ms 延迟的 portal Tooltip 说明动作",
+     "bg": "platform",
+     "pad": "lg",
+     "html": "<div style=\"--dsh-composer-card-max-width:720px;--dsh-composer-side-clearance:16px;--dsh-composer-dock-inset:8px;width:720px\"><div class=\"dock\" data-goal-bar><div class=\"bar\"><span class=\"goalGlyph\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M14.5001 8C14.5 9.28552 14.1188 10.5422 13.4045 11.611C12.6903 12.6799 11.6752 13.5129 10.4875 14.0049C9.29982 14.4968 7.99295 14.6255 6.73212 14.3747C5.4713 14.124 4.31314 13.505 3.4041 12.596C2.49514 11.687 1.87614 10.5288 1.62537 9.26798C1.37459 8.00716 1.50331 6.70028 1.99525 5.51261C2.48719 4.32494 3.32025 3.30981 4.3891 2.59557C5.45795 1.88134 6.71458 1.50008 8.0001 1.5\" stroke=\"currentColor\"/><path d=\"M11.5 8C11.5001 8.69227 11.2948 9.36901 10.9102 9.94463C10.5257 10.5202 9.97901 10.9689 9.33944 11.2338C8.69986 11.4987 7.99609 11.5681 7.31712 11.433C6.63816 11.2979 6.01449 10.9645 5.52501 10.475C5.03548 9.98552 4.70209 9.36185 4.56702 8.68289C4.43195 8.00392 4.50127 7.30015 4.76619 6.66057C5.03112 6.021 5.47976 5.47436 6.05538 5.08978C6.631 4.70519 7.30774 4.49995 8.00001 4.5\" stroke=\"currentColor\"/><path d=\"M8.00024 7.99976L11.2 4.80005\" stroke=\"currentColor\"/><path d=\"M12.4719 5.62245C12.4246 5.66972 12.3569 5.69025 12.2913 5.67715L10.7814 5.37555C10.7022 5.35972 10.6402 5.29781 10.6244 5.2186L10.3228 3.70866C10.3097 3.6431 10.3302 3.57533 10.3775 3.52806L12.1826 1.723C12.2863 1.61929 12.4627 1.65879 12.5122 1.79684L12.9271 2.95225C12.9472 3.00847 12.9915 3.05272 13.0477 3.07291L14.2031 3.48774C14.3412 3.5373 14.3807 3.71368 14.277 3.81739L12.4719 5.62245Z\" stroke=\"currentColor\"/></svg></span><span class=\"label\">进行中的目标</span><span class=\"objective\">把 UIUX 组件目录补齐</span><div class=\"actions\"><button type=\"button\" class=\"iconBtn\" aria-label=\"暂停目标\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 14.5C11.5899 14.5 14.5 11.5899 14.5 8C14.5 4.41015 11.5899 1.5 8 1.5C4.41015 1.5 1.5 4.41015 1.5 8C1.5 11.5899 4.41015 14.5 8 14.5Z\" stroke=\"currentColor\"/><path d=\"M6.5 5V11\" stroke=\"currentColor\"/><path d=\"M9.5 5V11\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"iconBtn\" aria-label=\"编辑目标\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8.85596 2.69971H4.19971C3.37141 2.69971 2.69992 3.37146 2.69971 4.19971V11.8003C2.69992 12.6285 3.37141 13.3003 4.19971 13.3003H11.8003C12.6283 13.2999 13.3001 12.6283 13.3003 11.8003V7.89893H14.3003V11.8003C14.3001 13.1806 13.1806 14.2999 11.8003 14.3003H4.19971C2.81913 14.3003 1.69992 13.1808 1.69971 11.8003V4.19971C1.69992 2.81918 2.81913 1.69971 4.19971 1.69971H8.85596V2.69971Z\" fill=\"currentColor\"/><path d=\"M7.7849 8.23878L13.888 2.13574\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"iconBtn\" aria-label=\"清除目标\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M1.28149 3.88831H14.7187\" stroke=\"currentColor\"/><path d=\"M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833\" stroke=\"currentColor\"/><path d=\"M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831\" stroke=\"currentColor\"/><path d=\"M6.44946 6.98926V11.1238\" stroke=\"currentColor\"/><path d=\"M9.55054 6.98926V11.1238\" stroke=\"currentColor\"/></svg></button></div></div></div></div>"
+    },
+    {
+     "label": "已暂停：恢复 / 编辑 / 清除",
+     "note": "激活态是进程内事实：paused 与 active-disarmed 都走同一个「恢复」按钮",
+     "bg": "platform",
+     "pad": "lg",
+     "html": "<div style=\"--dsh-composer-card-max-width:720px;--dsh-composer-side-clearance:16px;--dsh-composer-dock-inset:8px;width:720px\"><div class=\"dock\" data-goal-bar><div class=\"bar\"><span class=\"goalGlyph\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M14.5001 8C14.5 9.28552 14.1188 10.5422 13.4045 11.611C12.6903 12.6799 11.6752 13.5129 10.4875 14.0049C9.29982 14.4968 7.99295 14.6255 6.73212 14.3747C5.4713 14.124 4.31314 13.505 3.4041 12.596C2.49514 11.687 1.87614 10.5288 1.62537 9.26798C1.37459 8.00716 1.50331 6.70028 1.99525 5.51261C2.48719 4.32494 3.32025 3.30981 4.3891 2.59557C5.45795 1.88134 6.71458 1.50008 8.0001 1.5\" stroke=\"currentColor\"/><path d=\"M11.5 8C11.5001 8.69227 11.2948 9.36901 10.9102 9.94463C10.5257 10.5202 9.97901 10.9689 9.33944 11.2338C8.69986 11.4987 7.99609 11.5681 7.31712 11.433C6.63816 11.2979 6.01449 10.9645 5.52501 10.475C5.03548 9.98552 4.70209 9.36185 4.56702 8.68289C4.43195 8.00392 4.50127 7.30015 4.76619 6.66057C5.03112 6.021 5.47976 5.47436 6.05538 5.08978C6.631 4.70519 7.30774 4.49995 8.00001 4.5\" stroke=\"currentColor\"/><path d=\"M8.00024 7.99976L11.2 4.80005\" stroke=\"currentColor\"/><path d=\"M12.4719 5.62245C12.4246 5.66972 12.3569 5.69025 12.2913 5.67715L10.7814 5.37555C10.7022 5.35972 10.6402 5.29781 10.6244 5.2186L10.3228 3.70866C10.3097 3.6431 10.3302 3.57533 10.3775 3.52806L12.1826 1.723C12.2863 1.61929 12.4627 1.65879 12.5122 1.79684L12.9271 2.95225C12.9472 3.00847 12.9915 3.05272 13.0477 3.07291L14.2031 3.48774C14.3412 3.5373 14.3807 3.71368 14.277 3.81739L12.4719 5.62245Z\" stroke=\"currentColor\"/></svg></span><span class=\"label\">已暂停的目标</span><span class=\"objective\">把 UIUX 组件目录补齐</span><div class=\"actions\"><button type=\"button\" class=\"iconBtn\" aria-label=\"恢复目标\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 14.5C11.5899 14.5 14.5 11.5899 14.5 8C14.5 4.41015 11.5899 1.5 8 1.5C4.41015 1.5 1.5 4.41015 1.5 8C1.5 11.5899 4.41015 14.5 8 14.5Z\" stroke=\"currentColor\"/><path d=\"M10.3329 7.91346C10.3996 7.95195 10.3996 8.04818 10.3329 8.08667L6.78304 10.1362C6.71638 10.1747 6.63304 10.1266 6.63304 10.0496L6.63304 5.95055C6.63304 5.87357 6.71638 5.82546 6.78304 5.86395L10.3329 7.91346Z\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"iconBtn\" aria-label=\"编辑目标\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8.85596 2.69971H4.19971C3.37141 2.69971 2.69992 3.37146 2.69971 4.19971V11.8003C2.69992 12.6285 3.37141 13.3003 4.19971 13.3003H11.8003C12.6283 13.2999 13.3001 12.6283 13.3003 11.8003V7.89893H14.3003V11.8003C14.3001 13.1806 13.1806 14.2999 11.8003 14.3003H4.19971C2.81913 14.3003 1.69992 13.1808 1.69971 11.8003V4.19971C1.69992 2.81918 2.81913 1.69971 4.19971 1.69971H8.85596V2.69971Z\" fill=\"currentColor\"/><path d=\"M7.7849 8.23878L13.888 2.13574\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"iconBtn\" aria-label=\"清除目标\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M1.28149 3.88831H14.7187\" stroke=\"currentColor\"/><path d=\"M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833\" stroke=\"currentColor\"/><path d=\"M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831\" stroke=\"currentColor\"/><path d=\"M6.44946 6.98926V11.1238\" stroke=\"currentColor\"/><path d=\"M9.55054 6.98926V11.1238\" stroke=\"currentColor\"/></svg></button></div></div></div></div>"
+    },
+    {
+     "label": "编辑态：InlineEditor + 保存 / 取消",
+     "note": "编辑器最多长到 6 行（127px）后自己滚动；高度由 JS 按内容设置",
+     "bg": "platform",
+     "pad": "lg",
+     "html": "<div style=\"--dsh-composer-card-max-width:720px;--dsh-composer-side-clearance:16px;--dsh-composer-dock-inset:8px;width:720px\"><div class=\"dock\" data-goal-bar><div class=\"bar editBar\"><textarea class=\"editor\" rows=\"1\" aria-label=\"目标内容\" autofocus>把 UIUX 组件目录补齐</textarea><div class=\"actions\"><button type=\"button\" class=\"iconBtn\" aria-label=\"保存目标\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"iconBtn\" aria-label=\"取消编辑\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></div></div></div></div>"
+    },
+    {
+     "label": "受阻：只剩编辑 / 清除",
+     "note": "阶段词走「受阻的目标」，受阻原因作为原生 title 挂在整条上（截图中不可见）",
+     "bg": "platform",
+     "pad": "lg",
+     "html": "<div style=\"--dsh-composer-card-max-width:720px;--dsh-composer-side-clearance:16px;--dsh-composer-dock-inset:8px;width:720px\"><div class=\"dock\" data-goal-bar><div class=\"bar\"><span class=\"goalGlyph\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M14.5001 8C14.5 9.28552 14.1188 10.5422 13.4045 11.611C12.6903 12.6799 11.6752 13.5129 10.4875 14.0049C9.29982 14.4968 7.99295 14.6255 6.73212 14.3747C5.4713 14.124 4.31314 13.505 3.4041 12.596C2.49514 11.687 1.87614 10.5288 1.62537 9.26798C1.37459 8.00716 1.50331 6.70028 1.99525 5.51261C2.48719 4.32494 3.32025 3.30981 4.3891 2.59557C5.45795 1.88134 6.71458 1.50008 8.0001 1.5\" stroke=\"currentColor\"/><path d=\"M11.5 8C11.5001 8.69227 11.2948 9.36901 10.9102 9.94463C10.5257 10.5202 9.97901 10.9689 9.33944 11.2338C8.69986 11.4987 7.99609 11.5681 7.31712 11.433C6.63816 11.2979 6.01449 10.9645 5.52501 10.475C5.03548 9.98552 4.70209 9.36185 4.56702 8.68289C4.43195 8.00392 4.50127 7.30015 4.76619 6.66057C5.03112 6.021 5.47976 5.47436 6.05538 5.08978C6.631 4.70519 7.30774 4.49995 8.00001 4.5\" stroke=\"currentColor\"/><path d=\"M8.00024 7.99976L11.2 4.80005\" stroke=\"currentColor\"/><path d=\"M12.4719 5.62245C12.4246 5.66972 12.3569 5.69025 12.2913 5.67715L10.7814 5.37555C10.7022 5.35972 10.6402 5.29781 10.6244 5.2186L10.3228 3.70866C10.3097 3.6431 10.3302 3.57533 10.3775 3.52806L12.1826 1.723C12.2863 1.61929 12.4627 1.65879 12.5122 1.79684L12.9271 2.95225C12.9472 3.00847 12.9915 3.05272 13.0477 3.07291L14.2031 3.48774C14.3412 3.5373 14.3807 3.71368 14.277 3.81739L12.4719 5.62245Z\" stroke=\"currentColor\"/></svg></span><span class=\"label\">受阻的目标</span><span class=\"objective\">把 UIUX 组件目录补齐</span><div class=\"actions\"><button type=\"button\" class=\"iconBtn\" aria-label=\"编辑目标\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8.85596 2.69971H4.19971C3.37141 2.69971 2.69992 3.37146 2.69971 4.19971V11.8003C2.69992 12.6285 3.37141 13.3003 4.19971 13.3003H11.8003C12.6283 13.2999 13.3001 12.6283 13.3003 11.8003V7.89893H14.3003V11.8003C14.3001 13.1806 13.1806 14.2999 11.8003 14.3003H4.19971C2.81913 14.3003 1.69992 13.1808 1.69971 11.8003V4.19971C1.69992 2.81918 2.81913 1.69971 4.19971 1.69971H8.85596V2.69971Z\" fill=\"currentColor\"/><path d=\"M7.7849 8.23878L13.888 2.13574\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"iconBtn\" aria-label=\"清除目标\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M1.28149 3.88831H14.7187\" stroke=\"currentColor\"/><path d=\"M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833\" stroke=\"currentColor\"/><path d=\"M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831\" stroke=\"currentColor\"/><path d=\"M6.44946 6.98926V11.1238\" stroke=\"currentColor\"/><path d=\"M9.55054 6.98926V11.1238\" stroke=\"currentColor\"/></svg></button></div></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "goal",
+     "type": "GoalSnapshot | null | undefined",
+     "default": "—",
+     "desc": "undefined = 能力缺席或读取中，null = 没有目标，complete 与已清除的 id 同样不渲染；其余按 phase 出阶段词。"
+    },
+    {
+     "name": "activation",
+     "type": "GoalActivation | undefined",
+     "default": "undefined",
+     "desc": "进程内续跑开关（armed / disarmed）；undefined 表示激活读取还没回来，此时暂停与恢复都不出现。"
+    },
+    {
+     "name": "onEdit",
+     "type": "(objective: string) => Promise<GoalActionResult>",
+     "default": "—",
+     "desc": "改写目标；成功后收起编辑态，失败把 Remote 错误就地显示。"
+    },
+    {
+     "name": "onPause / onResume",
+     "type": "() => Promise<GoalActionResult>",
+     "default": "—",
+     "desc": "暂停 / 恢复当前目标，走各自 CAS 变更；同一帧内的重复点击由 <code>pendingRef</code> 挡掉。"
+    },
+    {
+     "name": "onClear",
+     "type": "() => Promise<GoalActionResult>",
+     "default": "—",
+     "desc": "清除目标；成功后先本地压掉该 id，等投影追上来。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'goal'>",
+     "default": "—",
+     "desc": "goal 词典：阶段词、动作名与编辑器的无障碍名。"
+    }
+   ],
+   "notes": "本条只显示目标与阶段：<code>GoalSnapshot</code> 里没有轮次进度，<code>roundsStarted / maxGoalRounds</code> 那个「3 / 12」式的进度数字由工具详情卡渲染，不在输入框上方的这条里。动作按钮是 <code>28×28</code>、<code>border-radius:999px</code> 且配 <code>corner-shape: round</code> 的圆形；禁用态 <code>opacity:.4</code>。整条宽度是 <code>calc(100% - 2×--dsh-composer-side-clearance - 4×--dsh-composer-dock-inset)</code>，卡片最大宽度再按卡宽减去 4 个 dock 内缩，示例里把这几个 composer 变量按真实取值写在外层 style 上。",
+   "keywords": [
+    "目标",
+    "goal",
+    "进行中的目标",
+    "暂停",
+    "恢复",
+    "composer dock"
+   ]
+  },
+  {
+   "id": "goal-dock",
+   "name": "GoalDock",
+   "exportName": "GoalDock",
+   "zh": "目标停靠",
+   "group": "panels",
+   "summary": "composer 输入区 <code>conversation.input.dock</code> 座位上的停靠适配器：外观完全交给同包的 <code>GoalBar</code>，自己只负责取数与对齐——durable 侧读 <code>useProjection('goal')</code>，进程内激活侧用注入的 <code>useGoalActivation</code>，只有 <code>id</code> 与 <code>revision</code> 都等于当前目标的那条激活边才被采纳，否则 activation 保持 undefined。于是它和 Todo、Queue 三张卡在同一列、同一 36px 高、同一层阴影上排开，宽度按 composer 的 <code>--dsh-composer-dock-inset</code> 收缩。激活还没读到时，进行中的目标既不显示「暂停」也不显示「恢复」，只剩编辑与清除；目标处于加载中、无目标或已完结时整条不渲染。",
+   "source": "packages/client/ui-goal/src/client/GoalBar.tsx#L184",
+   "css": [
+    "packages/client/ui-goal/src/client/GoalBar.module.css",
+    "packages/client/ui-primitives/src/InlineEditor.module.css"
+   ],
+   "tokens": [
+    "--dsw-specific-menu",
+    "--dsw-menu-backdrop-filter",
+    "--dsw-elevation-panel",
+    "--dsw-alias-border-l1",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-primary-dimmed",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-radius-md"
+   ],
+   "specimens": [
+    {
+     "label": "停靠态：进行中 + 激活读取完成（armed）",
+     "note": "与 Todo / Queue 共用的停靠列宽：<code>4 × --dsh-composer-dock-inset</code> 已在示例外层按真实取值给出",
+     "bg": "platform",
+     "pad": "lg",
+     "html": "<div style=\"--dsh-composer-card-max-width:720px;--dsh-composer-side-clearance:16px;--dsh-composer-dock-inset:8px;width:720px\"><div class=\"dock\" data-goal-bar><div class=\"bar\"><span class=\"goalGlyph\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M14.5001 8C14.5 9.28552 14.1188 10.5422 13.4045 11.611C12.6903 12.6799 11.6752 13.5129 10.4875 14.0049C9.29982 14.4968 7.99295 14.6255 6.73212 14.3747C5.4713 14.124 4.31314 13.505 3.4041 12.596C2.49514 11.687 1.87614 10.5288 1.62537 9.26798C1.37459 8.00716 1.50331 6.70028 1.99525 5.51261C2.48719 4.32494 3.32025 3.30981 4.3891 2.59557C5.45795 1.88134 6.71458 1.50008 8.0001 1.5\" stroke=\"currentColor\"/><path d=\"M11.5 8C11.5001 8.69227 11.2948 9.36901 10.9102 9.94463C10.5257 10.5202 9.97901 10.9689 9.33944 11.2338C8.69986 11.4987 7.99609 11.5681 7.31712 11.433C6.63816 11.2979 6.01449 10.9645 5.52501 10.475C5.03548 9.98552 4.70209 9.36185 4.56702 8.68289C4.43195 8.00392 4.50127 7.30015 4.76619 6.66057C5.03112 6.021 5.47976 5.47436 6.05538 5.08978C6.631 4.70519 7.30774 4.49995 8.00001 4.5\" stroke=\"currentColor\"/><path d=\"M8.00024 7.99976L11.2 4.80005\" stroke=\"currentColor\"/><path d=\"M12.4719 5.62245C12.4246 5.66972 12.3569 5.69025 12.2913 5.67715L10.7814 5.37555C10.7022 5.35972 10.6402 5.29781 10.6244 5.2186L10.3228 3.70866C10.3097 3.6431 10.3302 3.57533 10.3775 3.52806L12.1826 1.723C12.2863 1.61929 12.4627 1.65879 12.5122 1.79684L12.9271 2.95225C12.9472 3.00847 12.9915 3.05272 13.0477 3.07291L14.2031 3.48774C14.3412 3.5373 14.3807 3.71368 14.277 3.81739L12.4719 5.62245Z\" stroke=\"currentColor\"/></svg></span><span class=\"label\">进行中的目标</span><span class=\"objective\">把 UIUX 组件目录补齐</span><div class=\"actions\"><button type=\"button\" class=\"iconBtn\" aria-label=\"暂停目标\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 14.5C11.5899 14.5 14.5 11.5899 14.5 8C14.5 4.41015 11.5899 1.5 8 1.5C4.41015 1.5 1.5 4.41015 1.5 8C1.5 11.5899 4.41015 14.5 8 14.5Z\" stroke=\"currentColor\"/><path d=\"M6.5 5V11\" stroke=\"currentColor\"/><path d=\"M9.5 5V11\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"iconBtn\" aria-label=\"编辑目标\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8.85596 2.69971H4.19971C3.37141 2.69971 2.69992 3.37146 2.69971 4.19971V11.8003C2.69992 12.6285 3.37141 13.3003 4.19971 13.3003H11.8003C12.6283 13.2999 13.3001 12.6283 13.3003 11.8003V7.89893H14.3003V11.8003C14.3001 13.1806 13.1806 14.2999 11.8003 14.3003H4.19971C2.81913 14.3003 1.69992 13.1808 1.69971 11.8003V4.19971C1.69992 2.81918 2.81913 1.69971 4.19971 1.69971H8.85596V2.69971Z\" fill=\"currentColor\"/><path d=\"M7.7849 8.23878L13.888 2.13574\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"iconBtn\" aria-label=\"清除目标\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M1.28149 3.88831H14.7187\" stroke=\"currentColor\"/><path d=\"M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833\" stroke=\"currentColor\"/><path d=\"M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831\" stroke=\"currentColor\"/><path d=\"M6.44946 6.98926V11.1238\" stroke=\"currentColor\"/><path d=\"M9.55054 6.98926V11.1238\" stroke=\"currentColor\"/></svg></button></div></div></div></div>"
+    },
+    {
+     "label": "激活未解析：进行中，但只有编辑 / 清除",
+     "note": "目标还在进行中却两个续跑按钮都不出现，是激活读取未完成时的真实样子",
+     "bg": "platform",
+     "pad": "lg",
+     "html": "<div style=\"--dsh-composer-card-max-width:720px;--dsh-composer-side-clearance:16px;--dsh-composer-dock-inset:8px;width:720px\"><div class=\"dock\" data-goal-bar><div class=\"bar\"><span class=\"goalGlyph\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M14.5001 8C14.5 9.28552 14.1188 10.5422 13.4045 11.611C12.6903 12.6799 11.6752 13.5129 10.4875 14.0049C9.29982 14.4968 7.99295 14.6255 6.73212 14.3747C5.4713 14.124 4.31314 13.505 3.4041 12.596C2.49514 11.687 1.87614 10.5288 1.62537 9.26798C1.37459 8.00716 1.50331 6.70028 1.99525 5.51261C2.48719 4.32494 3.32025 3.30981 4.3891 2.59557C5.45795 1.88134 6.71458 1.50008 8.0001 1.5\" stroke=\"currentColor\"/><path d=\"M11.5 8C11.5001 8.69227 11.2948 9.36901 10.9102 9.94463C10.5257 10.5202 9.97901 10.9689 9.33944 11.2338C8.69986 11.4987 7.99609 11.5681 7.31712 11.433C6.63816 11.2979 6.01449 10.9645 5.52501 10.475C5.03548 9.98552 4.70209 9.36185 4.56702 8.68289C4.43195 8.00392 4.50127 7.30015 4.76619 6.66057C5.03112 6.021 5.47976 5.47436 6.05538 5.08978C6.631 4.70519 7.30774 4.49995 8.00001 4.5\" stroke=\"currentColor\"/><path d=\"M8.00024 7.99976L11.2 4.80005\" stroke=\"currentColor\"/><path d=\"M12.4719 5.62245C12.4246 5.66972 12.3569 5.69025 12.2913 5.67715L10.7814 5.37555C10.7022 5.35972 10.6402 5.29781 10.6244 5.2186L10.3228 3.70866C10.3097 3.6431 10.3302 3.57533 10.3775 3.52806L12.1826 1.723C12.2863 1.61929 12.4627 1.65879 12.5122 1.79684L12.9271 2.95225C12.9472 3.00847 12.9915 3.05272 13.0477 3.07291L14.2031 3.48774C14.3412 3.5373 14.3807 3.71368 14.277 3.81739L12.4719 5.62245Z\" stroke=\"currentColor\"/></svg></span><span class=\"label\">进行中的目标</span><span class=\"objective\">把 UIUX 组件目录补齐</span><div class=\"actions\"><button type=\"button\" class=\"iconBtn\" aria-label=\"编辑目标\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8.85596 2.69971H4.19971C3.37141 2.69971 2.69992 3.37146 2.69971 4.19971V11.8003C2.69992 12.6285 3.37141 13.3003 4.19971 13.3003H11.8003C12.6283 13.2999 13.3001 12.6283 13.3003 11.8003V7.89893H14.3003V11.8003C14.3001 13.1806 13.1806 14.2999 11.8003 14.3003H4.19971C2.81913 14.3003 1.69992 13.1808 1.69971 11.8003V4.19971C1.69992 2.81918 2.81913 1.69971 4.19971 1.69971H8.85596V2.69971Z\" fill=\"currentColor\"/><path d=\"M7.7849 8.23878L13.888 2.13574\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"iconBtn\" aria-label=\"清除目标\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M1.28149 3.88831H14.7187\" stroke=\"currentColor\"/><path d=\"M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833\" stroke=\"currentColor\"/><path d=\"M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831\" stroke=\"currentColor\"/><path d=\"M6.44946 6.98926V11.1238\" stroke=\"currentColor\"/><path d=\"M9.55054 6.98926V11.1238\" stroke=\"currentColor\"/></svg></button></div></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "useProjection",
+     "type": "PropsRuntime<'conversation.input.dock'>['useProjection']",
+     "default": "—",
+     "desc": "读会话投影里的 <code>goal</code>；undefined = 读取中，null = 无目标。"
+    },
+    {
+     "name": "useGoalActivation",
+     "type": "Hook<GoalActivationSnapshot, GoalActivation | undefined>",
+     "default": "—",
+     "desc": "注入的进程内激活源，按 <code>id</code> + <code>revision</code> 精确匹配后才交给条形；不匹配时不传 activation。"
+    },
+    {
+     "name": "onEdit / onPause / onResume / onClear",
+     "type": "GoalBarActions",
+     "default": "—",
+     "desc": "四个变更动词，原样交给 GoalBar；CAS 引用取自会话当前投影值。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'goal'>",
+     "default": "—",
+     "desc": "goal 词典，原样下传。"
+    }
+   ],
+   "notes": "它是这个包的插件入口：<code>ui-goal</code> 把 <code>GoalDock</code> 注册到 ui-conversation 声明的 <code>conversation.input.dock</code>，本身不导出组件给别的包用。适配层与展示层共用一份 <code>GoalBar.module.css</code>，所以两者外观必须一起改；diff 只在数据来源——<code>GoalBar</code> 收现成的 <code>goal</code> 与 <code>activation</code>，<code>GoalDock</code> 自己订阅并做那次匹配。",
+   "keywords": [
+    "目标停靠",
+    "dock",
+    "composer",
+    "input dock",
+    "activation",
+    "armed"
+   ]
+  },
+  {
+   "id": "deliverables",
+   "name": "Deliverables",
+   "exportName": "Deliverables",
+   "zh": "交付文件",
+   "group": "panels",
+   "summary": "回合尾部的显式交付区：<code>.root</code> 是纵向 16px 间距的容器并带 <code>container-type: inline-size</code>，紧跟在改动卡之后时上边距归零；<code>.presented</code> 默认两列网格（10px 间距），只有一个文件时用 <code>data-single</code> 收成一列，容器自身 ≤620px 时也收成一列。每张 <code>.file</code> 卡 60px 高、<code>8px 10px</code> 内边距、0.5px <code>--dsw-alias-border-l1</code> 描边、<code>--dsw-radius-lg</code>，底色浅色 <code>--dsw-static-neutral-50</code>、深色 <code>850</code>；左侧 40×40 R10 图标砖放 20px 文件类型字形，中间文件名 13px/20px/500 加一行 10px/16px tertiary 描述（悬停时换成「在侧边栏预览」），右侧留给 <code>deliverables.file.actions</code> 槽位。超过 4 个文件时折成 4 个并给出居中的「全部 N 个文件」开关；主机桌面读不到或不可用时，卡片行上方多一行 12px/18px 的 <code>.hostStatus</code>。",
+   "source": "packages/client/ui-deliverables/src/client/Deliverables.tsx#L68",
+   "css": [
+    "packages/client/ui-deliverables/src/client/Deliverables.module.css"
+   ],
+   "tokens": [
+    "--dsw-static-neutral-50",
+    "--dsw-static-neutral-100",
+    "--dsw-static-neutral-850",
+    "--dsw-static-neutral-800",
+    "--dsw-static-neutral-00",
+    "--dsw-alias-border-l1",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-link",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-state-error-primary",
+    "--dsw-radius-lg",
+    "--dsw-radius-sm",
+    "--dsw-focus-ring-color",
+    "--dsw-alias-state-business-primary"
+   ],
+   "specimens": [
+    {
+     "label": "三个交付文件：两列网格 + 第三个另起一行",
+     "note": "描述行悬停时换成「在侧边栏预览」；右侧 actions 槽位由 ui-open-in-app 等插件填充",
+     "pad": "lg",
+     "html": "<div style=\"width:720px\"><div class=\"root\"><div class=\"presented\" data-presented-files-row><div class=\"file\" data-presented-file><button type=\"button\" class=\"cardPreview\" title=\"/home/lk/deepseek-harness/UIUX/data/parts/b5-panels.json\" aria-label=\"在侧边栏预览 UIUX/data/parts/b5-panels.json\"></button><span class=\"fileIcon\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"none\" aria-hidden=\"true\"><path d=\"M5.4 2.5h5.1l4 4v10.1a0.9 0.9 0 0 1-0.9 0.9H5.4a0.9 0.9 0 0 1-0.9-0.9V3.4a0.9 0.9 0 0 1 0.9-0.9Z\" stroke=\"currentColor\" stroke-width=\"1.1\"/><path d=\"M10.3 2.6v3.2a0.9 0.9 0 0 0 0.9 0.9h3.2\" stroke=\"currentColor\" stroke-width=\"1.1\"/><path d=\"M8.1 11.4 6.7 12.8l1.4 1.4M11.9 11.4l1.4 1.4-1.4 1.4\" stroke=\"currentColor\" stroke-width=\"1.1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span><div class=\"fileBody\"><div class=\"details\"><span class=\"fileName\">b5-panels.json</span><span class=\"description\" data-presented-description><span class=\"secondaryText\">18.6 KB · 10 个面板条目</span><span class=\"previewHint\">在侧边栏预览</span></span></div><div class=\"actions\"></div></div></div><div class=\"file\" data-presented-file><button type=\"button\" class=\"cardPreview\" title=\"/home/lk/deepseek-harness/docs/images/b5-panels.png\" aria-label=\"在侧边栏预览 docs/images/b5-panels.png\"></button><span class=\"fileIcon\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"none\" aria-hidden=\"true\"><path d=\"M5.4 2.5h5.1l4 4v10.1a0.9 0.9 0 0 1-0.9 0.9H5.4a0.9 0.9 0 0 1-0.9-0.9V3.4a0.9 0.9 0 0 1 0.9-0.9Z\" stroke=\"currentColor\" stroke-width=\"1.1\"/><path d=\"M10.3 2.6v3.2a0.9 0.9 0 0 0 0.9 0.9h3.2\" stroke=\"currentColor\" stroke-width=\"1.1\"/><path d=\"M8.1 11.4 6.7 12.8l1.4 1.4M11.9 11.4l1.4 1.4-1.4 1.4\" stroke=\"currentColor\" stroke-width=\"1.1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span><div class=\"fileBody\"><div class=\"details\"><span class=\"fileName\">b5-panels.png</span><span class=\"description\" data-presented-description><span class=\"secondaryText\">412 KB · 目录截图</span><span class=\"previewHint\">在侧边栏预览</span></span></div><div class=\"actions\"></div></div></div><div class=\"file\" data-presented-file><button type=\"button\" class=\"cardPreview\" title=\"/home/lk/deepseek-harness/UIUX/data/parts/b5-panels.validation.txt\" aria-label=\"在侧边栏预览 UIUX/data/parts/b5-panels.validation.txt\"></button><span class=\"fileIcon\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"none\" aria-hidden=\"true\"><path d=\"M5.4 2.5h5.1l4 4v10.1a0.9 0.9 0 0 1-0.9 0.9H5.4a0.9 0.9 0 0 1-0.9-0.9V3.4a0.9 0.9 0 0 1 0.9-0.9Z\" stroke=\"currentColor\" stroke-width=\"1.1\"/><path d=\"M10.3 2.6v3.2a0.9 0.9 0 0 0 0.9 0.9h3.2\" stroke=\"currentColor\" stroke-width=\"1.1\"/><path d=\"M8.1 11.4 6.7 12.8l1.4 1.4M11.9 11.4l1.4 1.4-1.4 1.4\" stroke=\"currentColor\" stroke-width=\"1.1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span><div class=\"fileBody\"><div class=\"details\"><span class=\"fileName\">b5-panels.validation.txt</span><span class=\"description\" data-presented-description><span class=\"secondaryText\">1.4 KB · 校验输出</span><span class=\"previewHint\">在侧边栏预览</span></span></div><div class=\"actions\"></div></div></div></div></div></div>"
+    },
+    {
+     "label": "单个交付文件：data-single 占满整行",
+     "note": "单文件没有折叠开关，卡片直接铺满内容列",
+     "pad": "lg",
+     "html": "<div style=\"width:640px\"><div class=\"root\"><div class=\"presented\" data-presented-files-row data-single=\"true\"><div class=\"file\" data-presented-file><button type=\"button\" class=\"cardPreview\" title=\"/home/lk/deepseek-harness/UIUX/data/parts/b5-panels.json\" aria-label=\"在侧边栏预览 UIUX/data/parts/b5-panels.json\"></button><span class=\"fileIcon\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"none\" aria-hidden=\"true\"><path d=\"M5.4 2.5h5.1l4 4v10.1a0.9 0.9 0 0 1-0.9 0.9H5.4a0.9 0.9 0 0 1-0.9-0.9V3.4a0.9 0.9 0 0 1 0.9-0.9Z\" stroke=\"currentColor\" stroke-width=\"1.1\"/><path d=\"M10.3 2.6v3.2a0.9 0.9 0 0 0 0.9 0.9h3.2\" stroke=\"currentColor\" stroke-width=\"1.1\"/><path d=\"M8.1 11.4 6.7 12.8l1.4 1.4M11.9 11.4l1.4 1.4-1.4 1.4\" stroke=\"currentColor\" stroke-width=\"1.1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span><div class=\"fileBody\"><div class=\"details\"><span class=\"fileName\">b5-panels.json</span><span class=\"description\" data-presented-description><span class=\"secondaryText\">18.6 KB · 10 个面板条目</span><span class=\"previewHint\">在侧边栏预览</span></span></div><div class=\"actions\"></div></div></div></div></div></div>"
+    },
+    {
+     "label": "主机没有桌面：卡片行上方多一条状态说明",
+     "note": "主机桌面读取失败时同一位置换成错误文案 + 「重试」按钮",
+     "pad": "lg",
+     "html": "<div style=\"width:640px\"><div class=\"root\"><span class=\"hostStatus\">此主机没有可用的桌面，无法使用外部程序打开文件或文件夹；文件仍可在侧边栏预览</span><div class=\"presented\" data-presented-files-row data-single=\"true\"><div class=\"file\" data-presented-file><button type=\"button\" class=\"cardPreview\" title=\"/home/lk/deepseek-harness/docs/ui-radius.md\" aria-label=\"在侧边栏预览 docs/ui-radius.md\"></button><span class=\"fileIcon\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"none\" aria-hidden=\"true\"><path d=\"M5.4 2.5h5.1l4 4v10.1a0.9 0.9 0 0 1-0.9 0.9H5.4a0.9 0.9 0 0 1-0.9-0.9V3.4a0.9 0.9 0 0 1 0.9-0.9Z\" stroke=\"currentColor\" stroke-width=\"1.1\"/><path d=\"M10.3 2.6v3.2a0.9 0.9 0 0 0 0.9 0.9h3.2\" stroke=\"currentColor\" stroke-width=\"1.1\"/><path d=\"M8.1 11.4 6.7 12.8l1.4 1.4M11.9 11.4l1.4 1.4-1.4 1.4\" stroke=\"currentColor\" stroke-width=\"1.1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span><div class=\"fileBody\"><div class=\"details\"><span class=\"fileName\">ui-radius.md</span><span class=\"description\" data-presented-description><span class=\"secondaryText\">6.2 KB · 圆角规范</span><span class=\"previewHint\">在侧边栏预览</span></span></div><div class=\"actions\"></div></div></div></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "matched",
+     "type": "{ changes: ChangesTurnData | null; presented: readonly PresentedPath[] }",
+     "default": "—",
+     "desc": "本回合的改动公告与显式交付清单；两者皆空时 <code>DeliverablesTail</code> 整个不渲染。"
+    },
+    {
+     "name": "openFile",
+     "type": "(path: string) => void",
+     "default": "—",
+     "desc": "点卡片预览：在右 Sidebar 打开该文件。"
+    },
+    {
+     "name": "sessionId",
+     "type": "SessionId",
+     "default": "—",
+     "desc": "被查看的会话；交付与改动都按它定位路由与工作目录。"
+    },
+    {
+     "name": "usePresentedOpen / openPresented",
+     "type": "ObservableSnapshot<…> / PresentedOpenController['open']",
+     "default": "—",
+     "desc": "原生打开的手势状态与动作（打开、在文件管理器中显示）。"
+    },
+    {
+     "name": "usePresentedHost / reloadPresentedHost",
+     "type": "ObservableSnapshot<…> / () => void",
+     "default": "—",
+     "desc": "主机桌面能力；null 时挂载即重读，error 时给出重试。"
+    },
+    {
+     "name": "useChangesDiff / useChangesSummary / useShowCodeDiff",
+     "type": "ObservableSnapshot<…>",
+     "default": "—",
+     "desc": "改动摘要与比较的读取状态，以及「是否展示改动卡」的用户偏好。"
+    },
+    {
+     "name": "renderSlot",
+     "type": "PropsRenderSlots<'deliverables.file.actions'>",
+     "default": "—",
+     "desc": "每张卡右侧的动作槽位；卡片本身不实现任何原生动作。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'deliverables'>",
+     "default": "—",
+     "desc": "deliverables 词典：卡片动作状态、折叠与主机提示。"
+    }
+   ],
+   "notes": "图标砖里的真实内容是 ui-primitives 的 <code>FileTypeIcon</code>；那是内嵌的多色 SVG 字形表，示例用同尺寸的 <code>currentColor</code> 占位字形代替，几何与配色不参与本条的布局。交付卡与改动卡共用一档圆角与材质（<code>docs/ui-radius.md</code> 的 R16 预览卡规则，图标砖是 R10 例外），卡面填充在浅色主题用白 50% 混色、深色主题 5%。<code>presented</code> 的 <code>data-single</code> 由「恰好一个文件」决定，容器宽度则交给 <code>@container</code> 查询，两者互不替代。",
+   "keywords": [
+    "交付文件",
+    "present",
+    "产出文件",
+    "file card",
+    "turn tail",
+    "deliverable"
+   ]
+  },
+  {
+   "id": "changed-files",
+   "name": "ChangedFiles",
+   "exportName": "ChangedFiles",
+   "zh": "改动文件",
+   "group": "panels",
+   "summary": "回合结束时按 Host 记录的 git 摘要渲染的改动卡：<code>.card</code> 0.5px <code>--dsw-alias-border-l2</code> 描边（单文件时改用 l1）、<code>--dsw-radius-lg</code> 圆角、底色 <code>--dsw-alias-bg-layer-1</code>。顶部是可点的 60px 高 <code>.header</code>：40×40 R10 图标砖 + 13px/20px/500 标题（多文件「已编辑 N 个文件」、单文件「已编辑 &lt;文件名&gt;」）+ 10px/16px 等宽计数的 <code>+128</code> <code>-46</code>，悬停或键盘聚焦时计数换成「在侧边栏预览」。多文件时下面接 <code>.list</code>：每行 <code>min-height:24px</code>、<code>7px 18px 7px 14px</code> 内边距，12px 路径配 11px 等宽计数，行悬停与聚焦用 <code>--dsw-alias-interactive-bg-hover</code>；超过 4 行先折起，底部 <code>.toggle</code> 给「全部 N 个文件」/「收起」。二进制与过大文件不显示计数而显示「二进制」「过大」；<code>(pointer: coarse)</code> 下行高升到 44px。行与单文件表头悬停 500ms 会打开 portal 的改动预览。",
+   "source": "packages/client/ui-deliverables/src/client/ChangedFiles.tsx#L37",
+   "css": [
+    "packages/client/ui-deliverables/src/client/ChangedFiles.module.css"
+   ],
+   "tokens": [
+    "--dsw-static-neutral-50",
+    "--dsw-static-neutral-100",
+    "--dsw-static-neutral-850",
+    "--dsw-static-neutral-800",
+    "--dsw-static-neutral-00",
+    "--dsw-alias-bg-layer-1",
+    "--dsw-alias-border-l1",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-state-success-primary",
+    "--dsw-alias-state-error-primary",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-radius-lg",
+    "--dsw-focus-ring-color",
+    "--dsw-alias-state-business-primary"
+   ],
+   "specimens": [
+    {
+     "label": "多文件：表头折叠计数 + 4 行路径与 +/− 计数",
+     "note": "计数用等宽字体（<code>--ds-font-family-code</code>），路径用界面字体，两者分开上色",
+     "pad": "lg",
+     "html": "<div style=\"width:640px\"><div class=\"card\" data-changed-files><button type=\"button\" class=\"header\" aria-label=\"在侧边栏查看本轮改动\"><span class=\"tile\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"none\" aria-hidden=\"true\"><path d=\"M5.4 2.5h5.1l4 4v10.1a0.9 0.9 0 0 1-0.9 0.9H5.4a0.9 0.9 0 0 1-0.9-0.9V3.4a0.9 0.9 0 0 1 0.9-0.9Z\" stroke=\"currentColor\" stroke-width=\"1.1\"/><path d=\"M10.3 2.6v3.2a0.9 0.9 0 0 0 0.9 0.9h3.2\" stroke=\"currentColor\" stroke-width=\"1.1\"/><path d=\"M8.1 11.4 6.7 12.8l1.4 1.4M11.9 11.4l1.4 1.4-1.4 1.4\" stroke=\"currentColor\" stroke-width=\"1.1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span><span class=\"titles\"><span class=\"title\">已编辑 6 个文件</span><span class=\"stat\"><span class=\"statCounts\"><span class=\"added\">+128</span><span class=\"deleted\">-46</span></span><span class=\"previewHint\">在侧边栏预览</span></span></span></button><ul class=\"list\"><li><button type=\"button\" class=\"row\" aria-label=\"查看 packages/client/ui-goal/src/client/GoalBar.tsx 的改动\"><span class=\"path\">packages/client/ui-goal/src/client/GoalBar.tsx</span><span class=\"counts\"><span class=\"added\">+42</span><span class=\"deleted\">-8</span></span></button></li><li><button type=\"button\" class=\"row\" aria-label=\"查看 packages/client/ui-goal/src/client/GoalBar.module.css 的改动\"><span class=\"path\">packages/client/ui-goal/src/client/GoalBar.module.css</span><span class=\"counts\"><span class=\"added\">+18</span><span class=\"deleted\">-3</span></span></button></li><li><button type=\"button\" class=\"row\" aria-label=\"查看 packages/client/ui-deliverables/src/client/ChangedFiles.tsx 的改动\"><span class=\"path\">packages/client/ui-deliverables/src/client/ChangedFiles.tsx</span><span class=\"counts\"><span class=\"added\">+36</span><span class=\"deleted\">-12</span></span></button></li><li><button type=\"button\" class=\"row\" aria-label=\"查看 docs/web-styling.md 的改动\"><span class=\"path\">docs/web-styling.md</span><span class=\"counts\"><span class=\"added\">+9</span><span class=\"deleted\">-0</span></span></button></li></ul><button type=\"button\" class=\"toggle\" aria-expanded=\"false\" aria-label=\"展开全部 6 个改动文件\"><span>全部 6 个文件</span><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></button></div></div>"
+    },
+    {
+     "label": "单文件：只有表头，data-single 换成 l1 描边",
+     "note": "表头无障碍名带上完整路径；卡片不再渲染文件列表",
+     "pad": "lg",
+     "html": "<div style=\"width:520px\"><div class=\"card\" data-changed-files data-single=\"true\"><button type=\"button\" class=\"header\" aria-label=\"查看 ChangedFiles.tsx 的改动\"><span class=\"tile\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"none\" aria-hidden=\"true\"><path d=\"M5.4 2.5h5.1l4 4v10.1a0.9 0.9 0 0 1-0.9 0.9H5.4a0.9 0.9 0 0 1-0.9-0.9V3.4a0.9 0.9 0 0 1 0.9-0.9Z\" stroke=\"currentColor\" stroke-width=\"1.1\"/><path d=\"M10.3 2.6v3.2a0.9 0.9 0 0 0 0.9 0.9h3.2\" stroke=\"currentColor\" stroke-width=\"1.1\"/><path d=\"M8.1 11.4 6.7 12.8l1.4 1.4M11.9 11.4l1.4 1.4-1.4 1.4\" stroke=\"currentColor\" stroke-width=\"1.1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span><span class=\"titles\"><span class=\"title\">已编辑 ChangedFiles.tsx</span><span class=\"stat\"><span class=\"statCounts\"><span class=\"added\">36</span><span class=\"deleted\">12</span></span><span class=\"previewHint\">在侧边栏预览</span></span></span></button></div></div>"
+    },
+    {
+     "label": "展开态：5 行，含二进制与过大文件",
+     "note": "二进制 / 过大行不给计数；展开后底部开关变「收起」并配向上箭头",
+     "pad": "lg",
+     "html": "<div style=\"width:640px\"><div class=\"card\" data-changed-files><button type=\"button\" class=\"header\" aria-label=\"在侧边栏查看本轮改动\"><span class=\"tile\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"none\" aria-hidden=\"true\"><path d=\"M5.4 2.5h5.1l4 4v10.1a0.9 0.9 0 0 1-0.9 0.9H5.4a0.9 0.9 0 0 1-0.9-0.9V3.4a0.9 0.9 0 0 1 0.9-0.9Z\" stroke=\"currentColor\" stroke-width=\"1.1\"/><path d=\"M10.3 2.6v3.2a0.9 0.9 0 0 0 0.9 0.9h3.2\" stroke=\"currentColor\" stroke-width=\"1.1\"/><path d=\"M8.1 11.4 6.7 12.8l1.4 1.4M11.9 11.4l1.4 1.4-1.4 1.4\" stroke=\"currentColor\" stroke-width=\"1.1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span><span class=\"titles\"><span class=\"title\">已编辑 5 个文件</span><span class=\"stat\"><span class=\"statCounts\"><span class=\"added\">204</span><span class=\"deleted\">31</span></span><span class=\"previewHint\">在侧边栏预览</span></span></span></button><ul class=\"list\"><li><button type=\"button\" class=\"row\" aria-label=\"查看 UIUX/data/parts/b5-panels.json 的改动\"><span class=\"path\">UIUX/data/parts/b5-panels.json</span><span class=\"counts\"><span class=\"added\">+96</span><span class=\"deleted\">-0</span></span></button></li><li><button type=\"button\" class=\"row\" aria-label=\"查看 UIUX/tools/validate.mjs 的改动\"><span class=\"path\">UIUX/tools/validate.mjs</span><span class=\"counts\"><span class=\"added\">+4</span><span class=\"deleted\">-2</span></span></button></li><li><button type=\"button\" class=\"row\" aria-label=\"查看 UIUX/assets/b5-panels-preview.png 的改动\"><span class=\"path\">UIUX/assets/b5-panels-preview.png</span><span class=\"counts\"><span>二进制</span></span></button></li><li><button type=\"button\" class=\"row\" aria-label=\"查看 docs/web-styling.zh.md 的改动\"><span class=\"path\">docs/web-styling.zh.md</span><span class=\"counts\"><span class=\"added\">+12</span><span class=\"deleted\">-4</span></span></button></li><li><button type=\"button\" class=\"row\" aria-label=\"查看 benchmarks/fixtures/large-session.jsonl 的改动\"><span class=\"path\">benchmarks/fixtures/large-session.jsonl</span><span class=\"counts\"><span>过大</span></span></button></li></ul><button type=\"button\" class=\"toggle\" aria-expanded=\"true\" aria-label=\"收起改动文件列表\"><span>收起</span><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10\" stroke=\"currentColor\"/></svg></button></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "changes",
+     "type": "Pick<ChangesSummary, 'files' | 'total' | 'added' | 'deleted'> & { seq: number }",
+     "default": "—",
+     "desc": "Host 为该回合提供的摘要（含公告事件序号）；<code>total === 1</code> 时走单文件布局。"
+    },
+    {
+     "name": "cwd",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "被查看会话的工作目录；用于把记录里的相对路径还原成完整路径。"
+    },
+    {
+     "name": "openReview",
+     "type": "(index: number) => void",
+     "default": "—",
+     "desc": "在右 Sidebar 打开本回合的改动审阅并选中该索引的文件；表头固定打开第 0 个。"
+    },
+    {
+     "name": "sessionId",
+     "type": "SessionId",
+     "default": "—",
+     "desc": "悬停预览读取比较时所用的会话坐标之一。"
+    },
+    {
+     "name": "useChangesDiff / loadChangesDiff",
+     "type": "ObservableSnapshot<…> / ChangesDiffStore['load']",
+     "default": "—",
+     "desc": "单文件比较的读取状态与加载动作，只在悬停预览挂载后才触发。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'deliverables'>",
+     "default": "—",
+     "desc": "deliverables 词典：标题、增删计数、二进制 / 过大与折叠文案。"
+    }
+   ],
+   "notes": "摘要开关是「Coding Tools」偏好：关掉后改动卡立即消失，但显式交付卡、行内文件链接与已记录的改动事实仍在。<code>@media (pointer: coarse)</code> 把 <code>.row</code> 与 <code>.toggle</code> 的行高抬到 44px，触屏下没有 500ms 悬停预览可用。卡片自身不实现任何按钮：每行与表头都只是打开右 Sidebar 审阅的入口，原生打开动作由 <code>deliverables.review.file.actions</code> 槽位提供。",
+   "keywords": [
+    "改动文件",
+    "changed files",
+    "git 摘要",
+    "增删行数",
+    "diff 审阅"
+   ]
+  },
+  {
+   "id": "plan-chip",
+   "name": "PlanChip",
+   "exportName": "PlanChip",
+   "zh": "计划开关",
+   "group": "panels",
+   "summary": "composer 里的计划模式状态按钮：<code>.chip</code> 28px 高、最小宽 34px、<code>0 8px</code> 内边距、<code>--dsw-radius-sm</code> 圆角，底色 <code>--dsw-alias-state-business-tertiary</code>、文字 <code>--dsw-alias-state-business-primary</code>、13px/20px/500。前置 14px 图标槽在常态显示计划轮廓，悬停或键盘聚焦时换成叉圈——提示这一下点的就是把计划模式关掉；悬停底色在同一块 tertiary 上再混入 6% 品牌色。只有在有效目标是计划模式时才渲染（<code>pending ? !active : active</code>，Host 折叠出来的值而非前端乐观更新），否则整个座位为空；<code>locked</code> 或退出请求在飞时按钮禁用（<code>opacity:.6</code>），失败在该座位右侧追加一行 12px/18px 的错误文案。",
+   "source": "packages/client/ui-plan/src/client/PlanModeControl.tsx#L19",
+   "css": [
+    "packages/client/ui-plan/src/client/PlanModeControl.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-state-business-tertiary",
+    "--dsw-alias-state-error-primary",
+    "--dsw-radius-sm",
+    "--dsw-focus-ring-width",
+    "--dsw-focus-ring-color"
+   ],
+   "specimens": [
+    {
+     "label": "常态：计划模式开启（计划轮廓 + 「计划」）",
+     "note": "座位由 ui-conversation 声明，紧挨访问模式控件的右侧",
+     "pad": "lg",
+     "html": "<span class=\"wrap\"><button type=\"button\" class=\"chip\" aria-label=\"计划模式已开启，按下关闭\" title=\"计划模式已开启 — 点击关闭（/plan off）\"><span class=\"glyph\" aria-hidden=\"true\"><svg width=\"14\" height=\"14\" class=\"restGlyph\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4.9375 5.90295H11.0625\" stroke=\"currentColor\"/><path d=\"M4.9375 9.02991H8.27841\" stroke=\"currentColor\"/><path d=\"M12.5 1.32617C13.3039 1.32617 14 1.95171 14 2.77637V7.61328L13 8.68164V2.77637C13 2.55186 12.8007 2.32617 12.5 2.32617H3.5C3.1993 2.32617 3 2.55186 3 2.77637V13.2246C3.00044 13.4489 3.19963 13.6738 3.5 13.6738H8.32812L7.39258 14.6738H3.5C2.69637 14.6738 2.00042 14.0489 2 13.2246V2.77637C2 1.95171 2.69613 1.32617 3.5 1.32617H12.5Z\" fill=\"currentColor\"/><path d=\"M8.97212 14.3693C9.17511 14.5723 9.37811 14.7753 9.5811 14.9783C9.67012 14.8953 9.75914 14.8123 9.84815 14.7293C11.4505 13.2352 13.0528 11.7411 14.6551 10.247C14.7441 10.164 14.8331 10.081 14.9221 9.99803C14.5989 9.6748 14.2756 9.35157 13.9524 9.02834C13.8694 9.11736 13.7864 9.20637 13.7034 9.29539C12.2093 10.8977 10.7152 12.5 9.22113 14.1023C9.13813 14.1913 9.05513 14.2803 8.97212 14.3693Z\" fill=\"currentColor\"/><path d=\"M11.6323 13.7841C11.6323 14.0395 11.6323 14.295 11.6323 14.5504C11.6812 14.5523 11.7301 14.5543 11.779 14.5562C12.659 14.5913 13.539 14.6263 14.419 14.6614C14.4679 14.6633 14.5168 14.6653 14.5657 14.6672C14.5657 14.3339 14.5657 14.0006 14.5657 13.6672C14.5168 13.6692 14.4679 13.6711 14.419 13.6731C13.539 13.7081 12.659 13.7432 11.779 13.7783C11.7301 13.7802 11.6812 13.7821 11.6323 13.7841Z\" fill=\"currentColor\"/></svg><svg width=\"14\" height=\"14\" class=\"hoverGlyph\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M15 8A7 7 0 1 1 1 8A7 7 0 1 1 15 8ZM6.409 10.652L5.348 9.591L6.939 8L5.348 6.409L6.409 5.348L8 6.939L9.591 5.348L10.652 6.409L9.061 8L10.652 9.591L9.591 10.652L8 9.061Z\" fill=\"currentColor\"/></svg></span>计划</button></span>"
+    },
+    {
+     "label": "悬停 / 键盘聚焦：叉圈图标 + 6% 品牌混色底",
+     "note": "悬停模拟",
+     "pad": "lg",
+     "css": "/* 状态模拟：:hover / :focus-visible 无法静态触发，下面三条是 PlanModeControl.module.css 中对应规则的原样副本。 */\n.chip.forceHover { background: color-mix(in srgb, var(--dsw-alias-state-business-tertiary), var(--dsw-alias-state-business-primary) 6%); }\n.chip.forceHover .restGlyph { display: none; }\n.chip.forceHover .hoverGlyph { display: block; }",
+     "html": "<span class=\"wrap\"><button type=\"button\" class=\"chip forceHover\" aria-label=\"计划模式已开启，按下关闭\" title=\"计划模式已开启 — 点击关闭（/plan off）\"><span class=\"glyph\" aria-hidden=\"true\"><svg width=\"14\" height=\"14\" class=\"restGlyph\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4.9375 5.90295H11.0625\" stroke=\"currentColor\"/><path d=\"M4.9375 9.02991H8.27841\" stroke=\"currentColor\"/><path d=\"M12.5 1.32617C13.3039 1.32617 14 1.95171 14 2.77637V7.61328L13 8.68164V2.77637C13 2.55186 12.8007 2.32617 12.5 2.32617H3.5C3.1993 2.32617 3 2.55186 3 2.77637V13.2246C3.00044 13.4489 3.19963 13.6738 3.5 13.6738H8.32812L7.39258 14.6738H3.5C2.69637 14.6738 2.00042 14.0489 2 13.2246V2.77637C2 1.95171 2.69613 1.32617 3.5 1.32617H12.5Z\" fill=\"currentColor\"/><path d=\"M8.97212 14.3693C9.17511 14.5723 9.37811 14.7753 9.5811 14.9783C9.67012 14.8953 9.75914 14.8123 9.84815 14.7293C11.4505 13.2352 13.0528 11.7411 14.6551 10.247C14.7441 10.164 14.8331 10.081 14.9221 9.99803C14.5989 9.6748 14.2756 9.35157 13.9524 9.02834C13.8694 9.11736 13.7864 9.20637 13.7034 9.29539C12.2093 10.8977 10.7152 12.5 9.22113 14.1023C9.13813 14.1913 9.05513 14.2803 8.97212 14.3693Z\" fill=\"currentColor\"/><path d=\"M11.6323 13.7841C11.6323 14.0395 11.6323 14.295 11.6323 14.5504C11.6812 14.5523 11.7301 14.5543 11.779 14.5562C12.659 14.5913 13.539 14.6263 14.419 14.6614C14.4679 14.6633 14.5168 14.6653 14.5657 14.6672C14.5657 14.3339 14.5657 14.0006 14.5657 13.6672C14.5168 13.6692 14.4679 13.6711 14.419 13.6731C13.539 13.7081 12.659 13.7432 11.779 13.7783C11.7301 13.7802 11.6812 13.7821 11.6323 13.7841Z\" fill=\"currentColor\"/></svg><svg width=\"14\" height=\"14\" class=\"hoverGlyph\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M15 8A7 7 0 1 1 1 8A7 7 0 1 1 15 8ZM6.409 10.652L5.348 9.591L6.939 8L5.348 6.409L6.409 5.348L8 6.939L9.591 5.348L10.652 6.409L9.061 8L10.652 9.591L9.591 10.652L8 9.061Z\" fill=\"currentColor\"/></svg></span>计划</button></span>"
+    },
+    {
+     "label": "禁用：locked 或退出请求在飞",
+     "note": "按钮整体降到 60% 不透明度并保持 <code>cursor: default</code>",
+     "pad": "lg",
+     "html": "<span class=\"wrap\"><button type=\"button\" class=\"chip\" disabled aria-label=\"计划模式已开启，按下关闭\" title=\"计划模式已开启 — 点击关闭（/plan off）\"><span class=\"glyph\" aria-hidden=\"true\"><svg width=\"14\" height=\"14\" class=\"restGlyph\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4.9375 5.90295H11.0625\" stroke=\"currentColor\"/><path d=\"M4.9375 9.02991H8.27841\" stroke=\"currentColor\"/><path d=\"M12.5 1.32617C13.3039 1.32617 14 1.95171 14 2.77637V7.61328L13 8.68164V2.77637C13 2.55186 12.8007 2.32617 12.5 2.32617H3.5C3.1993 2.32617 3 2.55186 3 2.77637V13.2246C3.00044 13.4489 3.19963 13.6738 3.5 13.6738H8.32812L7.39258 14.6738H3.5C2.69637 14.6738 2.00042 14.0489 2 13.2246V2.77637C2 1.95171 2.69613 1.32617 3.5 1.32617H12.5Z\" fill=\"currentColor\"/><path d=\"M8.97212 14.3693C9.17511 14.5723 9.37811 14.7753 9.5811 14.9783C9.67012 14.8953 9.75914 14.8123 9.84815 14.7293C11.4505 13.2352 13.0528 11.7411 14.6551 10.247C14.7441 10.164 14.8331 10.081 14.9221 9.99803C14.5989 9.6748 14.2756 9.35157 13.9524 9.02834C13.8694 9.11736 13.7864 9.20637 13.7034 9.29539C12.2093 10.8977 10.7152 12.5 9.22113 14.1023C9.13813 14.1913 9.05513 14.2803 8.97212 14.3693Z\" fill=\"currentColor\"/><path d=\"M11.6323 13.7841C11.6323 14.0395 11.6323 14.295 11.6323 14.5504C11.6812 14.5523 11.7301 14.5543 11.779 14.5562C12.659 14.5913 13.539 14.6263 14.419 14.6614C14.4679 14.6633 14.5168 14.6653 14.5657 14.6672C14.5657 14.3339 14.5657 14.0006 14.5657 13.6672C14.5168 13.6692 14.4679 13.6711 14.419 13.6731C13.539 13.7081 12.659 13.7432 11.779 13.7783C11.7301 13.7802 11.6812 13.7821 11.6323 13.7841Z\" fill=\"currentColor\"/></svg><svg width=\"14\" height=\"14\" class=\"hoverGlyph\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M15 8A7 7 0 1 1 1 8A7 7 0 1 1 15 8ZM6.409 10.652L5.348 9.591L6.939 8L5.348 6.409L6.409 5.348L8 6.939L9.591 5.348L10.652 6.409L9.061 8L10.652 9.591L9.591 10.652L8 9.061Z\" fill=\"currentColor\"/></svg></span>计划</button></span>"
+    },
+    {
+     "label": "空闲：计划模式未开启，座位不渲染任何节点",
+     "note": "有效目标不是计划模式（<code>pending ? !active : active</code> 为假）时这里就是空的——没有「进入计划模式」的按钮",
+     "pad": "lg",
+     "html": ""
+    }
+   ],
+   "props": [
+    {
+     "name": "useProjection",
+     "type": "PropsRuntime<'conversation.input.plan'>['useProjection']",
+     "default": "—",
+     "desc": "读会话投影里的 <code>plan</code>；undefined（还没读到）时同样不渲染。"
+    },
+    {
+     "name": "locked",
+     "type": "boolean",
+     "default": "—",
+     "desc": "由 composer 所有者给出的锁定：待处理的整体交互占用输入区时禁用按钮。"
+    },
+    {
+     "name": "exitPlanMode",
+     "type": "() => Promise<string | null>",
+     "default": "—",
+     "desc": "执行 <code>/plan off</code>；返回 null 表示成功，否则返回就地显示的错误文案。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'plan'>",
+     "default": "—",
+     "desc": "plan 词典：按钮名、title 与退出失败文案。"
+    }
+   ],
+   "notes": "进入计划模式不在这个控件上——走 <code>/plan</code> 命令或 composer 的 <code>+</code> 命令菜单，ui-plan README 把「没有 inactive plan control」列为已知限制。悬停换字形而不是换颜色，是为了在点下去之前就说清这一下的语义（关闭）；焦点可视化走 <code>--dsw-focus-ring-width</code> 的 2px 品牌描边、偏移 2px。",
+   "keywords": [
+    "计划",
+    "plan mode",
+    "chip",
+    "退出计划模式",
+    "/plan off"
+   ]
+  },
+  {
+   "id": "plan-preview",
+   "name": "PlanPreview",
+   "exportName": "PlanPreview",
+   "zh": "计划预览",
+   "group": "panels",
+   "summary": "右 Sidebar 里的计划文档页：<code>.preview</code> 撑满高度、<code>overflow:auto</code>、内边距 <code>20px 24px 40px</code>（≤767px 收到 <code>16px 18px 32px</code>），里面 <code>.document</code> 是 14px / 1.75 的正文容器，正文交给 ui-primitives 的 <code>MarkdownText</code> 渲染——<code>.markdown</code> 根上走 <code>--dsw-font-markdown-base</code> 排版、段落 16px 间距、列表标记 24px 行高、行内代码与标题各有自己的档位。整页用计划标题做 <code>aria-label</code>，并把地址写在 <code>data-plan-preview</code> 上。资源还没到时同一位置显示 <code>.message</code>（24px 内边距、secondary 色）的一行状态：读取中、不可用、读取失败或临时预览已失效。",
+   "source": "packages/client/ui-plan/src/client/PlanPreview.tsx#L18",
+   "css": [
+    "packages/client/ui-plan/src/client/PlanPreview.module.css",
+    "packages/client/ui-primitives/src/markdown/MarkdownText.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-font-markdown-base",
+    "--dsw-font-markdown-h1",
+    "--dsw-font-markdown-h2",
+    "--dsw-font-markdown-h3",
+    "--dsw-font-markdown-code",
+    "--dsw-alias-markdown-inline-code",
+    "--dsw-alias-link",
+    "--dsw-static-neutral-50",
+    "--dsw-static-neutral-850",
+    "--dsw-radius-lg"
+   ],
+   "specimens": [
+    {
+     "label": "四步编号计划（Markdown 有序列表）",
+     "note": "正文由 MarkdownText 渲染：段落与有序列表都带真实间距，行内代码走 <code>.markdown code</code> 档",
+     "pad": "lg",
+     "html": "<div style=\"width:620px;height:380px\"><section class=\"preview\" data-plan-preview=\"call_plan_7f3a\" aria-label=\"补齐 UIUX 组件目录\"><div class=\"document\"><div class=\"markdown\"><p>目标：让 <code>UIUX/data/parts/b5-panels.json</code> 与 <code>primitives.json</code> 的写法一致，并通过类名与变量校验。</p><ol><li>读 <code>ENTRY-SCHEMA.md</code> 与已完成的 <code>primitives.json</code>，确定字段、语气与深度。</li><li>逐个读 10 个组件的 <code>.tsx</code> 与 <code>.module.css</code>，抄下真实类名、尺寸与 token。</li><li>按仓库里的真实场景写示例：定时任务、会话目标、交付文件、计划与轨迹工具栏。</li><li>跑 <code>node -e</code> 自检与 <code>validate.mjs --quiet</code>，直到没有 finding 指向本文件。</li></ol></div></div></section></div>"
+    },
+    {
+     "label": "读取中：资源还没到（.message 状态行）",
+     "note": "失败、不可用与临时预览失效共用同一块 <code>.message</code>，只换文案",
+     "pad": "lg",
+     "html": "<div style=\"width:520px;height:200px\"><section class=\"preview\" data-plan-preview=\"dsh-resource://plan/session/ses_2f8/plan_7f3a\" aria-label=\"计划\"><div class=\"message\" role=\"status\">正在读取计划…</div></section></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "useTabInfo",
+     "type": "PropsRuntime<'sidebar.right.pane.tab'>['useTabInfo']",
+     "default": "—",
+     "desc": "当前标签的地址与导航参数；临时评审预览的正文从参数里取，不落会话。"
+    },
+    {
+     "name": "useResource",
+     "type": "PropsRuntime<'sidebar.right.pane.tab'>['useResource']",
+     "default": "—",
+     "desc": "按地址读 <code>plan</code> 资源；status 决定 <code>.message</code> 显示哪一行。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'plan'>",
+     "default": "—",
+     "desc": "plan 词典：加载 / 失败 / 不可用 / 已过期文案，以及 Markdown 代码块与脚注的本地化标签。"
+    }
+   ],
+   "notes": "同一份文档有两处入口：提交计划后由计划卡自动打开的持久标签（正文从会话历史读得），以及只有导航内存的临时评审预览——后者刷新页面即失效，于是显示「临时计划预览已失效」。资源缺失（<code>status === 'none'</code>）与读取失败是两种状态，失败时还会在状态行下补一行具体原因。<code>.cards / .card</code> 一组类留给计划卡的列表形态，本页只用 <code>.preview</code> 与 <code>.document</code>。",
+   "keywords": [
+    "计划预览",
+    "plan",
+    "sidebar",
+    "Markdown",
+    "计划文档"
+   ]
+  },
+  {
+   "id": "trajectory-toolbar",
+   "name": "TrajectoryToolbar",
+   "exportName": "TrajectoryToolbar",
+   "zh": "轨迹工具栏",
+   "group": "panels",
+   "summary": "轨迹视图顶部的 sticky 工具栏：<code>.root</code> 高 <code>--dsh-trajectory-toolbar-height</code>（views.module.css 里是 32px）、<code>--dsw-alias-bg-layer-1</code> 底、下缘 0.5px <code>--dsw-alias-border-l2</code>、<code>z-index:4</code>、<code>top:0</code>。左半是 12px 文字、2px 间距的控制组：20px 高的「时长」切换（带 12px 时钟图标，<code>aria-pressed</code> 为真时底色 + 主文字色）与「轮次」「调用」两个折叠开关（<code>⊞ / ⊟</code> 字形配 14px 等宽字，<code>aria-pressed</code> 表示「已全部折叠」）；三者都圆角 <code>--dsw-radius-sm</code>、悬停给 <code>--dsw-alias-interactive-bg-hover</code>。右半的搜索框靠 <code>margin-left:auto</code> 收边：高 22px、<code>flex: 0 1 164px</code>（最小 84px）、0.5px <code>--dsw-alias-border-l4</code> 描边、底色 <code>--dsw-alias-bg-layer-2</code>，聚焦时转品牌描边并抬回 layer1；框内是 11px 搜索图标与 12px 输入。源码里还有一个「实际时间」开关，当前恒带 <code>hidden</code>，不显示。",
+   "source": "packages/client/ui-trajectory/src/client/TrajectoryToolbar.tsx#L38",
+   "css": [
+    "packages/client/ui-trajectory/src/client/TrajectoryToolbar.module.css"
+   ],
+   "tokens": [
+    "--ds-ease-in-out",
+    "--ds-font-family-code",
+    "--dsh-trajectory-toolbar-height",
+    "--dsw-alias-bg-layer-1",
+    "--dsw-alias-bg-layer-2",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-border-l4",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-caption",
+    "--dsw-alias-label-dimmed",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-state-business-primary",
+    "--dsw-focus-ring-color",
+    "--dsw-font-xxs-12",
+    "--dsw-radius-sm"
+   ],
+   "specimens": [
+    {
+     "label": "默认：等宽操作、均未折叠、搜索为空",
+     "note": "高度变量按 views.module.css 的真实取值 32px 写在外层 style 上",
+     "html": "<div style=\"--dsh-trajectory-toolbar-height:32px;width:760px\"><div class=\"root\" role=\"toolbar\" aria-label=\"轨迹工具栏\"><div class=\"inner\"><div class=\"actions\"><button type=\"button\" class=\"toggle\" aria-label=\"使用实际时长\" aria-pressed=\"false\" title=\"使用实际时长\"><svg class=\"toggleIcon\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><circle cx=\"8\" cy=\"8\" r=\"5.25\"/><path d=\"M8 4.75V8l2.25 1.5\"/></svg>时长</button><button type=\"button\" class=\"control\" role=\"switch\" aria-checked=\"false\" hidden><span>实际时间</span><span class=\"controlTrack\" aria-hidden=\"true\"><span class=\"controlThumb\"></span></span></button><button type=\"button\" class=\"action\" aria-label=\"收起所有轮次\" aria-pressed=\"false\" title=\"收起所有轮次\"><span class=\"actionIcon\" aria-hidden=\"true\">⊟</span>轮次</button><button type=\"button\" class=\"action\" aria-label=\"收起所有调用\" aria-pressed=\"false\" title=\"收起所有调用\"><span class=\"actionIcon\" aria-hidden=\"true\">⊟</span>调用</button></div><div class=\"search\"><svg width=\"11\" height=\"11\" class=\"searchIcon\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M6.58727 11.8586C9.55061 11.8586 11.9529 9.45637 11.9529 6.49304C11.9529 3.5297 9.55061 1.12744 6.58727 1.12744C3.62394 1.12744 1.22168 3.5297 1.22168 6.49304C1.22168 9.45637 3.62394 11.8586 6.58727 11.8586Z\" stroke=\"currentColor\"/><path d=\"M10.2991 10.3933L14.7783 14.8725\" stroke=\"currentColor\"/></svg><input type=\"search\" class=\"searchInput\" aria-label=\"搜索轨迹\" placeholder=\"搜索\"></div></div></div></div>"
+    },
+    {
+     "label": "选中态 + 已全折叠 + 搜索词",
+     "note": "「时长」按下走实际时长；两个折叠开关变成「展开所有…」并配 ⊞",
+     "html": "<div style=\"--dsh-trajectory-toolbar-height:32px;width:760px\"><div class=\"root\" role=\"toolbar\" aria-label=\"轨迹工具栏\"><div class=\"inner\"><div class=\"actions\"><button type=\"button\" class=\"toggle\" aria-label=\"使用实际时长\" aria-pressed=\"true\" title=\"使用等宽操作\"><svg class=\"toggleIcon\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><circle cx=\"8\" cy=\"8\" r=\"5.25\"/><path d=\"M8 4.75V8l2.25 1.5\"/></svg>时长</button><button type=\"button\" class=\"action\" aria-label=\"展开所有轮次\" aria-pressed=\"true\" title=\"展开所有轮次\"><span class=\"actionIcon\" aria-hidden=\"true\">⊞</span>轮次</button><button type=\"button\" class=\"action\" aria-label=\"展开所有调用\" aria-pressed=\"true\" title=\"展开所有调用\"><span class=\"actionIcon\" aria-hidden=\"true\">⊞</span>调用</button></div><div class=\"search\"><svg width=\"11\" height=\"11\" class=\"searchIcon\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M6.58727 11.8586C9.55061 11.8586 11.9529 9.45637 11.9529 6.49304C11.9529 3.5297 9.55061 1.12744 6.58727 1.12744C3.62394 1.12744 1.22168 3.5297 1.22168 6.49304C1.22168 9.45637 3.62394 11.8586 6.58727 11.8586Z\" stroke=\"currentColor\"/><path d=\"M10.2991 10.3933L14.7783 14.8725\" stroke=\"currentColor\"/></svg><input type=\"search\" class=\"searchInput\" aria-label=\"搜索轨迹\" placeholder=\"搜索\" value=\"ui-schedule\"></div></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "actualDuration",
+     "type": "boolean",
+     "default": "—",
+     "desc": "时间轴按记录时长还是等宽；<code>aria-pressed</code> 与高亮底色由它决定（按钮的无障碍名恒为「使用实际时长」，只有 title 随状态切换）。"
+    },
+    {
+     "name": "onActualDurationChange",
+     "type": "(actualDuration: boolean) => void",
+     "default": "—",
+     "desc": "切换时长口径。"
+    },
+    {
+     "name": "actualTime",
+     "type": "boolean",
+     "default": "—",
+     "desc": "完整墙钟还是压缩空闲；当前渲染出的开关恒带 <code>hidden</code>。"
+    },
+    {
+     "name": "onActualTimeChange",
+     "type": "(actualTime: boolean) => void",
+     "default": "—",
+     "desc": "切换时间口径（同上，开关暂不显示）。"
+    },
+    {
+     "name": "allTurnsCollapsed / onToggleAllTurns",
+     "type": "boolean / () => void",
+     "default": "—",
+     "desc": "是否所有可折叠回合都已折叠，以及整表折叠 / 展开动作。"
+    },
+    {
+     "name": "allAssistantsCollapsed / onToggleAllAssistants",
+     "type": "boolean / () => void",
+     "default": "—",
+     "desc": "是否所有可折叠助手的工具调用都已折叠，以及对应动作。"
+    },
+    {
+     "name": "searchQuery / onSearchQueryChange",
+     "type": "string / (query: string) => void",
+     "default": "—",
+     "desc": "实时账本搜索词；搜索只覆盖 React 可见窗口。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'trajectory'>",
+     "default": "—",
+     "desc": "trajectory 词典：工具栏名、四个开关的标签与 title、搜索占位。"
+    }
+   ],
+   "notes": "工具栏是 sticky 的：它在滚动容器里钉在顶部（<code>z-index:4</code>），高度必须由 <code>--dsh-trajectory-toolbar-height</code> 提供——这个本地自定义属性由同包的 views.module.css 声明，示例外层按真实取值给出。折叠开关用的是文字字形 <code>⊞ / ⊟</code> 而不是 SVG，落在 <code>--ds-font-family-code</code> 的 14px 上。搜索框在触屏不需要特殊处理，但输入 12px、图标 11px，都比工具栏其余控件小一档。",
+   "keywords": [
+    "轨迹工具栏",
+    "trajectory",
+    "时长",
+    "折叠全部",
+    "搜索轨迹"
+   ]
+  }
+ ]
+}

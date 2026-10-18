@@ -1,0 +1,739 @@
+{
+ "schemaVersion": 1,
+ "note": "设置页外壳、General 行、模型页、内置插件页与账号/主题/语言控件的精选条目。所有示例的类名都来自各组件真实的 CSS Module；面板与卡片材质统一为 --dsw-alias-settings-card-fill / -stroke 与 --dsw-radius-xl。容器类条目在 notes 里注明示例组合了哪些注册者样式。",
+ "entries": [
+  {
+   "id": "settings-root",
+   "name": "SettingsRoot",
+   "exportName": "SettingsRoot",
+   "zh": "设置面板",
+   "group": "settings",
+   "summary": "设置页外壳：全屏遮罩上是 800px 宽的模态面板，高度取 <code>min(800px, 100vh - 2×遮罩上缘)</code>，遮罩上缘至少 24px，圆角走 <code>--dsw-radius-panel</code>（R28），填充 <code>--dsw-alias-bg-layer-2</code>，投影 <code>--dsw-elevation-prominent</code>（0.5px 发丝描边藏在阴影第一层，因此面板不再另加边框）。左侧 188px 导航栏由 <code>settings.section</code> 账本投影而来：标题 16/24/500，导航格 164×40、<code>--dsw-radius-md</code>，悬停与选中分别用 <code>--dsw-specific-sidebar-nav-item-hover</code> / <code>-active</code>。右侧内容列是 54px 标题栏（右上关闭按钮 28×28）加左右 24px 内边距的滚动区。面板由 portal 挂在 <code>#root</code> 之外，遮罩从 frame 顶栏下缘开始；侧栏触发行另有 42px 展开态与 36×36 收起态。",
+   "source": "packages/client/ui-settings-general/src/client/SettingsRoot.tsx#L112",
+   "css": [
+    "packages/client/ui-settings-general/src/client/SettingsRoot.module.css",
+    "packages/client/ui-settings-general/src/client/GeneralSection.module.css",
+    "packages/client/ui-theme/src/client/AppearanceRow.module.css",
+    "packages/client/locale/src/client/LanguageRow.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-layer-2",
+    "--dsw-alias-bg-mask-1",
+    "--dsw-alias-bg-module-platform",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-border-l4",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-scrollbar-bg-l2",
+    "--dsw-alias-scrollbar-hover-l2",
+    "--dsw-elevation-prominent",
+    "--dsw-mask-blur",
+    "--dsw-radius-md",
+    "--dsw-radius-panel",
+    "--dsw-radius-sm",
+    "--dsw-radius-xl",
+    "--dsw-specific-sidebar-nav-item-active",
+    "--dsw-specific-sidebar-nav-item-hover",
+    "--dsw-static-neutral-bluish-400"
+   ],
+   "specimens": [
+    {
+     "label": "800px 面板：188px 导航栏 + 内容列（General 页）",
+     "note": "内容列是 slot 空位，示例内联了 General 页外观行 / 语言行的真实样式",
+     "bg": "platform",
+     "html": "<div style='width:800px'><div class='panel'><nav class='nav'><div class='navTitle'>设置</div><div class='navList'><button type='button' class='navCell'><svg class='navIcon' width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M8 8.25C9.51878 8.25 10.75 7.01878 10.75 5.5C10.75 3.98122 9.51878 2.75 8 2.75C6.48122 2.75 5.25 3.98122 5.25 5.5C5.25 7.01878 6.48122 8.25 8 8.25Z' stroke='currentColor' stroke-width='1.3'/><path d='M2.5 14.5C2.5 11.5 5.25 10.25 8 10.25C10.75 10.25 13.5 11.5 13.5 14.5' stroke='currentColor' stroke-width='1.3'/></svg><span class='navLabel'>账号与余额</span></button><button type='button' class='navCell active' aria-current='true'><svg class='navIcon' width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M8 9.75012C8.9665 9.75012 9.75 8.96662 9.75 8.00012C9.75 7.03362 8.9665 6.25012 8 6.25012C7.0335 6.25012 6.25 7.03362 6.25 8.00012C6.25 8.96662 7.0335 9.75012 8 9.75012Z' stroke='currentColor' stroke-width='1.3'/><path d='M13.0107 7.79377C12.9505 7.89401 12.9205 7.94413 12.9205 7.99951C12.9205 8.0549 12.9505 8.10502 13.0106 8.20528L13.9849 9.83006C14.045 9.93029 14.0751 9.9804 14.0751 10.0358C14.0751 10.0911 14.045 10.1413 13.9849 10.2415L13.0037 11.8777C12.9468 11.9726 12.9184 12.0201 12.8725 12.0461C12.8267 12.072 12.7713 12.072 12.6607 12.072H10.6704C10.5598 12.072 10.5045 12.072 10.4586 12.098C10.4128 12.1239 10.3843 12.1714 10.3274 12.2662L9.33825 13.9142C9.28133 14.009 9.25287 14.0564 9.20703 14.0823C9.16118 14.1083 9.10588 14.1083 8.99529 14.1083H7.00486C6.89426 14.1083 6.83896 14.1083 6.79312 14.0823C6.74727 14.0564 6.71881 14.009 6.6619 13.9142L5.67273 12.2662C5.61581 12.1714 5.58735 12.1239 5.54151 12.098C5.49566 12.072 5.44036 12.072 5.32977 12.072H3.33945C3.2288 12.072 3.17347 12.072 3.12761 12.0461C3.08176 12.0201 3.0533 11.9726 2.9964 11.8777L2.0152 10.2415C1.9551 10.1413 1.92505 10.0911 1.92505 10.0358C1.92505 9.9804 1.9551 9.93029 2.0152 9.83006L2.98951 8.20528C3.04963 8.10502 3.07969 8.0549 3.07969 7.99951C3.07968 7.94413 3.04961 7.89401 2.98946 7.79377L2.01529 6.17011C1.95514 6.06987 1.92507 6.01975 1.92507 5.96437C1.92506 5.90899 1.95512 5.85886 2.01524 5.7586L2.9964 4.1224C3.0533 4.0275 3.08176 3.98005 3.12761 3.95408C3.17347 3.92811 3.2288 3.92811 3.33945 3.92811H5.32977C5.44036 3.92811 5.49566 3.92811 5.54151 3.90216C5.58735 3.87621 5.61581 3.82879 5.67273 3.73397L6.6619 2.08599C6.71881 1.99116 6.74727 1.94375 6.79312 1.9178C6.83896 1.89185 6.89426 1.89185 7.00486 1.89185H8.99529C9.10588 1.89185 9.16118 1.89185 9.20703 1.9178C9.25287 1.94375 9.28133 1.99116 9.33825 2.08599L10.3274 3.73397C10.3843 3.82879 10.4128 3.87621 10.4586 3.90216C10.5045 3.92811 10.5598 3.92811 10.6704 3.92811H12.6607C12.7713 3.92811 12.8267 3.92811 12.8725 3.95408C12.9184 3.98005 12.9468 4.0275 13.0037 4.1224L13.9849 5.7586C14.045 5.85886 14.0751 5.90899 14.0751 5.96437C14.0751 6.01975 14.045 6.06987 13.9849 6.17011L13.0107 7.79377Z' stroke='currentColor' stroke-width='1.3' stroke-miterlimit='10'/></svg><span class='navLabel'>通用设置</span></button><button type='button' class='navCell'><svg class='navIcon' width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M7.8667 0.349609C8.96906 0.349634 10.0601 0.481272 11.0317 0.735352C11.9973 0.987845 12.8453 1.362 13.4644 1.84766C14.0744 2.32629 14.507 2.95539 14.5161 3.69336H14.5171V8.53516C14.0843 8.32076 13.6108 8.17679 13.1108 8.11816C13.1831 7.96848 13.2162 7.82856 13.2163 7.70312V5.76758C12.6269 6.16618 11.8739 6.47995 11.0317 6.7002C10.0602 6.95423 8.96896 7.08494 7.8667 7.08496C6.76461 7.08493 5.67411 6.95415 4.70264 6.7002C3.85994 6.48006 3.10694 6.1662 2.51709 5.76758V7.70312L2.521 7.78418C2.56374 8.19554 2.93361 8.74414 3.91357 9.23145C4.9281 9.73585 6.35004 10.0371 7.8667 10.0371C8.26373 10.0371 8.6543 10.0141 9.03271 9.97461C8.75596 10.3799 8.54664 10.8349 8.42041 11.3232C8.23666 11.3313 8.0518 11.3369 7.8667 11.3369C6.20108 11.3369 4.57025 11.01 3.33447 10.3955C3.04163 10.2499 2.76658 10.0836 2.51709 9.90039V11.6738C2.51728 12.1379 2.88589 12.7556 3.92236 13.292C4.93457 13.8157 6.35342 14.1289 7.8667 14.1289C8.12318 14.1289 8.37694 14.1161 8.62646 14.0986C8.82021 14.5535 9.08999 14.9682 9.41943 15.3271C8.91285 15.3934 8.39149 15.4287 7.8667 15.4287C6.19761 15.4287 4.56379 15.0869 3.32568 14.4463C2.11244 13.8185 1.21649 12.8562 1.21631 11.6738V3.76367C1.21595 3.74853 1.21438 3.733 1.21436 3.71777C1.21436 2.96917 1.65103 2.33053 2.26807 1.84668C2.88747 1.36112 3.73675 0.987685 4.70264 0.735352C5.67413 0.481376 6.76457 0.349636 7.8667 0.349609ZM7.8667 1.65039C6.86269 1.65042 5.88326 1.77028 5.03076 1.99316C4.17183 2.2176 3.50421 2.52956 3.06982 2.87012C2.65043 3.19909 2.52622 3.48898 2.51709 3.69336V3.74414C2.52719 3.94845 2.65185 4.23772 3.06982 4.56543C3.50425 4.90601 4.17172 5.21795 5.03076 5.44238C5.88326 5.66527 6.8627 5.78513 7.8667 5.78516C8.8707 5.78513 9.85015 5.66525 10.7026 5.44238C11.5611 5.21787 12.2286 4.9049 12.6626 4.56445C13.0982 4.22252 13.2163 3.9231 13.2163 3.71777L13.2104 3.63574C13.1818 3.43623 13.044 3.16941 12.6626 2.87012C12.2286 2.52957 11.5614 2.21773 10.7026 1.99316C9.85009 1.77025 8.8708 1.65041 7.8667 1.65039Z' fill='currentColor'/><path d='M12.8936 10.0361L13.2061 10.5566C13.2296 10.5959 13.2651 10.6562 13.3027 10.707C13.3469 10.7666 13.4148 10.8431 13.5195 10.9023C13.6244 10.9617 13.725 10.9801 13.7988 10.9873C13.8619 10.9934 13.9318 10.9932 13.9775 10.9932H14.6162L14.8896 11.4502L14.5947 11.9443C14.5698 11.9859 14.5312 12.0483 14.5029 12.1084C14.4781 12.1611 14.4514 12.2312 14.4395 12.3164L14.4326 12.4072L14.4395 12.4971C14.4514 12.5825 14.4781 12.6532 14.5029 12.7061C14.5312 12.7661 14.5689 12.8287 14.5938 12.8701L14.8896 13.3633L14.6162 13.8213H13.9775C13.9318 13.8213 13.8619 13.821 13.7988 13.8271C13.7433 13.8326 13.6728 13.8442 13.5967 13.875L13.5195 13.9121C13.4148 13.9714 13.3469 14.0478 13.3027 14.1074C13.265 14.1583 13.2296 14.2186 13.2061 14.2578L12.8936 14.7783H12.3115L11.999 14.2578C11.9755 14.2186 11.9401 14.1583 11.9023 14.1074C11.8693 14.0628 11.823 14.0083 11.7578 13.959L11.6855 13.9121L11.6074 13.875C11.5316 13.8445 11.4615 13.8325 11.4062 13.8271C11.3432 13.821 11.2733 13.8213 11.2275 13.8213H10.5889L10.3135 13.3633L10.6104 12.8701C10.6352 12.8287 10.6739 12.7661 10.7021 12.7061C10.7352 12.6357 10.7724 12.534 10.7725 12.4072C10.7724 12.2804 10.7352 12.1788 10.7021 12.1084C10.6739 12.0483 10.6353 11.9859 10.6104 11.9443L10.3135 11.4502L10.5889 10.9932H11.2275C11.2733 10.9932 11.3432 10.9934 11.4062 10.9873C11.4801 10.9801 11.5808 10.9616 11.6855 10.9023C11.7903 10.843 11.8582 10.7666 11.9023 10.707C11.94 10.6562 11.9755 10.5959 11.999 10.5566L12.3115 10.0361H12.8936Z' stroke='currentColor' stroke-width='1.3' stroke-miterlimit='10'/></svg><span class='navLabel'>模型</span></button><button type='button' class='navCell'><svg class='navIcon' width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M6.51867 12.3282C7.29816 12.6011 8.16475 12.6514 9.02269 12.4216C9.57879 12.2726 10.0784 12.0185 10.5087 11.6888C10.7819 12.0555 11.1606 12.3304 11.5913 12.4805C10.9688 13.029 10.2149 13.4478 9.35911 13.6771C8.13946 14.0038 6.90632 13.8971 5.82126 13.4533C6.15821 13.1562 6.4021 12.7652 6.51867 12.3282ZM9.17629 2.89409C11.1101 3.34433 12.739 4.81872 13.2889 6.87043C13.4219 7.3665 13.4811 7.8649 13.4774 8.35466C13.0924 8.13213 12.6422 8.01837 12.1741 8.05276L12.1711 8.05257C12.1539 7.77199 12.109 7.48889 12.0334 7.20684C11.6363 5.72533 10.5048 4.6372 9.13549 4.22844C9.25559 3.87667 9.29214 3.49087 9.22309 3.09892C9.2108 3.02922 9.19451 2.96108 9.17629 2.89409ZM4.7311 3.89107L4.78302 4.11879C4.87648 4.4488 5.04146 4.74263 5.25579 4.98896C3.98078 6.01355 3.35848 7.72904 3.8089 9.41059C3.81828 9.44559 3.82866 9.48025 3.83885 9.51479C3.38217 9.61268 2.98548 9.84137 2.68107 10.1556C2.63414 10.022 2.5897 9.88632 2.55244 9.74726C1.93301 7.43489 2.86717 5.07173 4.71504 3.76697L4.7311 3.89107Z' fill='currentColor'/><path d='M7.99136 5.28105C8.87501 5.28105 9.59136 4.56471 9.59136 3.68105C9.59136 2.7974 8.87501 2.08105 7.99136 2.08105C7.1077 2.08105 6.39136 2.7974 6.39136 3.68105C6.39136 4.56471 7.1077 5.28105 7.99136 5.28105Z' stroke='currentColor' stroke-width='1.3'/><path d='M3.94009 12.9417C4.82374 12.9417 5.54009 12.2254 5.54009 11.3417C5.54009 10.458 4.82374 9.7417 3.94009 9.7417C3.05643 9.7417 2.34009 10.458 2.34009 11.3417C2.34009 12.2254 3.05643 12.9417 3.94009 12.9417Z' stroke='currentColor' stroke-width='1.3'/><path d='M12.0851 12.9417C12.9688 12.9417 13.6851 12.2254 13.6851 11.3417C13.6851 10.458 12.9688 9.7417 12.0851 9.7417C11.2015 9.7417 10.4851 10.458 10.4851 11.3417C10.4851 12.2254 11.2015 12.9417 12.0851 12.9417Z' stroke='currentColor' stroke-width='1.3'/></svg><span class='navLabel'>Agent 预设</span></button><button type='button' class='navCell'><svg class='navIcon' width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M3.25 7.16357C3.20417 7.32247 3.17778 7.48993 3.17773 7.66357C3.17773 7.83698 3.20336 8.00486 3.24902 8.16357H1.85742V7.16357H3.25ZM14.1426 8.16357H6.71484C6.76052 8.00485 6.78613 7.837 6.78613 7.66357C6.78609 7.48991 6.75971 7.32249 6.71387 7.16357H14.1426V8.16357Z' fill='currentColor'/><path d='M9.1377 11.9092C9.08596 12.0666 9.05668 12.2344 9.05664 12.4092C9.05664 12.5838 9.08606 12.7518 9.1377 12.9092H1.85742V11.9092H9.1377ZM14.1426 12.9092H12.1816C12.2332 12.7519 12.2617 12.5838 12.2617 12.4092C12.2617 12.2345 12.2333 12.0666 12.1816 11.9092H14.1426V12.9092Z' fill='currentColor'/><path d='M9.1123 3.09106C9.06138 3.24865 9.03324 3.41653 9.0332 3.59106C9.0332 3.76549 9.06148 3.93355 9.1123 4.09106H1.85742V3.09106H9.1123ZM14.1426 4.09106H12.207C12.2578 3.93358 12.2861 3.76545 12.2861 3.59106C12.2861 3.41657 12.2579 3.24862 12.207 3.09106H14.1426V4.09106Z' fill='currentColor'/><circle cx='4.97065' cy='7.66401' r='1.35151' stroke='currentColor' stroke-width='1.3'/><circle cx='10.6596' cy='12.4091' r='1.35151' stroke='currentColor' stroke-width='1.3'/><circle cx='10.6596' cy='3.59101' r='1.35151' stroke='currentColor' stroke-width='1.3'/></svg><span class='navLabel'>内置插件</span></button><button type='button' class='navCell'><svg class='navIcon' width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M13.5 2.5H2.5C1.94772 2.5 1.5 2.94772 1.5 3.5V4.5C1.5 5.05228 1.94772 5.5 2.5 5.5H13.5C14.0523 5.5 14.5 5.05228 14.5 4.5V3.5C14.5 2.94772 14.0523 2.5 13.5 2.5Z' stroke='currentColor' stroke-width='1.3'/><path d='M2.5 5.5V13.5C2.5 13.7652 2.60536 14.0196 2.79289 14.2071C2.98043 14.3946 3.23478 14.5 3.5 14.5H12.5C12.7652 14.5 13.0196 14.3946 13.2071 14.2071C13.3946 14.0196 13.5 13.7652 13.5 13.5V5.5' stroke='currentColor' stroke-width='1.3'/><path d='M6.5 9.5H9.5' stroke='currentColor' stroke-width='1.3'/></svg><span class='navLabel'>已归档会话</span></button></div></nav><div class='content'><div class='header'><div class='actions'></div><button type='button' class='close' aria-label='关闭'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M2.5 2.5L13.5 13.5' stroke='currentColor' stroke-width='1'/><path d='M13.5 2.5L2.5 13.5' stroke='currentColor' stroke-width='1'/></svg><span class='hiddenLabel'>关闭</span></button></div><div class='options'><div class='section'><div data-slot='settings.general.item' style='display:contents'><div class='group'><div class='title'>外观</div><div class='cubeRow'><button type='button' class='themeCube selected' aria-pressed='true'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M8.00007 11.8117C10.1052 11.8117 11.8117 10.1052 11.8117 8.00007C11.8117 5.89499 10.1052 4.18848 8.00007 4.18848C5.89499 4.18848 4.18848 5.89499 4.18848 8.00007C4.18848 10.1052 5.89499 11.8117 8.00007 11.8117Z' stroke='currentColor' stroke-width='1.3'/><path d='M13.3899 8H15.1499' stroke='currentColor' stroke-width='1.3'/><path d='M11.8115 11.8115L13.0556 13.0556' stroke='currentColor' stroke-width='1.3'/><path d='M8 13.3901V15.1501' stroke='currentColor' stroke-width='1.3'/><path d='M4.18868 11.8115L2.94458 13.0556' stroke='currentColor' stroke-width='1.3'/><path d='M2.6101 8H0.850098' stroke='currentColor' stroke-width='1.3'/><path d='M4.18868 4.18856L2.94458 2.94446' stroke='currentColor' stroke-width='1.3'/><path d='M8 2.6101V0.850098' stroke='currentColor' stroke-width='1.3'/><path d='M11.8115 4.18856L13.0556 2.94446' stroke='currentColor' stroke-width='1.3'/></svg>浅色</button><button type='button' class='themeCube' aria-pressed='false'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M14.1127 8.70663C14.2576 8.60602 14.4627 8.71355 14.4386 8.88834C14.2901 9.96567 13.8731 10.9912 13.2229 11.8692C12.479 12.8735 11.4613 13.6421 10.2917 14.0829C9.1222 14.5236 7.85038 14.6179 6.62865 14.3543C5.40692 14.0907 4.28709 13.4805 3.40332 12.5967C2.51955 11.7129 1.90931 10.5931 1.64572 9.37135C1.38212 8.14962 1.47635 6.87779 1.91711 5.70825C2.35787 4.5387 3.12647 3.52103 4.13083 2.77714C5.00878 2.12689 6.03433 1.70994 7.11166 1.5614C7.28645 1.5373 7.39397 1.74238 7.29337 1.88734C6.68703 2.76099 6.37885 3.81241 6.42313 4.88345C6.47392 6.11194 6.98471 7.27645 7.85413 8.14587C8.72355 9.01529 9.88805 9.52608 11.1166 9.57687C12.1876 9.62114 13.239 9.31296 14.1127 8.70663Z' stroke='currentColor' stroke-width='1.3'/></svg>深色</button><button type='button' class='themeCube' aria-pressed='false'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M13.5 2.5H2.5C1.94772 2.5 1.5 2.94772 1.5 3.5V11.5C1.5 12.0523 1.94772 12.5 2.5 12.5H13.5C14.0523 12.5 14.5 12.0523 14.5 11.5V3.5C14.5 2.94772 14.0523 2.5 13.5 2.5Z' stroke='currentColor' stroke-width='1.3'/><path d='M5 14.5H11' stroke='currentColor' stroke-width='1.3'/></svg>跟随系统</button></div></div><div class='row'><div class='rowText'><div class='title'>语言</div></div><button type='button' class='selector' aria-haspopup='menu' aria-expanded='false'>简体中文<svg class='chevron' width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor' stroke-width='1'/></svg></button></div></div></div></div></div></div></div>"
+    },
+    {
+     "label": "侧栏触发行：展开 42px / 收起 36×36",
+     "note": "rail 态与导航栏其它 36×36 控件对齐",
+     "html": "<div style='display:flex;align-items:center;gap:28px;width:340px'><div style='width:240px'><div class='triggerRow'><button type='button' class='trigger' aria-label='设置' aria-haspopup='dialog' aria-expanded='false'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M8 9.75012C8.9665 9.75012 9.75 8.96662 9.75 8.00012C9.75 7.03362 8.9665 6.25012 8 6.25012C7.0335 6.25012 6.25 7.03362 6.25 8.00012C6.25 8.96662 7.0335 9.75012 8 9.75012Z' stroke='currentColor' stroke-width='1.3'/><path d='M13.0107 7.79377C12.9505 7.89401 12.9205 7.94413 12.9205 7.99951C12.9205 8.0549 12.9505 8.10502 13.0106 8.20528L13.9849 9.83006C14.045 9.93029 14.0751 9.9804 14.0751 10.0358C14.0751 10.0911 14.045 10.1413 13.9849 10.2415L13.0037 11.8777C12.9468 11.9726 12.9184 12.0201 12.8725 12.0461C12.8267 12.072 12.7713 12.072 12.6607 12.072H10.6704C10.5598 12.072 10.5045 12.072 10.4586 12.098C10.4128 12.1239 10.3843 12.1714 10.3274 12.2662L9.33825 13.9142C9.28133 14.009 9.25287 14.0564 9.20703 14.0823C9.16118 14.1083 9.10588 14.1083 8.99529 14.1083H7.00486C6.89426 14.1083 6.83896 14.1083 6.79312 14.0823C6.74727 14.0564 6.71881 14.009 6.6619 13.9142L5.67273 12.2662C5.61581 12.1714 5.58735 12.1239 5.54151 12.098C5.49566 12.072 5.44036 12.072 5.32977 12.072H3.33945C3.2288 12.072 3.17347 12.072 3.12761 12.0461C3.08176 12.0201 3.0533 11.9726 2.9964 11.8777L2.0152 10.2415C1.9551 10.1413 1.92505 10.0911 1.92505 10.0358C1.92505 9.9804 1.9551 9.93029 2.0152 9.83006L2.98951 8.20528C3.04963 8.10502 3.07969 8.0549 3.07969 7.99951C3.07968 7.94413 3.04961 7.89401 2.98946 7.79377L2.01529 6.17011C1.95514 6.06987 1.92507 6.01975 1.92507 5.96437C1.92506 5.90899 1.95512 5.85886 2.01524 5.7586L2.9964 4.1224C3.0533 4.0275 3.08176 3.98005 3.12761 3.95408C3.17347 3.92811 3.2288 3.92811 3.33945 3.92811H5.32977C5.44036 3.92811 5.49566 3.92811 5.54151 3.90216C5.58735 3.87621 5.61581 3.82879 5.67273 3.73397L6.6619 2.08599C6.71881 1.99116 6.74727 1.94375 6.79312 1.9178C6.83896 1.89185 6.89426 1.89185 7.00486 1.89185H8.99529C9.10588 1.89185 9.16118 1.89185 9.20703 1.9178C9.25287 1.94375 9.28133 1.99116 9.33825 2.08599L10.3274 3.73397C10.3843 3.82879 10.4128 3.87621 10.4586 3.90216C10.5045 3.92811 10.5598 3.92811 10.6704 3.92811H12.6607C12.7713 3.92811 12.8267 3.92811 12.8725 3.95408C12.9184 3.98005 12.9468 4.0275 13.0037 4.1224L13.9849 5.7586C14.045 5.85886 14.0751 5.90899 14.0751 5.96437C14.0751 6.01975 14.045 6.06987 13.9849 6.17011L13.0107 7.79377Z' stroke='currentColor' stroke-width='1.3' stroke-miterlimit='10'/></svg><span class='triggerLabel'>设置</span></button></div></div><div class='triggerRow railRow'><button type='button' class='trigger rail' aria-label='设置' aria-haspopup='dialog' aria-expanded='false'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M8 9.75012C8.9665 9.75012 9.75 8.96662 9.75 8.00012C9.75 7.03362 8.9665 6.25012 8 6.25012C7.0335 6.25012 6.25 7.03362 6.25 8.00012C6.25 8.96662 7.0335 9.75012 8 9.75012Z' stroke='currentColor' stroke-width='1.3'/><path d='M13.0107 7.79377C12.9505 7.89401 12.9205 7.94413 12.9205 7.99951C12.9205 8.0549 12.9505 8.10502 13.0106 8.20528L13.9849 9.83006C14.045 9.93029 14.0751 9.9804 14.0751 10.0358C14.0751 10.0911 14.045 10.1413 13.9849 10.2415L13.0037 11.8777C12.9468 11.9726 12.9184 12.0201 12.8725 12.0461C12.8267 12.072 12.7713 12.072 12.6607 12.072H10.6704C10.5598 12.072 10.5045 12.072 10.4586 12.098C10.4128 12.1239 10.3843 12.1714 10.3274 12.2662L9.33825 13.9142C9.28133 14.009 9.25287 14.0564 9.20703 14.0823C9.16118 14.1083 9.10588 14.1083 8.99529 14.1083H7.00486C6.89426 14.1083 6.83896 14.1083 6.79312 14.0823C6.74727 14.0564 6.71881 14.009 6.6619 13.9142L5.67273 12.2662C5.61581 12.1714 5.58735 12.1239 5.54151 12.098C5.49566 12.072 5.44036 12.072 5.32977 12.072H3.33945C3.2288 12.072 3.17347 12.072 3.12761 12.0461C3.08176 12.0201 3.0533 11.9726 2.9964 11.8777L2.0152 10.2415C1.9551 10.1413 1.92505 10.0911 1.92505 10.0358C1.92505 9.9804 1.9551 9.93029 2.0152 9.83006L2.98951 8.20528C3.04963 8.10502 3.07969 8.0549 3.07969 7.99951C3.07968 7.94413 3.04961 7.89401 2.98946 7.79377L2.01529 6.17011C1.95514 6.06987 1.92507 6.01975 1.92507 5.96437C1.92506 5.90899 1.95512 5.85886 2.01524 5.7586L2.9964 4.1224C3.0533 4.0275 3.08176 3.98005 3.12761 3.95408C3.17347 3.92811 3.2288 3.92811 3.33945 3.92811H5.32977C5.44036 3.92811 5.49566 3.92811 5.54151 3.90216C5.58735 3.87621 5.61581 3.82879 5.67273 3.73397L6.6619 2.08599C6.71881 1.99116 6.74727 1.94375 6.79312 1.9178C6.83896 1.89185 6.89426 1.89185 7.00486 1.89185H8.99529C9.10588 1.89185 9.16118 1.89185 9.20703 1.9178C9.25287 1.94375 9.28133 1.99116 9.33825 2.08599L10.3274 3.73397C10.3843 3.82879 10.4128 3.87621 10.4586 3.90216C10.5045 3.92811 10.5598 3.92811 10.6704 3.92811H12.6607C12.7713 3.92811 12.8267 3.92811 12.8725 3.95408C12.9184 3.98005 12.9468 4.0275 13.0037 4.1224L13.9849 5.7586C14.045 5.85886 14.0751 5.90899 14.0751 5.96437C14.0751 6.01975 14.045 6.06987 13.9849 6.17011L13.0107 7.79377Z' stroke='currentColor' stroke-width='1.3' stroke-miterlimit='10'/></svg></button></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "wide",
+     "type": "boolean",
+     "default": "—",
+     "desc": "侧栏是否展开；为 false 时触发按钮收起为 36×36 的 rail 形态。"
+    },
+    {
+     "name": "renderSlot",
+     "type": "(name, props, opts?) => ReactNode",
+     "default": "—",
+     "desc": "填充 launcher / trigger / header / action / close / section / onboarding 七个槽位。"
+    },
+    {
+     "name": "useStore",
+     "type": "(select: (s) => T) => T",
+     "default": "—",
+     "desc": "读取外壳 store 的 open 与 activeId；模态开关状态属于 store，不在组件内。"
+    },
+    {
+     "name": "actions",
+     "type": "{ open(): void; close(): void; select(id: string): void }",
+     "default": "—",
+     "desc": "打开、关闭面板以及切换当前 section 的唯一写入口。"
+    },
+    {
+     "name": "reconnect",
+     "type": "() => void",
+     "default": "—",
+     "desc": "连接异常时请求新的逻辑 generation 与 WebSocket。"
+    },
+    {
+     "name": "t",
+     "type": "(key: SettingsKey, vars?) => string",
+     "default": "—",
+     "desc": "settings 命名空间的本地化文案（标题、关闭、连接状态等）。"
+    }
+   ],
+   "notes": "面板通过 <code>createPortal</code> 挂在 <code>#root</code> 旁边而不是内部：<code>#root</code> 里的浮层会排在列 chrome 之前，macOS 的拖拽区一旦由后续 chrome 行声明就会覆盖它。关闭路径有三条——右上按钮、点击遮罩、<code>Escape</code>——由 <code>useModalLayer</code> 统一管理；面板自身 <code>tabIndex=-1</code>，菜单列的滚动与内容列的滚动互不影响。示例把 General 页外观行 / 语言行的真实样式一并内联，因为内容列本身是 <code>settings.section</code> 的空位；面板、导航与页头的所有尺寸仍只来自 <code>SettingsRoot.module.css</code>。",
+   "keywords": [
+    "设置面板",
+    "设置页",
+    "settings dialog",
+    "模态",
+    "导航栏",
+    "section rail",
+    "800×800"
+   ]
+  },
+  {
+   "id": "general-section",
+   "name": "GeneralSection",
+   "exportName": "GeneralSection",
+   "zh": "通用设置页",
+   "group": "settings",
+   "summary": "通用设置页的单列容器，宽度 100%，自己不画卡片也不留内边距，只做两件事：按注册顺序竖排 <code>settings.general.item</code> 的贡献，并把最后一行的 <code>border-bottom</code> 去掉（分隔线由每一行自带，因此页面末行不会留下一条悬空的线）。行的节奏来自各注册者统一的 <code>padding: 16px 0</code>，相邻两行之间形成 32px 的视觉空隙。默认内容包含外观、语言、字号、Coding Tools 开关与当前版本，先后顺序由各插件注册时的 <code>order</code> 决定。",
+   "source": "packages/client/ui-settings-general/src/client/GeneralSection.tsx#L14",
+   "css": [
+    "packages/client/ui-settings-general/src/client/GeneralSection.module.css",
+    "packages/client/ui-theme/src/client/AppearanceRow.module.css",
+    "packages/client/locale/src/client/LanguageRow.module.css",
+    "packages/client/ui-theme/src/client/FontSizeRow.module.css",
+    "packages/client/ui-settings-general/src/client/CurrentVersionRow.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-layer-1",
+    "--dsw-alias-bg-module-platform",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-border-l4",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-caption",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-radius-md",
+    "--dsw-radius-xl",
+    "--dsw-radius-xs",
+    "--dsw-static-neutral-bluish-400"
+   ],
+   "specimens": [
+    {
+     "label": "General 列：外观 / 语言 / 字号 / 当前版本",
+     "note": "行样式来自 ui-theme、locale 与 shell 的真实模块，末行分隔线被 section 剥掉",
+     "html": "<div style='width:620px'><div class='section'><div data-slot='settings.general.item' style='display:contents'><div class='group'><div class='title'>外观</div><div class='cubeRow'><button type='button' class='themeCube' aria-pressed='false'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M8.00007 11.8117C10.1052 11.8117 11.8117 10.1052 11.8117 8.00007C11.8117 5.89499 10.1052 4.18848 8.00007 4.18848C5.89499 4.18848 4.18848 5.89499 4.18848 8.00007C4.18848 10.1052 5.89499 11.8117 8.00007 11.8117Z' stroke='currentColor' stroke-width='1.3'/><path d='M13.3899 8H15.1499' stroke='currentColor' stroke-width='1.3'/><path d='M11.8115 11.8115L13.0556 13.0556' stroke='currentColor' stroke-width='1.3'/><path d='M8 13.3901V15.1501' stroke='currentColor' stroke-width='1.3'/><path d='M4.18868 11.8115L2.94458 13.0556' stroke='currentColor' stroke-width='1.3'/><path d='M2.6101 8H0.850098' stroke='currentColor' stroke-width='1.3'/><path d='M4.18868 4.18856L2.94458 2.94446' stroke='currentColor' stroke-width='1.3'/><path d='M8 2.6101V0.850098' stroke='currentColor' stroke-width='1.3'/><path d='M11.8115 4.18856L13.0556 2.94446' stroke='currentColor' stroke-width='1.3'/></svg>浅色</button><button type='button' class='themeCube' aria-pressed='false'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M14.1127 8.70663C14.2576 8.60602 14.4627 8.71355 14.4386 8.88834C14.2901 9.96567 13.8731 10.9912 13.2229 11.8692C12.479 12.8735 11.4613 13.6421 10.2917 14.0829C9.1222 14.5236 7.85038 14.6179 6.62865 14.3543C5.40692 14.0907 4.28709 13.4805 3.40332 12.5967C2.51955 11.7129 1.90931 10.5931 1.64572 9.37135C1.38212 8.14962 1.47635 6.87779 1.91711 5.70825C2.35787 4.5387 3.12647 3.52103 4.13083 2.77714C5.00878 2.12689 6.03433 1.70994 7.11166 1.5614C7.28645 1.5373 7.39397 1.74238 7.29337 1.88734C6.68703 2.76099 6.37885 3.81241 6.42313 4.88345C6.47392 6.11194 6.98471 7.27645 7.85413 8.14587C8.72355 9.01529 9.88805 9.52608 11.1166 9.57687C12.1876 9.62114 13.239 9.31296 14.1127 8.70663Z' stroke='currentColor' stroke-width='1.3'/></svg>深色</button><button type='button' class='themeCube selected' aria-pressed='true'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M13.5 2.5H2.5C1.94772 2.5 1.5 2.94772 1.5 3.5V11.5C1.5 12.0523 1.94772 12.5 2.5 12.5H13.5C14.0523 12.5 14.5 12.0523 14.5 11.5V3.5C14.5 2.94772 14.0523 2.5 13.5 2.5Z' stroke='currentColor' stroke-width='1.3'/><path d='M5 14.5H11' stroke='currentColor' stroke-width='1.3'/></svg>跟随系统</button></div></div><div class='row'><div class='rowText'><div class='title'>语言</div></div><button type='button' class='selector' aria-haspopup='menu' aria-expanded='false'>简体中文<svg class='chevron' width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor' stroke-width='1'/></svg></button></div><div class='row'><div class='rowText'><div class='title'>字号大小</div><div class='desc'>仅影响会话内容的字号</div></div><div class='control'><div class='stepper'><span class='value'>14</span><span class='arrows'><button type='button' class='arrow' aria-label='增大字号'><svg width='9' height='9' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10' stroke='currentColor' stroke-width='1'/></svg></button><button type='button' class='arrow' aria-label='减小字号'><svg width='9' height='9' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor' stroke-width='1'/></svg></button></span></div><span class='unit'>px</span><button type='button' class='expander' aria-label='更多字体设置' title='更多字体设置' aria-expanded='false'><svg width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor' stroke-width='1'/></svg></button></div></div><div class='row'>当前版本：0.4.2</div></div></div></div>"
+    },
+    {
+     "label": "窄面板 380px：三枚外观立方体换行",
+     "note": "flex: 1 1 180px + flex-wrap 在窄列里自动折成两行",
+     "html": "<div style='width:380px'><div class='section'><div data-slot='settings.general.item' style='display:contents'><div class='group'><div class='title'>外观</div><div class='cubeRow'><button type='button' class='themeCube selected' aria-pressed='true'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M8.00007 11.8117C10.1052 11.8117 11.8117 10.1052 11.8117 8.00007C11.8117 5.89499 10.1052 4.18848 8.00007 4.18848C5.89499 4.18848 4.18848 5.89499 4.18848 8.00007C4.18848 10.1052 5.89499 11.8117 8.00007 11.8117Z' stroke='currentColor' stroke-width='1.3'/><path d='M13.3899 8H15.1499' stroke='currentColor' stroke-width='1.3'/><path d='M11.8115 11.8115L13.0556 13.0556' stroke='currentColor' stroke-width='1.3'/><path d='M8 13.3901V15.1501' stroke='currentColor' stroke-width='1.3'/><path d='M4.18868 11.8115L2.94458 13.0556' stroke='currentColor' stroke-width='1.3'/><path d='M2.6101 8H0.850098' stroke='currentColor' stroke-width='1.3'/><path d='M4.18868 4.18856L2.94458 2.94446' stroke='currentColor' stroke-width='1.3'/><path d='M8 2.6101V0.850098' stroke='currentColor' stroke-width='1.3'/><path d='M11.8115 4.18856L13.0556 2.94446' stroke='currentColor' stroke-width='1.3'/></svg>浅色</button><button type='button' class='themeCube' aria-pressed='false'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M14.1127 8.70663C14.2576 8.60602 14.4627 8.71355 14.4386 8.88834C14.2901 9.96567 13.8731 10.9912 13.2229 11.8692C12.479 12.8735 11.4613 13.6421 10.2917 14.0829C9.1222 14.5236 7.85038 14.6179 6.62865 14.3543C5.40692 14.0907 4.28709 13.4805 3.40332 12.5967C2.51955 11.7129 1.90931 10.5931 1.64572 9.37135C1.38212 8.14962 1.47635 6.87779 1.91711 5.70825C2.35787 4.5387 3.12647 3.52103 4.13083 2.77714C5.00878 2.12689 6.03433 1.70994 7.11166 1.5614C7.28645 1.5373 7.39397 1.74238 7.29337 1.88734C6.68703 2.76099 6.37885 3.81241 6.42313 4.88345C6.47392 6.11194 6.98471 7.27645 7.85413 8.14587C8.72355 9.01529 9.88805 9.52608 11.1166 9.57687C12.1876 9.62114 13.239 9.31296 14.1127 8.70663Z' stroke='currentColor' stroke-width='1.3'/></svg>深色</button><button type='button' class='themeCube' aria-pressed='false'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M13.5 2.5H2.5C1.94772 2.5 1.5 2.94772 1.5 3.5V11.5C1.5 12.0523 1.94772 12.5 2.5 12.5H13.5C14.0523 12.5 14.5 12.0523 14.5 11.5V3.5C14.5 2.94772 14.0523 2.5 13.5 2.5Z' stroke='currentColor' stroke-width='1.3'/><path d='M5 14.5H11' stroke='currentColor' stroke-width='1.3'/></svg>跟随系统</button></div></div><div class='row'><div class='rowText'><div class='title'>语言</div></div><button type='button' class='selector' aria-haspopup='menu' aria-expanded='false'>English<svg class='chevron' width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor' stroke-width='1'/></svg></button></div></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "renderSlot",
+     "type": "(name: 'settings.general.item', props, opts?) => ReactNode",
+     "default": "—",
+     "desc": "按 ledger 顺序渲染已注册的 General 行；没有贡献时得到空列。"
+    }
+   ],
+   "notes": "末行去分隔线依赖结构：注册者渲染的选择器必须在 <code>.section &gt; [data-slot='settings.general.item'] &gt; :last-child</code> 上，所以示例保留了 slot 包装层。这个包只提供容器，行的文案、控件与写入都归注册者——当前由 ui-theme（外观 / 字号）、locale（语言）和 shell（Coding Tools / 当前版本）贡献。",
+   "keywords": [
+    "通用设置",
+    "General",
+    "设置列",
+    "行列表",
+    "settings.general.item"
+   ]
+  },
+  {
+   "id": "current-version-row",
+   "name": "CurrentVersionRow",
+   "exportName": "CurrentVersionRow",
+   "zh": "当前版本",
+   "group": "settings",
+   "summary": "General 页底部的版本行：一行 14/22 文本，上下各 16px 内边距，颜色 <code>--dsw-alias-label-primary</code>，并用 <code>overflow-wrap: anywhere</code> 让 <code>0.4.0-nightly.20261017+sha</code> 这类长串在窄面板里安全折行。版本来自构建期注入的 <code>process.env.DSH_CLIENT_VERSION</code>，缺少该元数据的部分构建直接返回 null——整行消失，而不是显示占位。文案由 locale 的 <code>general.currentVersion</code> 渲染成「当前版本：{version}」，行本身不带按钮，也不画分隔线。",
+   "source": "packages/client/ui-settings-general/src/client/CurrentVersionRow.tsx#L10",
+   "css": [
+    "packages/client/ui-settings-general/src/client/CurrentVersionRow.module.css",
+    "packages/client/ui-primitives/src/Button.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-label-primary",
+    "--dsw-alias-border-l3",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-radius-sm"
+   ],
+   "specimens": [
+    {
+     "label": "Web / Desktop：当前版本",
+     "html": "<div style='width:560px'><div class='row'>当前版本：0.4.2</div></div>"
+    },
+    {
+     "label": "组合：版本行 + 检查更新动作",
+     "note": "版本行本身只输出文字；按钮是共享 Button（outline sm）的组合示意",
+     "html": "<div style='display:flex;align-items:center;gap:12px;width:560px'><div class='row'>当前版本：0.4.2</div><button type='button' class='button outline sm'>检查更新</button></div>"
+    },
+    {
+     "label": "长预发布版本在窄列折行",
+     "note": "overflow-wrap: anywhere",
+     "html": "<div style='width:220px'><div class='row'>当前版本：0.5.0-nightly.20261017+sha.9f3c2a1</div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "t",
+     "type": "(key: 'general.currentVersion', vars: { version: string }) => string",
+     "default": "—",
+     "desc": "settings 命名空间的版本模板；component 不接收 version prop，版本只来自构建元数据。"
+    }
+   ],
+   "notes": "源码里这条 row 没有 <code>border-bottom</code>：它通常排在 General 列末尾，分隔线由上一行提供，section 还会再剥掉末行分隔线。Desktop 的更新状态由账号行的 <code>DesktopUpdateIndicator</code> 与折叠侧栏的角标承载，版本行里没有内置的检查按钮；第二个示例只是展示把共享 <code>Button</code> 放在同一行时的观感，<code>Button.module.css</code> 仅为该组合示例内联。",
+   "keywords": [
+    "当前版本",
+    "version",
+    "版本号",
+    "构建元数据",
+    "DSH_CLIENT_VERSION",
+    "检查更新"
+   ]
+  },
+  {
+   "id": "models-section",
+   "name": "ModelsSection",
+   "exportName": "ModelsSection",
+   "zh": "模型设置页",
+   "group": "settings",
+   "summary": "模型设置页：720px 上限的单列，标题 16/24/500、说明 14/22 三级色。每个已配置的提供商是一张 <code>.rowCard</code>——0.5px <code>--dsw-alias-settings-card-stroke</code> 描边、<code>--dsw-alias-settings-card-fill</code> 填充、<code>--dsw-radius-xl</code>（R20）、12/14 内边距；行头是 14/22/500 的提供商名、可选的“自定义”小标签与 8px 凭证点（绿=已配置、红=缺失），右侧是 28px 高的编辑/删除按钮（R8、12/18）。展开后的编辑器换成 R16 的 <code>--dsw-alias-bg-module-platform</code> 内嵌面，模型行用 32px 输入框编辑 <code>deepseek-chat</code> 这类 ID。列表末尾是一只 44px 高的虚线「添加模型提供商」入口。",
+   "source": "packages/client/ui-settings-models/src/client/ModelsSection.tsx#L238",
+   "css": [
+    "packages/client/ui-settings-models/src/client/ModelsSection.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-layer-1",
+    "--dsw-alias-bg-module-platform",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-border-l3",
+    "--dsw-alias-border-l4",
+    "--dsw-alias-button-primary-fill",
+    "--dsw-alias-button-primary-hover",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-interactive-bg-hover-danger",
+    "--dsw-alias-interactive-bg-hover-solid",
+    "--dsw-alias-label-dimmed",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-primary-foreground",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-scrollbar-bg-l2",
+    "--dsw-alias-scrollbar-hover-l2",
+    "--dsw-alias-settings-card-fill",
+    "--dsw-alias-settings-card-stroke",
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-state-error-primary",
+    "--dsw-alias-state-success-primary",
+    "--dsw-alias-state-warn-label",
+    "--dsw-focus-ring-color",
+    "--dsw-focus-ring-width",
+    "--dsw-radius-lg",
+    "--dsw-radius-md",
+    "--dsw-radius-sm",
+    "--dsw-radius-xl",
+    "--dsw-radius-xs"
+   ],
+   "specimens": [
+    {
+     "label": "提供商行：DeepSeek 账号 / DeepSeek / 自定义中转站",
+     "note": "绿点为已确认配置、红点为已确认缺失；账号行没有编辑入口",
+     "html": "<div style='width:640px'><div class='section'><h2 class='title'>模型</h2><p class='intro'>填入各提供商的 API 密钥即可使用其模型。</p><ul class='rows'><li class='rowCard'><div class='rowHead'><span class='rowIdentity'><span class='rowName'>DeepSeek 账号</span><span class='accountStatus'><span class='credentialDot credentialDotConfigured' aria-hidden='true'></span>已登录</span></span></div></li><li class='rowCard'><div class='rowHead'><span class='rowIdentity'><span class='rowName'>DeepSeek</span><span class='credentialDot credentialDotConfigured' role='img' aria-label='API 密钥已配置' title='API 密钥已配置'></span></span><span class='rowActions'><button type='button' class='secondaryButton' aria-label='编辑 DeepSeek'>编辑</button><button type='button' class='dangerButton' aria-label='删除 DeepSeek'>删除</button></span></div></li><li class='rowCard'><div class='rowHead'><span class='rowIdentity'><span class='rowName'>中转站</span><span class='rowTag'>自定义</span><span class='credentialDot credentialDotMissing' role='img' aria-label='API 密钥缺失' title='API 密钥缺失'></span></span><span class='rowActions'><button type='button' class='secondaryButton' aria-label='编辑 中转站'>编辑</button><button type='button' class='dangerButton' aria-label='删除 中转站'>删除</button></span></div></li></ul><div class='addBlock'><div class='addActions'><button type='button' class='addButton'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M8 2V14' stroke='currentColor' stroke-width='1'/><path d='M2 8H14' stroke='currentColor' stroke-width='1'/></svg>添加模型提供商</button></div></div></div></div>"
+    },
+    {
+     "label": "展开编辑：API 密钥 + 模型目录（deepseek-chat / deepseek-reasoner）",
+     "note": "编辑面用 R16 模块填充，模型行由 32px 输入框组成",
+     "html": "<div style='width:640px'><div class='section'><h2 class='title'>模型</h2><p class='intro'>填入各提供商的 API 密钥即可使用其模型。</p><ul class='rows'><li class='rowCard'><div class='rowHead'><span class='rowIdentity'><span class='rowName'>DeepSeek</span><span class='credentialDot credentialDotConfigured' role='img' aria-label='API 密钥已配置' title='API 密钥已配置'></span></span><span class='rowActions'><button type='button' class='secondaryButton' aria-label='编辑 DeepSeek'>编辑</button><button type='button' class='dangerButton' aria-label='删除 DeepSeek'>删除</button></span></div><div class='editor'><div class='editorHeader'><span class='editorTitle'>DeepSeek</span><span class='editorRoute'>deepseek</span></div><div class='field'><span class='fieldLabel'>API 密钥</span><input class='input' type='password' placeholder='留空使用已保存凭据' aria-label='API 密钥'></div><div class='modelCatalog'><div class='modelCatalogHeading'><span class='modelCatalogTitle'>模型目录</span><p class='modelCatalogMeta'>已自定义模型目录</p></div><div class='modelList'><div class='modelEntry'><div class='modelRow'><input class='input' value='deepseek-chat' aria-label='模型 ID'><input class='input' placeholder='使用模型 ID 作为名称' aria-label='显示名称'><span></span><button type='button' class='iconButton' aria-label='删除模型'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M1.28149 3.88831H14.7187' stroke='currentColor' stroke-width='1'/><path d='M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833' stroke='currentColor' stroke-width='1'/><path d='M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831' stroke='currentColor' stroke-width='1'/><path d='M6.44946 6.98926V11.1238' stroke='currentColor' stroke-width='1'/><path d='M9.55054 6.98926V11.1238' stroke='currentColor' stroke-width='1'/></svg></button></div></div><div class='modelEntry'><div class='modelRow'><input class='input' value='deepseek-reasoner' aria-label='模型 ID'><input class='input' placeholder='使用模型 ID 作为名称' aria-label='显示名称'><span></span><button type='button' class='iconButton' aria-label='删除模型'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M1.28149 3.88831H14.7187' stroke='currentColor' stroke-width='1'/><path d='M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833' stroke='currentColor' stroke-width='1'/><path d='M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831' stroke='currentColor' stroke-width='1'/><path d='M6.44946 6.98926V11.1238' stroke='currentColor' stroke-width='1'/><path d='M9.55054 6.98926V11.1238' stroke='currentColor' stroke-width='1'/></svg></button></div></div></div></div></div></li></ul></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "controller",
+     "type": "ModelsSettingsStore",
+     "default": "—",
+     "desc": "页面 store：加载目录、设置与凭证的联合快照，并接收推送失效。"
+    },
+    {
+     "name": "useSnapshot",
+     "type": "(select) => ModelsSnapshot",
+     "default": "—",
+     "desc": "读取行、命名空间与凭证状态的联合快照。"
+    },
+    {
+     "name": "operations",
+     "type": "ModelsOperations",
+     "default": "—",
+     "desc": "写设置、写/删凭证、发起端点探测的 Host 操作。"
+    },
+    {
+     "name": "schema",
+     "type": "SettingsSchemaOperations",
+     "default": "—",
+     "desc": "读取命名空间 schema 与不可变路径。"
+    },
+    {
+     "name": "t",
+     "type": "(key: keyof typeof en) => string",
+     "default": "—",
+     "desc": "settings.models 的本地化文案，由注册者提供。"
+    },
+    {
+     "name": "renderSlot",
+     "type": "(name, props, opts?) => ReactNode",
+     "default": "—",
+     "desc": "派发 settings.models.provider-card 与 settings.models.footer 两个子槽。"
+    }
+   ],
+   "notes": "账号行只在账号目录有条目时出现，且没有编辑器：模型来自账号列表，覆盖项写在 <code>cordis.patch.yml</code>。凭证点只表达「已确认」的状态——绿点要求被引用的凭证确认已配置，红点只给已命名且确认缺失的引用；未确认的读取不画点。新用户没有任何可用提供商时，未配置的整节提供商会直接渲染成打开的 setup 卡而不是行，关闭后本次会话退回普通行。删除提供商会先移除页面管理的凭证再写设置，任一步失败都保持行可见并可重试。",
+   "keywords": [
+    "模型设置",
+    "提供商",
+    "provider",
+    "API 密钥",
+    "deepseek-chat",
+    "模型目录",
+    "DeepSeek"
+   ]
+  },
+  {
+   "id": "plugins-settings-section",
+   "name": "PluginsSettingsSection",
+   "exportName": "PluginsSettingsSection",
+   "zh": "内置插件页",
+   "group": "settings",
+   "summary": "内置插件页的壳：18/600 标题加 13px 三级色说明，下面是 <code>settings.plugins.tab</code> 账本投影出的页签行（13/20、22px 间距、0.5px <code>--dsw-alias-border-l2</code> 底边，选中项用 2px 下划线 <code>::after</code> 标出）。只有一个 tab 注册时根本不画页签行，直接把该页面当作整页内容；两个及以上才出现 tablist。页签首次选中后保持挂载，切换只切 <code>hidden</code>，因此搜索词、滚动位置和本地草稿都不会丢。示例面板内联了 inventory 标签页的真实卡片：0.5px 卡片描边 + <code>--dsw-radius-xl</code>、36×20 开关与版本胶囊。",
+   "source": "packages/client/ui-settings-plugins/src/client/PluginsSettingsSection.tsx#L33",
+   "css": [
+    "packages/client/ui-settings-plugins/src/client/PluginsSettingsSection.module.css",
+    "packages/client/ui-settings-plugin-inventory/src/client/PluginInventorySettingsTab.module.css",
+    "packages/client/ui-primitives/src/Switch.module.css",
+    "packages/client/ui-primitives/src/Tag.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-module-platform",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-border-l3",
+    "--dsw-alias-border-l4",
+    "--dsw-alias-brand-primary",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-label-primary-foreground",
+    "--dsw-alias-settings-card-fill",
+    "--dsw-alias-settings-card-stroke",
+    "--dsw-alias-switch-thumb",
+    "--dsw-alias-state-business-primary",
+    "--dsw-focus-ring-color",
+    "--dsw-focus-ring-width",
+    "--dsw-radius-md",
+    "--dsw-radius-sm",
+    "--dsw-radius-xl",
+    "--dsw-radius-xs"
+   ],
+   "specimens": [
+    {
+     "label": "单标签：直接渲染插件列表（已启用 / 已停用）",
+     "note": "卡片主体用 div 呈现，避免把 switch 嵌进展开按钮里",
+     "html": "<div style='width:640px'><div class='section'><h2 class='heading'>内置插件</h2><p class='intro'>查看内置部署的插件列表</p><div class='panel'><ul class='cards'><li class='card'><div class='cardContent'><span class='cardMainRow'><strong class='cardTitle'>Superpowers</strong><span class='cardTrailing'><span class='tag' data-tone='neutral'>v0.4.2</span><button type='button' role='switch' aria-checked='true' aria-label='启用 Superpowers' class='switch'><span class='thumb'></span></button><svg class='chevron' width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor' stroke-width='1'/></svg></span></span><span class='cardDescription'>为会话提供技能、斜杠命令和代理编排的官方插件。</span><span class='cardMeta'><code class='cardIdentity'>dsh-plugin-superpowers</code></span></div></li><li class='card'><div class='cardContent'><span class='cardMainRow'><strong class='cardTitle'>Web Search</strong><span class='cardTrailing'><span class='tag' data-tone='neutral'>v0.3.0</span><button type='button' role='switch' aria-checked='false' aria-label='启用 Web Search' class='switch'><span class='thumb'></span></button><svg class='chevron' width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor' stroke-width='1'/></svg></span></span><span class='cardDescription'>联网搜索与网页抓取工具，按部署配置启用。</span><span class='cardMeta'><code class='cardIdentity'>dsh-plugin-web-search</code></span></div></li></ul></div></div></div>"
+    },
+    {
+     "label": "两个注册者：页签行 + 面板",
+     "note": "第二个 tab 用于演示多注册者形态；当前部署只随附一个 inventory tab",
+     "html": "<div style='width:640px'><div class='section'><h2 class='heading'>内置插件</h2><p class='intro'>查看内置部署的插件列表</p><div class='tabs' role='tablist' aria-label='插件视图'><button type='button' role='tab' class='tab' data-active='true' aria-selected='true'>已安装</button><button type='button' role='tab' class='tab' aria-selected='false'>可安装</button></div><div class='panel'><ul class='cards' style='grid-template-columns:1fr'><li class='card'><div class='cardContent'><span class='cardMainRow'><strong class='cardTitle'>Superpowers</strong><span class='cardTrailing'><span class='tag' data-tone='neutral'>v0.4.2</span><button type='button' role='switch' aria-checked='true' aria-label='启用 Superpowers' class='switch'><span class='thumb'></span></button><svg class='chevron' width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor' stroke-width='1'/></svg></span></span><span class='cardDescription'>为会话提供技能、斜杠命令和代理编排的官方插件。</span><span class='cardMeta'><code class='cardIdentity'>dsh-plugin-superpowers</code></span></div></li></ul></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "t",
+     "type": "(key: PluginsSettingsLocaleKey) => string",
+     "default": "—",
+     "desc": "settings.plugins 命名空间的标题、说明、页签组名与空态文案。"
+    },
+    {
+     "name": "renderSlot",
+     "type": "(name: 'settings.plugins.tab', props, opts?) => ReactNode",
+     "default": "—",
+     "desc": "渲染当前页签的注册内容；单页签时直接放在面板里。"
+    },
+    {
+     "name": "useTabs",
+     "type": "() => readonly PluginsSettingsTabEntry[]",
+     "default": "—",
+     "desc": "读取按 order 排序、label 跟随 locale 的页签账本。"
+    }
+   ],
+   "notes": "这个包只是壳：页签内容、开关写入和版本号都由注册者（当前是 <code>ui-settings-plugin-inventory</code>）拥有，因此示例把 inventory 标签页的样式表一并内联，卡片仍是 0.5px <code>--dsw-alias-settings-card-stroke</code> + <code>--dsw-alias-settings-card-fill</code> + R20 的设置卡材质。页签的键盘行为是 ArrowLeft/Right 循环、Home/End 跳首尾，焦点手动跟随选中项；搜索时两个视图都会展开，但本页不拥有搜索框。",
+   "keywords": [
+    "内置插件",
+    "插件设置",
+    "插件列表",
+    "inventory",
+    "settings.plugins.tab",
+    "开关",
+    "版本"
+   ]
+  },
+  {
+   "id": "account-avatar",
+   "name": "AccountAvatar",
+   "exportName": "AccountAvatar",
+   "zh": "账号头像",
+   "group": "settings",
+   "summary": "账号头像：一张 <code>&lt;img&gt;</code>，<code>alt=''</code> 作为装饰交给旁边的文字命名；<code>.image</code> 撑满父级 100%、<code>object-fit: cover</code>、<code>border-radius: 50%</code> 且配 <code>corner-shape: round</code>，所以圆不会被主题的超椭圆曲线拉变形。尺寸不在组件内：侧栏用 24px，设置页用 32px，由父容器决定。只有快照 <code>status === 'ready'</code> 时才渲染图片；没有 URL、加载中或加载失败都回退到 16px 的 <code>IconUserOutlineMedium</code>。",
+   "source": "packages/client/ui-settings-account/src/client/AccountAvatar.tsx#L11",
+   "css": [
+    "packages/client/ui-settings-account/src/client/AccountAvatar.module.css"
+   ],
+   "tokens": [],
+   "specimens": [
+    {
+     "label": "设置页 32px / 侧栏 24px",
+     "note": "组件的 .image 只负责撑满与裁圆，直径由父级决定",
+     "html": "<div style='display:flex;align-items:center;gap:24px'><div style='display:flex;flex-direction:column;align-items:center;gap:6px'><div style='width:32px;height:32px'><img class='image' src=\"data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%2232%22%20height=%2232%22%3E%3Crect%20width=%2232%22%20height=%2232%22%20fill=%22%234176e6%22/%3E%3Ctext%20x=%2216%22%20y=%2221%22%20font-family=%22system-ui%22%20font-size=%2213%22%20fill=%22%23ffffff%22%20text-anchor=%22middle%22%3EDS%3C/text%3E%3C/svg%3E\" alt=''></div><span style='font-size:11px'>32px · 设置页</span></div><div style='display:flex;flex-direction:column;align-items:center;gap:6px'><div style='width:24px;height:24px'><img class='image' src=\"data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%2224%22%20height=%2224%22%3E%3Crect%20width=%2224%22%20height=%2224%22%20fill=%22%234176e6%22/%3E%3Ctext%20x=%2212%22%20y=%2216%22%20font-family=%22system-ui%22%20font-size=%2210%22%20fill=%22%23ffffff%22%20text-anchor=%22middle%22%3EDS%3C/text%3E%3C/svg%3E\" alt=''></div><span style='font-size:11px'>24px · 侧栏</span></div></div>"
+    },
+    {
+     "label": "无图回退：16px 账号图标",
+     "note": "URL 缺失、加载中或加载失败都走这条分支",
+     "html": "<div style='display:flex;align-items:center;gap:24px'><div style='display:flex;flex-direction:column;align-items:center;gap:6px'><div style='display:flex;align-items:center;justify-content:center;width:24px;height:24px'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M8 8.25C9.51878 8.25 10.75 7.01878 10.75 5.5C10.75 3.98122 9.51878 2.75 8 2.75C6.48122 2.75 5.25 3.98122 5.25 5.5C5.25 7.01878 6.48122 8.25 8 8.25Z' stroke='currentColor' stroke-width='1.3'/><path d='M2.5 14.5C2.5 11.5 5.25 10.25 8 10.25C10.75 10.25 13.5 11.5 13.5 14.5' stroke='currentColor' stroke-width='1.3'/></svg></div><span style='font-size:11px'>24px 槽 · 回退</span></div><div style='display:flex;flex-direction:column;align-items:center;gap:6px'><div style='display:flex;align-items:center;justify-content:center;width:32px;height:32px'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M8 8.25C9.51878 8.25 10.75 7.01878 10.75 5.5C10.75 3.98122 9.51878 2.75 8 2.75C6.48122 2.75 5.25 3.98122 5.25 5.5C5.25 7.01878 6.48122 8.25 8 8.25Z' stroke='currentColor' stroke-width='1.3'/><path d='M2.5 14.5C2.5 11.5 5.25 10.25 8 10.25C10.75 10.25 13.5 11.5 13.5 14.5' stroke='currentColor' stroke-width='1.3'/></svg></div><span style='font-size:11px'>32px 槽 · 回退</span></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "avatar",
+     "type": "AccountAvatarSnapshot | undefined",
+     "default": "—",
+     "desc": "共享的浏览器加载结果；只有 ready 才带 URL，其余状态回退图标。"
+    },
+    {
+     "name": "avatarFailed",
+     "type": "(snapshot: AccountAvatarSnapshot) => void",
+     "default": "—",
+     "desc": "图片 onError 时上报，更新共享结果，让侧栏与设置页同时退回图标。"
+    }
+   ],
+   "notes": "图片是装饰性的：<code>alt=''</code>，旁边总会有一个可读的账号名（账号菜单的 label 或设置页的标题）。<code>referrerPolicy='no-referrer'</code> 避免把来源页带给头像 CDN。组件的 CSS 不引用任何 <code>--dsw-*</code> 变量，圆形完全由 <code>50%</code> + <code>corner-shape: round</code> 决定。",
+   "keywords": [
+    "头像",
+    "avatar",
+    "账号",
+    "圆形",
+    "回退图标"
+   ]
+  },
+  {
+   "id": "account-menu",
+   "name": "AccountMenu",
+   "exportName": "AccountMenu",
+   "zh": "账号菜单",
+   "group": "settings",
+   "summary": "侧栏账号入口：<code>.root</code> 占满剩余宽度，触发器是 44px 高的整行按钮（<code>--dsw-radius-md</code>、悬停 <code>--dsw-alias-interactive-bg-hover</code>），左侧 24px 圆形头像槽（<code>--dsw-alias-bg-skeleton</code> 兜底、<code>--dsw-alias-label-tertiary</code> 图标色），右侧 14/22 的名字做单行省略。折叠时触发器收成 36×36；未登录时改成一个 32px 高的 More 行，14px 省略号打头，弹出的菜单用 <code>.signedOutMenu</code> 放宽到 124–280px、行高 40px、R12。菜单本身向上弹出，包含设置、意见反馈与退出/登录。",
+   "source": "packages/client/ui-settings-account/src/client/AccountMenu.tsx#L22",
+   "css": [
+    "packages/client/ui-settings-account/src/client/AccountMenu.module.css",
+    "packages/client/ui-settings-account/src/client/AccountAvatar.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-skeleton",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-menu-icon",
+    "--dsw-radius-md"
+   ],
+   "specimens": [
+    {
+     "label": "已登录：展开 44px 行 + 24px 头像",
+     "note": "名字单行省略，头像槽固定 24px",
+     "html": "<div style='width:260px'><div class='root'><button type='button' class='trigger' data-collapsed='false' data-signed-out='false' aria-label='账号菜单' aria-haspopup='menu' aria-expanded='false'><span class='avatar' data-avatar-status='ready'><img class='image' src=\"data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%2224%22%20height=%2224%22%3E%3Crect%20width=%2224%22%20height=%2224%22%20fill=%22%234176e6%22/%3E%3Ctext%20x=%2212%22%20y=%2216%22%20font-family=%22system-ui%22%20font-size=%2210%22%20fill=%22%23ffffff%22%20text-anchor=%22middle%22%3EDS%3C/text%3E%3C/svg%3E\" alt=''></span><span class='label'>DeepSeek Harness</span></button></div></div>"
+    },
+    {
+     "label": "折叠 36×36 / 未登录 More 行",
+     "note": "折叠态只留头像；未登录态用 14px 省略号，菜单行更宽",
+     "html": "<div style='display:flex;align-items:center;gap:28px;width:320px'><div style='width:56px'><div class='root'><button type='button' class='trigger' data-collapsed='true' data-signed-out='false' aria-label='账号菜单' aria-haspopup='menu' aria-expanded='false'><span class='avatar' data-avatar-status='ready'><img class='image' src=\"data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%2224%22%20height=%2224%22%3E%3Crect%20width=%2224%22%20height=%2224%22%20fill=%22%234176e6%22/%3E%3Ctext%20x=%2212%22%20y=%2216%22%20font-family=%22system-ui%22%20font-size=%2210%22%20fill=%22%23ffffff%22%20text-anchor=%22middle%22%3EDS%3C/text%3E%3C/svg%3E\" alt=''></span></button></div></div><div style='width:200px'><div class='root'><button type='button' class='trigger' data-collapsed='false' data-signed-out='true' aria-label='账号菜单' aria-haspopup='menu' aria-expanded='false'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z' fill='currentColor'/><path d='M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z' fill='currentColor'/><path d='M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z' fill='currentColor'/></svg><span class='label'>更多</span></button></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "wide",
+     "type": "boolean",
+     "default": "—",
+     "desc": "侧栏展开态；false 时触发器进入 36×36 折叠形态。"
+    },
+    {
+     "name": "settingsOpen",
+     "type": "boolean",
+     "default": "—",
+     "desc": "设置面板是否打开；false→true 的上升沿触发一次账号刷新。"
+    },
+    {
+     "name": "settingsShortcut",
+     "type": "ShortcutPresentation | undefined",
+     "default": "undefined",
+     "desc": "菜单里 Settings 行显示的快捷键。"
+    },
+    {
+     "name": "useAccount",
+     "type": "(select) => AccountState",
+     "default": "—",
+     "desc": "读取登录状态、资料、头像与通知。"
+    },
+    {
+     "name": "openSettings",
+     "type": "() => void",
+     "default": "—",
+     "desc": "菜单选择设置时调用；关闭菜单并把焦点还给触发器后再执行。"
+    },
+    {
+     "name": "signOut",
+     "type": "() => Promise<void>",
+     "default": "—",
+     "desc": "确认对话框通过后执行退出登录。"
+    },
+    {
+     "name": "t",
+     "type": "(key: AccountKey, vars?) => string",
+     "default": "—",
+     "desc": "settings.account 的本地化文案（菜单名、设置、反馈、退出/登录等）。"
+    }
+   ],
+   "notes": "菜单本身由共享 <code>Menu</code> 渲染，向上弹出、portal 到 body，卡片材质与模糊归 <code>MenuSurface</code>，所以这里只声明 launcher 自己的类。退出登录前会先查询正在使用账号 token 的任务：有任务时对话框描述中断风险，查询失败则展示「未知任务状态」的警告；取消、关闭与 Escape 都不会退出。设置面板关闭后焦点回到这个触发器。",
+   "keywords": [
+    "账号菜单",
+    "侧栏账号",
+    "sign out",
+    "更多",
+    "头像入口"
+   ]
+  },
+  {
+   "id": "language-row",
+   "name": "LanguageRow",
+   "exportName": "LanguageRow",
+   "zh": "语言行",
+   "group": "settings",
+   "summary": "General 页的语言行：左侧 14/22 标题「语言」，右侧一个 36px 高的选择器药丸（左右 14px 内边距、12px 圆角、<code>--dsw-alias-bg-module-platform</code> 填充、文字与 12px 间距的 chevron）。行本身 flex 居中、上下 16px 内边距，并用 0.5px <code>--dsw-alias-border-l2</code> 与下一行分隔。点开是由 <code>Menu</code> 渲染的右对齐语言列表，选项来自已注册的 locale 账本（内置 <code>zh</code> / <code>en</code>，插件可追加）。选中即写入 <code>locale.preference</code> 并立即切换界面语言与 <code>&lt;html lang&gt;</code>。",
+   "source": "packages/client/locale/src/client/LanguageRow.tsx#L30",
+   "css": [
+    "packages/client/locale/src/client/LanguageRow.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-module-platform",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-primary",
+    "--dsw-radius-md"
+   ],
+   "specimens": [
+    {
+     "label": "简体中文界面",
+     "html": "<div style='width:560px'><div class='row'><div class='rowText'><div class='title'>语言</div></div><button type='button' class='selector' aria-haspopup='menu' aria-expanded='false'>简体中文<svg class='chevron' width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor' stroke-width='1'/></svg></button></div></div>"
+    },
+    {
+     "label": "English 界面",
+     "html": "<div style='width:560px'><div class='row'><div class='rowText'><div class='title'>语言</div></div><button type='button' class='selector' aria-haspopup='menu' aria-expanded='false'>English<svg class='chevron' width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor' stroke-width='1'/></svg></button></div></div>"
+    },
+    {
+     "label": "选择器悬停",
+     "note": "悬停模拟",
+     "css": "/* 状态模拟：把 .selector:hover 的填充规则原样搬到静态类上 */ .selector.forceHover { background: var(--dsw-alias-interactive-bg-hover); }",
+     "html": "<div style='width:560px'><div class='row'><div class='rowText'><div class='title'>语言</div></div><button type='button' class='selector forceHover' aria-haspopup='menu' aria-expanded='false'>简体中文<svg class='chevron' width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor' stroke-width='1'/></svg></button></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "useStore",
+     "type": "(select) => { active: string; options: readonly { id: string; label: string }[] }",
+     "default": "—",
+     "desc": "读取当前 locale id 与可用语言列表；列表随注册 / 卸载更新。"
+    },
+    {
+     "name": "setLocale",
+     "type": "(id: string) => void",
+     "default": "—",
+     "desc": "切换活动 locale，并持久化到 locale.preference。"
+    },
+    {
+     "name": "t",
+     "type": "(key: 'language.title') => string",
+     "default": "—",
+     "desc": "settings.locale 命名空间的标题文案。"
+    }
+   ],
+   "notes": "选择器没有自己的下拉样式：它只是 <code>Menu</code> 的 anchor，菜单右对齐并 portal，选中项由 <code>selectedId</code> 标出。自动检测（navigator 或 Native shell）是临时的，只有在这里选过才会写入 durable settings；语言定义被卸载时，选中的外部 locale 会退回可用的默认语言。",
+   "keywords": [
+    "语言",
+    "locale",
+    "language",
+    "简体中文",
+    "English",
+    "切换语言",
+    "语言选择"
+   ]
+  },
+  {
+   "id": "appearance-row",
+   "name": "AppearanceRow",
+   "exportName": "AppearanceRow",
+   "zh": "外观行",
+   "group": "settings",
+   "summary": "General 页的外观行：标题下是一排三枚选择立方体（浅色 / 深色 / 跟随系统），<code>flex: 1 1 180px</code> 平分宽度并用 <code>flex-wrap</code> 在窄面板里换行。每枚是图标在上、14/22 标签在下的纵向按钮：<code>padding: 20px 32px</code>、0.5px <code>--dsw-alias-border-l4</code> 描边、<code>--dsw-radius-xl</code>（R20）。选中态用 <code>--dsw-alias-bg-module-platform</code> 填充并把描边换成 <code>--dsw-static-neutral-bluish-400</code>；未选中项悬停只加 <code>--dsw-alias-interactive-bg-hover</code>。选中跟随持久化偏好，而不是当前解析出的活动主题。",
+   "source": "packages/client/ui-theme/src/client/AppearanceRow.tsx#L42",
+   "css": [
+    "packages/client/ui-theme/src/client/AppearanceRow.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-module-platform",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-border-l4",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-primary",
+    "--dsw-radius-xl",
+    "--dsw-static-neutral-bluish-400"
+   ],
+   "specimens": [
+    {
+     "label": "偏好：浅色",
+     "note": "偏好的浅色不等于当前解析结果——系统深色时 body 仍是深色，但立方体停在浅色",
+     "html": "<div style='width:600px'><div class='group'><div class='title'>外观</div><div class='cubeRow'><button type='button' class='themeCube selected' aria-pressed='true'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M8.00007 11.8117C10.1052 11.8117 11.8117 10.1052 11.8117 8.00007C11.8117 5.89499 10.1052 4.18848 8.00007 4.18848C5.89499 4.18848 4.18848 5.89499 4.18848 8.00007C4.18848 10.1052 5.89499 11.8117 8.00007 11.8117Z' stroke='currentColor' stroke-width='1.3'/><path d='M13.3899 8H15.1499' stroke='currentColor' stroke-width='1.3'/><path d='M11.8115 11.8115L13.0556 13.0556' stroke='currentColor' stroke-width='1.3'/><path d='M8 13.3901V15.1501' stroke='currentColor' stroke-width='1.3'/><path d='M4.18868 11.8115L2.94458 13.0556' stroke='currentColor' stroke-width='1.3'/><path d='M2.6101 8H0.850098' stroke='currentColor' stroke-width='1.3'/><path d='M4.18868 4.18856L2.94458 2.94446' stroke='currentColor' stroke-width='1.3'/><path d='M8 2.6101V0.850098' stroke='currentColor' stroke-width='1.3'/><path d='M11.8115 4.18856L13.0556 2.94446' stroke='currentColor' stroke-width='1.3'/></svg>浅色</button><button type='button' class='themeCube' aria-pressed='false'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M14.1127 8.70663C14.2576 8.60602 14.4627 8.71355 14.4386 8.88834C14.2901 9.96567 13.8731 10.9912 13.2229 11.8692C12.479 12.8735 11.4613 13.6421 10.2917 14.0829C9.1222 14.5236 7.85038 14.6179 6.62865 14.3543C5.40692 14.0907 4.28709 13.4805 3.40332 12.5967C2.51955 11.7129 1.90931 10.5931 1.64572 9.37135C1.38212 8.14962 1.47635 6.87779 1.91711 5.70825C2.35787 4.5387 3.12647 3.52103 4.13083 2.77714C5.00878 2.12689 6.03433 1.70994 7.11166 1.5614C7.28645 1.5373 7.39397 1.74238 7.29337 1.88734C6.68703 2.76099 6.37885 3.81241 6.42313 4.88345C6.47392 6.11194 6.98471 7.27645 7.85413 8.14587C8.72355 9.01529 9.88805 9.52608 11.1166 9.57687C12.1876 9.62114 13.239 9.31296 14.1127 8.70663Z' stroke='currentColor' stroke-width='1.3'/></svg>深色</button><button type='button' class='themeCube' aria-pressed='false'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M13.5 2.5H2.5C1.94772 2.5 1.5 2.94772 1.5 3.5V11.5C1.5 12.0523 1.94772 12.5 2.5 12.5H13.5C14.0523 12.5 14.5 12.0523 14.5 11.5V3.5C14.5 2.94772 14.0523 2.5 13.5 2.5Z' stroke='currentColor' stroke-width='1.3'/><path d='M5 14.5H11' stroke='currentColor' stroke-width='1.3'/></svg>跟随系统</button></div></div></div>"
+    },
+    {
+     "label": "偏好：跟随系统",
+     "html": "<div style='width:600px'><div class='group'><div class='title'>外观</div><div class='cubeRow'><button type='button' class='themeCube' aria-pressed='false'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M8.00007 11.8117C10.1052 11.8117 11.8117 10.1052 11.8117 8.00007C11.8117 5.89499 10.1052 4.18848 8.00007 4.18848C5.89499 4.18848 4.18848 5.89499 4.18848 8.00007C4.18848 10.1052 5.89499 11.8117 8.00007 11.8117Z' stroke='currentColor' stroke-width='1.3'/><path d='M13.3899 8H15.1499' stroke='currentColor' stroke-width='1.3'/><path d='M11.8115 11.8115L13.0556 13.0556' stroke='currentColor' stroke-width='1.3'/><path d='M8 13.3901V15.1501' stroke='currentColor' stroke-width='1.3'/><path d='M4.18868 11.8115L2.94458 13.0556' stroke='currentColor' stroke-width='1.3'/><path d='M2.6101 8H0.850098' stroke='currentColor' stroke-width='1.3'/><path d='M4.18868 4.18856L2.94458 2.94446' stroke='currentColor' stroke-width='1.3'/><path d='M8 2.6101V0.850098' stroke='currentColor' stroke-width='1.3'/><path d='M11.8115 4.18856L13.0556 2.94446' stroke='currentColor' stroke-width='1.3'/></svg>浅色</button><button type='button' class='themeCube' aria-pressed='false'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M14.1127 8.70663C14.2576 8.60602 14.4627 8.71355 14.4386 8.88834C14.2901 9.96567 13.8731 10.9912 13.2229 11.8692C12.479 12.8735 11.4613 13.6421 10.2917 14.0829C9.1222 14.5236 7.85038 14.6179 6.62865 14.3543C5.40692 14.0907 4.28709 13.4805 3.40332 12.5967C2.51955 11.7129 1.90931 10.5931 1.64572 9.37135C1.38212 8.14962 1.47635 6.87779 1.91711 5.70825C2.35787 4.5387 3.12647 3.52103 4.13083 2.77714C5.00878 2.12689 6.03433 1.70994 7.11166 1.5614C7.28645 1.5373 7.39397 1.74238 7.29337 1.88734C6.68703 2.76099 6.37885 3.81241 6.42313 4.88345C6.47392 6.11194 6.98471 7.27645 7.85413 8.14587C8.72355 9.01529 9.88805 9.52608 11.1166 9.57687C12.1876 9.62114 13.239 9.31296 14.1127 8.70663Z' stroke='currentColor' stroke-width='1.3'/></svg>深色</button><button type='button' class='themeCube selected' aria-pressed='true'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M13.5 2.5H2.5C1.94772 2.5 1.5 2.94772 1.5 3.5V11.5C1.5 12.0523 1.94772 12.5 2.5 12.5H13.5C14.0523 12.5 14.5 12.0523 14.5 11.5V3.5C14.5 2.94772 14.0523 2.5 13.5 2.5Z' stroke='currentColor' stroke-width='1.3'/><path d='M5 14.5H11' stroke='currentColor' stroke-width='1.3'/></svg>跟随系统</button></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "useStore",
+     "type": "(select) => { preference: ThemePreference }",
+     "default": "—",
+     "desc": "读取持久化的 light / dark / system 偏好。"
+    },
+    {
+     "name": "setTheme",
+     "type": "(id: ThemePreference) => void",
+     "default": "—",
+     "desc": "写入主题偏好；ui-theme 服务负责解析 system 并发布快照。"
+    },
+    {
+     "name": "t",
+     "type": "(key: ThemeKey) => string",
+     "default": "—",
+     "desc": "settings.theme 命名空间的外观标题与三种立方体标签。"
+    }
+   ],
+   "notes": "选中的描边色是 <code>--dsw-static-neutral-bluish-400</code>：别名层没有 bluish-400 这一档，所以直接读静态色板。立方体是普通 <code>&lt;button&gt;</code> + <code>aria-pressed</code>，不是 radio group——三枚按钮各自表达按下状态。系统跟随由 ui-theme 服务监听 <code>prefers-color-scheme</code>，行本身不解析主题。",
+   "keywords": [
+    "外观",
+    "主题",
+    "浅色",
+    "深色",
+    "跟随系统",
+    "theme",
+    "appearance"
+   ]
+  },
+  {
+   "id": "font-size-row",
+   "name": "FontSizeRow",
+   "exportName": "FontSizeRow",
+   "zh": "字号行",
+   "group": "settings",
+   "summary": "字号行：左侧标题 14/22 加一行 12/18 的说明（三级色），右侧控件是 72×36、12px 圆角的 <code>--dsw-alias-bg-module-platform</code> 数字步进器，值居中、等宽数字；右侧 8px 处叠着一列 17×12 的上下箭头，默认 <code>opacity: 0</code>，悬停或 <code>:focus-within</code> 时才显形，因此纯键盘聚焦也能看到箭头。步进器后跟一个 14px 的 <code>px</code> 单位标签，再跟 24×24 的「更多字体设置」展开按钮。到达范围端点时对应箭头 <code>disabled</code> 并降为 <code>--dsw-alias-label-caption</code>；文本角色范围 10–22px，默认 14px。",
+   "source": "packages/client/ui-theme/src/client/FontSizeRow.tsx#L49",
+   "css": [
+    "packages/client/ui-theme/src/client/FontSizeRow.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-layer-1",
+    "--dsw-alias-bg-module-platform",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-caption",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-radius-md",
+    "--dsw-radius-xs"
+   ],
+   "specimens": [
+    {
+     "label": "文本字号 14px（箭头列收起）",
+     "note": "箭头仍在 tab 顺序与无障碍树里，只是 opacity 为 0",
+     "html": "<div style='width:560px'><div class='row'><div class='rowText'><div class='title'>字号大小</div><div class='desc'>仅影响会话内容的字号</div></div><div class='control'><div class='stepper'><span class='value'>14</span><span class='arrows'><button type='button' class='arrow' aria-label='增大字号'><svg width='9' height='9' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10' stroke='currentColor' stroke-width='1'/></svg></button><button type='button' class='arrow' aria-label='减小字号'><svg width='9' height='9' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor' stroke-width='1'/></svg></button></span></div><span class='unit'>px</span><button type='button' class='expander' aria-label='更多字体设置' title='更多字体设置' aria-expanded='false'><svg width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor' stroke-width='1'/></svg></button></div></div></div>"
+    },
+    {
+     "label": "悬停：步进器露出箭头列",
+     "note": "悬停模拟",
+     "css": "/* 状态模拟：把 .stepper:hover .arrows 的 opacity 规则原样搬到静态类上 */ .stepper.forceShow .arrows { opacity: 1; }",
+     "html": "<div style='width:560px'><div class='row'><div class='rowText'><div class='title'>字号大小</div><div class='desc'>仅影响会话内容的字号</div></div><div class='control'><div class='stepper forceShow'><span class='value'>15</span><span class='arrows'><button type='button' class='arrow' aria-label='增大字号'><svg width='9' height='9' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10' stroke='currentColor' stroke-width='1'/></svg></button><button type='button' class='arrow' aria-label='减小字号'><svg width='9' height='9' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor' stroke-width='1'/></svg></button></span></div><span class='unit'>px</span><button type='button' class='expander' aria-label='更多字体设置' title='更多字体设置' aria-expanded='false'><svg width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor' stroke-width='1'/></svg></button></div></div></div>"
+    },
+    {
+     "label": "上限 22px：增大按钮禁用",
+     "note": "悬停模拟 + disabled 态",
+     "css": "/* 状态模拟：悬停时显示箭头列，与 .stepper:hover .arrows 一致 */ .stepper.forceShow .arrows { opacity: 1; }",
+     "html": "<div style='width:560px'><div class='row'><div class='rowText'><div class='title'>字号大小</div><div class='desc'>仅影响会话内容的字号</div></div><div class='control'><div class='stepper forceShow'><span class='value'>22</span><span class='arrows'><button type='button' class='arrow' aria-label='增大字号' disabled><svg width='9' height='9' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10' stroke='currentColor' stroke-width='1'/></svg></button><button type='button' class='arrow' aria-label='减小字号'><svg width='9' height='9' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor' stroke-width='1'/></svg></button></span></div><span class='unit'>px</span><button type='button' class='expander' aria-label='更多字体设置' title='更多字体设置' aria-expanded='false'><svg width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor' stroke-width='1'/></svg></button></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "useStore",
+     "type": "(select) => { fontSizes: Record<FontRole, number> }",
+     "default": "—",
+     "desc": "读取当前角色的字号；显示值跟随持久化设置而不是点击回声。"
+    },
+    {
+     "name": "role",
+     "type": "FontRole",
+     "default": "—",
+     "desc": "text / code / terminal；决定标题、说明、范围与写回字段。"
+    },
+    {
+     "name": "setFontSize",
+     "type": "(px: number) => void",
+     "default": "—",
+     "desc": "按角色的整数范围写入字号，Host 侧串行化连续手势。"
+    },
+    {
+     "name": "expander",
+     "type": "FontSizeRowExpander | undefined",
+     "default": "undefined",
+     "desc": "提供时多一个 24×24 展开按钮，通过 aria-controls 控制更多字体设置区域；展开时图标旋转 180°。"
+    },
+    {
+     "name": "t",
+     "type": "(key: ThemeKey) => string",
+     "default": "—",
+     "desc": "settings.theme 命名空间的角色标题、说明、增减与 px 单位文案。"
+    }
+   ],
+   "notes": "箭头列用 <code>opacity</code> 而不是 <code>visibility</code> 隐藏：按钮仍在 tab 顺序和无障碍树里，键盘聚焦到步进器时 <code>:focus-within</code> 会自己把箭头显示出来。箭头底色是 <code>color-mix(in srgb, var(--dsw-alias-bg-layer-1) 75%, transparent)</code>，在浅色与深色下都叠在模块填充上；hover 时升到完整的 layer-1。Desktop 的 <code>Mod +/-</code> 会同时改三个角色，各自在自己的范围里截断。",
+   "keywords": [
+    "字号",
+    "font size",
+    "步进器",
+    "stepper",
+    "文本字号",
+    "px"
+   ]
+  }
+ ]
+}

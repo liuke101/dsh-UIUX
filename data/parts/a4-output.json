@@ -1,0 +1,863 @@
+{
+ "schemaVersion": 1,
+ "note": "输出卡片（agent 工具结果）条目：TerminalBlock / ReadBlock / DiffBlock / SearchBlock / WebBlock / CodeBlock / JsonBlock / MarkdownText / CommandText。css 数组列出各卡片真实渲染路径上的 CSS Module：共享代码卡头部来自 CodeCard.module.css，终端卡还内联 CommandText / Pill / StateDot 的样式表，MarkdownText 的 answer 由 WebBlock 一并内联。",
+ "entries": [
+  {
+   "id": "terminal-block",
+   "name": "TerminalBlock",
+   "exportName": "TerminalBlock",
+   "zh": "终端输出",
+   "group": "output",
+   "summary": "shell 命令的结果卡片：左侧 30px 的 <code>--dsl-terminal-gutter</code> 放运行状态点，横幅每条命令一行（<code>$</code> + cwd 末段 + 可横向滚动的 <code>CommandText</code>），右侧是退出状态 <code>Pill</code> 与复制按钮；输出区 <code>white-space: pre</code> 保列，超过 <code>maxLines</code>（默认 16）时把中段折成头 8 + <code>… 其余 N 行</code> + 尾 8。输出里的 ANSI SGR 由 <code>ansi.ts</code> 解析成内联 token 色的 span，不引入类名。",
+   "source": "packages/client/ui-primitives/src/TerminalBlock.tsx#L173",
+   "css": [
+    "packages/client/ui-primitives/src/CommandText.module.css",
+    "packages/client/ui-primitives/src/Pill.module.css",
+    "packages/client/ui-primitives/src/StateDot.module.css",
+    "packages/client/ui-primitives/src/TerminalBlock.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-border-l2",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-markdown-code-block",
+    "--dsw-alias-state-error-primary",
+    "--dsw-alias-state-success-primary",
+    "--dsw-font-markdown-code-block",
+    "--dsw-font-xs-13",
+    "--dsw-radius-lg",
+    "--dsw-radius-sm",
+    "--dsw-alias-bg-layer-2",
+    "--dsw-alias-button-ghost-active-border",
+    "--dsw-alias-button-ghost-active-fill",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-state-idle-primary",
+    "--dsw-alias-state-warn-primary",
+    "--dsw-alias-label-primary-foreground",
+    "--dsw-alias-state-business-primary",
+    "--dsw-focus-ring-color",
+    "--dsw-focus-ring-width"
+   ],
+   "specimens": [
+    {
+     "label": "pnpm run test:gui：42 个文件全部通过（中段折叠）",
+     "note": "尾部就是 “Test Files 42 passed (42)”；exit 0 不画 Pill",
+     "html": "<div class=\"block\" data-terminal=\"\" data-body=\"\"><div class=\"header\"><div class=\"prompt\"><span class=\"runStateLabel\">已完成</span><div class=\"promptLine\"><span class=\"dot runState\" data-state=\"done\" style=\"width:10px;height:10px\" aria-hidden=\"true\"></span><span class=\"cwd\">ui-primitives</span><span class=\"text command\" data-command-text=\"\">pnpm run test:gui</span></div></div><button type=\"button\" class=\"copyButton\">复制</button></div><div class=\"output\"><div class=\"line\"><span style=\"color:var(--dsw-alias-state-success-primary)\">✓</span> packages/client/ui-primitives/tests/atoms.client.spec.tsx <span style=\"opacity:0.7\">(18 tests) 431ms</span></div><div class=\"line\"><span style=\"color:var(--dsw-alias-state-success-primary)\">✓</span> packages/client/ui-primitives/tests/read-block.client.spec.tsx <span style=\"opacity:0.7\">(14 tests) 219ms</span></div><div class=\"line\"><span style=\"color:var(--dsw-alias-state-success-primary)\">✓</span> packages/client/ui-primitives/tests/diff-block.client.spec.tsx <span style=\"opacity:0.7\">(11 tests) 186ms</span></div><div class=\"line\"><span style=\"color:var(--dsw-alias-state-success-primary)\">✓</span> packages/client/ui-primitives/tests/search-block.client.spec.tsx <span style=\"opacity:0.7\">(13 tests) 204ms</span></div><div class=\"line\"><span style=\"color:var(--dsw-alias-state-success-primary)\">✓</span> packages/client/ui-primitives/tests/markdown.client.spec.tsx <span style=\"opacity:0.7\">(27 tests) 386ms</span></div><div class=\"line\"><span style=\"color:var(--dsw-alias-state-success-primary)\">✓</span> packages/client/ui-tool/tests/tool-row.client.spec.tsx <span style=\"opacity:0.7\">(26 tests) 512ms</span></div><div class=\"line\"><span style=\"color:var(--dsw-alias-state-success-primary)\">✓</span> packages/client/ui-chat/tests/chat-scroll.client.spec.tsx <span style=\"opacity:0.7\">(15 tests) 297ms</span></div><div class=\"line\"><span style=\"color:var(--dsw-alias-state-success-primary)\">✓</span> packages/client/ui-conversation/tests/apply-wiring.client.spec.tsx <span style=\"opacity:0.7\">(9 tests) 168ms</span></div><div class=\"line\"><button type=\"button\" class=\"expand\" aria-expanded=\"false\" aria-label=\"展开其余 31 行输出\">… 其余 31 行</button></div><div class=\"line\"><span style=\"color:var(--dsw-alias-state-success-primary)\">✓</span> packages/client/ui-theme/tests/theme.client.spec.ts <span style=\"opacity:0.7\">(21 tests) 244ms</span></div><div class=\"line\"><span style=\"color:var(--dsw-alias-state-success-primary)\">✓</span> packages/client/ui-layout/tests/theme-presenter.client.spec.ts <span style=\"opacity:0.7\">(12 tests) 173ms</span></div><div class=\"line\"><span style=\"color:var(--dsw-alias-state-success-primary)\">✓</span> packages/client/ui-sidebar-right/tests/service.client.spec.ts <span style=\"opacity:0.7\">(34 tests) 402ms</span></div><div class=\"line\"></div><div class=\"line\"><span style=\"opacity:0.7\"> Test Files </span> <span style=\"font-weight:700;color:var(--dsw-alias-state-success-primary)\">42 passed</span> (42)</div><div class=\"line\"><span style=\"opacity:0.7\">      Tests </span> <span style=\"font-weight:700;color:var(--dsw-alias-state-success-primary)\">613 passed</span> (613)</div><div class=\"line\"><span style=\"opacity:0.7\">   Start at </span> 19:41:12</div><div class=\"line\"><span style=\"opacity:0.7\">   Duration </span> 38.42s (transform 12.31s, setup 6.02s, collect 18.44s, tests 9.12s)</div></div></div>"
+    },
+    {
+     "label": "非零退出：退出码 Pill + 红色 error 点",
+     "note": "labels.exitCode(1) = 退出码 1；短输出不折叠",
+     "html": "<div class=\"block\" data-terminal=\"\" data-body=\"\"><div class=\"header\"><div class=\"prompt\"><span class=\"runStateLabel\">失败</span><div class=\"promptLine\"><span class=\"dot runState\" data-state=\"error\" style=\"width:10px;height:10px\" aria-hidden=\"true\"></span><span class=\"cwd\">ui-primitives</span><span class=\"text command\" data-command-text=\"\">pnpm run test:gui</span></div></div><span class=\"pill status\">退出码 1</span><button type=\"button\" class=\"copyButton\">复制</button></div><div class=\"output\"><div class=\"line\"> <span style=\"color:var(--dsw-alias-state-error-primary)\">❯</span> packages/client/ui-primitives/tests/read-block.client.spec.tsx <span style=\"opacity:0.7\">(14 tests | 1 failed) 219ms</span></div><div class=\"line\">   <span style=\"color:var(--dsw-alias-state-error-primary)\">×</span> 窗口读取显示总数 <span style=\"opacity:0.7\">7ms</span></div><div class=\"line\">     <span style=\"color:var(--dsw-alias-state-error-primary)\">→</span> expected <span style=\"opacity:0.7\">'显示 12 / 36 行'</span> to contain <span style=\"opacity:0.7\">'显示 12 / 35 行'</span></div><div class=\"line\"></div><div class=\"line\"><span style=\"opacity:0.7\"> Test Files </span> <span style=\"font-weight:700;color:var(--dsw-alias-state-error-primary)\">1 failed</span> | <span style=\"font-weight:700;color:var(--dsw-alias-state-success-primary)\">41 passed</span> (42)</div><div class=\"line\"><span style=\"opacity:0.7\">      Tests </span> <span style=\"font-weight:700;color:var(--dsw-alias-state-error-primary)\">1 failed</span> | <span style=\"font-weight:700;color:var(--dsw-alias-state-success-primary)\">612 passed</span> (613)</div></div></div>"
+    },
+    {
+     "label": "无输出：正文画 noOutput 占位，也不出现复制控件",
+     "html": "<div class=\"block\" data-terminal=\"\" data-body=\"\"><div class=\"header\"><div class=\"prompt\"><span class=\"runStateLabel\">已完成</span><div class=\"promptLine\"><span class=\"dot runState\" data-state=\"done\" style=\"width:10px;height:10px\" aria-hidden=\"true\"></span><span class=\"cwd\">ui-primitives</span><span class=\"text command\" data-command-text=\"\">pnpm --filter @deepseek-ai/dsh-client-ui-primitives exec tsc --noEmit</span></div></div></div><div class=\"empty\">无输出</div></div>"
+    },
+    {
+     "label": "running：还没打印任何东西时只有横幅",
+     "note": "14px 旋转环 + “运行中”",
+     "html": "<div class=\"block\" data-terminal=\"\" data-running=\"\"><div class=\"header\"><div class=\"prompt\"><span class=\"runStateLabel\">运行中</span><div class=\"promptLine\"><span class=\"dot runState\" data-state=\"ongoing\" style=\"width:10px;height:10px\" aria-hidden=\"true\"></span><span class=\"cwd\">ui-primitives</span><span class=\"text command\" data-command-text=\"\">pnpm run test:gui</span></div></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "command",
+     "type": "string",
+     "default": "—",
+     "desc": "命令原文，按换行拆成多个提示行；每行独立横向滚动。"
+    },
+    {
+     "name": "cwd",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "提示符目录标签：等于 home 收敛为 <code>~</code>，否则取路径末段；省略时画纯 <code>$</code>。"
+    },
+    {
+     "name": "home",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "绝对 home 路径，用于上面的 <code>~</code> 收敛。"
+    },
+    {
+     "name": "output",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "输出文本，可含 ANSI 转义；结尾单个换行按终止符处理，不算空行。"
+    },
+    {
+     "name": "exitCode",
+     "type": "number | null | undefined",
+     "default": "—",
+     "desc": "结算退出码：非 0 画 Pill，<code>null</code>（结算但无退出码）画 noExitCode 文案，0 不画。"
+    },
+    {
+     "name": "signal",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "终止信号名，任何值都画 Pill 且优先于退出码。"
+    },
+    {
+     "name": "running",
+     "type": "boolean",
+     "default": "false",
+     "desc": "仍在运行：14px 旋转环 + “运行中”；无输出时只画横幅。"
+    },
+    {
+     "name": "background",
+     "type": "boolean",
+     "default": "false",
+     "desc": "后台调用：不画输出、占位、退出 Pill 与默认复制控件。"
+    },
+    {
+     "name": "maxLines",
+     "type": "number",
+     "default": "16",
+     "desc": "输出高度上限（行）；<code>Infinity</code> 关闭折叠。"
+    },
+    {
+     "name": "copyText",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "复制载荷覆盖；提供后即使尚无输出也保留复制控件。"
+    },
+    {
+     "name": "runStateDot",
+     "type": "boolean",
+     "default": "true",
+     "desc": "是否在 gutter 画运行状态点与读屏文字；由外层行承担状态时关掉。"
+    },
+    {
+     "name": "className",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "调用方的定位类。"
+    },
+    {
+     "name": "labels",
+     "type": "TerminalBlockLabels",
+     "default": "—",
+     "desc": "整份本地化文案：commandLine / signal / exitCode / noExitCode / running / failed / done / copy / copied / noOutput / collapse / expand。"
+    }
+   ],
+   "notes": "退出状态只画异常：<code>exit 0</code> 既不画 Pill 也不画失败色——与 bash 工具自己的退出标记同一条规则，所以“全部通过”的卡片只有绿色 done 点。状态点的三种可达状态是 running 旋转环、done 绿、error 红（信号或非零退出）。ANSI 的 8/16 基本色在 <code>ansi.ts</code> 里映射到 <code>--dsw-alias-state-*</code> 等 token（黑/白都落到 label-primary 以保证两种主题可读），256 色与 truecolor 保留 anser 的字面 rgb；<code>blink</code> 不还原。宿主可用 <code>--dsl-terminal-command-whitespace</code> / <code>--dsl-terminal-line-whitespace</code> 改成折行、用 <code>maxLines: Infinity</code> 关闭折叠。",
+   "keywords": [
+    "终端",
+    "命令输出",
+    "bash 卡片",
+    "ANSI",
+    "折叠",
+    "terminal"
+   ]
+  },
+  {
+   "id": "read-block",
+   "name": "ReadBlock",
+   "exportName": "ReadBlock",
+   "zh": "读取卡片",
+   "group": "output",
+   "summary": "read 工具的文件窗口：共享代码卡头部（tertiary 的语言与文件名、secondary 的换行与复制图标），正文是行号 gutter + 代码，gutter 宽度按本次返回的最大行号算（最小 3ch），窗口读取时头部右侧补一条 <code>显示 X / Y 行</code>。正文默认 <code>white-space: pre</code> 保列，启用换行后 <code>overflow-wrap: anywhere</code>。",
+   "source": "packages/client/ui-primitives/src/ReadBlock.tsx#L69",
+   "css": [
+    "packages/client/ui-primitives/src/CodeCard.module.css",
+    "packages/client/ui-primitives/src/ReadBlock.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-markdown-code-block",
+    "--dsw-font-markdown-code-block",
+    "--dsw-font-family",
+    "--dsw-radius-lg",
+    "--dsw-radius-sm",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-focus-ring-color",
+    "--dsw-focus-ring-width",
+    "--dsw-alias-state-business-primary"
+   ],
+   "specimens": [
+    {
+     "label": "窗口读取 Button.tsx 第 1–12 行（显示 12 / 36 行）",
+     "note": "gutter 3ch（最大行号 12 两位，下限 3ch）",
+     "html": "<div class=\"card block\" data-read=\"\" data-code-wrap=\"false\" style=\"--dsl-read-gutter:3ch\"><div class=\"header\" data-code-block-banner><div class=\"heading\"><span class=\"language\">tsx</span><span class=\"title\" title=\"packages/client/ui-primitives/src/Button.tsx\">packages/client/ui-primitives/src/Button.tsx</span></div><div class=\"actions\"><span class=\"status\">显示 12 / 36 行</span><button type=\"button\" class=\"action\" aria-label=\"自动换行\" aria-pressed=\"false\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M10.9999 8C10.9999 6.89543 10.1046 6 9 6H4.5V5H9C10.6568 5 11.9999 6.34315 11.9999 8C11.9999 9.65685 10.6568 11 9 11H6.20703L6.85351 11.6465L6.14648 12.3535L4.64652 10.8536C4.45126 10.6583 4.45126 10.3417 4.64652 10.1464L6.14648 8.64648L6.85351 9.35352L6.20703 10H9C10.1046 10 10.9999 9.10457 10.9999 8Z\" fill=\"currentColor\"/><path d=\"M2 15H1V1H2V15Z\" fill=\"currentColor\"/><path d=\"M15 15H14V1H15V15Z\" fill=\"currentColor\"/></svg></button><button type=\"button\" class=\"action\" aria-label=\"复制\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><rect x=\"1.52075\" y=\"4.07373\" width=\"10.3932\" height=\"10.3932\" rx=\"2\" stroke=\"currentColor\"/><path d=\"M11.9792 1.53296C13.36 1.53296 14.4792 2.65225 14.4792 4.03296V9.42847C14.4792 10.3756 13.9521 11.1987 13.1755 11.6228V10.3298C13.3652 10.0787 13.4792 9.7674 13.4792 9.42847V4.03296C13.4792 3.20453 12.8077 2.53296 11.9792 2.53296H6.58374C6.27966 2.53301 5.99684 2.6235 5.7605 2.77905H4.42358C4.85652 2.03463 5.66056 1.53304 6.58374 1.53296H11.9792Z\" fill=\"currentColor\"/></svg></button></div></div><div class=\"body\"><div class=\"line\"><span class=\"gutter\" aria-hidden\">1</span><span class=\"content\">// Button: token-styled button atom. Variants map to the --dsw-alias-button-*</span></div><div class=\"line\"><span class=\"gutter\" aria-hidden\">2</span><span class=\"content\">// fill families; no framework imports, all behavior via props.</span></div><div class=\"line\"><span class=\"gutter\" aria-hidden\">3</span><span class=\"content\"></span></div><div class=\"line\"><span class=\"gutter\" aria-hidden\">4</span><span class=\"content\">import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react'</span></div><div class=\"line\"><span class=\"gutter\" aria-hidden\">5</span><span class=\"content\">import clsx from 'clsx'</span></div><div class=\"line\"><span class=\"gutter\" aria-hidden\">6</span><span class=\"content\">import css from './Button.module.css'</span></div><div class=\"line\"><span class=\"gutter\" aria-hidden\">7</span><span class=\"content\"></span></div><div class=\"line\"><span class=\"gutter\" aria-hidden\">8</span><span class=\"content\">/** Visual variant, each backed by its --dsw-alias-button-* token family. */</span></div><div class=\"line\"><span class=\"gutter\" aria-hidden\">9</span><span class=\"content\">export type ButtonVariant = 'primary' | 'ghost' | 'outline' | 'toolbar'</span></div><div class=\"line\"><span class=\"gutter\" aria-hidden\">10</span><span class=\"content\"></span></div><div class=\"line\"><span class=\"gutter\" aria-hidden\">11</span><span class=\"content\">type ButtonProps = {</span></div><div class=\"line\"><span class=\"gutter\" aria-hidden\">12</span><span class=\"content\">  variant?: ButtonVariant</span></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "label",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "头部标题（文件路径或工具给的替代标题）；省略则不画标题。"
+    },
+    {
+     "name": "lines",
+     "type": "readonly ReadBlockLine[]",
+     "default": "—",
+     "desc": "窗口内的行，保持文件顺序；每行带自己的 1-based 行号与文本。"
+    },
+    {
+     "name": "totalLines",
+     "type": "number",
+     "default": "—",
+     "desc": "文件总行数；大于返回行数时头部显示窗口提示。"
+    },
+    {
+     "name": "lang",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "语法提示（读工具持久化的短 id，如 <code>tsx</code>）；未知或缺省走纯文本。"
+    },
+    {
+     "name": "maxLines",
+     "type": "number",
+     "default": "16",
+     "desc": "折叠前的内容行上限。"
+    },
+    {
+     "name": "labels",
+     "type": "ReadBlockLabels",
+     "default": "—",
+     "desc": "本地化文案：codeLabel / wrapLabel / unwrapLabel / window / copy / copied / collapse / expand。"
+    },
+    {
+     "name": "className",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "调用方的定位类。"
+    }
+   ],
+   "notes": "头部由共享的 <code>CodeToolbar</code> + <code>CodeCard.module.css</code> 渲染（不是本组件自己的类），<code>.card</code>/<code>.header</code>/<code>.language</code>/<code>.title</code>/<code>.status</code>/<code>.action</code> 都来自那张表。空文件不提供复制（避免把空文本写进剪贴板）。复制内容是不含 banner 与行号的原文。聊天行用 <code>CHAT_READ_MAX_LINES = 8</code>，详情面板保留 16。高亮是进入视口后才激活的：未激活时 <code>CodeBlock</code>/<code>ReadBlock</code> 走 plain 分支，激活后换成 shiki 的 <code>--shiki-*</code> 变量树。",
+   "keywords": [
+    "读取",
+    "文件窗口",
+    "行号",
+    "gutter",
+    "read"
+   ]
+  },
+  {
+   "id": "diff-block",
+   "name": "DiffBlock",
+   "exportName": "DiffBlock",
+   "zh": "差异卡片",
+   "group": "output",
+   "summary": "文件改动的内联 diff：每个改动一行，路径行用 secondary 加粗，增删行带 <code>- </code>/<code>+ </code> 前缀（<code>::before</code> 画出）与整行填充、左侧 3px 内阴影，上下文行 secondary；同一文件的多段改动之间插入 <code>⋯</code> 间隔行。行按 <code>structuredPatch</code> 的 3 行上下文生成，超过 256 次编辑搜索时退化为整段替换。",
+   "source": "packages/client/ui-primitives/src/DiffBlock.tsx#L168",
+   "css": [
+    "packages/client/ui-primitives/src/CodeCard.module.css",
+    "packages/client/ui-primitives/src/DiffBlock.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-code-diff-added",
+    "--dsw-alias-code-diff-deleted",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-state-error-primary",
+    "--dsw-alias-state-success-primary",
+    "--dsw-font-markdown-code-block",
+    "--dsw-alias-markdown-code-block",
+    "--dsw-font-family",
+    "--dsw-radius-lg",
+    "--dsw-radius-sm",
+    "--dsw-alias-interactive-bg-hover"
+   ],
+   "specimens": [
+    {
+     "label": "Button.module.css：两段改动（3 行上下文 + ⋯ 间隔）",
+     "note": "语言取自文件扩展名（.css → css）",
+     "html": "<div class=\"card block\" data-diff=\"\" data-code-wrap=\"false\"><div class=\"header\" data-code-block-banner><div class=\"heading\"><span class=\"language\">css</span></div><div class=\"actions\"><button type=\"button\" class=\"action\" aria-label=\"自动换行\" aria-pressed=\"false\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M10.9999 8C10.9999 6.89543 10.1046 6 9 6H4.5V5H9C10.6568 5 11.9999 6.34315 11.9999 8C11.9999 9.65685 10.6568 11 9 11H6.20703L6.85351 11.6465L6.14648 12.3535L4.64652 10.8536C4.45126 10.6583 4.45126 10.3417 4.64652 10.1464L6.14648 8.64648L6.85351 9.35352L6.20703 10H9C10.1046 10 10.9999 9.10457 10.9999 8Z\" fill=\"currentColor\"/><path d=\"M2 15H1V1H2V15Z\" fill=\"currentColor\"/><path d=\"M15 15H14V1H15V15Z\" fill=\"currentColor\"/></svg></button><button type=\"button\" class=\"action\" aria-label=\"复制\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><rect x=\"1.52075\" y=\"4.07373\" width=\"10.3932\" height=\"10.3932\" rx=\"2\" stroke=\"currentColor\"/><path d=\"M11.9792 1.53296C13.36 1.53296 14.4792 2.65225 14.4792 4.03296V9.42847C14.4792 10.3756 13.9521 11.1987 13.1755 11.6228V10.3298C13.3652 10.0787 13.4792 9.7674 13.4792 9.42847V4.03296C13.4792 3.20453 12.8077 2.53296 11.9792 2.53296H6.58374C6.27966 2.53301 5.99684 2.6235 5.7605 2.77905H4.42358C4.85652 2.03463 5.66056 1.53304 6.58374 1.53296H11.9792Z\" fill=\"currentColor\"/></svg></button></div></div><div class=\"body\"><div class=\"line path\">packages/client/ui-primitives/src/Button.module.css</div><div class=\"line context\">justify-content: center;</div><div class=\"line context\">gap: 4px;</div><div class=\"line context\">border: none;</div><div class=\"line del\">border-radius: var(--dsw-radius-md);</div><div class=\"line add\">border-radius: var(--dsw-radius-sm);</div><div class=\"line context\">cursor: pointer;</div><div class=\"line context\">font-size: 14px;</div><div class=\"line context\">line-height: 22px;</div><div class=\"line gap\">⋯</div><div class=\"line context\">height: 28px;</div><div class=\"line context\">line-height: 18px;</div><div class=\"line del\">padding: 0 10px;</div><div class=\"line add\">padding: 0 12px;</div><div class=\"line context\">border-radius: var(--dsw-radius-sm);</div><div class=\"line context\">}</div></div></div>"
+    },
+    {
+     "label": "开启换行：aria-pressed=\"true\"，图标换成 nowrap",
+     "note": "换行只影响显示，复制内容不变",
+     "html": "<div class=\"card block\" data-diff=\"\" data-code-wrap=\"true\"><div class=\"header\" data-code-block-banner><div class=\"heading\"><span class=\"language\">css</span></div><div class=\"actions\"><button type=\"button\" class=\"action\" aria-label=\"自动换行\" aria-pressed=\"true\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M2 15H1V1H2V15Z\" fill=\"currentColor\"/><path d=\"M12.3535 7.64645C12.5487 7.84171 12.5487 8.15829 12.3535 8.35355L9.85352 10.8535L9.14648 10.1465L10.793 8.5H3.5V7.5H10.793L9.14648 5.85352L9.85352 5.14648L12.3535 7.64645Z\" fill=\"currentColor\"/><path d=\"M15 15H14V1H15V15Z\" fill=\"currentColor\"/></svg></button><button type=\"button\" class=\"action\" aria-label=\"复制\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><rect x=\"1.52075\" y=\"4.07373\" width=\"10.3932\" height=\"10.3932\" rx=\"2\" stroke=\"currentColor\"/><path d=\"M11.9792 1.53296C13.36 1.53296 14.4792 2.65225 14.4792 4.03296V9.42847C14.4792 10.3756 13.9521 11.1987 13.1755 11.6228V10.3298C13.3652 10.0787 13.4792 9.7674 13.4792 9.42847V4.03296C13.4792 3.20453 12.8077 2.53296 11.9792 2.53296H6.58374C6.27966 2.53301 5.99684 2.6235 5.7605 2.77905H4.42358C4.85652 2.03463 5.66056 1.53304 6.58374 1.53296H11.9792Z\" fill=\"currentColor\"/></svg></button></div></div><div class=\"body\"><div class=\"line path\">packages/client/ui-primitives/src/Button.module.css</div><div class=\"line context\">gap: 4px;</div><div class=\"line context\">border: none;</div><div class=\"line del\">border-radius: var(--dsw-radius-md);</div><div class=\"line add\">border-radius: var(--dsw-radius-sm);</div><div class=\"line context\">cursor: pointer;</div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "diffs",
+     "type": "DiffHunk[]",
+     "default": "—",
+     "desc": "按文件顺序的改动列表（<code>{ path, oldText, newText }</code>）；空数组不渲染任何元素，同一路径的多段改动之间画 ⋯。"
+    },
+    {
+     "name": "labels",
+     "type": "DiffBlockLabels",
+     "default": "—",
+     "desc": "本地化文案：codeLabel / wrapLabel / unwrapLabel / copy / copied / collapse / expand。"
+    },
+    {
+     "name": "maxLines",
+     "type": "number",
+     "default": "16",
+     "desc": "正文行数上限（每行相加删行都算一行）。"
+    },
+    {
+     "name": "className",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "调用方的定位类。"
+    }
+   ],
+   "notes": "与 ReadBlock 共用同一份 <code>CodeCard.module.css</code> 头部；<code>.body</code>/<code>.line</code>/<code>.path</code>/<code>.del</code>/<code>.add</code>/<code>.context</code>/<code>.gap</code> 才是本组件自己的类。上下文行不进入工具摘要的增删计数（<code>diffTotals</code>）。混合语言的多个文件退化成 owner 的 <code>codeLabel</code>。末尾单个换行按终止符处理：仅“有无末尾换行”的差异不显示。折叠时复制仍带上全部行（增删行 <code>- </code>/<code>+ </code>、上下文两空格、路径与 ⋯ 原样）。",
+   "keywords": [
+    "diff",
+    "改动",
+    "增删行",
+    "patch",
+    "差异"
+   ]
+  },
+  {
+   "id": "search-block",
+   "name": "SearchBlock",
+   "exportName": "SearchBlock",
+   "zh": "检索卡片",
+   "group": "output",
+   "summary": "grep / glob 结果卡片：标题行是结果摘要与复制按钮，正文两种形态由 <code>kind</code> 决定——<code>matches</code> 每组文件一个可折叠的文件头（加粗路径 + 命中数）加逐行命中（tertiary 行号 + 原文），<code>paths</code> 则是每行一个路径。行高固定 22px、不折行，超出 16 行按头尾折叠，尾部若从某文件的命中中间开始会补回该文件的头。",
+   "source": "packages/client/ui-primitives/src/SearchBlock.tsx#L177",
+   "css": [
+    "packages/client/ui-primitives/src/SearchBlock.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-markdown-code-block",
+    "--dsw-alias-markdown-code-block-banner",
+    "--dsw-font-markdown-code-block",
+    "--dsw-font-xs-13",
+    "--dsw-radius-lg"
+   ],
+   "specimens": [
+    {
+     "label": "grep --dsw-alias-label-tertiary（截断：显示 10 / 共 36 处匹配）",
+     "note": "fileHeader 是折叠控件，aria-expanded=\"true\"",
+     "html": "<div class=\"block\" data-search=\"matches\"><div class=\"header\"><span class=\"summary\">显示 10 / 共 36 处匹配 · 4 个文件</span><button type=\"button\" class=\"copyButton\">复制</button></div><div class=\"body\"><div><button type=\"button\" class=\"fileHeader\" aria-expanded=\"true\"><span class=\"filePath\">packages/client/ui-primitives/src/ansi.ts</span><span class=\"fileCount\">1</span></button></div><div><div class=\"line\"><span class=\"lineNumber\">48: </span>  '85,85,85': 'var(--dsw-alias-label-tertiary)',</div></div><div><button type=\"button\" class=\"fileHeader\" aria-expanded=\"true\"><span class=\"filePath\">packages/client/ui-primitives/src/TerminalBlock.module.css</span><span class=\"fileCount\">3</span></button></div><div><div class=\"line\"><span class=\"lineNumber\">110: </span>  color: var(--dsw-alias-label-tertiary);</div></div><div><div class=\"line\"><span class=\"lineNumber\">191: </span>  color: var(--dsw-alias-label-tertiary);</div></div><div><div class=\"line\"><span class=\"lineNumber\">204: </span>  color: var(--dsw-alias-label-tertiary);</div></div><div><button type=\"button\" class=\"fileHeader\" aria-expanded=\"true\"><span class=\"filePath\">packages/client/ui-primitives/src/SearchBlock.module.css</span><span class=\"fileCount\">4</span></button></div><div><div class=\"line\"><span class=\"lineNumber\">61: </span>  color: var(--dsw-alias-label-tertiary);</div></div><div><div class=\"line\"><span class=\"lineNumber\">89: </span>  color: var(--dsw-alias-label-tertiary);</div></div><div><div class=\"line\"><span class=\"lineNumber\">98: </span>  color: var(--dsw-alias-label-tertiary);</div></div><div><div class=\"line\"><span class=\"lineNumber\">111: </span>  color: var(--dsw-alias-label-tertiary);</div></div><div><button type=\"button\" class=\"fileHeader\" aria-expanded=\"true\"><span class=\"filePath\">packages/client/ui-primitives/src/StateDot.module.css</span><span class=\"fileCount\">2</span></button></div><div><div class=\"line\"><span class=\"lineNumber\">39: </span>  color: var(--dsw-alias-label-tertiary);</div></div><div><div class=\"line\"><span class=\"lineNumber\">97: </span>.step { display: inline-flex; flex: none; align-items: center; justify-content: center; box-sizing: border-box; border-radius: 50%; corner-shape: round; border: 1.5px solid var(--dsw-alias-label-tertiary); color: var(--dsw-alias-label-primary-foreground); }</div></div></div></div>"
+    },
+    {
+     "label": "kind=\"paths\"（glob 形态）",
+     "html": "<div class=\"block\" data-search=\"paths\"><div class=\"header\"><span class=\"summary\">10 个路径</span><button type=\"button\" class=\"copyButton\">复制</button></div><div class=\"body\"><div><div class=\"line\">packages/client/ui-primitives/src/Button.module.css</div></div><div><div class=\"line\">packages/client/ui-primitives/src/CodeCard.module.css</div></div><div><div class=\"line\">packages/client/ui-primitives/src/CommandText.module.css</div></div><div><div class=\"line\">packages/client/ui-primitives/src/DiffBlock.module.css</div></div><div><div class=\"line\">packages/client/ui-primitives/src/ReadBlock.module.css</div></div><div><div class=\"line\">packages/client/ui-primitives/src/SearchBlock.module.css</div></div><div><div class=\"line\">packages/client/ui-primitives/src/StateDot.module.css</div></div><div><div class=\"line\">packages/client/ui-primitives/src/TerminalBlock.module.css</div></div><div><div class=\"line\">packages/client/ui-primitives/src/WebBlock.module.css</div></div><div><div class=\"line\">packages/client/ui-primitives/src/markdown/CodeBlock.module.css</div></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "kind",
+     "type": "'matches' | 'paths'",
+     "default": "—",
+     "desc": "判别两种形态：分组命中或平铺路径。"
+    },
+    {
+     "name": "files",
+     "type": "SearchFileGroup[]",
+     "default": "—",
+     "desc": "<code>kind=\"matches\"</code> 时按文件分组、保持首见顺序，每组含 <code>path</code> 与 <code>matches[{ lineNumber, line }]</code>。"
+    },
+    {
+     "name": "paths",
+     "type": "string[]",
+     "default": "—",
+     "desc": "<code>kind=\"paths\"</code> 时的路径列表，保持结果顺序（截断时为保留页）。"
+    },
+    {
+     "name": "truncated",
+     "type": "boolean",
+     "default": "—",
+     "desc": "工具是否截断过内联结果；为真时摘要折入截断前的 <code>total</code>。"
+    },
+    {
+     "name": "total",
+     "type": "number",
+     "default": "—",
+     "desc": "截断前的结果总数（未截断时等于当前条数）。"
+    },
+    {
+     "name": "maxLines",
+     "type": "number",
+     "default": "16",
+     "desc": "折叠前的行数上限；文件头、命中行、路径行一律各算一行。"
+    },
+    {
+     "name": "labels",
+     "type": "SearchBlockLabels",
+     "default": "—",
+     "desc": "本地化文案：pathsSummary / matchesSummary / copy / copied / noResults / collapse / expand。"
+    },
+    {
+     "name": "className",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "调用方的定位类。"
+    }
+   ],
+   "notes": "复制载荷是完整结构化结果（含被折叠组与折叠行），不是卡片当前显示的部分。截断时摘要写成 <code>显示 X / 共 N 处匹配 · K 个文件</code>，避免把保留页当成完整结果。聊天行的上限是 <code>CHAT_SEARCH_MAX_LINES = 8</code>。",
+   "keywords": [
+    "grep",
+    "glob",
+    "搜索结果",
+    "命中",
+    "检索"
+   ]
+  },
+  {
+   "id": "web-block",
+   "name": "WebBlock",
+   "exportName": "WebBlock",
+   "zh": "联网卡片",
+   "group": "output",
+   "summary": "web_search / web_fetch 的结果卡片，由 <code>kind</code> 分两种正文：<code>search</code> 先渲染 provider 的 answer（走 <code>MarkdownText</code>），再列出编号来源（标题、URL、摘要、时间，最多 320px 高就地滚动），截断时补一行提示；<code>fetch</code> 只画一行等宽 URL 与 <code>HTTP 200</code> 状态、截断说明。",
+   "source": "packages/client/ui-primitives/src/WebBlock.tsx#L194",
+   "css": [
+    "packages/client/ui-primitives/src/WebBlock.module.css",
+    "packages/client/ui-primitives/src/markdown/MarkdownText.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-link",
+    "--dsw-alias-markdown-code-block",
+    "--dsw-font-xs-13",
+    "--dsw-radius-lg",
+    "--dsw-alias-bg-base",
+    "--dsw-alias-border-l1",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-border-l3",
+    "--dsw-alias-label-caption",
+    "--dsw-alias-markdown-inline-code",
+    "--dsw-alias-state-business-primary",
+    "--dsw-focus-ring-color",
+    "--dsw-focus-ring-width",
+    "--dsw-font-markdown-base",
+    "--dsw-font-markdown-base-strong",
+    "--dsw-font-markdown-code",
+    "--dsw-font-markdown-h1",
+    "--dsw-font-markdown-h2",
+    "--dsw-font-markdown-h3",
+    "--dsw-font-markdown-h4",
+    "--dsw-font-markdown-table",
+    "--dsw-font-markdown-table-head",
+    "--dsw-radius-md",
+    "--dsw-radius-sm",
+    "--dsw-radius-xs"
+   ],
+   "specimens": [
+    {
+     "label": "web_search：answer + 三条来源 + 截断提示",
+     "note": "来源列表用 <li value> 固定序号",
+     "html": "<div class=\"block\" data-web=\"search\"><div class=\"answer\"><div class=\"markdown\"><p>Vitest 的 <code>--reporter</code> 决定终端输出形态，<code>--pool=forks</code> 让每个测试文件在独立进程运行，二者都写进 <code>package.json</code> 的 <code>test:gui</code> 脚本即可。</p></div></div><ol class=\"sources\"><li class=\"source\" value=\"1\"><a class=\"sourceLink\" href=\"https://vitest.dev/guide/cli.html\" target=\"_blank\" rel=\"noopener noreferrer\"><svg width=\"14\" height=\"14\" class=\"linkIcon\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1.3\"><path d=\"M7.99986 14.0887C11.3626 14.0887 14.0886 11.3627 14.0886 7.99998C14.0886 4.63727 11.3626 1.91125 7.99986 1.91125C4.63715 1.91125 1.91113 4.63727 1.91113 7.99998C1.91113 11.3627 4.63715 14.0887 7.99986 14.0887Z\" stroke=\"currentColor\"/><path d=\"M2.34619 8H13.6538\" stroke=\"currentColor\" stroke-linecap=\"square\"/><path d=\"M7.99976 14.0889C9.23509 14.0889 10.1743 11.3629 10.1743 8.00006C10.1743 4.63739 9.23509 1.91138 7.99976 1.91138\" stroke=\"currentColor\"/><path d=\"M7.99973 14.0889C6.76445 14.0889 5.8252 11.3629 5.8252 8.00006C5.8252 4.63739 6.76445 1.91138 7.99973 1.91138\" stroke=\"currentColor\"/></svg>Command Line Interface | Vitest</a><div class=\"snippet\">CLI options for filtering, reporters, pools, and coverage.</div><div class=\"published\">2026-09-30</div></li><li class=\"source\" value=\"2\"><a class=\"sourceLink\" href=\"https://pnpm.io/cli/run\" target=\"_blank\" rel=\"noopener noreferrer\"><svg width=\"14\" height=\"14\" class=\"linkIcon\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1.3\"><path d=\"M7.99986 14.0887C11.3626 14.0887 14.0886 11.3627 14.0886 7.99998C14.0886 4.63727 11.3626 1.91125 7.99986 1.91125C4.63715 1.91125 1.91113 4.63727 1.91113 7.99998C1.91113 11.3627 4.63715 14.0887 7.99986 14.0887Z\" stroke=\"currentColor\"/><path d=\"M2.34619 8H13.6538\" stroke=\"currentColor\" stroke-linecap=\"square\"/><path d=\"M7.99976 14.0889C9.23509 14.0889 10.1743 11.3629 10.1743 8.00006C10.1743 4.63739 9.23509 1.91138 7.99976 1.91138\" stroke=\"currentColor\"/><path d=\"M7.99973 14.0889C6.76445 14.0889 5.8252 11.3629 5.8252 8.00006C5.8252 4.63739 6.76445 1.91138 7.99973 1.91138\" stroke=\"currentColor\"/></svg>pnpm run | pnpm</a><div class=\"snippet\">Run a script defined in package.json, forwarding extra arguments after --.</div><div class=\"published\">2026-08-14</div></li><li class=\"source\" value=\"3\"><a class=\"sourceLink\" href=\"https://vitejs.dev/guide/features\" target=\"_blank\" rel=\"noopener noreferrer\"><svg width=\"14\" height=\"14\" class=\"linkIcon\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1.3\"><path d=\"M7.99986 14.0887C11.3626 14.0887 14.0886 11.3627 14.0886 7.99998C14.0886 4.63727 11.3626 1.91125 7.99986 1.91125C4.63715 1.91125 1.91113 4.63727 1.91113 7.99998C1.91113 11.3627 4.63715 14.0887 7.99986 14.0887Z\" stroke=\"currentColor\"/><path d=\"M2.34619 8H13.6538\" stroke=\"currentColor\" stroke-linecap=\"square\"/><path d=\"M7.99976 14.0889C9.23509 14.0889 10.1743 11.3629 10.1743 8.00006C10.1743 4.63739 9.23509 1.91138 7.99976 1.91138\" stroke=\"currentColor\"/><path d=\"M7.99973 14.0889C6.76445 14.0889 5.8252 11.3629 5.8252 8.00006C5.8252 4.63739 6.76445 1.91138 7.99973 1.91138\" stroke=\"currentColor\"/></svg>Features | Vite</a><div class=\"snippet\">Importing CSS Modules returns the local class-name map for the importing module.</div></li></ol><div class=\"truncated\">来源列表已截断</div></div>"
+    },
+    {
+     "label": "抓取页面：标题（h2）+ 正文摘录，作为 answer 渲染",
+     "note": "fetch 正文没有标题/摘录槽位，页面内容只能走 search 的 answer",
+     "html": "<div class=\"block\" data-web=\"search\"><div class=\"answer\"><div class=\"markdown\"><h2>Command Line Interface | Vitest</h2><p>Run <code>vitest</code> with no arguments to start the watcher; use <code>vitest run</code> for a single pass. Filters combine as AND: <code>vitest run packages/client packages/host</code> only executes spec files under both directories, and <code>--reporter=verbose</code> prints one line per test file.</p></div></div><ol class=\"sources\"><li class=\"source\" value=\"1\"><a class=\"sourceLink\" href=\"https://vitest.dev/guide/cli.html\" target=\"_blank\" rel=\"noopener noreferrer\"><svg width=\"14\" height=\"14\" class=\"linkIcon\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1.3\"><path d=\"M7.99986 14.0887C11.3626 14.0887 14.0886 11.3627 14.0886 7.99998C14.0886 4.63727 11.3626 1.91125 7.99986 1.91125C4.63715 1.91125 1.91113 4.63727 1.91113 7.99998C1.91113 11.3627 4.63715 14.0887 7.99986 14.0887Z\" stroke=\"currentColor\"/><path d=\"M2.34619 8H13.6538\" stroke=\"currentColor\" stroke-linecap=\"square\"/><path d=\"M7.99976 14.0889C9.23509 14.0889 10.1743 11.3629 10.1743 8.00006C10.1743 4.63739 9.23509 1.91138 7.99976 1.91138\" stroke=\"currentColor\"/><path d=\"M7.99973 14.0889C6.76445 14.0889 5.8252 11.3629 5.8252 8.00006C5.8252 4.63739 6.76445 1.91138 7.99973 1.91138\" stroke=\"currentColor\"/></svg>Command Line Interface | Vitest</a><div class=\"snippet\">Retrieved 2026-10-18; excerpt is the section on filtering and reporters.</div><div class=\"published\">2026-09-30</div></li></ol></div>"
+    },
+    {
+     "label": "web_fetch 正文：URL + HTTP 状态 + 截断说明",
+     "html": "<div class=\"block fetch\" data-web=\"fetch\"><a class=\"fetchUrl\" href=\"https://vitest.dev/guide/cli.html\" target=\"_blank\" rel=\"noopener noreferrer\"><svg width=\"14\" height=\"14\" class=\"linkIcon\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1.3\"><path d=\"M7.99986 14.0887C11.3626 14.0887 14.0886 11.3627 14.0886 7.99998C14.0886 4.63727 11.3626 1.91125 7.99986 1.91125C4.63715 1.91125 1.91113 4.63727 1.91113 7.99998C1.91113 11.3627 4.63715 14.0887 7.99986 14.0887Z\" stroke=\"currentColor\"/><path d=\"M2.34619 8H13.6538\" stroke=\"currentColor\" stroke-linecap=\"square\"/><path d=\"M7.99976 14.0889C9.23509 14.0889 10.1743 11.3629 10.1743 8.00006C10.1743 4.63739 9.23509 1.91138 7.99976 1.91138\" stroke=\"currentColor\"/><path d=\"M7.99973 14.0889C6.76445 14.0889 5.8252 11.3629 5.8252 8.00006C5.8252 4.63739 6.76445 1.91138 7.99973 1.91138\" stroke=\"currentColor\"/></svg>https://vitest.dev/guide/cli.html</a><div class=\"fetchMeta\"><span class=\"status\">HTTP 200</span><span class=\"truncated\">内容已截断</span></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "kind",
+     "type": "'search' | 'fetch'",
+     "default": "—",
+     "desc": "选 search 正文（answer + 来源）或 fetch 正文（URL + 状态）。"
+    },
+    {
+     "name": "answer",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "provider 生成的答案，按 markdown 渲染在来源列表上方。"
+    },
+    {
+     "name": "sources",
+     "type": "WebSourceView[]",
+     "default": "—",
+     "desc": "来源列表：<code>url</code> 必填，<code>title</code>/<code>snippet</code>/<code>publishedAt</code> 可选。"
+    },
+    {
+     "name": "url",
+     "type": "string",
+     "default": "—",
+     "desc": "fetch 形态的最终 URL（跟随允许的重定向之后）。"
+    },
+    {
+     "name": "statusCode",
+     "type": "number",
+     "default": "—",
+     "desc": "fetch 形态的 HTTP 状态码。"
+    },
+    {
+     "name": "truncated",
+     "type": "boolean",
+     "default": "—",
+     "desc": "来源列表或抓取内容被上限截断。"
+    },
+    {
+     "name": "labels",
+     "type": "WebBlockLabels",
+     "default": "—",
+     "desc": "本地化文案：noResults / sourcesTruncated / http / contentTruncated / markdown。"
+    },
+    {
+     "name": "className",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "调用方的定位类。"
+    }
+   ],
+   "notes": "answer 由 <code>MarkdownText</code> 渲染，所以本条目把它的样式表一并内联；<code>.source</code>/<code>.sourceLink</code>/<code>.snippet</code>/<code>.fetchUrl</code> 等是本组件自己的类。只有 <code>http(s)</code> 变成可点的外链，其他协议与解析失败的 URL 退化为纯文本（比 MarkdownText 的白名单少了 <code>mailto:</code>，检索 URL 不可能是邮箱）。无 title 时用主机名、再退回原串，标签不会为空。已知缺口：fetch 正文只有 URL 与状态，没有标题与正文摘录槽位——要展示抓到的页面内容，只能放进 search 形态的 answer（见第二个示例）或来源 snippet。",
+   "keywords": [
+    "联网",
+    "搜索来源",
+    "web_fetch",
+    "引用",
+    "URL"
+   ]
+  },
+  {
+   "id": "code-block",
+   "name": "CodeBlock",
+   "exportName": "CodeBlock",
+   "zh": "代码块",
+   "group": "output",
+   "summary": "markdown 围栏与源码预览共用的代码卡：默认画 11px 的 infostring 横幅与文字复制按钮；传入 <code>toolbarLabels</code> 后换成共享代码卡头部（tertiary 语言 + secondary 图标）并补齐内边距，<code>lineNumbers</code> 打开行号 gutter，宽度按行号位数算（下限 2ch）。围栏默认开启换行，源码预览按 owner 的 <code>wrap</code> 决定。",
+   "source": "packages/client/ui-primitives/src/markdown/CodeBlock.tsx#L71",
+   "css": [
+    "packages/client/ui-primitives/src/CodeCard.module.css",
+    "packages/client/ui-primitives/src/markdown/CodeBlock.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-base",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-markdown-code-block",
+    "--dsw-alias-markdown-code-block-banner",
+    "--dsw-font-family",
+    "--dsw-font-markdown-code-block",
+    "--dsw-radius-lg",
+    "--dsw-alias-label-secondary",
+    "--dsw-radius-sm",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-focus-ring-color",
+    "--dsw-alias-state-business-primary"
+   ],
+   "specimens": [
+    {
+     "label": "toolbarLabels + lineNumbers（源码预览形态）",
+     "note": "plain 分支：高亮要进入视口后才激活",
+     "html": "<div class=\"block md-code-block numbered card\" data-line-numbers=\"true\" data-code-wrap=\"true\" style=\"--dsl-code-block-line-number-width:2ch\"><div class=\"bannerWrap\"><div class=\"header\" data-code-block-banner><div class=\"heading\"><span class=\"language\">ts</span></div><div class=\"actions\"><button type=\"button\" class=\"action\" aria-label=\"自动换行\" aria-pressed=\"true\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M2 15H1V1H2V15Z\" fill=\"currentColor\"/><path d=\"M12.3535 7.64645C12.5487 7.84171 12.5487 8.15829 12.3535 8.35355L9.85352 10.8535L9.14648 10.1465L10.793 8.5H3.5V7.5H10.793L9.14648 5.85352L9.85352 5.14648L12.3535 7.64645Z\" fill=\"currentColor\"/><path d=\"M15 15H14V1H15V15Z\" fill=\"currentColor\"/></svg></button><button type=\"button\" class=\"action\" aria-label=\"复制\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><rect x=\"1.52075\" y=\"4.07373\" width=\"10.3932\" height=\"10.3932\" rx=\"2\" stroke=\"currentColor\"/><path d=\"M11.9792 1.53296C13.36 1.53296 14.4792 2.65225 14.4792 4.03296V9.42847C14.4792 10.3756 13.9521 11.1987 13.1755 11.6228V10.3298C13.3652 10.0787 13.4792 9.7674 13.4792 9.42847V4.03296C13.4792 3.20453 12.8077 2.53296 11.9792 2.53296H6.58374C6.27966 2.53301 5.99684 2.6235 5.7605 2.77905H4.42358C4.85652 2.03463 5.66056 1.53304 6.58374 1.53296H11.9792Z\" fill=\"currentColor\"/></svg></button></div></div></div><div class=\"content\" data-code-block-content><pre class=\"plain\"><code><span class=\"line\">/**</span>\n<span class=\"line\"> * Compute the head/tail cap metrics for a list of `total` rows against `maxLines`,</span>\n<span class=\"line\"> * given whether the surface is expanded. Pure arithmetic; the caller slices its</span>\n<span class=\"line\"> * own rows with `headLines`/`tailLines` so a block can layer its own concerns</span>\n<span class=\"line\"> * (SearchBlock restores a tail file header) on top.</span>\n<span class=\"line\"> * @param total - the list's row count.</span>\n<span class=\"line\"> * @param maxLines - the collapsed-height cap in rows.</span>\n<span class=\"line\"> * @param expanded - whether the surface is expanded (uncaps the list).</span>\n<span class=\"line\"> * @returns the split metrics.</span>\n<span class=\"line\"> */</span>\n<span class=\"line\">export function headTailCap(total: number, maxLines: number, expanded: boolean): HeadTailCap {</span>\n<span class=\"line\">  const hidden = total - maxLines</span>\n<span class=\"line\">  const headLines = Math.ceil(maxLines / 2)</span>\n<span class=\"line\">  return { hidden, capped: hidden > 0 &amp;&amp; !expanded, headLines, tailLines: maxLines - headLines }</span>\n<span class=\"line\">}</span></code></pre></div></div>"
+    },
+    {
+     "label": "默认横幅：infostring + 文字复制按钮",
+     "note": "toolbarLabels 缺省时的围栏形态",
+     "html": "<div class=\"block md-code-block\"><div class=\"bannerWrap\"><div class=\"banner\" data-code-block-banner><div class=\"infostring\">ts</div><div class=\"action\"><button type=\"button\" class=\"copyButton\">复制</button></div></div></div><div class=\"content\" data-code-block-content><pre class=\"plain\"><code><span class=\"line\">const cap = headTailCap(lines.length, maxLines, expanded)</span>\n<span class=\"line\">const head = lines.slice(0, cap.headLines)</span>\n<span class=\"line\">const tail = lines.slice(lines.length - cap.tailLines)</span></code></pre></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "code",
+     "type": "string",
+     "default": "—",
+     "desc": "源码原文；显示时去掉结尾单个换行。"
+    },
+    {
+     "name": "lang",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "语法提示（markdown 围栏 info 或固定 id）；未知走纯文本。"
+    },
+    {
+     "name": "lineNumbers",
+     "type": "boolean",
+     "default": "false",
+     "desc": "画行号 gutter（复制文本不含行号）。"
+    },
+    {
+     "name": "showHeader",
+     "type": "boolean",
+     "default": "true",
+     "desc": "是否渲染头部；owner 自带工具栏时置 false。"
+    },
+    {
+     "name": "toolbarLabels",
+     "type": "CodeToolbarLabels | undefined",
+     "default": "—",
+     "desc": "启用共享代码卡头部与间距；缺省走 infostring 横幅。"
+    },
+    {
+     "name": "wrap",
+     "type": "boolean | undefined",
+     "default": "—",
+     "desc": "配合 toolbarLabels：跟随 owner 的换行偏好并隐藏本卡片的换行按钮。"
+    },
+    {
+     "name": "streaming",
+     "type": "boolean | undefined",
+     "default": "—",
+     "desc": "内容仍在增长：用每实例的增量高亮会话，只重切新增文本。"
+    },
+    {
+     "name": "copyLabel",
+     "type": "string",
+     "default": "—",
+     "desc": "复制按钮空闲文案（owner 本地化）。"
+    },
+    {
+     "name": "copiedLabel",
+     "type": "string",
+     "default": "—",
+     "desc": "复制成功后的短时文案。"
+    },
+    {
+     "name": "contentRef",
+     "type": "Ref<HTMLDivElement> | undefined",
+     "default": "—",
+     "desc": "内容节点的 ref，供 owner 当滚动容器用。"
+    },
+    {
+     "name": "className",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "调用方的定位类。"
+    }
+   ],
+   "notes": "传入 <code>toolbarLabels</code> 时头部来自 <code>CodeCard.module.css</code>，未传时用本组件的 <code>.banner</code> + <code>.infostring</code>。高亮走 shiki 的 css-variables 主题，颜色全部来自 <code>--shiki-*</code>；未激活、语法未加载或未注册语言时渲染 <code>pre.plain</code> 分支，DOM 与高亮树逐行等价（每行一个 <code>.line</code>）。复制读的是 <code>pre</code> 的 textContent。示例中的行号宽度变量 <code>--dsl-code-block-line-number-width</code> 由组件自己写入。",
+   "keywords": [
+    "代码",
+    "围栏",
+    "行号",
+    "shiki",
+    "fence"
+   ]
+  },
+  {
+   "id": "json-block",
+   "name": "JsonBlock",
+   "exportName": "JsonBlock",
+   "zh": "JSON 块",
+   "group": "output",
+   "summary": "可折叠的只读 JSON 块：一行 <code>▸ label</code> 切换按钮，展开后在 200px 高的等宽 <code>pre</code> 里画 <code>JSON.stringify(payload, null, 2)</code>，超过 20000 字符截断并追加 owner 给的脚注。用于 UI 版本不认识的会话事件或内容块兜底。",
+   "source": "packages/client/ui-primitives/src/markdown/JsonBlock.tsx#L8",
+   "css": [
+    "packages/client/ui-primitives/src/markdown/JsonBlock.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-border-l1",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-markdown-code-block",
+    "--dsw-radius-lg",
+    "--dsw-radius-sm"
+   ],
+   "specimens": [
+    {
+     "label": "折叠（defaultOpen=false）",
+     "note": "owner 文案：未知内容块",
+     "html": "<div class=\"root\"><button type=\"button\" class=\"toggle\">▸ 未知内容块</button></div>"
+    },
+    {
+     "label": "展开：一条会话事件负载",
+     "note": "JSON.stringify(payload, null, 2)",
+     "html": "<div class=\"root\"><button type=\"button\" class=\"toggle\">▾ 附加内容块</button><pre class=\"body\">{\n  \"seq\": 376,\n  \"time\": 1789265577475,\n  \"type\": \"tool/result\",\n  \"surfaceOp\": \"append\",\n  \"data\": {\n    \"turn\": 52,\n    \"step\": 0,\n    \"message\": {\n      \"id\": \"e9bbfe6c-96f3-44b6-b65c-89997783be1e\",\n      \"role\": \"tool\",\n      \"toolCallId\": \"fx-call-52\",\n      \"source\": {\n        \"kind\": \"tool\",\n        \"callId\": \"fx-call-52\"\n      },\n      \"content\": [\n        {\n          \"type\": \"text\",\n          \"text\": \"ECHO: TURN 52\"\n        }\n      ],\n      \"isError\": false\n    }\n  }\n}</pre></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "label",
+     "type": "string",
+     "default": "—",
+     "desc": "切换按钮上的标题，owner 本地化。"
+    },
+    {
+     "name": "payload",
+     "type": "unknown",
+     "default": "—",
+     "desc": "任意可序列化值；stringify 失败或返回 undefined 时退化为 <code>String(payload)</code>。"
+    },
+    {
+     "name": "defaultOpen",
+     "type": "boolean",
+     "default": "false",
+     "desc": "初始是否展开。"
+    },
+    {
+     "name": "truncatedLabel",
+     "type": "(total: number) => string",
+     "default": "—",
+     "desc": "超过字符上限时追加的脚注，参数是完整长度。"
+    }
+   ],
+   "notes": "与 RPC 面板的 PayloadJson、会话面板的 <code>JsonTree</code> 都不是同一个组件：JsonBlock 只做“一行开关 + 一段美化文本”，没有逐节点折叠、行内复制或路径复制。",
+   "keywords": [
+    "JSON",
+    "展开",
+    "事件负载",
+    "兜底"
+   ]
+  },
+  {
+   "id": "markdown-text",
+   "name": "MarkdownText",
+   "exportName": "MarkdownText",
+   "zh": "正文渲染",
+   "group": "output",
+   "summary": "助手 Markdown 渲染器：解析 GFM + TeX，禁用原始 HTML 与非安全协议，输出的元素全部由 <code>MarkdownText.module.css</code> 定版式。默认 <code>variant=\"body\"</code> 走完整文档排版；<code>variant=\"compact\"</code> 用 13px/20px 次级文字、统一的 600 字重标题与更紧的块间距，文字与代码保持 tertiary 色。围栏交给 <code>CodeBlock</code>（owner 提供 toolbarLabels 时用共享代码卡头部）。",
+   "source": "packages/client/ui-primitives/src/markdown/MarkdownText.tsx#L174",
+   "css": [
+    "packages/client/ui-primitives/src/CodeCard.module.css",
+    "packages/client/ui-primitives/src/markdown/CodeBlock.module.css",
+    "packages/client/ui-primitives/src/markdown/MarkdownText.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-label-caption",
+    "--dsw-alias-link",
+    "--dsw-alias-markdown-inline-code",
+    "--dsw-alias-bg-base",
+    "--dsw-alias-border-l1",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-border-l3",
+    "--dsw-font-markdown-base",
+    "--dsw-font-markdown-base-strong",
+    "--dsw-font-markdown-code",
+    "--dsw-font-markdown-h1",
+    "--dsw-font-markdown-h2",
+    "--dsw-font-markdown-h3",
+    "--dsw-font-markdown-h4",
+    "--dsw-font-markdown-table",
+    "--dsw-font-markdown-table-head",
+    "--dsw-radius-md",
+    "--dsw-radius-sm",
+    "--dsw-radius-xs",
+    "--dsw-focus-ring-color",
+    "--dsw-focus-ring-width",
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-markdown-code-block",
+    "--dsw-alias-markdown-code-block-banner",
+    "--dsw-font-markdown-code-block",
+    "--dsw-font-family",
+    "--dsw-radius-lg"
+   ],
+   "specimens": [
+    {
+     "label": "variant=\"body\"：标题 + 列表 + 表格 + 任务列表 + 围栏",
+     "note": "表格 3 列 → tableFill；围栏是 md-code-block",
+     "html": "<div class=\"markdown\"><h2>输出卡片共用一套几何</h2><p>ui-primitives 的六张卡片（<code>TerminalBlock</code>、<code>ReadBlock</code>、<code>DiffBlock</code>、<code>SearchBlock</code>、<code>WebBlock</code>、<code>CodeBlock</code>）共享<strong>同一套几何模型</strong>：<code>white-space: pre</code> 的正文、16 行的默认高度上限，以及 head+tail 折叠。</p><ul><li>折叠只切中间：头 8 行、<code>… 其余 N 行</code>、尾 8 行</li><li>换行开关是每张卡片自己的局部状态，复制内容不受影响</li></ul><div class=\"tableScroll tableFill\"><table><thead><tr><th>卡片</th><th>头部</th><th>默认换行</th></tr></thead><tbody><tr><td>TerminalBlock</td><td>命令 + 退出状态 Pill</td><td>否</td></tr><tr><td>ReadBlock</td><td>语言 + 文件名</td><td>否</td></tr><tr><td>CodeBlock</td><td>语言 + 复制</td><td>是</td></tr></tbody></table></div><ul class=\"contains-task-list\"><li class=\"task-list-item\"><input type=\"checkbox\" disabled=\"\" checked=\"\"/> 卡片几何与 token 对齐</li><li class=\"task-list-item\"><input type=\"checkbox\" disabled=\"\"/> 把折叠阈值暴露给插件配置</li></ul><div class=\"block md-code-block card\" data-code-wrap=\"true\"><div class=\"bannerWrap\"><div class=\"header\" data-code-block-banner><div class=\"heading\"><span class=\"language\">ts</span></div><div class=\"actions\"><button type=\"button\" class=\"action\" aria-label=\"自动换行\" aria-pressed=\"true\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M2 15H1V1H2V15Z\" fill=\"currentColor\"/><path d=\"M12.3535 7.64645C12.5487 7.84171 12.5487 8.15829 12.3535 8.35355L9.85352 10.8535L9.14648 10.1465L10.793 8.5H3.5V7.5H10.793L9.14648 5.85352L9.85352 5.14648L12.3535 7.64645Z\" fill=\"currentColor\"/><path d=\"M15 15H14V1H15V15Z\" fill=\"currentColor\"/></svg></button><button type=\"button\" class=\"action\" aria-label=\"复制\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><rect x=\"1.52075\" y=\"4.07373\" width=\"10.3932\" height=\"10.3932\" rx=\"2\" stroke=\"currentColor\"/><path d=\"M11.9792 1.53296C13.36 1.53296 14.4792 2.65225 14.4792 4.03296V9.42847C14.4792 10.3756 13.9521 11.1987 13.1755 11.6228V10.3298C13.3652 10.0787 13.4792 9.7674 13.4792 9.42847V4.03296C13.4792 3.20453 12.8077 2.53296 11.9792 2.53296H6.58374C6.27966 2.53301 5.99684 2.6235 5.7605 2.77905H4.42358C4.85652 2.03463 5.66056 1.53304 6.58374 1.53296H11.9792Z\" fill=\"currentColor\"/></svg></button></div></div></div><div class=\"content\" data-code-block-content><pre class=\"plain\"><code><span class=\"line\">export function headTailCap(total: number, maxLines: number, expanded: boolean): HeadTailCap {</span>\n<span class=\"line\">  const hidden = total - maxLines</span>\n<span class=\"line\">  return { hidden, capped: hidden > 0 &amp;&amp; !expanded, headLines, tailLines }</span>\n<span class=\"line\">}</span></code></pre></div></div></div>"
+    },
+    {
+     "label": "variant=\"compact\"：次级内容（13px / 统一标题字重）",
+     "html": "<div class=\"markdown compact\" data-markdown-variant=\"compact\"><h3>下一步</h3><p>折叠阈值目前是<strong>卡片常量</strong>，改动前先跑 <code>pnpm run test:gui</code>。<a href=\"https://github.com/deepseek-ai\">卡片目录</a>里已登记全部输出卡片。</p><ul><li>六张卡片共用 <code>headTailCap</code></li><li>compact 变体沿用同一套代码排版</li></ul></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "text",
+     "type": "string",
+     "default": "—",
+     "desc": "会话投影保留的 Markdown 原文。"
+    },
+    {
+     "name": "variant",
+     "type": "'body' | 'compact'",
+     "default": "'body'",
+     "desc": "body 用完整文档排版；compact 用次级文字尺寸、统一标题字重与紧凑间距。"
+    },
+    {
+     "name": "streaming",
+     "type": "boolean",
+     "default": "false",
+     "desc": "增量解析：只重解析尾部，已完成的块冻结为缓存元素。"
+    },
+    {
+     "name": "labels",
+     "type": "MarkdownLabels",
+     "default": "—",
+     "desc": "本地化 chrome：围栏复制文案与脚注标题；<code>toolbarLabels</code> 决定围栏用共享卡头还是横幅。"
+    },
+    {
+     "name": "fileMentions",
+     "type": "MarkdownFileMentions | undefined",
+     "default": "—",
+     "desc": "把行内代码识别为文件并提供打开回调（仅 settled 渲染生效）。"
+    },
+    {
+     "name": "pathImages",
+     "type": "MarkdownPathImages | undefined",
+     "default": "—",
+     "desc": "把本地图片路径改写为可显示 URL（仅 settled 渲染生效）。"
+    }
+   ],
+   "notes": "未识别的块、定义节点与未来语法渲染为空；表格 4 列及以上加 <code>md-table-wide</code>，静止时不显示横向滚动条、指针悬停或键盘聚焦才出现。SSR/静态渲染时围栏走 <code>pre.plain</code> 分支：高亮需要进入视口后由 IntersectionObserver 激活。compact 变体里的链接与行内代码继承周围文字色，只用点状下划线区分链接。",
+   "keywords": [
+    "markdown",
+    "正文",
+    "表格",
+    "任务列表",
+    "compact"
+   ]
+  },
+  {
+   "id": "command-text",
+   "name": "CommandText",
+   "exportName": "CommandText",
+   "zh": "命令文本",
+   "group": "output",
+   "summary": "一段可选择的命令文本：<code>white-space: pre</code> + 横向滚动，内容放不下时才进入 Tab 序（<code>tabIndex=0</code>、<code>role=\"group\"</code>、owner 给的 <code>aria-label</code>），因此不溢出的命令不会多出一个焦点停靠点。组件只提供滚动行为与焦点环，字体与颜色由 owner 的类决定（终端卡里是 <code>.command</code>）。",
+   "source": "packages/client/ui-primitives/src/CommandText.tsx#L21",
+   "css": [
+    "packages/client/ui-primitives/src/CommandText.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-state-business-primary",
+    "--dsw-focus-ring-color",
+    "--dsw-focus-ring-width"
+   ],
+   "specimens": [
+    {
+     "label": "不溢出的命令：无 tabindex / role",
+     "note": "外层容器模拟 owner 的排版与宽度",
+     "html": "<div style=\"max-width:420px;font-family:var(--ds-font-family-code)\"><span class=\"text\" data-command-text=\"\">pnpm run test:gui</span></div>"
+    },
+    {
+     "label": "溢出的参数列表：tabindex=0 + role=\"group\"",
+     "note": "焦点环 outline-offset:-2px",
+     "html": "<div style=\"max-width:420px;font-family:var(--ds-font-family-code)\"><span class=\"text\" data-command-text=\"\" tabindex=\"0\" role=\"group\" aria-label=\"命令参数\">--filter @deepseek-ai/dsh-client-ui-primitives --reporter=verbose --coverage.enabled=false --coverage.exclude=**/tests/** --pool=forks</span></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "text",
+     "type": "string",
+     "default": "—",
+     "desc": "原文命令或格式化后的命令参数，不做截断。"
+    },
+    {
+     "name": "label",
+     "type": "string",
+     "default": "—",
+     "desc": "可横向滚动时的无障碍名称（owner 的 <code>row.commandArguments</code> / <code>terminal.commandLine(n)</code>）。"
+    },
+    {
+     "name": "className",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "owner 的排版与定位类。"
+    }
+   ],
+   "notes": "溢出判定在 layout effect 里量 <code>scrollWidth &gt; clientWidth</code>，并用 ResizeObserver 与 <code>fonts.loadingdone</code> 重测——文本、字号或宽度变化都会更新可聚焦性而不改变滚动位置。组件本身没有字体与颜色，示例外层容器只补了排版与宽度约束。",
+   "keywords": [
+    "命令",
+    "参数",
+    "横向滚动",
+    "focusable",
+    "溢出"
+   ]
+  }
+ ]
+}

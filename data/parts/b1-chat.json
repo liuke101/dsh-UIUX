@@ -1,0 +1,367 @@
+{
+ "schemaVersion": 1,
+ "note": "packages/client/ui-chat 对话转录层精选条目。示例里的用户消息、回复、思考、用量与失败文案取自同一次会话（统一按钮圆角改动 + pnpm run test:gui + 一次连接超时失败 + 一条待接收插话），因此共用 MessageItem.module.css 的几条可以串起来读。css 字段指向真实 CSS Module 源码，构建时原文内联进 shadow root。",
+ "entries": [
+  {
+   "id": "user-message-node-view",
+   "name": "UserMessageNodeView",
+   "exportName": "UserMessageNodeView",
+   "zh": "用户消息",
+   "group": "conversation",
+   "summary": "右对齐的用户消息行，同时渲染 <code>user</code> 与已被接收的 <code>steering</code> 两种 Chat 节点。<code>.userStack</code> 把气泡宽度限制为「内容列宽 × 0.702」与 <code>82%</code> 的较小值（默认列 748px → 525px），气泡圆角 <code>--dsw-radius-xl</code>、内边距 10px 16px、行高 22px，所以单行气泡高 42px；气泡下方是 28px 高的复制 / 分支 / 时钟操作行（由 MessageIconActions 提供）。",
+   "source": "packages/client/ui-chat/src/client/chat/MessageItem.tsx#L298",
+   "css": [
+    "packages/client/ui-chat/src/client/chat/MessageItem.module.css",
+    "packages/client/ui-chat/src/client/chat/MessageIconActions.module.css"
+   ],
+   "tokens": ["--dsw-alias-bg-base", "--dsw-alias-border-l2", "--dsw-alias-interactive-bg-hover", "--dsw-alias-interactive-bg-hover-solid", "--dsw-alias-label-caption", "--dsw-alias-label-primary", "--dsw-alias-label-secondary", "--dsw-alias-label-tertiary", "--dsw-alias-state-business-primary", "--dsw-alias-state-error-primary", "--dsw-alias-state-warn-primary", "--dsw-focus-ring-color", "--dsw-font-markdown-code-block-small", "--dsw-radius-lg", "--dsw-radius-sm", "--dsw-radius-xl", "--dsw-specific-bubble", "--dsw-specific-input-major"],
+   "specimens": [
+    {
+     "label": "单行消息 + 操作行",
+     "note": "时钟 / 复制 / 分支，28px 图标按钮",
+     "html": "<div style=\"width:640px\"><div class=\"userRow\"><div class=\"userStack\"><div class=\"bubble\">帮我把 packages/client/ui-primitives 里的按钮圆角统一成 --dsw-radius-md</div></div><div class=\"actions\" data-clock=\"start\"><span class=\"timeStart\">14:32</span><button type=\"button\" class=\"action\" aria-label=\"复制\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><rect x=\"1.52075\" y=\"4.07373\" width=\"10.3932\" height=\"10.3932\" rx=\"2\" stroke=\"currentColor\"/><path d=\"M11.9792 1.53296C13.36 1.53296 14.4792 2.65225 14.4792 4.03296V9.42847C14.4792 10.3756 13.9521 11.1987 13.1755 11.6228V10.3298C13.3652 10.0787 13.4792 9.7674 13.4792 9.42847V4.03296C13.4792 3.20453 12.8077 2.53296 11.9792 2.53296H6.58374C6.27966 2.53301 5.99684 2.6235 5.7605 2.77905H4.42358C4.85652 2.03463 5.66056 1.53304 6.58374 1.53296H11.9792Z\" fill=\"currentColor\"/></svg></button><button type=\"button\" class=\"action\" aria-label=\"在新对话中分支\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M1.01503 8.0001L5.6964 8.0001C6.41913 8.0001 6.78049 8.0001 7.12115 7.91951C7.4232 7.84804 7.71233 7.73014 7.97821 7.57C8.27809 7.38939 8.5364 7.13669 9.05303 6.63129L11.3281 4.40564\" stroke=\"currentColor\"/><path d=\"M1.01221 7.9999L5.6964 7.9999C6.41913 7.9999 6.78049 7.9999 7.12115 8.08049C7.4232 8.15196 7.71233 8.26986 7.97821 8.43C8.27809 8.61061 8.5364 8.86331 9.05303 9.36871L11.3281 11.5944\" stroke=\"currentColor\"/><circle cx=\"12.4502\" cy=\"3.3079\" r=\"1.56962\" stroke=\"currentColor\"/><circle cx=\"12.4502\" cy=\"12.6921\" r=\"1.56962\" stroke=\"currentColor\"/></svg></button></div></div></div>"
+    },
+    {
+     "label": "长文本换行（525px 上限）",
+     "note": "white-space: pre-wrap + word-break: break-word",
+     "html": "<div style=\"width:640px\"><div class=\"userRow\"><div class=\"userStack\"><div class=\"bubble\">帮我把 packages/client/ui-primitives 里的按钮圆角统一成 --dsw-radius-md：md / sm / toolbar 三档现在各写各的，md 是 12px、sm 是 8px、toolbar 又写了一遍 8px，请只保留 --dsw-radius-md 这一处来源。</div></div><div class=\"actions\" data-clock=\"start\"><span class=\"timeStart\">14:32</span><button type=\"button\" class=\"action\" aria-label=\"复制\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><rect x=\"1.52075\" y=\"4.07373\" width=\"10.3932\" height=\"10.3932\" rx=\"2\" stroke=\"currentColor\"/><path d=\"M11.9792 1.53296C13.36 1.53296 14.4792 2.65225 14.4792 4.03296V9.42847C14.4792 10.3756 13.9521 11.1987 13.1755 11.6228V10.3298C13.3652 10.0787 13.4792 9.7674 13.4792 9.42847V4.03296C13.4792 3.20453 12.8077 2.53296 11.9792 2.53296H6.58374C6.27966 2.53301 5.99684 2.6235 5.7605 2.77905H4.42358C4.85652 2.03463 5.66056 1.53304 6.58374 1.53296H11.9792Z\" fill=\"currentColor\"/></svg></button><button type=\"button\" class=\"action\" aria-label=\"在新对话中分支\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M1.01503 8.0001L5.6964 8.0001C6.41913 8.0001 6.78049 8.0001 7.12115 7.91951C7.4232 7.84804 7.71233 7.73014 7.97821 7.57C8.27809 7.38939 8.5364 7.13669 9.05303 6.63129L11.3281 4.40564\" stroke=\"currentColor\"/><path d=\"M1.01221 7.9999L5.6964 7.9999C6.41913 7.9999 6.78049 7.9999 7.12115 8.08049C7.4232 8.15196 7.71233 8.26986 7.97821 8.43C8.27809 8.61061 8.5364 8.86331 9.05303 9.36871L11.3281 11.5944\" stroke=\"currentColor\"/><circle cx=\"12.4502\" cy=\"3.3079\" r=\"1.56962\" stroke=\"currentColor\"/><circle cx=\"12.4502\" cy=\"12.6921\" r=\"1.56962\" stroke=\"currentColor\"/></svg></button></div></div></div>"
+    },
+    {
+     "label": "引用摘要行",
+     "note": "消息关联了会话引用时追加在气泡下方",
+     "html": "<div style=\"width:640px\"><div class=\"userRow\"><div class=\"userStack\"><div class=\"bubble\">帮我把 packages/client/ui-primitives 里的按钮圆角统一成 --dsw-radius-md</div><div class=\"referenceSummary\">引用会话 · 按钮圆角治理、ui-primitives 组件目录</div></div><div class=\"actions\" data-clock=\"start\"><span class=\"timeStart\">14:32</span><button type=\"button\" class=\"action\" aria-label=\"复制\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><rect x=\"1.52075\" y=\"4.07373\" width=\"10.3932\" height=\"10.3932\" rx=\"2\" stroke=\"currentColor\"/><path d=\"M11.9792 1.53296C13.36 1.53296 14.4792 2.65225 14.4792 4.03296V9.42847C14.4792 10.3756 13.9521 11.1987 13.1755 11.6228V10.3298C13.3652 10.0787 13.4792 9.7674 13.4792 9.42847V4.03296C13.4792 3.20453 12.8077 2.53296 11.9792 2.53296H6.58374C6.27966 2.53301 5.99684 2.6235 5.7605 2.77905H4.42358C4.85652 2.03463 5.66056 1.53304 6.58374 1.53296H11.9792Z\" fill=\"currentColor\"/></svg></button><button type=\"button\" class=\"action\" aria-label=\"在新对话中分支\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M1.01503 8.0001L5.6964 8.0001C6.41913 8.0001 6.78049 8.0001 7.12115 7.91951C7.4232 7.84804 7.71233 7.73014 7.97821 7.57C8.27809 7.38939 8.5364 7.13669 9.05303 6.63129L11.3281 4.40564\" stroke=\"currentColor\"/><path d=\"M1.01221 7.9999L5.6964 7.9999C6.41913 7.9999 6.78049 7.9999 7.12115 8.08049C7.4232 8.15196 7.71233 8.26986 7.97821 8.43C8.27809 8.61061 8.5364 8.86331 9.05303 9.36871L11.3281 11.5944\" stroke=\"currentColor\"/><circle cx=\"12.4502\" cy=\"3.3079\" r=\"1.56962\" stroke=\"currentColor\"/><circle cx=\"12.4502\" cy=\"12.6921\" r=\"1.56962\" stroke=\"currentColor\"/></svg></button></div></div></div>"
+    }
+   ],
+   "props": [
+    { "name": "node", "type": "ChatNodeViewProps<'user' | 'steering'>['node']", "default": "—", "desc": "已构建的节点数据：content（文本 + 图片 / 文件附件）、time、referenceLabels、skillNames。" },
+    { "name": "renderFactorySlot", "type": "PropsRenderFactories['renderFactorySlot']", "default": "—", "desc": "渲染会话级 Factory <code>conversation.chat.user.content</code>（文本、附件、引用摘要）。" },
+    { "name": "loadImage", "type": "MessageImageLoader", "default": "—", "desc": "会话授权的图片加载器，只传给图片 Slot。" },
+    { "name": "t", "type": "ChatViewSlotProps['t']", "default": "—", "desc": "chat 命名空间的本地化座位。" }
+   ],
+   "notes": "同一个 view 注册在 <code>conversation.chat.node</code> 的 <code>user</code> 与 <code>steering</code> 两个 key 上：<code>steering</code> 是被本轮 inbox 认领的人类输入，外观与 <code>user</code> 完全一致，只多一个不可见标记。<code>.userStack</code> 的 82% 上限依赖父级宽度，示例用 640px 容器还原默认列下的 525px 气泡上限。源码行内传入的 <code>css.actions</code> 在 MessageItem.module.css 里没有对应规则，操作行的实际几何来自 MessageIconActions.module.css。",
+   "keywords": ["用户气泡", "user bubble", "消息行", "steering", "引用摘要"]
+  },
+  {
+   "id": "pending-steering-bubble",
+   "name": "PendingSteeringBubble",
+   "exportName": "PendingSteeringBubble",
+   "zh": "待接收插话",
+   "group": "conversation",
+   "summary": "Host 已接受、尚未落库的 steer 行。它复用与耐久 <code>user</code> 节点相同的气泡（同宽上限、<code>--dsw-radius-xl</code>、10px 16px 内边距），行上只多一个 <code>data-pending-steering</code> 标记——该标记不参与任何样式，只供视图识别待接收态。因为宿主投影还没带上时间，操作行只有复制按钮，没有时钟与分支。",
+   "source": "packages/client/ui-chat/src/client/chat/MessageItem.tsx#L220",
+   "css": [
+    "packages/client/ui-chat/src/client/chat/MessageItem.module.css",
+    "packages/client/ui-chat/src/client/chat/MessageIconActions.module.css"
+   ],
+   "tokens": ["--dsw-alias-bg-base", "--dsw-alias-border-l2", "--dsw-alias-interactive-bg-hover", "--dsw-alias-interactive-bg-hover-solid", "--dsw-alias-label-caption", "--dsw-alias-label-primary", "--dsw-alias-label-secondary", "--dsw-alias-label-tertiary", "--dsw-alias-state-business-primary", "--dsw-alias-state-error-primary", "--dsw-alias-state-warn-primary", "--dsw-focus-ring-color", "--dsw-font-markdown-code-block-small", "--dsw-radius-lg", "--dsw-radius-sm", "--dsw-radius-xl", "--dsw-specific-bubble", "--dsw-specific-input-major"],
+   "specimens": [
+    {
+     "label": "等待接收的插话",
+     "note": "data-pending-steering 标记；操作行只有复制",
+     "html": "<div style=\"width:640px\"><div class=\"userRow\" data-pending-steering=\"true\"><div class=\"userStack\"><div class=\"bubble\">顺便把 Tag 的 tone 补一个 danger</div></div><div class=\"actions\" data-clock=\"start\"><button type=\"button\" class=\"action\" aria-label=\"复制\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><rect x=\"1.52075\" y=\"4.07373\" width=\"10.3932\" height=\"10.3932\" rx=\"2\" stroke=\"currentColor\"/><path d=\"M11.9792 1.53296C13.36 1.53296 14.4792 2.65225 14.4792 4.03296V9.42847C14.4792 10.3756 13.9521 11.1987 13.1755 11.6228V10.3298C13.3652 10.0787 13.4792 9.7674 13.4792 9.42847V4.03296C13.4792 3.20453 12.8077 2.53296 11.9792 2.53296H6.58374C6.27966 2.53301 5.99684 2.6235 5.7605 2.77905H4.42358C4.85652 2.03463 5.66056 1.53304 6.58374 1.53296H11.9792Z\" fill=\"currentColor\"/></svg></button></div></div></div>"
+    },
+    {
+     "label": "与落库后的 user 行对比",
+     "note": "上：待接收；下：耐久节点（时钟 + 分支已就位）",
+     "html": "<div style=\"width:640px;display:flex;flex-direction:column;gap:14px\"><div class=\"userRow\" data-pending-steering=\"true\"><div class=\"userStack\"><div class=\"bubble\">顺便把 Tag 的 tone 补一个 danger</div></div><div class=\"actions\" data-clock=\"start\"><button type=\"button\" class=\"action\" aria-label=\"复制\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><rect x=\"1.52075\" y=\"4.07373\" width=\"10.3932\" height=\"10.3932\" rx=\"2\" stroke=\"currentColor\"/><path d=\"M11.9792 1.53296C13.36 1.53296 14.4792 2.65225 14.4792 4.03296V9.42847C14.4792 10.3756 13.9521 11.1987 13.1755 11.6228V10.3298C13.3652 10.0787 13.4792 9.7674 13.4792 9.42847V4.03296C13.4792 3.20453 12.8077 2.53296 11.9792 2.53296H6.58374C6.27966 2.53301 5.99684 2.6235 5.7605 2.77905H4.42358C4.85652 2.03463 5.66056 1.53304 6.58374 1.53296H11.9792Z\" fill=\"currentColor\"/></svg></button></div></div><div class=\"userRow\"><div class=\"userStack\"><div class=\"bubble\">顺便把 Tag 的 tone 补一个 danger</div></div><div class=\"actions\" data-clock=\"start\"><span class=\"timeStart\">14:36</span><button type=\"button\" class=\"action\" aria-label=\"复制\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><rect x=\"1.52075\" y=\"4.07373\" width=\"10.3932\" height=\"10.3932\" rx=\"2\" stroke=\"currentColor\"/><path d=\"M11.9792 1.53296C13.36 1.53296 14.4792 2.65225 14.4792 4.03296V9.42847C14.4792 10.3756 13.9521 11.1987 13.1755 11.6228V10.3298C13.3652 10.0787 13.4792 9.7674 13.4792 9.42847V4.03296C13.4792 3.20453 12.8077 2.53296 11.9792 2.53296H6.58374C6.27966 2.53301 5.99684 2.6235 5.7605 2.77905H4.42358C4.85652 2.03463 5.66056 1.53304 6.58374 1.53296H11.9792Z\" fill=\"currentColor\"/></svg></button><button type=\"button\" class=\"action\" aria-label=\"在新对话中分支\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M1.01503 8.0001L5.6964 8.0001C6.41913 8.0001 6.78049 8.0001 7.12115 7.91951C7.4232 7.84804 7.71233 7.73014 7.97821 7.57C8.27809 7.38939 8.5364 7.13669 9.05303 6.63129L11.3281 4.40564\" stroke=\"currentColor\"/><path d=\"M1.01221 7.9999L5.6964 7.9999C6.41913 7.9999 6.78049 7.9999 7.12115 8.08049C7.4232 8.15196 7.71233 8.26986 7.97821 8.43C8.27809 8.61061 8.5364 8.86331 9.05303 9.36871L11.3281 11.5944\" stroke=\"currentColor\"/><circle cx=\"12.4502\" cy=\"3.3079\" r=\"1.56962\" stroke=\"currentColor\"/><circle cx=\"12.4502\" cy=\"12.6921\" r=\"1.56962\" stroke=\"currentColor\"/></svg></button></div></div></div>"
+    }
+   ],
+   "props": [
+    { "name": "content", "type": "readonly unknown[]", "default": "—", "desc": "待接收插话的原始内容块；文本与附件在组件内拆成 UserContentData。" },
+    { "name": "renderFactorySlot", "type": "PropsRenderFactories['renderFactorySlot']", "default": "—", "desc": "渲染 <code>conversation.chat.user.content</code> Factory。" },
+    { "name": "loadImage", "type": "MessageImageLoader", "default": "—", "desc": "会话授权的图片加载器。" },
+    { "name": "t", "type": "ChatViewSlotProps['t']", "default": "—", "desc": "chat 命名空间的本地化座位。" }
+   ],
+   "notes": "源码注释明确「pending 与它将来的耐久节点使用同一套视觉语言」：本例与 user 行的唯一差别就是 <code>data-pending-steering</code> 与缺少时间。本地提交回声（<code>PendingSubmissionBubble</code>）走同一个 UserStyleBubble，但会带时间戳。<code>data-submission-echo</code> 同样是不可见标记。",
+   "keywords": ["插话", "steering", "待接收", "pending"]
+  },
+  {
+   "id": "turn-error-node-view",
+   "name": "TurnErrorNodeView",
+   "exportName": "TurnErrorNodeView",
+   "zh": "回合错误",
+   "group": "conversation",
+   "summary": "一轮终态失败的常驻行：10px 错误点 + 加粗标题「本轮运行失败」+ 失败文案，右侧可选一枚 code 芯片（<code>--dsw-font-markdown-code-block-small</code>）。网格固定为 10px / minmax(0,1fr) / auto 三列、间距 8px，正文 13px、行高 20px，状态点下沉 5px 与首行对齐。",
+   "source": "packages/client/ui-chat/src/client/chat/MessageItem.tsx#L349",
+   "css": [
+    "packages/client/ui-chat/src/client/chat/MessageItem.module.css",
+    "packages/client/ui-primitives/src/StateDot.module.css"
+   ],
+   "tokens": ["--dsw-alias-bg-base", "--dsw-alias-border-l2", "--dsw-alias-interactive-bg-hover", "--dsw-alias-interactive-bg-hover-solid", "--dsw-alias-label-caption", "--dsw-alias-label-primary", "--dsw-alias-label-primary-foreground", "--dsw-alias-label-secondary", "--dsw-alias-label-tertiary", "--dsw-alias-state-business-primary", "--dsw-alias-state-error-primary", "--dsw-alias-state-idle-primary", "--dsw-alias-state-success-primary", "--dsw-alias-state-warn-primary", "--dsw-focus-ring-color", "--dsw-font-markdown-code-block-small", "--dsw-radius-lg", "--dsw-radius-sm", "--dsw-radius-xl", "--dsw-specific-bubble", "--dsw-specific-input-major"],
+   "specimens": [
+    {
+     "label": "失败：连接超时（无 code）",
+     "note": "role=\"status\" 常驻，不随折叠消失",
+     "html": "<div style=\"width:640px\"><div class=\"turnErrorRow\" role=\"status\"><span class=\"dot turnErrorDot\" data-state=\"error\" aria-hidden=\"true\" style=\"width:10px;height:10px\"></span><div class=\"turnErrorCopy\"><span class=\"turnErrorTitle\">本轮运行失败</span><span class=\"turnErrorMessage\">请求失败：连接超时，可重试</span></div></div></div>"
+    },
+    {
+     "label": "带 code 芯片（额度失败）",
+     "note": "QUOTA 类失败改用中性文案，原码留在芯片里",
+     "html": "<div style=\"width:640px\"><div class=\"turnErrorRow\" role=\"status\"><span class=\"dot turnErrorDot\" data-state=\"error\" aria-hidden=\"true\" style=\"width:10px;height:10px\"></span><div class=\"turnErrorCopy\"><span class=\"turnErrorTitle\">本轮运行失败</span><span class=\"turnErrorMessage\">当前请求的额度已用尽</span></div><code class=\"turnErrorCode\">ACCOUNT_QUOTA</code></div></div>"
+    }
+   ],
+   "props": [
+    { "name": "node", "type": "ChatNodeViewProps<'turn-error'>['node']", "default": "—", "desc": "失败节点数据：message、可选 code、失败的 turn / step / seq。" },
+    { "name": "t", "type": "ChatViewSlotProps['t']", "default": "—", "desc": "chat 命名空间的本地化座位。" }
+   ],
+   "notes": "该行只由 <code>turn/end</code> 的 error 原因生成（重试历史由单独的 model-retry 行渲染）。<code>QUOTA</code> / <code>ACCOUNT_QUOTA</code> 换成中性文案，<code>INTERRUPTED</code> 不渲染芯片且标题换成「任务已停止」，输出 token 上限则是同为 <code>.turnErrorRow</code> 骨架、改用 warning 点的 TurnMaxTokensNodeView。红色圆点本身的颜色来自 StateDot.module.css（示例把该表一并内联）。",
+   "keywords": ["失败行", "turn error", "code 芯片", "状态点"]
+  },
+  {
+   "id": "assistant-markdown",
+   "name": "AssistantMarkdown",
+   "exportName": "AssistantMarkdown",
+   "zh": "助手正文",
+   "group": "conversation",
+   "summary": "助手回复的正文外壳：14px / 24px 正文、块间距 16px，把 <code>reasoning</code> 块交给 ReasoningRow、<code>text</code> 块交给 MarkdownText、图片块交给 <code>conversation.chat.message.images</code> Slot。被中断的回合在正文末尾追加一枚 11px / 18px 的「已停止」标记（<code>--dsw-radius-sm</code> 圆角、<code>--dsw-alias-interactive-bg-hover</code> 底色）。",
+   "source": "packages/client/ui-chat/src/client/chat/AssistantMarkdown.tsx#L56",
+   "css": [
+    "packages/client/ui-chat/src/client/chat/AssistantMarkdown.module.css",
+    "packages/client/ui-primitives/src/markdown/MarkdownText.module.css"
+   ],
+   "tokens": ["--dsw-alias-bg-base", "--dsw-alias-border-l1", "--dsw-alias-border-l2", "--dsw-alias-border-l3", "--dsw-alias-interactive-bg-hover", "--dsw-alias-label-caption", "--dsw-alias-label-primary", "--dsw-alias-label-secondary", "--dsw-alias-label-tertiary", "--dsw-alias-link", "--dsw-alias-markdown-inline-code", "--dsw-alias-state-business-primary", "--dsw-focus-ring-color", "--dsw-focus-ring-width", "--dsw-font-markdown-base", "--dsw-font-markdown-base-strong", "--dsw-font-markdown-code", "--dsw-font-markdown-h1", "--dsw-font-markdown-h2", "--dsw-font-markdown-h3", "--dsw-font-markdown-h4", "--dsw-font-markdown-table", "--dsw-font-markdown-table-head", "--dsw-radius-md", "--dsw-radius-sm", "--dsw-radius-xs"],
+   "specimens": [
+    {
+     "label": "回复正文（段落 + 列表 + 行内代码）",
+     "note": "data-streaming 为流式期的标记属性",
+     "html": "<div style=\"width:700px\"><div class=\"root\" data-streaming=\"true\"><div class=\"body\"><div class=\"markdown\"><p>已把 <code>packages/client/ui-primitives</code> 里的按钮圆角收敛到 <code>--dsw-radius-md</code> 一处：<code>packages/client/ui-primitives/src/Button.module.css</code> 的 md 档保持 12px，sm 与 toolbar 不再各写一遍 8px。</p><ul><li>改动只落在 <code>Button.module.css</code> 的圆角声明上，未触碰填充与描边变量。</li><li>已在包内执行 <code>pnpm run test:gui</code>，GUI 用例全部通过。</li></ul><p>需要我把 <code>Tag</code> 的 tone 也按同一份圆角变量走一遍吗？</p></div></div></div></div>"
+    },
+    {
+     "label": "中断回合的「已停止」标记",
+     "note": "interrupted 且该部分仍含回复内容时追加",
+     "html": "<div style=\"width:700px\"><div class=\"root\"><div class=\"body\"><div class=\"markdown\"><p>已把 <code>packages/client/ui-primitives/src/Button.module.css</code> 的园角改成 <code>--dsw-radius-md</code>，接下来跑 <code>pnpm run test:gui</code></p></div><span class=\"stopped\">已停止</span></div></div></div>"
+    }
+   ],
+   "props": [
+    { "name": "blocks", "type": "readonly AssistantBlock[]", "default": "—", "desc": "助手内容块序列：text / reasoning / image / tool-call。" },
+    { "name": "streaming", "type": "boolean", "default": "—", "desc": "是否仍在流式输出；决定末尾块的游标与 reasoning 行的运行态。" },
+    { "name": "interrupted", "type": "boolean | undefined", "default": "—", "desc": "被中断回合的冻结片段，渲染「已停止」标记。" },
+    { "name": "groupPart", "type": "string | undefined", "default": "—", "desc": "只渲染 <code>reasoning</code> 或 <code>response</code> 部分，同时保留原始块下标。" },
+    { "name": "reasoningHidden", "type": "boolean | undefined", "default": "false", "desc": "把 reasoning 块交给回合级过程折叠隐藏。" },
+    { "name": "useDisclosure", "type": "UseDisclosure", "default": "—", "desc": "转发给每个可独立展开的 reasoning 块。" },
+    { "name": "usePresentation", "type": "UsePresentation", "default": "—", "desc": "工作细节模式派生的实时展示策略。" },
+    { "name": "renderSlot", "type": "PropsRenderSlots<'conversation.chat.reasoning.body' | 'conversation.chat.message.images'>['renderSlot']", "default": "—", "desc": "渲染思考正文与图片画廊两个 Slot。" },
+    { "name": "t", "type": "ChatViewSlotProps['t']", "default": "—", "desc": "chat 命名空间的本地化座位。" }
+   ],
+   "notes": "只有 <code>tool-call</code> 块（或空）时整个外壳返回 <code>null</code>，避免在工具组之间画出空行。底部操作行由调用方在 <code>.actions</code> 上叠加 MessageIconActions（16px 上边距、-6px 左移），本条示例只呈现正文。行内代码与文件链接的样式来自 MarkdownText.module.css，示例一并内联。",
+   "keywords": ["助手回复", "markdown", "已停止", "正文"]
+  },
+  {
+   "id": "reasoning-row",
+   "name": "ReasoningRow",
+   "exportName": "ReasoningRow",
+   "zh": "思考行",
+   "group": "conversation",
+   "summary": "折叠的思考块，固定 24px 行高：16px 前置图标 + 6px 间距 + 13px 标题，右侧是 2×2px 分隔点与单行摘要（20px 行高、超出省略；流式时右端渐变淡出）。展开后正文缩进 22px 走次要字号，标题吸顶并用 <code>--dsw-alias-bg-base</code> 遮住滚过的正文。",
+   "source": "packages/client/ui-chat/src/client/chat/ReasoningRow.tsx#L48",
+   "css": [
+    "packages/client/ui-chat/src/client/chat/ReasoningRow.module.css",
+    "packages/client/ui-primitives/src/DisclosureRow.module.css",
+    "packages/client/ui-primitives/src/TextShimmer.module.css"
+   ],
+   "tokens": ["--dsw-alias-bg-base", "--dsw-alias-label-caption", "--dsw-alias-label-secondary", "--dsw-alias-label-shimmer", "--dsw-alias-label-tertiary"],
+   "specimens": [
+    {
+     "label": "折叠：已结束（摘要预览）",
+     "note": "16px 图标盒 / 13px 标题 / 20px 摘要行",
+     "html": "<div style=\"width:640px\"><div class=\"root\" data-variant=\"think\" data-state=\"ok\" data-preview=\"true\"><div class=\"c1-root\"><div class=\"c1-header\" data-disclosure-header><div class=\"row c1-row\" data-disclosure-row data-expandable=\"true\" role=\"button\" tabindex=\"0\" aria-expanded=\"false\"><span class=\"leading c1-leading\"><span class=\"c1-iconIdle\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M10.2854 5.71481C12.9673 8.39663 14.1182 11.5938 12.8562 12.8559C11.5942 14.1179 8.39706 12.9669 5.71518 10.2851C3.03333 7.60323 1.88236 4.40608 3.14441 3.14403C4.40644 1.882 7.6036 3.03297 10.2854 5.71481Z\" stroke=\"currentColor\"/><path d=\"M10.2854 10.2851C7.6036 12.9669 4.40644 14.1179 3.14441 12.8559C1.88236 11.5938 3.03333 8.39663 5.71518 5.71481C8.39706 3.03297 11.5942 1.882 12.8562 3.14403C14.1182 4.40608 12.9673 7.60323 10.2854 10.2851Z\" stroke=\"currentColor\"/><path d=\"M8.86291 8.0002C8.86291 8.47549 8.47762 8.86087 8.00224 8.86087C7.52694 8.86087 7.1416 8.47549 7.1416 8.0002C7.1416 7.52485 7.52694 7.13953 8.00224 7.13953C8.47762 7.13953 8.86291 7.52485 8.86291 8.0002Z\" fill=\"currentColor\"/></svg></span><svg class=\"c1-chevronHover\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></span><span class=\"c2-root\"><span class=\"c2-content\"><span class=\"c2-text c1-title title\">思考</span><span class=\"separator\" data-shimmer-decoration=\"true\" aria-hidden=\"true\"></span><span class=\"summary\"><span class=\"summaryText\"><span class=\"c2-text\">先读 Button.module.css，确认 md 与 sm 的圆角引用的是 --dsw-radius-md 还是写死的字面量</span></span></span></span></span></div></div></div></div></div>"
+    },
+    {
+     "label": "展开：思考正文",
+     "note": "标题吸顶，正文缩进 22px",
+     "html": "<div style=\"width:640px\"><div class=\"root\" data-variant=\"think\" data-state=\"ok\" data-expanded=\"true\"><div class=\"c1-root\" data-open=\"true\"><div class=\"c1-header\" data-disclosure-header><div class=\"row c1-row\" data-disclosure-row data-expandable=\"true\" role=\"button\" tabindex=\"0\" aria-expanded=\"true\"><span class=\"leading c1-leading\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10\" stroke=\"currentColor\"/></svg></span><span class=\"c2-root\"><span class=\"c2-content\"><span class=\"c2-text c1-title title\">思考</span></span></span></div></div><div class=\"thinkBody\">Button.module.css 里 md 与 sm 各写了一次圆角，先确认它们引用的是 --dsw-radius-md 还是字面量；如果是字面量，改成变量后再核对 28px 的工具条按钮，最后跑 pnpm run test:gui。</div></div></div></div>"
+    },
+    {
+     "label": "运行中：标题与摘要扫光",
+     "note": "状态模拟：动画暂停在扫过中段",
+     "html": "<div style=\"width:640px\"><div class=\"root\" data-variant=\"think\" data-state=\"running\" data-preview=\"true\"><div class=\"c1-root\"><div class=\"c1-header\" data-disclosure-header><div class=\"row c1-row\" data-disclosure-row data-expandable=\"true\" role=\"button\" tabindex=\"0\" aria-expanded=\"false\"><span class=\"leading c1-leading\"><span class=\"c1-iconIdle\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M10.2854 5.71481C12.9673 8.39663 14.1182 11.5938 12.8562 12.8559C11.5942 14.1179 8.39706 12.9669 5.71518 10.2851C3.03333 7.60323 1.88236 4.40608 3.14441 3.14403C4.40644 1.882 7.6036 3.03297 10.2854 5.71481Z\" stroke=\"currentColor\"/><path d=\"M10.2854 10.2851C7.6036 12.9669 4.40644 14.1179 3.14441 12.8559C1.88236 11.5938 3.03333 8.39663 5.71518 5.71481C8.39706 3.03297 11.5942 1.882 12.8562 3.14403C14.1182 4.40608 12.9673 7.60323 10.2854 10.2851Z\" stroke=\"currentColor\"/><path d=\"M8.86291 8.0002C8.86291 8.47549 8.47762 8.86087 8.00224 8.86087C7.52694 8.86087 7.1416 8.47549 7.1416 8.0002C7.1416 7.52485 7.52694 7.13953 8.00224 7.13953C8.47762 7.13953 8.86291 7.52485 8.86291 8.0002Z\" fill=\"currentColor\"/></svg></span><svg class=\"c1-chevronHover\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></span><span class=\"c2-root\" data-shimmer=\"true\"><span class=\"c2-content\"><span class=\"c2-text c1-title title\">深度思考中</span><span class=\"separator\" data-shimmer-decoration=\"true\" aria-hidden=\"true\"></span><span class=\"summary\" data-streaming=\"true\"><span class=\"summaryText\"><span class=\"c2-text\">现在把 md / sm / toolbar 三处圆角收敛到 --dsw-radius-md，再跑一遍 pnpm run test:gui</span></span></span></span><span class=\"c2-decoration\" aria-hidden=\"true\" inert=\"\"><span class=\"c2-sweep\"><span class=\"c2-content c2-highlight\"><span class=\"c2-text c1-title title\" data-shimmer-text=\"深度思考中\"></span><span class=\"separator\" data-shimmer-decoration=\"true\" aria-hidden=\"true\"></span><span class=\"summary\" data-streaming=\"true\"><span class=\"summaryText\"><span class=\"c2-text\" data-shimmer-text=\"现在把 md / sm / toolbar 三处圆角收敛到 --dsw-radius-md，再跑一遍 pnpm run test:gui\"></span></span></span></span></span></span></span></div></div></div></div></div>",
+     "css": "/* 状态模拟：1.5s 无限循环的扫光（dsh-row-shimmer-sweep / -highlight）暂停在扫过中段，静态呈现运行中的高亮扫过。 */\n.c2-sweep, .c2-content.c2-highlight { animation-play-state: paused; animation-delay: -0.75s; }"
+    }
+   ],
+   "props": [
+    { "name": "text", "type": "string", "default": "—", "desc": "完整或流式中的思考文本。" },
+    { "name": "running", "type": "boolean", "default": "—", "desc": "该块是否为流式尾块：决定标题扫光与摘要取样方式。" },
+    { "name": "usePresentation", "type": "UsePresentation", "default": "—", "desc": "实时展示策略选择器，决定折叠态是否显示摘要预览。" },
+    { "name": "useDisclosure", "type": "UseDisclosure", "default": "—", "desc": "该行独立的展开状态，外层回合隐藏时会重置。" },
+    { "name": "renderSlot", "type": "PropsRenderSlots<'conversation.chat.reasoning.body'>['renderSlot']", "default": "—", "desc": "展开后渲染 <code>conversation.chat.reasoning.body</code> Slot。" },
+    { "name": "t", "type": "ChatViewSlotProps['t']", "default": "—", "desc": "chat 命名空间的本地化座位，提供标题与运行态文案。" }
+   ],
+   "notes": "标题文案是 <code>message.think</code>（中文词典值「思考」，运行中的示例按本次会话材料写作「深度思考中」）。折叠态摘要取最后一段已完成的首行并去掉 <code>**</code> 标记，流式摘要右端有 48px 渐变遮罩。运行中的标题与摘要由 TextShimmer 扫光：可访问文本保留在 <code>.c2-content</code> 里，另有一份 <code>inert</code> 的装饰副本随 <code>.c2-sweep</code> / <code>.c2-highlight</code> 反向平移形成一次高亮扫过（1.5s、steps(48)、无限循环，示例把它暂停在扫过中段）。展开后标题 sticky 到滚动容器顶部并用 <code>--dsw-alias-bg-base</code> 遮挡正文；展开正文是 Slot 内容（官方条目为 MarkdownText 的 compact 变体），不在本条样式表内。三张样式表按 <code>css</code> 下标加 <code>c0-</code>/<code>c1-</code>/<code>c2-</code> 前缀：<code>.root</code>、<code>.row</code>、<code>.leading</code>、<code>.title</code> 在 ReasoningRow 与 DisclosureRow 里同名，示例按归属写成 <code>c1-root</code>、<code>c1-title</code>、<code>c2-text</code> 等明确类名。",
+   "keywords": ["深度思考", "thinking", "思考块", "折叠", "shimmer"]
+  },
+  {
+   "id": "activity-pill",
+   "name": "ActivityPill",
+   "exportName": "ActivityPill",
+   "zh": "活动统计",
+   "group": "conversation",
+   "summary": "输入框下方 dock 里的会话活动读数（<code>data-composer-stat=\"activity\"</code>）：轮 / 步计数与整会话输出速度。12px 字号、20px 行高、内边距 1px 8px、圆角 <code>--dsw-radius-sm</code>，图标固定 14px、间距 6px。有可展开的计时数据时渲染成 button（可点开「会话统计」），否则是静态 span；Compact 模式只保留速度。",
+   "source": "packages/client/ui-chat/src/client/chat/StatsPills.tsx#L237",
+   "css": [
+    "packages/client/ui-chat/src/client/chat/StatsPills.module.css"
+   ],
+   "tokens": ["--dsw-alias-interactive-bg-hover", "--dsw-alias-label-secondary", "--dsw-alias-label-tertiary", "--dsw-alias-separator-primary", "--dsw-radius-sm"],
+   "specimens": [
+    {
+     "label": "Detailed：轮/步 + 速度（可点开统计）",
+     "note": "右侧按钮为弹窗打开时的底色（aria-expanded=\"true\"）",
+     "html": "<span class=\"anchor\" data-composer-stat=\"activity\"><button type=\"button\" class=\"pill\" aria-haspopup=\"dialog\" aria-expanded=\"false\" aria-label=\"3 轮 11 步 · 42 tok/s\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M3.4041 13.096C2.49514 12.187 1.87614 11.0288 1.62537 9.76798C1.37459 8.50716 1.50331 7.20028 1.99525 6.01261C2.48719 4.82494 3.32025 3.80981 4.3891 3.09557C5.45795 2.38134 6.71458 2.00008 8.0001 2C9.28563 2.00008 10.5423 2.38134 11.6111 3.09557C12.68 3.80981 13.513 4.82494 14.005 6.01261C14.4969 7.20028 14.6256 8.50716 14.3748 9.76798C14.1241 11.0288 13.5051 12.187 12.5961 13.096\" stroke=\"currentColor\"/><path d=\"M8 8.49994L11.6114 4.88855\" stroke=\"currentColor\"/><path d=\"M8 9.75C8.69036 9.75 9.25 9.19036 9.25 8.5C9.25 7.80964 8.69036 7.25 8 7.25C7.30964 7.25 6.75 7.80964 6.75 8.5C6.75 9.19036 7.30964 9.75 8 9.75Z\" fill=\"currentColor\"/></svg><span class=\"label\">3 轮 11 步<span class=\"sep\" aria-hidden=\"true\">·</span>42 tok/s</span></button></span><span class=\"anchor\" data-composer-stat=\"activity\"><button type=\"button\" class=\"pill\" aria-haspopup=\"dialog\" aria-expanded=\"true\" aria-label=\"3 轮 11 步 · 42 tok/s\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M3.4041 13.096C2.49514 12.187 1.87614 11.0288 1.62537 9.76798C1.37459 8.50716 1.50331 7.20028 1.99525 6.01261C2.48719 4.82494 3.32025 3.80981 4.3891 3.09557C5.45795 2.38134 6.71458 2.00008 8.0001 2C9.28563 2.00008 10.5423 2.38134 11.6111 3.09557C12.68 3.80981 13.513 4.82494 14.005 6.01261C14.4969 7.20028 14.6256 8.50716 14.3748 9.76798C14.1241 11.0288 13.5051 12.187 12.5961 13.096\" stroke=\"currentColor\"/><path d=\"M8 8.49994L11.6114 4.88855\" stroke=\"currentColor\"/><path d=\"M8 9.75C8.69036 9.75 9.25 9.19036 9.25 8.5C9.25 7.80964 8.69036 7.25 8 7.25C7.30964 7.25 6.75 7.80964 6.75 8.5C6.75 9.19036 7.30964 9.75 8 9.75Z\" fill=\"currentColor\"/></svg><span class=\"label\">3 轮 11 步<span class=\"sep\" aria-hidden=\"true\">·</span>42 tok/s</span></button></span>"
+    },
+    {
+     "label": "静态读数与 Compact 模式",
+     "note": "无可展开行时用 span；Compact 只留速度",
+     "html": "<span class=\"anchor\" data-composer-stat=\"activity\"><span class=\"pill\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M3.4041 13.096C2.49514 12.187 1.87614 11.0288 1.62537 9.76798C1.37459 8.50716 1.50331 7.20028 1.99525 6.01261C2.48719 4.82494 3.32025 3.80981 4.3891 3.09557C5.45795 2.38134 6.71458 2.00008 8.0001 2C9.28563 2.00008 10.5423 2.38134 11.6111 3.09557C12.68 3.80981 13.513 4.82494 14.005 6.01261C14.4969 7.20028 14.6256 8.50716 14.3748 9.76798C14.1241 11.0288 13.5051 12.187 12.5961 13.096\" stroke=\"currentColor\"/><path d=\"M8 8.49994L11.6114 4.88855\" stroke=\"currentColor\"/><path d=\"M8 9.75C8.69036 9.75 9.25 9.19036 9.25 8.5C9.25 7.80964 8.69036 7.25 8 7.25C7.30964 7.25 6.75 7.80964 6.75 8.5C6.75 9.19036 7.30964 9.75 8 9.75Z\" fill=\"currentColor\"/></svg><span class=\"label\">3 轮 11 步<span class=\"sep\" aria-hidden=\"true\">·</span>42 tok/s</span></span></span><span class=\"anchor\" data-composer-stat=\"activity\"><span class=\"pill\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M3.4041 13.096C2.49514 12.187 1.87614 11.0288 1.62537 9.76798C1.37459 8.50716 1.50331 7.20028 1.99525 6.01261C2.48719 4.82494 3.32025 3.80981 4.3891 3.09557C5.45795 2.38134 6.71458 2.00008 8.0001 2C9.28563 2.00008 10.5423 2.38134 11.6111 3.09557C12.68 3.80981 13.513 4.82494 14.005 6.01261C14.4969 7.20028 14.6256 8.50716 14.3748 9.76798C14.1241 11.0288 13.5051 12.187 12.5961 13.096\" stroke=\"currentColor\"/><path d=\"M8 8.49994L11.6114 4.88855\" stroke=\"currentColor\"/><path d=\"M8 9.75C8.69036 9.75 9.25 9.19036 9.25 8.5C9.25 7.80964 8.69036 7.25 8 7.25C7.30964 7.25 6.75 7.80964 6.75 8.5C6.75 9.19036 7.30964 9.75 8 9.75Z\" fill=\"currentColor\"/></svg><span class=\"label\">42 tok/s</span></span></span>"
+    }
+   ],
+   "props": [
+    { "name": "useChat", "type": "SnapshotSelectorHook<ChatSnapshot>", "default": "—", "desc": "会话快照选择器；没有 sessionStats 投影时用它兜底统计窗口内的轮 / 步与用时。" },
+    { "name": "useProjection", "type": "UseProjection", "default": "—", "desc": "读取耐久整日志投影 <code>sessionStats</code>。" },
+    { "name": "usePerformanceUsage", "type": "PerformanceUsageInjected['usePerformanceUsage']", "default": "—", "desc": "性能与用量偏好（detailed / compact）。" },
+    { "name": "t", "type": "ChatViewSlotProps['t']", "default": "—", "desc": "chat 命名空间的本地化座位。" }
+   ],
+   "notes": "文案由词典提供：<code>stats.counts</code> = 「{turns} 轮 {steps} 步」、<code>message.tokensPerSecond</code> = 「{tps} tok/s」，两者用 <code>.sep</code> 的「·」相隔。工具活动文案（<code>message.stepProcess.read</code>「正在读取文件」、<code>message.stepProcess.commands</code>「正在运行命令」）属于过程行 / 步骤摘要，不出现在这个胶囊里。当 <code>decodeMs</code> 为 0 时不显示速度，<code>steps</code> 为 0 时整个 pill 不渲染。附带发现：<code>--dsw-alias-separator-primary</code> 在 ui-theme 中没有任何声明，间隔点实际继承父级颜色。",
+   "keywords": ["统计胶囊", "composer dock", "tok/s", "会话统计"]
+  },
+  {
+   "id": "usage-pill",
+   "name": "UsagePill",
+   "exportName": "UsagePill",
+   "zh": "用量统计",
+   "group": "conversation",
+   "summary": "dock 里的整日志 token 读数（<code>data-composer-stat=\"usage\"</code>）：总用量 + 缓存命中率，几何与 ActivityPill 完全相同（12px 字号、1px 8px 内边距、14px 图标、<code>--dsw-radius-sm</code>）。Detailed 渲染为可点开「Token 用量」对话框的 button，Compact 只保留缓存命中。",
+   "source": "packages/client/ui-chat/src/client/chat/StatsPills.tsx#L282",
+   "css": [
+    "packages/client/ui-chat/src/client/chat/StatsPills.module.css"
+   ],
+   "tokens": ["--dsw-alias-interactive-bg-hover", "--dsw-alias-label-secondary", "--dsw-alias-label-tertiary", "--dsw-alias-separator-primary", "--dsw-radius-sm"],
+   "specimens": [
+    {
+     "label": "Detailed：总量 + 缓存命中",
+     "note": "12.4K tok · 缓存命中 87%",
+     "html": "<span class=\"anchor\" data-composer-stat=\"usage\"><button type=\"button\" class=\"pill\" aria-haspopup=\"dialog\" aria-expanded=\"false\" aria-label=\"12.4K tok · 缓存命中 87%\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M13.1967 5.1869C13.7232 4.77378 14.0003 4.30517 14.0001 3.82819C14.0003 3.3512 13.7232 2.88259 13.1967 2.46947C12.6702 2.05635 11.9128 1.71328 11.0006 1.47475C10.0885 1.23621 9.05371 1.11062 8.00039 1.1106C6.94707 1.11057 5.9123 1.23612 5.00009 1.47461C4.08742 1.71301 3.32948 2.05604 2.80249 2.46919C2.2755 2.88235 1.99805 3.35106 1.99805 3.82819C1.99805 4.30531 2.2755 4.77402 2.80249 5.18718C3.32948 5.60033 4.08742 5.94336 5.00009 6.18176C5.9123 6.42025 6.94707 6.5458 8.00039 6.54578C9.05371 6.54575 10.0885 6.42016 11.0006 6.18163C11.9128 5.94309 12.6702 5.60002 13.1967 5.1869Z\" stroke=\"currentColor\"/><path d=\"M2 3.80371V11.7848\" stroke=\"currentColor\"/><path d=\"M14 3.80371V11.7848\" stroke=\"currentColor\"/><path d=\"M2 7.81396C2 8.60524 2.63214 9.36411 3.75736 9.92363C4.88258 10.4832 6.4087 10.7975 8 10.7975C9.5913 10.7975 11.1174 10.4832 12.2426 9.92363C13.3679 9.36411 14 8.60524 14 7.81396\" stroke=\"currentColor\"/><path d=\"M2 11.7847C2 12.6081 2.63214 13.3977 3.75736 13.98C4.88258 14.5622 6.4087 14.8893 8 14.8893C9.5913 14.8893 11.1174 14.5622 12.2426 13.98C13.3679 13.3977 14 12.6081 14 11.7847\" stroke=\"currentColor\"/></svg><span class=\"label\">12.4K tok<span class=\"sep\" aria-hidden=\"true\">·</span>缓存命中 87%</span></button></span>"
+    },
+    {
+     "label": "静态读数与 Compact 模式",
+     "note": "Compact 只留缓存命中",
+     "html": "<span class=\"anchor\" data-composer-stat=\"usage\"><span class=\"pill\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M13.1967 5.1869C13.7232 4.77378 14.0003 4.30517 14.0001 3.82819C14.0003 3.3512 13.7232 2.88259 13.1967 2.46947C12.6702 2.05635 11.9128 1.71328 11.0006 1.47475C10.0885 1.23621 9.05371 1.11062 8.00039 1.1106C6.94707 1.11057 5.9123 1.23612 5.00009 1.47461C4.08742 1.71301 3.32948 2.05604 2.80249 2.46919C2.2755 2.88235 1.99805 3.35106 1.99805 3.82819C1.99805 4.30531 2.2755 4.77402 2.80249 5.18718C3.32948 5.60033 4.08742 5.94336 5.00009 6.18176C5.9123 6.42025 6.94707 6.5458 8.00039 6.54578C9.05371 6.54575 10.0885 6.42016 11.0006 6.18163C11.9128 5.94309 12.6702 5.60002 13.1967 5.1869Z\" stroke=\"currentColor\"/><path d=\"M2 3.80371V11.7848\" stroke=\"currentColor\"/><path d=\"M14 3.80371V11.7848\" stroke=\"currentColor\"/><path d=\"M2 7.81396C2 8.60524 2.63214 9.36411 3.75736 9.92363C4.88258 10.4832 6.4087 10.7975 8 10.7975C9.5913 10.7975 11.1174 10.4832 12.2426 9.92363C13.3679 9.36411 14 8.60524 14 7.81396\" stroke=\"currentColor\"/><path d=\"M2 11.7847C2 12.6081 2.63214 13.3977 3.75736 13.98C4.88258 14.5622 6.4087 14.8893 8 14.8893C9.5913 14.8893 11.1174 14.5622 12.2426 13.98C13.3679 13.3977 14 12.6081 14 11.7847\" stroke=\"currentColor\"/></svg><span class=\"label\">12.4K tok<span class=\"sep\" aria-hidden=\"true\">·</span>缓存命中 87%</span></span></span><span class=\"anchor\" data-composer-stat=\"usage\"><span class=\"pill\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M13.1967 5.1869C13.7232 4.77378 14.0003 4.30517 14.0001 3.82819C14.0003 3.3512 13.7232 2.88259 13.1967 2.46947C12.6702 2.05635 11.9128 1.71328 11.0006 1.47475C10.0885 1.23621 9.05371 1.11062 8.00039 1.1106C6.94707 1.11057 5.9123 1.23612 5.00009 1.47461C4.08742 1.71301 3.32948 2.05604 2.80249 2.46919C2.2755 2.88235 1.99805 3.35106 1.99805 3.82819C1.99805 4.30531 2.2755 4.77402 2.80249 5.18718C3.32948 5.60033 4.08742 5.94336 5.00009 6.18176C5.9123 6.42025 6.94707 6.5458 8.00039 6.54578C9.05371 6.54575 10.0885 6.42016 11.0006 6.18163C11.9128 5.94309 12.6702 5.60002 13.1967 5.1869Z\" stroke=\"currentColor\"/><path d=\"M2 3.80371V11.7848\" stroke=\"currentColor\"/><path d=\"M14 3.80371V11.7848\" stroke=\"currentColor\"/><path d=\"M2 7.81396C2 8.60524 2.63214 9.36411 3.75736 9.92363C4.88258 10.4832 6.4087 10.7975 8 10.7975C9.5913 10.7975 11.1174 10.4832 12.2426 9.92363C13.3679 9.36411 14 8.60524 14 7.81396\" stroke=\"currentColor\"/><path d=\"M2 11.7847C2 12.6081 2.63214 13.3977 3.75736 13.98C4.88258 14.5622 6.4087 14.8893 8 14.8893C9.5913 14.8893 11.1174 14.5622 12.2426 13.98C13.3679 13.3977 14 12.6081 14 11.7847\" stroke=\"currentColor\"/></svg><span class=\"label\">缓存命中 87%</span></span></span>"
+    }
+   ],
+   "props": [
+    { "name": "useProjection", "type": "UseProjection", "default": "—", "desc": "读取 <code>tokenUsage</code> 投影（未缓存输入 / 缓存读取 / 缓存写入 / 输出）。" },
+    { "name": "usePerformanceUsage", "type": "PerformanceUsageInjected['usePerformanceUsage']", "default": "—", "desc": "性能与用量偏好（detailed / compact）。" },
+    { "name": "t", "type": "ChatViewSlotProps['t']", "default": "—", "desc": "chat 命名空间的本地化座位。" }
+   ],
+   "notes": "总量 = 未缓存输入 + 缓存读取 + 缓存写入 + 输出，走 <code>formatTokens</code>（12400 → 「12.4K」，词典模板 <code>number.thousand</code> = 「{value}K」）。计费活动为 0 的会话整条不渲染；缓存命中率为 null 时只显示总量，Compact 模式下则为 null 就整条不渲染。对话框里的桶行与 TurnUsagePanel 共用 stat-dialog.module.css 皮肤（面板 min-width 300px、max-width 440px、padding 16px）。",
+   "keywords": ["token 用量", "缓存命中", "composer dock", "12.4K"]
+  },
+  {
+   "id": "turn-usage-panel",
+   "name": "TurnUsagePanel",
+   "exportName": "TurnUsagePanel",
+   "zh": "本轮用量",
+   "group": "conversation",
+   "summary": "回合尾部的用量触发器：固定 <code>calc(28px + 字号增量)</code> 高、内边距 6px 8px、图标 15px、图标与文字间距 4px、圆角 <code>--dsw-radius-sm</code>，文字比正文次要档再小 1px 并用等宽数字。点击在触发器上方（间距 8px、距视口 12px 收边）打开本轮用量对话框；窄视口（≤480px）收成 28px 圆形只剩图标。",
+   "source": "packages/client/ui-chat/src/client/chat/TurnUsagePanel.tsx#L31",
+   "css": [
+    "packages/client/ui-chat/src/client/chat/TurnUsagePanel.module.css",
+    "packages/client/ui-chat/src/client/chat/MessageIconActions.module.css"
+   ],
+   "tokens": ["--dsw-alias-interactive-bg-hover", "--dsw-alias-label-secondary", "--dsw-alias-label-tertiary", "--dsw-radius-sm"],
+   "specimens": [
+    {
+     "label": "触发器（收起 / 弹窗打开）",
+     "note": "右侧为 aria-expanded=\"true\" 的底色，与 :hover 同款",
+     "html": "<span class=\"root\"><button type=\"button\" class=\"trigger\" aria-haspopup=\"dialog\" aria-expanded=\"false\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M13.1967 5.1869C13.7232 4.77378 14.0003 4.30517 14.0001 3.82819C14.0003 3.3512 13.7232 2.88259 13.1967 2.46947C12.6702 2.05635 11.9128 1.71328 11.0006 1.47475C10.0885 1.23621 9.05371 1.11062 8.00039 1.1106C6.94707 1.11057 5.9123 1.23612 5.00009 1.47461C4.08742 1.71301 3.32948 2.05604 2.80249 2.46919C2.2755 2.88235 1.99805 3.35106 1.99805 3.82819C1.99805 4.30531 2.2755 4.77402 2.80249 5.18718C3.32948 5.60033 4.08742 5.94336 5.00009 6.18176C5.9123 6.42025 6.94707 6.5458 8.00039 6.54578C9.05371 6.54575 10.0885 6.42016 11.0006 6.18163C11.9128 5.94309 12.6702 5.60002 13.1967 5.1869Z\" stroke=\"currentColor\"/><path d=\"M2 3.80371V11.7848\" stroke=\"currentColor\"/><path d=\"M14 3.80371V11.7848\" stroke=\"currentColor\"/><path d=\"M2 7.81396C2 8.60524 2.63214 9.36411 3.75736 9.92363C4.88258 10.4832 6.4087 10.7975 8 10.7975C9.5913 10.7975 11.1174 10.4832 12.2426 9.92363C13.3679 9.36411 14 8.60524 14 7.81396\" stroke=\"currentColor\"/><path d=\"M2 11.7847C2 12.6081 2.63214 13.3977 3.75736 13.98C4.88258 14.5622 6.4087 14.8893 8 14.8893C9.5913 14.8893 11.1174 14.5622 12.2426 13.98C13.3679 13.3977 14 12.6081 14 11.7847\" stroke=\"currentColor\"/></svg><span class=\"label\">用量 12.4K tok</span></button></span><span class=\"root\"><button type=\"button\" class=\"trigger\" aria-haspopup=\"dialog\" aria-expanded=\"true\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M13.1967 5.1869C13.7232 4.77378 14.0003 4.30517 14.0001 3.82819C14.0003 3.3512 13.7232 2.88259 13.1967 2.46947C12.6702 2.05635 11.9128 1.71328 11.0006 1.47475C10.0885 1.23621 9.05371 1.11062 8.00039 1.1106C6.94707 1.11057 5.9123 1.23612 5.00009 1.47461C4.08742 1.71301 3.32948 2.05604 2.80249 2.46919C2.2755 2.88235 1.99805 3.35106 1.99805 3.82819C1.99805 4.30531 2.2755 4.77402 2.80249 5.18718C3.32948 5.60033 4.08742 5.94336 5.00009 6.18176C5.9123 6.42025 6.94707 6.5458 8.00039 6.54578C9.05371 6.54575 10.0885 6.42016 11.0006 6.18163C11.9128 5.94309 12.6702 5.60002 13.1967 5.1869Z\" stroke=\"currentColor\"/><path d=\"M2 3.80371V11.7848\" stroke=\"currentColor\"/><path d=\"M14 3.80371V11.7848\" stroke=\"currentColor\"/><path d=\"M2 7.81396C2 8.60524 2.63214 9.36411 3.75736 9.92363C4.88258 10.4832 6.4087 10.7975 8 10.7975C9.5913 10.7975 11.1174 10.4832 12.2426 9.92363C13.3679 9.36411 14 8.60524 14 7.81396\" stroke=\"currentColor\"/><path d=\"M2 11.7847C2 12.6081 2.63214 13.3977 3.75736 13.98C4.88258 14.5622 6.4087 14.8893 8 14.8893C9.5913 14.8893 11.1174 14.5622 12.2426 13.98C13.3679 13.3977 14 12.6081 14 11.7847\" stroke=\"currentColor\"/></svg><span class=\"label\">用量 12.4K tok</span></button></span>"
+    },
+    {
+     "label": "坐在回合尾部操作行里",
+     "note": "clock=\"end\"：复制 / 分支之后、时钟之前",
+     "html": "<div class=\"actions\" data-clock=\"end\"><button type=\"button\" class=\"action\" aria-label=\"复制\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><rect x=\"1.52075\" y=\"4.07373\" width=\"10.3932\" height=\"10.3932\" rx=\"2\" stroke=\"currentColor\"/><path d=\"M11.9792 1.53296C13.36 1.53296 14.4792 2.65225 14.4792 4.03296V9.42847C14.4792 10.3756 13.9521 11.1987 13.1755 11.6228V10.3298C13.3652 10.0787 13.4792 9.7674 13.4792 9.42847V4.03296C13.4792 3.20453 12.8077 2.53296 11.9792 2.53296H6.58374C6.27966 2.53301 5.99684 2.6235 5.7605 2.77905H4.42358C4.85652 2.03463 5.66056 1.53304 6.58374 1.53296H11.9792Z\" fill=\"currentColor\"/></svg></button><button type=\"button\" class=\"action\" aria-label=\"在新对话中分支\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M1.01503 8.0001L5.6964 8.0001C6.41913 8.0001 6.78049 8.0001 7.12115 7.91951C7.4232 7.84804 7.71233 7.73014 7.97821 7.57C8.27809 7.38939 8.5364 7.13669 9.05303 6.63129L11.3281 4.40564\" stroke=\"currentColor\"/><path d=\"M1.01221 7.9999L5.6964 7.9999C6.41913 7.9999 6.78049 7.9999 7.12115 8.08049C7.4232 8.15196 7.71233 8.26986 7.97821 8.43C8.27809 8.61061 8.5364 8.86331 9.05303 9.36871L11.3281 11.5944\" stroke=\"currentColor\"/><circle cx=\"12.4502\" cy=\"3.3079\" r=\"1.56962\" stroke=\"currentColor\"/><circle cx=\"12.4502\" cy=\"12.6921\" r=\"1.56962\" stroke=\"currentColor\"/></svg></button><span class=\"endInfo\"><span class=\"root\"><button type=\"button\" class=\"trigger\" aria-haspopup=\"dialog\" aria-expanded=\"false\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M13.1967 5.1869C13.7232 4.77378 14.0003 4.30517 14.0001 3.82819C14.0003 3.3512 13.7232 2.88259 13.1967 2.46947C12.6702 2.05635 11.9128 1.71328 11.0006 1.47475C10.0885 1.23621 9.05371 1.11062 8.00039 1.1106C6.94707 1.11057 5.9123 1.23612 5.00009 1.47461C4.08742 1.71301 3.32948 2.05604 2.80249 2.46919C2.2755 2.88235 1.99805 3.35106 1.99805 3.82819C1.99805 4.30531 2.2755 4.77402 2.80249 5.18718C3.32948 5.60033 4.08742 5.94336 5.00009 6.18176C5.9123 6.42025 6.94707 6.5458 8.00039 6.54578C9.05371 6.54575 10.0885 6.42016 11.0006 6.18163C11.9128 5.94309 12.6702 5.60002 13.1967 5.1869Z\" stroke=\"currentColor\"/><path d=\"M2 3.80371V11.7848\" stroke=\"currentColor\"/><path d=\"M14 3.80371V11.7848\" stroke=\"currentColor\"/><path d=\"M2 7.81396C2 8.60524 2.63214 9.36411 3.75736 9.92363C4.88258 10.4832 6.4087 10.7975 8 10.7975C9.5913 10.7975 11.1174 10.4832 12.2426 9.92363C13.3679 9.36411 14 8.60524 14 7.81396\" stroke=\"currentColor\"/><path d=\"M2 11.7847C2 12.6081 2.63214 13.3977 3.75736 13.98C4.88258 14.5622 6.4087 14.8893 8 14.8893C9.5913 14.8893 11.1174 14.5622 12.2426 13.98C13.3679 13.3977 14 12.6081 14 11.7847\" stroke=\"currentColor\"/></svg><span class=\"label\">用量 12.4K tok</span></button></span><span class=\"timeEnd\">14:35</span></span></div>"
+    }
+   ],
+   "props": [
+    { "name": "usage", "type": "TurnTokenUsage", "default": "—", "desc": "本轮用量桶：totalTokens、uncachedInputTokens、可选 cacheRead / cacheWrite / reasoningTokens、routes。" },
+    { "name": "t", "type": "ChatViewSlotProps['t']", "default": "—", "desc": "chat 命名空间的本地化座位。" }
+   ],
+   "notes": "只有本轮窗口含 <code>turn/start</code> 且每个已启动的模型尝试都报告精确用量时，回合尾才渲染这枚触发器；不可用的可选桶直接省略，账目不完整则整个披露隐藏。触发器文案是 <code>message.turnUsage.consumed</code>（「用量 {total}」），对话框标题「本轮用量」+ 精确总数。对话框是 portal + <code>position: fixed</code>，面板宽 min 300px / max 440px、内边距 16px、圆角 <code>--dsw-radius-lg</code>、投影 <code>--dsw-elevation-prominent</code>，本目录不渲染。相邻两个 <code>.root</code> 用 -6px 抵消各自内边距（同一回合只出现一枚，故示例未并排）。",
+   "keywords": ["本轮用量", "token", "回合尾部", "stat dialog"]
+  },
+  {
+   "id": "turn-navigator",
+   "name": "TurnNavigator",
+   "exportName": "TurnNavigator",
+   "zh": "回合导航",
+   "group": "conversation",
+   "summary": "贴在转录右缘的 28px 宽刻度轨，每个回合一根固定 10px 间距的刻度：静止 <code>scaleX(0.6)</code>、当前回合 <code>scaleX(1)</code> 用主文字色、未加载 <code>scaleX(0.4)</code> 并降到 60% 不透明度、正在翻页的回合脉冲闪烁。预览卡 300px 宽、最高 100px、内边距 10px 12px、圆角 <code>--dsw-radius-lg</code> 并带 <code>--dsw-elevation-panel</code> 投影；刻度多于带宽时在轨内滚动，两端各有 24px 渐隐。",
+   "source": "packages/client/ui-chat/src/client/chat/TurnNavigator.tsx#L295",
+   "css": [
+    "packages/client/ui-chat/src/client/chat/TurnNavigator.module.css"
+   ],
+   "tokens": ["--dsw-alias-bg-layer-1", "--dsw-alias-border-l4", "--dsw-alias-label-caption", "--dsw-alias-label-primary", "--dsw-alias-label-tertiary", "--dsw-alias-state-business-primary", "--dsw-elevation-panel", "--dsw-focus-ring-color", "--dsw-font-xs-strong-13", "--dsw-font-xxs-12", "--dsw-radius-lg"],
+   "specimens": [
+    {
+     "label": "刻度轨（当前 / 翻页中 / 未加载）",
+     "note": "容器模拟：960×320 的转录带，带宽 260px，底部渐隐",
+     "html": "<div style=\"position:relative;width:960px;height:320px;--dsh-conversation-viewport-height:320px;--dsh-composer-height:60px;--dsh-composer-side-clearance:0px\"><div class=\"slot\"><nav class=\"frame\" aria-label=\"轮次导航\"><div class=\"scroller fadeBottom\"><div class=\"marks\" style=\"height:262px\"><button type=\"button\" class=\"mark markUnloaded\" style=\"transform:translateY(1px)\" aria-label=\"加载并跳转到第 1 轮\"></button><button type=\"button\" class=\"mark markUnloaded\" style=\"transform:translateY(11px)\" aria-label=\"加载并跳转到第 2 轮\"></button><button type=\"button\" class=\"mark markUnloaded\" style=\"transform:translateY(21px)\" aria-label=\"加载并跳转到第 3 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(31px)\" aria-label=\"跳转到第 4 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(41px)\" aria-label=\"跳转到第 5 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(51px)\" aria-label=\"跳转到第 6 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(61px)\" aria-label=\"跳转到第 7 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(71px)\" aria-label=\"跳转到第 8 轮\"></button><button type=\"button\" class=\"mark markActive\" style=\"transform:translateY(81px)\" aria-current=\"true\" aria-label=\"跳转到第 9 轮\"></button><button type=\"button\" class=\"mark markBusy\" style=\"transform:translateY(91px)\" aria-busy=\"true\" aria-label=\"跳转到第 10 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(101px)\" aria-label=\"跳转到第 11 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(111px)\" aria-label=\"跳转到第 12 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(121px)\" aria-label=\"跳转到第 13 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(131px)\" aria-label=\"跳转到第 14 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(141px)\" aria-label=\"跳转到第 15 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(151px)\" aria-label=\"跳转到第 16 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(161px)\" aria-label=\"跳转到第 17 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(171px)\" aria-label=\"跳转到第 18 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(181px)\" aria-label=\"跳转到第 19 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(191px)\" aria-label=\"跳转到第 20 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(201px)\" aria-label=\"跳转到第 21 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(211px)\" aria-label=\"跳转到第 22 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(221px)\" aria-label=\"跳转到第 23 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(231px)\" aria-label=\"跳转到第 24 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(241px)\" aria-label=\"跳转到第 25 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(251px)\" aria-label=\"跳转到第 26 轮\"></button></div></div></nav></div></div>"
+    },
+    {
+     "label": "预览卡（指针悬停 / 键盘聚焦）",
+     "note": "提示行 1 行、回复 3 行截断",
+     "html": "<div style=\"position:relative;width:960px;height:320px;--dsh-conversation-viewport-height:320px;--dsh-composer-height:60px;--dsh-composer-side-clearance:0px\"><div class=\"slot\"><nav class=\"frame\" aria-label=\"轮次导航\"><div class=\"scroller fadeBottom\"><div class=\"marks\" style=\"height:262px\"><button type=\"button\" class=\"mark markUnloaded\" style=\"transform:translateY(1px)\" aria-label=\"加载并跳转到第 1 轮\"></button><button type=\"button\" class=\"mark markUnloaded\" style=\"transform:translateY(11px)\" aria-label=\"加载并跳转到第 2 轮\"></button><button type=\"button\" class=\"mark markUnloaded\" style=\"transform:translateY(21px)\" aria-label=\"加载并跳转到第 3 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(31px)\" aria-label=\"跳转到第 4 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(41px)\" aria-label=\"跳转到第 5 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(51px)\" aria-label=\"跳转到第 6 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(61px)\" aria-label=\"跳转到第 7 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(71px)\" aria-label=\"跳转到第 8 轮\"></button><button type=\"button\" class=\"mark markActive\" style=\"transform:translateY(81px)\" aria-current=\"true\" aria-label=\"跳转到第 9 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(91px)\" aria-label=\"跳转到第 10 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(101px)\" aria-label=\"跳转到第 11 轮\"></button><button type=\"button\" class=\"mark markPreview\" style=\"transform:translateY(111px)\" aria-describedby=\"turn-preview\" aria-label=\"跳转到第 12 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(121px)\" aria-label=\"跳转到第 13 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(131px)\" aria-label=\"跳转到第 14 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(141px)\" aria-label=\"跳转到第 15 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(151px)\" aria-label=\"跳转到第 16 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(161px)\" aria-label=\"跳转到第 17 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(171px)\" aria-label=\"跳转到第 18 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(181px)\" aria-label=\"跳转到第 19 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(191px)\" aria-label=\"跳转到第 20 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(201px)\" aria-label=\"跳转到第 21 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(211px)\" aria-label=\"跳转到第 22 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(221px)\" aria-label=\"跳转到第 23 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(231px)\" aria-label=\"跳转到第 24 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(241px)\" aria-label=\"跳转到第 25 轮\"></button><button type=\"button\" class=\"mark\" style=\"transform:translateY(251px)\" aria-label=\"跳转到第 26 轮\"></button></div></div><div id=\"turn-preview\" role=\"tooltip\" class=\"preview\" style=\"--turn-preview-center:116px\"><div class=\"previewPrompt\">帮我把 packages/client/ui-primitives 里的按钮圆角统一成 --dsw-radius-md</div><div class=\"previewResponse\">已把 Button.module.css 的圆角收敛到 --dsw-radius-md，sm 与 toolbar 不再各写一遍；已在包内跑 pnpm run test:gui，GUI 用例全绿。</div></div></nav></div></div>"
+    }
+   ],
+   "props": [
+    { "name": "items", "type": "readonly TurnRailItem[]", "default": "—", "desc": "已知回合的刻度项：回合号、锚点来源（已加载 / 未加载）、预览文案。" },
+    { "name": "activeTurn", "type": "number | null", "default": "—", "desc": "当前阅读位置所属回合，刻度加粗并用主文字色。" },
+    { "name": "busyTurn", "type": "number | null", "default": "—", "desc": "正在翻页载入历史的回合，刻度脉冲。" },
+    { "name": "onNavigate", "type": "(item: TurnRailItem) => void", "default": "—", "desc": "激活刻度：跳转或先加载历史再落点。" },
+    { "name": "t", "type": "ChatViewSlotProps['t']", "default": "—", "desc": "chat 命名空间的本地化座位。" }
+   ],
+   "notes": "刻度用 <code>transform</code> 做虚拟滚动（示例里的 <code>translateY</code> 与 262px 容器高度就是虚拟器写入的值），固定间距来自 <code>TURN_SPACING_PX = 10</code>，上下各留 6px 内缩。<code>&lt;2</code> 个回合时整条不渲染；容器查询在转录可用宽度 ≤900px 时隐藏整条轨道（示例用 960px 宽容器让其显示），预览卡左移 <code>calc(100% + 10px)</code> 且不吃指针事件。焦点态会把刻度换成品牌色描边环，示例未渲染。",
+   "keywords": ["回合轨", "turn rail", "导航", "预览卡", "刻度"]
+  },
+  {
+   "id": "message-icon-actions",
+   "name": "MessageIconActions",
+   "exportName": "MessageIconActions",
+   "zh": "消息操作",
+   "group": "conversation",
+   "summary": "用户与助手消息共用的 28px 操作行：内边距 6px 的 28×28 图标按钮、间距 8px、圆角 <code>--dsw-radius-sm</code>，图标 15px（助手尾部 17px）。<code>clock=\"start\"</code> 把 13px 时钟放在最前（右内边距 12px），<code>clock=\"end\"</code> 则把 12px 时钟与用量触发器一起收进末尾的 <code>.endInfo</code>（左外边距 8px）。",
+   "source": "packages/client/ui-chat/src/client/chat/MessageIconActions.tsx#L45",
+   "css": [
+    "packages/client/ui-chat/src/client/chat/MessageIconActions.module.css"
+   ],
+   "tokens": ["--dsw-alias-interactive-bg-hover", "--dsw-alias-label-secondary", "--dsw-alias-label-tertiary", "--dsw-radius-sm"],
+   "specimens": [
+    {
+     "label": "clock=\"start\"：用户消息行",
+     "note": "右侧复制按钮为悬停模拟",
+     "html": "<div style=\"display:flex;flex-direction:column;align-items:flex-end\"><div class=\"actions\" data-clock=\"start\"><span class=\"timeStart\">14:32</span><button type=\"button\" class=\"action\" aria-label=\"复制\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><rect x=\"1.52075\" y=\"4.07373\" width=\"10.3932\" height=\"10.3932\" rx=\"2\" stroke=\"currentColor\"/><path d=\"M11.9792 1.53296C13.36 1.53296 14.4792 2.65225 14.4792 4.03296V9.42847C14.4792 10.3756 13.9521 11.1987 13.1755 11.6228V10.3298C13.3652 10.0787 13.4792 9.7674 13.4792 9.42847V4.03296C13.4792 3.20453 12.8077 2.53296 11.9792 2.53296H6.58374C6.27966 2.53301 5.99684 2.6235 5.7605 2.77905H4.42358C4.85652 2.03463 5.66056 1.53304 6.58374 1.53296H11.9792Z\" fill=\"currentColor\"/></svg></button><button type=\"button\" class=\"action forceHover\" aria-label=\"在新对话中分支\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M1.01503 8.0001L5.6964 8.0001C6.41913 8.0001 6.78049 8.0001 7.12115 7.91951C7.4232 7.84804 7.71233 7.73014 7.97821 7.57C8.27809 7.38939 8.5364 7.13669 9.05303 6.63129L11.3281 4.40564\" stroke=\"currentColor\"/><path d=\"M1.01221 7.9999L5.6964 7.9999C6.41913 7.9999 6.78049 7.9999 7.12115 8.08049C7.4232 8.15196 7.71233 8.26986 7.97821 8.43C8.27809 8.61061 8.5364 8.86331 9.05303 9.36871L11.3281 11.5944\" stroke=\"currentColor\"/><circle cx=\"12.4502\" cy=\"3.3079\" r=\"1.56962\" stroke=\"currentColor\"/><circle cx=\"12.4502\" cy=\"12.6921\" r=\"1.56962\" stroke=\"currentColor\"/></svg></button></div></div>",
+     "css": "/* 状态模拟：.action:hover（原样搬自 MessageIconActions.module.css） */\n.action.forceHover { background: var(--dsw-alias-interactive-bg-hover); color: var(--dsw-alias-label-secondary); }"
+    },
+    {
+     "label": "clock=\"end\"：助手回合尾部",
+     "note": "endInfo 里依次是 extraActions、用量触发器与时钟",
+     "html": "<div class=\"actions\" data-clock=\"end\"><button type=\"button\" class=\"action\" aria-label=\"复制\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><rect x=\"1.52075\" y=\"4.07373\" width=\"10.3932\" height=\"10.3932\" rx=\"2\" stroke=\"currentColor\"/><path d=\"M11.9792 1.53296C13.36 1.53296 14.4792 2.65225 14.4792 4.03296V9.42847C14.4792 10.3756 13.9521 11.1987 13.1755 11.6228V10.3298C13.3652 10.0787 13.4792 9.7674 13.4792 9.42847V4.03296C13.4792 3.20453 12.8077 2.53296 11.9792 2.53296H6.58374C6.27966 2.53301 5.99684 2.6235 5.7605 2.77905H4.42358C4.85652 2.03463 5.66056 1.53304 6.58374 1.53296H11.9792Z\" fill=\"currentColor\"/></svg></button><button type=\"button\" class=\"action\" aria-label=\"在新对话中分支\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M1.01503 8.0001L5.6964 8.0001C6.41913 8.0001 6.78049 8.0001 7.12115 7.91951C7.4232 7.84804 7.71233 7.73014 7.97821 7.57C8.27809 7.38939 8.5364 7.13669 9.05303 6.63129L11.3281 4.40564\" stroke=\"currentColor\"/><path d=\"M1.01221 7.9999L5.6964 7.9999C6.41913 7.9999 6.78049 7.9999 7.12115 8.08049C7.4232 8.15196 7.71233 8.26986 7.97821 8.43C8.27809 8.61061 8.5364 8.86331 9.05303 9.36871L11.3281 11.5944\" stroke=\"currentColor\"/><circle cx=\"12.4502\" cy=\"3.3079\" r=\"1.56962\" stroke=\"currentColor\"/><circle cx=\"12.4502\" cy=\"12.6921\" r=\"1.56962\" stroke=\"currentColor\"/></svg></button><span class=\"endInfo\"><span class=\"timeEnd\">14:35</span></span></div>"
+    },
+    {
+     "label": "不可用分支（历史回合）",
+     "note": "保留焦点与悬停，用 40% 不透明度说明原因",
+     "html": "<div class=\"actions\" data-clock=\"end\"><button type=\"button\" class=\"action\" aria-label=\"复制\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><rect x=\"1.52075\" y=\"4.07373\" width=\"10.3932\" height=\"10.3932\" rx=\"2\" stroke=\"currentColor\"/><path d=\"M11.9792 1.53296C13.36 1.53296 14.4792 2.65225 14.4792 4.03296V9.42847C14.4792 10.3756 13.9521 11.1987 13.1755 11.6228V10.3298C13.3652 10.0787 13.4792 9.7674 13.4792 9.42847V4.03296C13.4792 3.20453 12.8077 2.53296 11.9792 2.53296H6.58374C6.27966 2.53301 5.99684 2.6235 5.7605 2.77905H4.42358C4.85652 2.03463 5.66056 1.53304 6.58374 1.53296H11.9792Z\" fill=\"currentColor\"/></svg></button><button type=\"button\" class=\"action\" aria-label=\"在新对话中分支\" aria-disabled=\"true\" data-unavailable=\"true\" aria-describedby=\"branch-reason\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M1.01503 8.0001L5.6964 8.0001C6.41913 8.0001 6.78049 8.0001 7.12115 7.91951C7.4232 7.84804 7.71233 7.73014 7.97821 7.57C8.27809 7.38939 8.5364 7.13669 9.05303 6.63129L11.3281 4.40564\" stroke=\"currentColor\"/><path d=\"M1.01221 7.9999L5.6964 7.9999C6.41913 7.9999 6.78049 7.9999 7.12115 8.08049C7.4232 8.15196 7.71233 8.26986 7.97821 8.43C8.27809 8.61061 8.5364 8.86331 9.05303 9.36871L11.3281 11.5944\" stroke=\"currentColor\"/><circle cx=\"12.4502\" cy=\"3.3079\" r=\"1.56962\" stroke=\"currentColor\"/><circle cx=\"12.4502\" cy=\"12.6921\" r=\"1.56962\" stroke=\"currentColor\"/></svg></button><span id=\"branch-reason\" class=\"visuallyHidden\">仅可从已完成轮次的最后一条消息分支</span><span class=\"endInfo\"><span class=\"timeEnd\">14:35</span></span></div>"
+    }
+   ],
+   "props": [
+    { "name": "text", "type": "string", "default": "—", "desc": "复制动作写入的纯文本。" },
+    { "name": "time", "type": "number | undefined", "default": "—", "desc": "时钟标签的 Unix 毫秒；省略则不渲染时钟（待接收插话就是这种）。" },
+    { "name": "clock", "type": "'start' | 'end'", "default": "—", "desc": "时钟在图标之前（用户行）还是收入末尾的 endInfo（助手尾部）。" },
+    { "name": "onBranch", "type": "(() => void) | undefined", "default": "—", "desc": "在该消息处分叉会话；省略则整个分支按钮不出现。" },
+    { "name": "branchUnavailable", "type": "boolean | undefined", "default": "false", "desc": "分支按钮保持可见可聚焦但不可用（40% 不透明度 + 说明文本）。" },
+    { "name": "extraActions", "type": "ReactNode", "default": "—", "desc": "排在复制与分支之间的插件动作。" },
+    { "name": "usageAction", "type": "ReactNode", "default": "—", "desc": "用量触发器座位（TurnUsagePanel），只在 clock=\"end\" 时渲染于 endInfo 首位。" },
+    { "name": "className", "type": "string | undefined", "default": "—", "desc": "调用方的布局类，叠加在 .actions 之后。" }
+   ],
+   "notes": "复制成功后图标换成对勾并保持 1 秒（会话内不重复写入）。悬停底色用 <code>--dsw-alias-interactive-bg-hover</code>、文字转 <code>--dsw-alias-label-secondary</code>；被标为 <code>data-unavailable</code> 的按钮悬停不变色，好让 Tooltip 继续解释原因。整行在早期回合上默认透明，靠父级容器的 <code>data-actions-reveal</code> / 悬停 / 焦点显形——<code>@media (hover: hover)</code> 之外的设备始终显示。",
+   "keywords": ["操作行", "复制", "分支", "时钟", "icon actions"]
+  }
+ ]
+}

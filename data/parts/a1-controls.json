@@ -1,0 +1,632 @@
+{
+ "schemaVersion": 1,
+ "note": "控制类原子：复选框、分段控件、分段标签、行内编辑器、单行输入、快捷键键帽、连接指示与文字微光。css 指向真实 CSS Module 源码，构建时原文内联进 shadow root。",
+ "entries": [
+  {
+   "id": "checkbox",
+   "name": "Checkbox",
+   "exportName": "Checkbox",
+   "zh": "复选框",
+   "group": "controls",
+   "summary": "受控的原生复选框：外层 <code>&lt;label&gt;</code> 包住 16×16 的原生 <code>&lt;input type=\"checkbox\"&gt;</code> 和 14px/20px 的可见文案，两者同属一个 6px 间距的点击区域，键盘与表单语义全部来自浏览器。<code>label</code> 同时是可见文案和无障碍名称，控件不会以无名状态出厂。<code>:has(input:disabled)</code> 把禁用态整体降到 50% 不透明度并把指针还原为默认。",
+   "source": "packages/client/ui-primitives/src/Checkbox.tsx#L16",
+   "css": [
+    "packages/client/ui-primitives/src/Checkbox.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-label-primary",
+    "--dsw-alias-brand-primary",
+    "--dsw-focus-ring-width",
+    "--dsw-focus-ring-color",
+    "--dsw-alias-state-business-primary"
+   ],
+   "specimens": [
+    {
+     "label": "未选中 / 已选中 / 禁用",
+     "html": "<label class=\"checkbox\"><input type=\"checkbox\"><span>显示代码工作视图</span></label><label class=\"checkbox\"><input type=\"checkbox\" checked><span>自动审查</span></label><label class=\"checkbox\" title=\"本部署已锁定访问模式\"><input type=\"checkbox\" checked disabled><span>工作区写入</span></label>"
+    },
+    {
+     "label": "长文案（风险确认里的勾选）",
+     "html": "<div style=\"display:flex;width:300px\"><label class=\"checkbox\"><input type=\"checkbox\"><span>我已了解这些风险，并愿意继续</span></label></div>"
+    },
+    {
+     "label": "焦点环（2px 偏移）",
+     "note": "焦点模拟",
+     "css": "/* 状态模拟：:focus-visible 无法静态触发，下面是 Checkbox.module.css 中 `.checkbox input:focus-visible` 的原样副本。 */\n.checkbox input.forceFocus {\n  outline: var(--dsw-focus-ring-width) solid var(--dsw-focus-ring-color, var(--dsw-alias-state-business-primary));\n  outline-offset: 2px;\n}",
+     "html": "<label class=\"checkbox\"><input class=\"forceFocus\" type=\"checkbox\" checked><span>自动审查</span></label>"
+    }
+   ],
+   "props": [
+    {
+     "name": "checked",
+     "type": "boolean",
+     "default": "—",
+     "desc": "当前勾选状态；控件完全受控。"
+    },
+    {
+     "name": "onChange",
+     "type": "(next: boolean) => void",
+     "default": "—",
+     "desc": "收到请求的目标状态。"
+    },
+    {
+     "name": "label",
+     "type": "string",
+     "default": "—",
+     "desc": "本地化的可见文案，同时充当无障碍名称，必填。"
+    },
+    {
+     "name": "disabled",
+     "type": "boolean",
+     "default": "false",
+     "desc": "拒绝输入；整个 label 降到 50% 不透明度。"
+    },
+    {
+     "name": "title",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "可选本地化悬停文本，通常说明为何被锁定。"
+    },
+    {
+     "name": "className",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "调用方布局类，叠加在 .checkbox 之后。"
+    }
+   ],
+   "notes": "方块与勾选由浏览器原生绘制，颜色只由 <code>accent-color: var(--dsw-alias-brand-primary)</code> 决定，深浅主题自动跟随。<code>title</code> 只是悬停说明，不进入无障碍名称。",
+   "keywords": [
+    "勾选",
+    "多选",
+    "checkbox",
+    "选择框"
+   ]
+  },
+  {
+   "id": "segmented-control",
+   "name": "SegmentedControl",
+   "exportName": "SegmentedControl",
+   "zh": "分段控件",
+   "group": "controls",
+   "summary": "等宽分段选择器，整条轨道是 <code>role=\"tablist\"</code> 的 <code>inline-grid</code>：2px 间隙、4px 内边距、<code>--dsw-radius-md</code> 圆角，底色与悬停色同为 <code>--dsw-alias-interactive-bg-hover</code>，唯一抬起的是滑块 <code>.indicator</code>（<code>--dsw-alias-bg-layer-1</code> 填充 + <code>--dsw-elevation-soft</code> 阴影，160ms 位移）。每段 28px 高、13px/20px 字号、左右 16px 内边距。段数与选中下标通过行内自定义属性 <code>--dsh-segment-count</code> / <code>--dsh-segment-index</code> 交给 CSS，滑块宽度与位移全部算出，不测量 DOM；方向键循环、Home/End 跳首尾，并跳过禁用段。",
+   "source": "packages/client/ui-primitives/src/SegmentedControl.tsx#L70",
+   "css": [
+    "packages/client/ui-primitives/src/SegmentedControl.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-layer-1",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-state-business-primary",
+    "--dsw-elevation-soft",
+    "--dsw-focus-ring-color",
+    "--dsw-focus-ring-width",
+    "--dsw-radius-md",
+    "--dsw-radius-sm"
+   ],
+   "specimens": [
+    {
+     "label": "三档访问模式（滑块在中段）",
+     "html": "<div role=\"tablist\" aria-label=\"访问模式\" class=\"control\" style=\"--dsh-segment-count:3;--dsh-segment-index:1\"><span aria-hidden=\"true\" class=\"indicator\"></span><button id=\"perm-readonly\" type=\"button\" role=\"tab\" aria-selected=\"false\" aria-controls=\"perm-readonly-panel\" tabindex=\"-1\" class=\"tab\">只读</button><button id=\"perm-write\" type=\"button\" role=\"tab\" aria-selected=\"true\" aria-controls=\"perm-write-panel\" tabindex=\"0\" class=\"tab\">工作区写入</button><button id=\"perm-full\" type=\"button\" role=\"tab\" aria-selected=\"false\" aria-controls=\"perm-full-panel\" tabindex=\"-1\" class=\"tab\">完全访问</button></div>"
+    },
+    {
+     "label": "两段，其中一段禁用（40% 不透明 + 悬停说明）",
+     "html": "<div role=\"tablist\" aria-label=\"添加方式\" class=\"control\" style=\"--dsh-segment-count:2;--dsh-segment-index:0\"><span aria-hidden=\"true\" class=\"indicator\"></span><button id=\"add-catalog\" type=\"button\" role=\"tab\" aria-selected=\"true\" aria-controls=\"add-catalog-panel\" tabindex=\"0\" class=\"tab\">第三方模型提供商</button><button id=\"add-custom\" type=\"button\" role=\"tab\" aria-selected=\"false\" aria-controls=\"add-custom-panel\" tabindex=\"-1\" class=\"tab\" disabled title=\"没有可用的 API 协议。\">自定义模型 API</button></div>"
+    },
+    {
+     "label": "未选中段的悬停文字色",
+     "note": "悬停模拟",
+     "css": "/* 状态模拟：:hover 无法静态触发，下面是 `.tab:hover:not(:disabled)` 分支的原样副本。 */\n.tab.forceHover:not(:disabled) {\n  color: var(--dsw-alias-label-primary);\n}",
+     "html": "<div role=\"tablist\" aria-label=\"访问模式\" class=\"control\" style=\"--dsh-segment-count:2;--dsh-segment-index:0\"><span aria-hidden=\"true\" class=\"indicator\"></span><button id=\"mode-readonly\" type=\"button\" role=\"tab\" aria-selected=\"true\" aria-controls=\"mode-readonly-panel\" tabindex=\"0\" class=\"tab\">只读</button><button id=\"mode-write\" type=\"button\" role=\"tab\" aria-selected=\"false\" aria-controls=\"mode-write-panel\" tabindex=\"-1\" class=\"tab forceHover\">工作区写入</button></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "id",
+     "type": "string",
+     "default": "—",
+     "desc": "段与面板 id 的前缀：段是 <id>-<value>，面板是 <id>-<value>-panel。"
+    },
+    {
+     "name": "value",
+     "type": "Value extends string",
+     "default": "—",
+     "desc": "当前选中值；控件完全受控。"
+    },
+    {
+     "name": "options",
+     "type": "readonly SegmentedControlOption<Value>[]",
+     "default": "—",
+     "desc": "按显示顺序排列的分段，至少两个，每项 { value, label, disabled?, title? }。"
+    },
+    {
+     "name": "onChange",
+     "type": "(next: Value) => void",
+     "default": "—",
+     "desc": "点击或方向键请求的新值，不会重复传当前已选值。"
+    },
+    {
+     "name": "label",
+     "type": "string",
+     "default": "—",
+     "desc": "tablist 的本地化无障碍名称，必填。"
+    },
+    {
+     "name": "disabled",
+     "type": "boolean",
+     "default": "false",
+     "desc": "锁定所有分段，通常用于面板里有写入在途、切换会丢弃结果的时刻。"
+    },
+    {
+     "name": "className",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "调用方布局类，叠加在 .control 之后。"
+    }
+   ],
+   "notes": "与 <code>SegmentedTabs</code> 的分工：本组件自己管 id 与 <code>aria-controls</code> 约定，段落是普通按钮，视觉更轻（轨道底 + 软阴影滑块）；需要跨面板切换、且面板由调用方渲染时用 <code>SegmentedTabs</code>。禁用态只看 <code>opacity: 0.4</code>，没有独立的禁用配色。",
+   "keywords": [
+    "分段",
+    "切换",
+    "tablist",
+    "模式选择",
+    "segmented"
+   ]
+  },
+  {
+   "id": "segmented-tabs",
+   "name": "SegmentedTabs",
+   "exportName": "SegmentedTabs",
+   "zh": "分段标签",
+   "group": "controls",
+   "summary": "只出标签条、不出面板的分段标签页：外层是 4px 内边距、<code>--dsw-radius-lg</code> 圆角、<code>--dsw-alias-bg-module-platform</code> 底的 <code>role=\"tablist\"</code> 网格，每一段复用 <code>Pill</code> 再叠一层 <code>.tab</code>（34px 高、14px 字号、居中、透明底），滑块是独立的 <code>.indicator</code>（<code>--dsw-alias-bg-layer-3</code> 填充 + 0.5px <code>--dsw-alias-border-l3</code> 描边，180ms 位移）。等宽由 <code>grid-template-columns: repeat(n, minmax(0, 1fr))</code> 保证，滑块宽度与 <code>translateX</code> 由行内样式给出。Left/Right 循环、Home/End 跳首尾，键盘选择同时移动焦点，只有选中段是可停靠点。",
+   "source": "packages/client/ui-primitives/src/SegmentedTabs.tsx#L24",
+   "css": [
+    "packages/client/ui-primitives/src/Pill.module.css",
+    "packages/client/ui-primitives/src/SegmentedTabs.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-layer-3",
+    "--dsw-alias-bg-module-platform",
+    "--dsw-alias-border-l3",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-radius-lg",
+    "--dsw-radius-md"
+   ],
+   "specimens": [
+    {
+     "label": "两段（模式说明 / 如何使用，选中第一段）",
+     "html": "<div role=\"tablist\" aria-label=\"帮助内容\" class=\"tabs\" style=\"grid-template-columns:repeat(2, minmax(0, 1fr))\"><span class=\"indicator\" aria-hidden=\"true\" style=\"width:calc((100% - 8px) / 2);transform:translateX(0%)\"></span><button id=\"guide-explanation-tab\" type=\"button\" class=\"pill interactive tab\" role=\"tab\" aria-selected=\"true\" aria-controls=\"guide-explanation-panel\" tabindex=\"0\">模式说明</button><button id=\"guide-usage-tab\" type=\"button\" class=\"pill interactive tab\" role=\"tab\" aria-selected=\"false\" aria-controls=\"guide-usage-panel\" tabindex=\"-1\">如何使用</button></div>"
+    },
+    {
+     "label": "三段（滑块右移到中段，选中段加粗 600）",
+     "html": "<div role=\"tablist\" aria-label=\"插件视图\" class=\"tabs\" style=\"grid-template-columns:repeat(3, minmax(0, 1fr))\"><span class=\"indicator\" aria-hidden=\"true\" style=\"width:calc((100% - 8px) / 3);transform:translateX(100%)\"></span><button id=\"plugins-installed-tab\" type=\"button\" class=\"pill interactive tab\" role=\"tab\" aria-selected=\"false\" aria-controls=\"plugins-installed-panel\" tabindex=\"-1\">已安装</button><button id=\"plugins-discover-tab\" type=\"button\" class=\"pill interactive tab\" role=\"tab\" aria-selected=\"true\" aria-controls=\"plugins-discover-panel\" tabindex=\"0\">发现</button><button id=\"plugins-sources-tab\" type=\"button\" class=\"pill interactive tab\" role=\"tab\" aria-selected=\"false\" aria-controls=\"plugins-sources-panel\" tabindex=\"-1\">索引源</button></div>",
+     "bg": "layer2"
+    },
+    {
+     "label": "未选中段的悬停文字色",
+     "note": "悬停模拟",
+     "css": "/* 状态模拟：:hover 无法静态触发，下面是 `.tab:hover, .tab[aria-selected='true']` 中悬停分支的原样副本。 */\n.tab.forceHover {\n  background: transparent;\n  color: var(--dsw-alias-label-primary);\n}",
+     "html": "<div role=\"tablist\" aria-label=\"帮助内容\" class=\"tabs\" style=\"grid-template-columns:repeat(2, minmax(0, 1fr))\"><span class=\"indicator\" aria-hidden=\"true\" style=\"width:calc((100% - 8px) / 2);transform:translateX(0%)\"></span><button id=\"guide-explanation-tab\" type=\"button\" class=\"pill interactive tab\" role=\"tab\" aria-selected=\"true\" aria-controls=\"guide-explanation-panel\" tabindex=\"0\">模式说明</button><button id=\"guide-usage-tab\" type=\"button\" class=\"pill interactive tab forceHover\" role=\"tab\" aria-selected=\"false\" aria-controls=\"guide-usage-panel\" tabindex=\"-1\">如何使用</button></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "items",
+     "type": "readonly [SegmentedTab<Value>, ...SegmentedTab<Value>[]]",
+     "default": "—",
+     "desc": "非空有序分段，每项 { value, label, id, panelId }，value 与 DOM id 都要唯一。"
+    },
+    {
+     "name": "value",
+     "type": "Value extends string",
+     "default": "—",
+     "desc": "选中值，必须命中 items 中的某一项。"
+    },
+    {
+     "name": "onChange",
+     "type": "(value: Value) => void",
+     "default": "—",
+     "desc": "点击、Left/Right 或 Home/End 请求的选中值。"
+    },
+    {
+     "name": "label",
+     "type": "string",
+     "default": "—",
+     "desc": "tablist 的本地化无障碍名称，必填。"
+    },
+    {
+     "name": "className",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "布局类，叠加在 .tabs 之后；面板仍由调用方渲染。"
+    }
+   ],
+   "notes": "选中态不写额外类，直接绑在 <code>aria-selected=\"true\"</code> 上；这些按钮由 <code>Pill</code> 渲染，所以本条目同时内联了 <code>Pill.module.css</code>（<code>.tab</code> 覆盖胶囊的圆角与底色后仍保留其排版）。焦点态不是描边而是 1px 下划线（<code>text-underline-offset: 4px</code>），这是它与 <code>SegmentedControl</code> 最明显的差异。",
+   "keywords": [
+    "分段标签",
+    "标签页",
+    "tabs",
+    "切换",
+    "tablist"
+   ]
+  },
+  {
+   "id": "inline-editor",
+   "name": "InlineEditor",
+   "exportName": "InlineEditor",
+   "zh": "行内编辑器",
+   "group": "controls",
+   "summary": "自动聚焦的多行行内编辑器，用来改短草稿：队列里的待发消息、目标条的文本。用 <code>textarea</code> 而不是 <code>input</code>，因为单行输入会吞掉换行；盒子 28px 起、随文本长高，六行（<code>max-height: 127px</code>）之后内部滚动，宽度变化由 <code>ResizeObserver</code> 重新贴合。Enter 保存、Shift+Enter 换行、IME 组合中的 Enter 不生效、Escape 取消。外观是 13px 的表单框：0.5px <code>--dsw-alias-border-l4</code> 边框、<code>--dsw-radius-sm</code> 圆角、<code>--dsw-alias-bg-base</code> 底，聚焦时边框转为 <code>--dsw-alias-state-business-primary</code>。",
+   "source": "packages/client/ui-primitives/src/InlineEditor.tsx#L20",
+   "css": [
+    "packages/client/ui-primitives/src/InlineEditor.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-base",
+    "--dsw-alias-border-l4",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-state-business-primary",
+    "--dsw-font-family",
+    "--dsw-font-xs-13",
+    "--dsw-radius-sm"
+   ],
+   "specimens": [
+    {
+     "label": "挂载即聚焦（单行草稿）",
+     "note": "焦点模拟",
+     "css": "/* 状态模拟：组件用 autoFocus 在挂载时获焦，静态示例无法触发 :focus，下面是 `.editor:focus` 的原样副本。 */\n.editor.forceFocus {\n  border-color: var(--dsw-alias-state-business-primary);\n}",
+     "html": "<div style=\"display:flex;width:320px\"><textarea class=\"editor forceFocus\" rows=\"1\" aria-label=\"目标内容\">重构会话存储层</textarea></div>"
+    },
+    {
+     "label": "两行草稿（Shift+Enter 换行，行内高度补位）",
+     "note": "高度由脚本撑开，这里用行内高度近似",
+     "html": "<div style=\"display:flex;width:360px\"><textarea class=\"editor\" rows=\"1\" aria-label=\"队列消息\" style=\"height:48px\">先跑 pnpm run test:gui 确认全绿\n再看 packages/client/ui-primitives/src/Button.tsx</textarea></div>"
+    },
+    {
+     "label": "超过六行后内部滚动（127px 上限）",
+     "note": "高度由脚本撑开，这里用行内高度近似",
+     "html": "<div style=\"display:flex;width:360px\"><textarea class=\"editor\" rows=\"1\" aria-label=\"目标内容\" style=\"height:127px\">重构会话存储层\n1. Session 不再直接落盘\n2. SessionManager 只保留生命周期\n3. 迁移脚本读旧格式并写新格式\n4. 补 packages/client/ui-primitives/src/Button.tsx 的回归用例\n5. 跑 pnpm run test:gui\n6. 更新 upgrade guide\n7. 通知下游消费者</textarea></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "value",
+     "type": "string",
+     "default": "—",
+     "desc": "当前草稿文本，完全受控。"
+    },
+    {
+     "name": "label",
+     "type": "string",
+     "default": "—",
+     "desc": "本地化无障碍名称，落到 textarea 的 aria-label。"
+    },
+    {
+     "name": "onChange",
+     "type": "(value: string) => void",
+     "default": "—",
+     "desc": "编辑中的文本。"
+    },
+    {
+     "name": "onSave",
+     "type": "() => void",
+     "default": "—",
+     "desc": "普通 Enter（非组合输入、非 Shift）触发。"
+    },
+    {
+     "name": "onCancel",
+     "type": "() => void",
+     "default": "—",
+     "desc": "Escape 触发。"
+    },
+    {
+     "name": "className",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "编辑器位置类，叠加在 .editor 之后。"
+    }
+   ],
+   "notes": "自撑高度靠 <code>useLayoutEffect</code> 按 <code>scrollHeight</code> 计算，所以静态示例必须用行内高度补位。<code>flex: 1 1 auto</code> + <code>min-width: 0</code> 说明它设计上就放在 flex 行里（目标条、队列行）；<code>resize: none</code>，没有拖拽角。",
+   "keywords": [
+    "行内编辑",
+    "草稿",
+    "textarea",
+    "队列消息",
+    "目标"
+   ]
+  },
+  {
+   "id": "input",
+   "name": "Input",
+   "exportName": "Input",
+   "zh": "单行输入",
+   "group": "controls",
+   "summary": "单行文本输入原子，用于搜索框与行内小表单：外层 <code>.wrap</code> 是 32px 高、0.5px <code>--dsw-alias-border-l4</code> 边框、<code>--dsw-radius-md</code> 圆角、<code>--dsw-alias-bg-layer-1</code> 底的 <code>inline-flex</code>，可选 16px 前置图标走 <code>--dsw-alias-label-tertiary</code>；内层原生 <code>input</code> 无边框无底色，占位符用 <code>--dsw-alias-label-dimmed</code>。焦点只改外层边框色（<code>.wrap:focus-within</code>），不画焦点环。<code>ref</code> 指向原生 input，其余 input 属性原样透传。",
+   "source": "packages/client/ui-primitives/src/Input.tsx#L14",
+   "css": [
+    "packages/client/ui-primitives/src/Input.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-layer-1",
+    "--dsw-alias-border-l4",
+    "--dsw-alias-label-dimmed",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-state-business-primary",
+    "--dsw-radius-md"
+   ],
+   "specimens": [
+    {
+     "label": "带 14px 前置图标的搜索框",
+     "html": "<span class=\"wrap\"><span class=\"icon\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M6.58727 11.8586C9.55061 11.8586 11.9529 9.45637 11.9529 6.49304C11.9529 3.5297 9.55061 1.12744 6.58727 1.12744C3.62394 1.12744 1.22168 3.5297 1.22168 6.49304C1.22168 9.45637 3.62394 11.8586 6.58727 11.8586Z\" stroke=\"currentColor\"></path><path d=\"M10.2991 10.3933L14.7783 14.8725\" stroke=\"currentColor\"></path></svg></span><input class=\"input\" type=\"search\" placeholder=\"筛选组件\" aria-label=\"筛选组件\"></span>"
+    },
+    {
+     "label": "已填值（长路径不撑破外层）",
+     "html": "<span class=\"wrap\" style=\"width:380px\"><input class=\"input\" value=\"packages/client/ui-primitives/src/Button.tsx\" aria-label=\"文件名\"></span>"
+    },
+    {
+     "label": "聚焦时外框转为 business 色",
+     "note": "焦点模拟",
+     "css": "/* 状态模拟：:focus-within 无法静态触发，下面是 `.wrap:focus-within` 的原样副本。 */\n.wrap.forceFocus {\n  border-color: var(--dsw-alias-state-business-primary);\n}",
+     "html": "<span class=\"wrap forceFocus\" style=\"width:380px\"><input class=\"input\" placeholder=\"搜索自动化任务\" aria-label=\"搜索自动化任务\"></span>"
+    }
+   ],
+   "props": [
+    {
+     "name": "icon",
+     "type": "ReactNode",
+     "default": "—",
+     "desc": "可选 16px 前置图标节点，放在 .icon 槽里（调用方自己控制 glyph 尺寸）。"
+    },
+    {
+     "name": "className",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "叠加在 .wrap 上的布局类，用来控制宽度与在 flex 行里的伸展。"
+    },
+    {
+     "name": "...rest",
+     "type": "InputHTMLAttributes<HTMLInputElement>",
+     "default": "—",
+     "desc": "原生 input 属性直接透传：type、value、placeholder、aria-label、readOnly 等。"
+    },
+    {
+     "name": "ref",
+     "type": "Ref<HTMLInputElement>",
+     "default": "—",
+     "desc": "指向原生 input，供聚焦与浮层锚点使用；卸载时清空。"
+    }
+   ],
+   "notes": "组件本身没有禁用样式，<code>disabled</code> / <code>readOnly</code> 交给浏览器与调用方；多行编辑用 <code>InlineEditor</code>，会话输入条由会话包自持，不在本原语范围内。",
+   "keywords": [
+    "输入框",
+    "搜索框",
+    "text input",
+    "search"
+   ]
+  },
+  {
+   "id": "shortcut-keys",
+   "name": "ShortcutKeys",
+   "exportName": "ShortcutKeys",
+   "zh": "快捷键",
+   "group": "controls",
+   "summary": "快捷键键帽，只画键、不持有默认绑定也不持有文案：调用方给的是已经平台化的按键标签数组。<code>variant=\"plain\"</code>（默认）是菜单与行内提示用的无框键帽：12px/16px、<code>--dsw-alias-label-tertiary</code>、3px 间距；<code>variant=\"tooltip\"</code> 换成 11px/14px、16px 见方的浅色键帽（<code>--dsw-alias-tooltip-key-bg</code>），给深色气泡使用。数组里的 <code>'+'</code> 渲染成 <code>.separator</code>；tooltip 变体下含 <code>'+'</code> 的整组再加 <code>.joined</code>，把 Ctrl + Enter 合成一个填充块（macOS 的 ⌘ Enter 不含加号，保持相邻键帽）。",
+   "source": "packages/client/ui-primitives/src/ShortcutKeys.tsx#L10",
+   "css": [
+    "packages/client/ui-primitives/src/ShortcutKeys.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-tooltip-key-bg"
+   ],
+   "specimens": [
+    {
+     "label": "plain：菜单与行内提示（含 Windows 的 Ctrl + Enter 分键）",
+     "html": "<span class=\"keys\"><kbd class=\"key\">↑</kbd><kbd class=\"key\">↓</kbd></span><span class=\"keys\"><kbd class=\"key\">Esc</kbd><kbd class=\"key\">Esc</kbd></span><span class=\"keys\"><kbd class=\"key\">Ctrl</kbd><kbd class=\"separator\">+</kbd><kbd class=\"key\">Enter</kbd></span>"
+    },
+    {
+     "label": "tooltip：深色气泡里的键帽，组合合成一个块",
+     "note": "气泡为静态近似",
+     "css": "/* 静态近似：tooltip 变体的键帽是给深色气泡用的，底色与文字色由 Tooltip.module.css 的 .bubble 提供（--dsw-alias-tooltip-bg / --dsw-static-neutral-bluish-00）。这里把该规则原样搬来，只去掉 position: fixed 以便在示例里排布。 */\n.bubbleContext {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  padding: 3px 7px;\n  border-radius: var(--dsw-radius-sm);\n  background: var(--dsw-alias-tooltip-bg);\n  color: var(--dsw-static-neutral-bluish-00);\n  font-size: 13px;\n  line-height: 20px;\n}",
+     "html": "<span class=\"bubbleContext\"><span class=\"keys tooltip joined\"><kbd class=\"key\">Ctrl</kbd><kbd class=\"separator\">+</kbd><kbd class=\"key\">Enter</kbd></span></span>"
+    },
+    {
+     "label": "tooltip：macOS 的 ⌘ Enter（无加号，不相邻合并）",
+     "note": "气泡为静态近似",
+     "css": "/* 静态近似：同上，气泡底色与文字色取自 Tooltip 的 .bubble。 */\n.bubbleContext {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  padding: 3px 7px;\n  border-radius: var(--dsw-radius-sm);\n  background: var(--dsw-alias-tooltip-bg);\n  color: var(--dsw-static-neutral-bluish-00);\n  font-size: 13px;\n  line-height: 20px;\n}",
+     "html": "<span class=\"bubbleContext\"><span class=\"keys tooltip\"><kbd class=\"key\">⌘</kbd><kbd class=\"key\">Enter</kbd></span></span>"
+    }
+   ],
+   "props": [
+    {
+     "name": "keys",
+     "type": "readonly string[]",
+     "default": "—",
+     "desc": "已经平台化的按键标签；'+' 会被渲染成 .separator。"
+    },
+    {
+     "name": "variant",
+     "type": "'plain' | 'tooltip'",
+     "default": "'plain'",
+     "desc": "plain 为无框键帽；tooltip 为深色气泡里的浅色键帽。"
+    },
+    {
+     "name": "className",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "调用方的交互样式类（例如菜单行里的对齐）。"
+    }
+   ],
+   "notes": "键帽文字与按键标签都由调用方决定：<code>keys</code> 来自 <code>shortcuts.describeBinding</code>，Windows 组合是 <code>['Ctrl','+','Enter']</code>，macOS 是 <code>['⌘','Enter']</code>，所以在 Windows 上菜单里的 plain 变体同样会出现 <code>.separator</code>。",
+   "keywords": [
+    "快捷键",
+    "键帽",
+    "keycap",
+    "kbd",
+    "shortcut"
+   ]
+  },
+  {
+   "id": "connection-indicator",
+   "name": "ConnectionIndicator",
+   "exportName": "ConnectionIndicator",
+   "zh": "连接指示",
+   "group": "controls",
+   "summary": "连接恢复指示器，28px 高的内联控件，按状态换外观：<code>disconnected</code> 是琥珀色按钮（刷新图标 + 已写明点击重连的文案），<code>connecting</code> 复用 <code>StateDot</code> 的 14px 加载环并在文案后每 500ms 逐点点亮三个点，<code>recovered</code> 换成成功色 <code>role=\"status\"</code>。警告态与成功态分别是 <code>--dsw-alias-state-warn-tertiary</code> / <code>--dsw-alias-state-success-tertiary</code> 底，配 20% 同色描边。出现时 150ms 淡入，<code>state</code> 变回 <code>undefined</code> 时先加 <code>.leaving</code> 淡出 150ms 再卸载。",
+   "source": "packages/client/ui-primitives/src/ConnectionIndicator.tsx#L29",
+   "css": [
+    "packages/client/ui-primitives/src/ConnectionIndicator.module.css",
+    "packages/client/ui-primitives/src/StateDot.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-state-success-primary",
+    "--dsw-alias-state-success-tertiary",
+    "--dsw-alias-state-warn-label",
+    "--dsw-alias-state-warn-primary",
+    "--dsw-alias-state-warn-tertiary",
+    "--dsw-focus-ring-color",
+    "--dsw-focus-ring-width",
+    "--dsw-radius-sm"
+   ],
+   "specimens": [
+    {
+     "label": "disconnected：断连按钮（后两只为悬停 / 按下加深）",
+     "note": "悬停模拟",
+     "css": "/* 状态模拟：:hover / :active 无法静态触发，下面是 `.warning:hover` 与 `.warning:active` 的原样副本。 */\n.warning.forceHover {\n  background: color-mix(\n    in srgb,\n    var(--dsw-alias-state-warn-tertiary),\n    var(--dsw-alias-state-warn-primary) 6%\n  );\n}\n.warning.forceActive {\n  background: color-mix(\n    in srgb,\n    var(--dsw-alias-state-warn-tertiary),\n    var(--dsw-alias-state-warn-primary) 10%\n  );\n}",
+     "html": "<button type=\"button\" class=\"indicator warning\" data-phase=\"disconnected\" aria-label=\"连接异常，点击立即重连\"><span class=\"icon\" aria-hidden=\"true\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M14.5001 8C14.5 9.28552 14.1188 10.5422 13.4045 11.611C12.6903 12.6799 11.6752 13.5129 10.4875 14.0049C9.29982 14.4968 7.99295 14.6255 6.73212 14.3747C5.4713 14.124 4.31314 13.505 3.4041 12.596C2.49514 11.687 1.87614 10.5288 1.62537 9.26798C1.37459 8.00716 1.50331 6.70028 1.99525 5.51261C2.48719 4.32494 3.32025 3.30981 4.3891 2.59557C5.45795 1.88134 6.71458 1.50008 8.0001 1.5C9.9001 1.5 11.7001 2.3 13.0001 3.6L14.5001 5.1\" stroke=\"currentColor\"></path><path d=\"M14.4999 1.5V5.1H10.8999\" stroke=\"currentColor\"></path></svg></span><span class=\"label\">连接异常，刷新重试</span></button><button type=\"button\" class=\"indicator warning forceHover\" data-phase=\"disconnected\" aria-label=\"连接异常，点击立即重连\"><span class=\"icon\" aria-hidden=\"true\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M14.5001 8C14.5 9.28552 14.1188 10.5422 13.4045 11.611C12.6903 12.6799 11.6752 13.5129 10.4875 14.0049C9.29982 14.4968 7.99295 14.6255 6.73212 14.3747C5.4713 14.124 4.31314 13.505 3.4041 12.596C2.49514 11.687 1.87614 10.5288 1.62537 9.26798C1.37459 8.00716 1.50331 6.70028 1.99525 5.51261C2.48719 4.32494 3.32025 3.30981 4.3891 2.59557C5.45795 1.88134 6.71458 1.50008 8.0001 1.5C9.9001 1.5 11.7001 2.3 13.0001 3.6L14.5001 5.1\" stroke=\"currentColor\"></path><path d=\"M14.4999 1.5V5.1H10.8999\" stroke=\"currentColor\"></path></svg></span><span class=\"label\">连接异常，刷新重试</span></button><button type=\"button\" class=\"indicator warning forceActive\" data-phase=\"disconnected\" aria-label=\"连接异常，点击立即重连\"><span class=\"icon\" aria-hidden=\"true\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M14.5001 8C14.5 9.28552 14.1188 10.5422 13.4045 11.611C12.6903 12.6799 11.6752 13.5129 10.4875 14.0049C9.29982 14.4968 7.99295 14.6255 6.73212 14.3747C5.4713 14.124 4.31314 13.505 3.4041 12.596C2.49514 11.687 1.87614 10.5288 1.62537 9.26798C1.37459 8.00716 1.50331 6.70028 1.99525 5.51261C2.48719 4.32494 3.32025 3.30981 4.3891 2.59557C5.45795 1.88134 6.71458 1.50008 8.0001 1.5C9.9001 1.5 11.7001 2.3 13.0001 3.6L14.5001 5.1\" stroke=\"currentColor\"></path><path d=\"M14.4999 1.5V5.1H10.8999\" stroke=\"currentColor\"></path></svg></span><span class=\"label\">连接异常，刷新重试</span></button>"
+    },
+    {
+     "label": "connecting：ongoing 加载环 + 逐点点亮的重试文案",
+     "html": "<button type=\"button\" class=\"indicator warning\" data-phase=\"connecting\" aria-label=\"连接中断，正在重试，点击立即重连\"><span class=\"icon\" aria-hidden=\"true\"><svg class=\"spinner\" data-state=\"ongoing\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><g class=\"spinnerMotion\"><circle class=\"spinnerTrack\" cx=\"12\" cy=\"12\" r=\"9.5\"></circle><circle class=\"spinnerArc\" cx=\"12\" cy=\"12\" r=\"9.5\"></circle></g></svg></span><span class=\"label\">重新连接中<span class=\"dots\" aria-hidden=\"true\"><span>.</span><span class=\"secondDot\">.</span><span class=\"thirdDot\">.</span></span></span></button>"
+    },
+    {
+     "label": "recovered：成功色 role=status",
+     "html": "<div class=\"indicator success\" role=\"status\" aria-label=\"连接成功\"><span class=\"icon\" aria-hidden=\"true\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4\" stroke=\"currentColor\"></path></svg></span><span class=\"label\">连接成功</span></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "state",
+     "type": "ConnectionIndicatorState | undefined",
+     "default": "—",
+     "desc": "'disconnected' | 'connecting' | 'recovered'；undefined 表示没有连接反馈。"
+    },
+    {
+     "name": "disconnectedLabel",
+     "type": "string",
+     "default": "—",
+     "desc": "断连文案，本身已说明点击即重连。"
+    },
+    {
+     "name": "connectingLabel",
+     "type": "string",
+     "default": "—",
+     "desc": "重试中文案，三点由组件追加。"
+    },
+    {
+     "name": "recoveredLabel",
+     "type": "string",
+     "default": "—",
+     "desc": "恢复确认文案。"
+    },
+    {
+     "name": "reconnectActionLabel",
+     "type": "string",
+     "default": "—",
+     "desc": "断连按钮的无障碍名称。"
+    },
+    {
+     "name": "restartActionLabel",
+     "type": "string",
+     "default": "—",
+     "desc": "重试中按钮的无障碍名称（点击会重新开始这一次尝试）。"
+    },
+    {
+     "name": "onReconnect",
+     "type": "() => void",
+     "default": "—",
+     "desc": "请求立即重连。"
+    }
+   ],
+   "notes": "为了画出 connecting 的加载环，本条目同时内联了 <code>StateDot.module.css</code>（<code>.icon &gt; svg</code> 的继承色最终覆盖 <code>.spinner</code> 的三级灰，让环与文案同色）。点击任一警告态都只请求重连，不改文案；“已恢复”停留多久由调用方决定，组件只在 <code>state</code> 变 <code>undefined</code> 时淡出。",
+   "keywords": [
+    "连接",
+    "断线",
+    "重连",
+    "状态",
+    "connection"
+   ]
+  },
+  {
+   "id": "text-shimmer",
+   "name": "TextShimmer",
+   "exportName": "TextShimmer",
+   "zh": "文字微光",
+   "group": "controls",
+   "summary": "给一行文字加一道从左到右扫过的高亮：基础层是真实、可选中、可读屏的文本（<code>data-shimmer</code> 只标记运行状态），运行中再叠一层 <code>aria-hidden</code> 且 <code>inert</code> 的装饰副本，扫光由 105° 渐变蒙版裁出，1.5s 一轮、延迟 0.3s。字符串子节点在装饰层用 <code>data-shimmer-text</code> + <code>::after</code> 复现，所以文本更新不会打断动画；组合子节点会整体渲染两遍，必须是无副作用、无 id 的表现型内容。图标与折叠箭头留在组件外，分隔符用 <code>data-shimmer-decoration</code> 让填充跟随高亮。",
+   "source": "packages/client/ui-primitives/src/TextShimmer.tsx#L37",
+   "css": [
+    "packages/client/ui-primitives/src/TextShimmer.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-label-shimmer"
+   ],
+   "specimens": [
+    {
+     "label": "静态（active=false，只有一层真实文本）",
+     "html": "<span class=\"root\"><span class=\"content\"><span class=\"text\">运行 pnpm run test:gui</span></span></span>"
+    },
+    {
+     "label": "运行中（字符串子节点，装饰层用 ::after 复现文本）",
+     "html": "<span class=\"root\" data-shimmer=\"\"><span class=\"content\"><span class=\"text\">运行 pnpm run test:gui</span></span><span class=\"decoration\" aria-hidden=\"true\" inert=\"\"><span class=\"sweep\"><span class=\"content highlight\"><span class=\"text\" data-shimmer-text=\"运行 pnpm run test:gui\"></span></span></span></span></span>"
+    },
+    {
+     "label": "组合子节点 + 跟随高亮的分隔点",
+     "note": "分隔点样式按调用方 CSS 同值补写",
+     "css": "/* 静态近似：真实行里这个 2px 圆点由调用方 CSS 提供（ToolRow.module.css 的 .sep），\n   这里按同值补一条，让基础层与高亮层都能看到它；高亮层由 .sweep [data-shimmer-decoration] 改成 currentColor。 */\n.separatorDot {\n  flex: none;\n  width: 2px;\n  height: 2px;\n  border-radius: 1px;\n  margin: 0 8px;\n  background: var(--dsw-alias-label-caption);\n}",
+     "html": "<span class=\"root\" data-shimmer=\"\"><span class=\"content\"><span>运行</span><span class=\"separatorDot\" data-shimmer-decoration=\"true\" aria-hidden=\"true\"></span><span>pnpm run test:gui</span></span><span class=\"decoration\" aria-hidden=\"true\" inert=\"\"><span class=\"sweep\"><span class=\"content highlight\"><span>运行</span><span class=\"separatorDot\" data-shimmer-decoration=\"true\" aria-hidden=\"true\"></span><span>pnpm run test:gui</span></span></span></span></span>",
+     "bg": "layer2"
+    }
+   ],
+   "props": [
+    {
+     "name": "children",
+     "type": "ReactNode",
+     "default": "—",
+     "desc": "文本或表现型子节点；运行中会渲染两遍，不能带副作用、元素 id 或表单控件。"
+    },
+    {
+     "name": "active",
+     "type": "boolean | undefined",
+     "default": "false",
+     "desc": "是否播放高亮；嵌套实例共享外层行的活动状态。"
+    },
+    {
+     "name": "className",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "根节点布局类（例如行标题的字重与截断）。"
+    },
+    {
+     "name": "contentClassName",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "同时应用到基础层与装饰层的布局类，保证两遍排版一致。"
+    }
+   ],
+   "notes": "基础文字保留调用方颜色（含悬停变化），只有扫光是主题色 <code>--dsw-alias-label-shimmer</code>；<code>.decoration</code> 用 <code>overflow: clip</code>，因此扫光不会撑大任何祖先的滚动区域。减少动态效果时装饰层直接 <code>display: none</code>，剩下的静态文本仍可读。",
+   "keywords": [
+    "微光",
+    "扫光",
+    "shimmer",
+    "运行中",
+    "加载文案"
+   ]
+  }
+ ]
+}

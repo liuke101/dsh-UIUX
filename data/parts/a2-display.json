@@ -1,0 +1,768 @@
+{
+ "schemaVersion": 1,
+ "note": "展示类原子：路径标签、JSON 树、展开行、悬停卡、图片预览与原图灯箱、浮层提示、气泡提示。css 指向真实 CSS Module 源码，构建时原文内联进 shadow root。",
+ "entries": [
+  {
+   "id": "path-label",
+   "name": "PathLabel",
+   "exportName": "PathLabel",
+   "zh": "路径标签",
+   "group": "display",
+   "summary": "单行文件路径：目录段用 <code>--dsw-alias-label-tertiary</code>，文件名用 <code>--dsw-alias-label-primary</code>，整体 12px / nowrap。<code>pathPartsOf</code> 把路径切成目录与文件名两段，宽度够时整体贴左；溢出时裁掉前端、保住文件名结尾，并从左侧 28px 渐变淡出——淡出由组件在 <code>offsetWidth &gt; clientWidth</code> 时写入的 <code>data-path-clipped</code> 触发，随路径变化与 ResizeObserver 尺寸变化更新。<code>title</code> 恒为完整路径。",
+   "source": "packages/client/ui-primitives/src/PathLabel.tsx#L14",
+   "css": [
+    "packages/client/ui-primitives/src/PathLabel.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-tertiary"
+   ],
+   "specimens": [
+    {
+     "label": "完整路径（目录次级色 + 文件名主色）",
+     "html": "<span class=\"path\" data-path-label title=\"packages/client/ui-primitives/src/JsonTree.tsx\" style=\"width:300px;flex:none\"><span class=\"text\"><span class=\"directory\">packages/client/ui-primitives/src/</span><span class=\"name\">JsonTree.tsx</span></span></span>"
+    },
+    {
+     "label": "窄工具栏溢出：data-path-clipped 触发左侧 28px 淡出",
+     "note": "静态快照：组件在内容溢出时写入该属性",
+     "html": "<span class=\"path\" data-path-label data-path-clipped title=\"packages/client/ui-primitives/src/JsonTree.tsx\" style=\"width:150px;flex:none\"><span class=\"text\"><span class=\"directory\">packages/client/ui-primitives/src/</span><span class=\"name\">JsonTree.tsx</span></span></span>"
+    },
+    {
+     "label": "文档路径",
+     "html": "<span class=\"path\" data-path-label title=\"docs/web-styling.md\" style=\"width:200px;flex:none\"><span class=\"text\"><span class=\"directory\">docs/</span><span class=\"name\">web-styling.md</span></span></span>"
+    }
+   ],
+   "props": [
+    {
+     "name": "path",
+     "type": "string",
+     "default": "—",
+     "desc": "完整路径；组件按 <code>/</code> 与 <code>\\</code> 切成目录（含结尾分隔符）与文件名，末尾分隔符被去掉。"
+    },
+    {
+     "name": "className",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "调用方的布局类，叠加在 <code>.path</code> 之后；外层间距由调用方负责。"
+    },
+    {
+     "name": "...attributes",
+     "type": "Omit<HTMLAttributes<HTMLSpanElement>, 'children' | 'title'>",
+     "default": "—",
+     "desc": "其余属性透传到外层 span；<code>title</code> 由组件固定为完整路径，<code>children</code> 被占用。"
+    },
+    {
+     "name": "data-path-clipped",
+     "type": "boolean attribute（内部维护）",
+     "default": "—",
+     "desc": "内容溢出时由组件写入，仅用于触发左侧 <code>mask-image</code> 淡出。"
+    }
+   ],
+   "notes": "溢出判定是像素级的：比较内层 <code>.text</code> 的 <code>offsetWidth</code> 与外层 <code>clientWidth</code>，所以工具栏变窄时始终保住文件名后缀。淡出走 <code>mask-image</code> 而不是叠加渐变层，不会盖住下方内容；无 <code>ResizeObserver</code> 时只在路径变化时判定一次。",
+   "keywords": [
+    "路径",
+    "文件名",
+    "工具栏",
+    "path",
+    "breadcrumb",
+    "truncate"
+   ]
+  },
+  {
+   "id": "json-tree",
+   "name": "JsonTree",
+   "exportName": "JsonTree",
+   "zh": "JSON 树",
+   "group": "display",
+   "summary": "只读 JSON 检视树，12px/16px 等宽字体，面板底色 <code>--dsw-alias-bg-layer-1</code>。<code>expandTopLevel</code>（默认 true）让顶层括号各占一行（<code>.topLevelBracket</code>），中间是可折叠的行列表；每个分支行左侧有 8px 宽的三角展开器（展开时旋转 90°），折叠时用 <code>.summary</code> 单行省略号预览内容。字符串按 <code>collapsedStringLines</code>（默认 3 行 = 48px）折叠，并浮出「…展开」入口；悬停行显示 20×16 的复制按钮，右键打开复制菜单（复制值 / JSON / 路径）。",
+   "source": "packages/client/ui-primitives/src/JsonTree.tsx#L687",
+   "css": [
+    "packages/client/ui-primitives/src/JsonTree.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-layer-1",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-state-error-primary",
+    "--dsw-focus-ring-color",
+    "--dsw-radius-xs"
+   ],
+   "specimens": [
+    {
+     "label": "expandTopLevel：session 事件（顶层括号独占两行）",
+     "bg": "platform",
+     "html": "<div class=\"root\" style=\"--json-tree-collapsed-lines:3;width:520px;flex:none\"><div class=\"expandedTopLevel\"><div class=\"row topLevelBracket\" data-json-root-row><span class=\"punctuation\">{</span></div><div class=\"container expandedTopLevelContainer\" role=\"tree\" aria-label=\"会话事件 JSON\"><div class=\"row\" role=\"treeitem\"><span class=\"label\">seq:</span><span class=\"numberValue\">128</span><span class=\"punctuation\">,</span></div><div class=\"row\" role=\"treeitem\"><span class=\"label\">type:</span><span class=\"stringValue\">\"assistant/chunk\"</span><span class=\"punctuation\">,</span></div><div class=\"row\" role=\"treeitem\"><span class=\"stringField\" data-expanded=\"false\"><span class=\"stringText\"><span class=\"label\">text:</span><span class=\"stringValue\">\"正在读取 packages/client/ui-primitives/src/JsonTree.tsx\"</span></span></span></div></div><div class=\"row topLevelBracket\"><span class=\"punctuation\">}</span></div></div></div>"
+    },
+    {
+     "label": "折叠分支的行内预览 + 超长字符串折叠（…展开）",
+     "bg": "platform",
+     "html": "<div class=\"root\" style=\"--json-tree-collapsed-lines:3;width:520px;flex:none\"><div class=\"expandedTopLevel\"><div class=\"row topLevelBracket\" data-json-root-row><span class=\"punctuation\">{</span></div><div class=\"container expandedTopLevelContainer\" role=\"tree\" aria-label=\"会话事件 JSON\"><div class=\"row\" role=\"treeitem\"><span class=\"label\">seq:</span><span class=\"numberValue\">128</span><span class=\"punctuation\">,</span></div><div class=\"row\" role=\"treeitem\" aria-expanded=\"false\"><span class=\"expander\" data-json-expander role=\"button\" aria-label=\"展开\" aria-expanded=\"false\" tabindex=\"0\"></span><span class=\"summary\"><span class=\"label clickableLabel\">payload:</span><span class=\"preview\"><span class=\"punctuation\">{</span><span><span class=\"previewProperty\">path</span><span class=\"punctuation\">: </span><span class=\"stringValue\">\"packages/client/ui-primitives/src/JsonTree.tsx\"</span></span><span><span class=\"punctuation\">, </span><span class=\"previewProperty\">bytes</span><span class=\"punctuation\">: </span><span class=\"numberValue\">4096</span></span><span><span class=\"punctuation\">, </span><span class=\"previewProperty\">ok</span><span class=\"punctuation\">: </span><span class=\"keywordValue\">true</span></span><span class=\"punctuation\">}</span></span><span class=\"punctuation\">,</span></span></div><div class=\"row\" role=\"treeitem\"><span class=\"stringField\" data-expanded=\"false\"><span class=\"stringText\"><span class=\"stringToggleSlot\"><button type=\"button\" class=\"stringToggle\" aria-label=\"展开\" aria-expanded=\"false\"><span aria-hidden=\"true\">…</span>展开</button></span><span class=\"label\">text:</span><span class=\"stringValue\">\"正在读取 packages/client/ui-primitives/src/JsonTree.tsx 并逐行解析 850 行源码：把每一层对象展开成可折叠的行，统计每行的 token 数与颜色；字符串超过 collapsedStringLines 行时折叠，右侧浮出展开入口，展开后按原文换行显示，并提供换行开关、折叠与复制三个动作。折叠态的字符串仍按 JSON.stringify 输出引号与转义，展开态则保留原始换行与缩进，方便直接核对模型看到的完整文本。\"</span></span></span></div></div><div class=\"row topLevelBracket\"><span class=\"punctuation\">}</span></div></div></div>"
+    },
+    {
+     "label": "行悬停复制动作（复制成功）",
+     "note": "静态快照：data-json-copy-active 与 data-state 由组件在悬停、复制成功时写入",
+     "bg": "platform",
+     "html": "<div class=\"root\" style=\"--json-tree-collapsed-lines:3;width:420px;flex:none\"><div class=\"expandedTopLevel\"><div class=\"row topLevelBracket\" data-json-root-row><span class=\"punctuation\">{</span></div><div class=\"container expandedTopLevelContainer\" role=\"tree\" aria-label=\"会话事件 JSON\"><div class=\"row\" role=\"treeitem\" data-json-copy-active><span class=\"copySlot\"><button type=\"button\" class=\"actionButton\" data-json-copy-button data-state=\"copied\" aria-label=\"已复制\" title=\"已复制\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4\" stroke=\"currentColor\"/></svg></button></span><span class=\"stringField\" data-expanded=\"false\"><span class=\"stringText\"><span class=\"label\">path:</span><span class=\"stringValue\">\"packages/client/ui-primitives/src/JsonTree.tsx\"</span></span></span></div><div class=\"row\" role=\"treeitem\"><span class=\"label\">bytes:</span><span class=\"numberValue\">4096</span></div></div><div class=\"row topLevelBracket\"><span class=\"punctuation\">}</span></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "data",
+     "type": "object | unknown[]",
+     "default": "—",
+     "desc": "已解析的 JSON 对象或数组；每次引用变化都会清空复制状态并重置键盘焦点行。"
+    },
+    {
+     "name": "label",
+     "type": "string",
+     "default": "—",
+     "desc": "树的 <code>role=\"tree\"</code> 无障碍名称，由调用方本地化。"
+    },
+    {
+     "name": "collapsedStringLines",
+     "type": "number",
+     "default": "3",
+     "desc": "折叠字符串保留的行数，写入本地变量 <code>--json-tree-collapsed-lines</code>（× 16px 行高）。"
+    },
+    {
+     "name": "expandTopLevel",
+     "type": "boolean",
+     "default": "true",
+     "desc": "顶层对象/数组固定展开，并把开闭括号各渲染为独立的括号行。"
+    },
+    {
+     "name": "copyable",
+     "type": "boolean",
+     "default": "true",
+     "desc": "是否给行提供复制按钮与右键菜单；关闭时不渲染 <code>.copySlot</code>。"
+    },
+    {
+     "name": "stringWrapping",
+     "type": "{ label, getDefault, setDefault } | undefined",
+     "default": "—",
+     "desc": "展开字符串时的换行开关：标签本地化，默认值由调用方记忆。"
+    },
+    {
+     "name": "labels",
+     "type": "JsonTreeLabels",
+     "default": "—",
+     "desc": "完整显示文案：复制值 / 复制 JSON / 复制路径 / 已复制 / 复制失败 / 展开 / 折叠与复制按钮标题。"
+    },
+    {
+     "name": "className",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "调用方的定位类，叠加在 <code>.root</code> 之后。"
+    }
+   ],
+   "notes": "行悬停时组件写入 <code>data-json-copy-active</code>：它同时点亮行底色（<code>::after</code>，高度取 <code>--json-tree-row-height</code>）与 20×16 的复制按钮；未悬停的行仍有一个空的 <code>.copySlot</code> 占位（绝对定位、不影响布局），示例里省略了空占位。键盘模型是 <code>role=\"tree\"</code> + 8px 三角按钮：<code>tabindex</code> 只落在当前行，左右键折叠/展开，上下键在展开器之间移动。复制按钮的右键菜单用共享 <code>Menu</code> 呈现，本条目未内联其样式。",
+   "keywords": [
+    "JSON",
+    "检视",
+    "树",
+    "折叠",
+    "复制",
+    "treeview"
+   ]
+  },
+  {
+   "id": "disclosure-row",
+   "name": "DisclosureRow",
+   "exportName": "DisclosureRow",
+   "zh": "展开行",
+   "group": "display",
+   "summary": "24px 高的过程行表头：左侧 16px 图标槽 + 6px 间距 + 13px/24px 标题，静息文字为 <code>--dsw-alias-label-tertiary</code>，悬停转 <code>--dsw-alias-label-secondary</code>。可展开时折叠态显示原图标、悬停换成下拉箭头，展开态固定为上箭头；<code>expandOnRowClick</code> 让整行成为 <code>role=\"button\"</code> 且可键盘触发，否则只有左侧 16px 槽是按钮。<code>headerAccessory</code> 在标题右侧空出 8px 放独立动作，标题行随之收缩到内容宽度。行高、图标槽与字号跟随设置里的 <code>--dsh-content-font-delta</code>。",
+   "source": "packages/client/ui-primitives/src/DisclosureRow.tsx#L43",
+   "css": [
+    "packages/client/ui-primitives/src/DisclosureRow.module.css",
+    "packages/client/ui-primitives/src/TextShimmer.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-label-shimmer"
+   ],
+   "specimens": [
+    {
+     "label": "折叠行（悬停预览下箭头，静态近似）",
+     "note": "悬停模拟",
+     "css": "/* 状态模拟：:hover 无法静态触发，以下三条是 DisclosureRow.module.css 中 .row:hover 相关规则的原样副本。 */\n.row.forceHover { color: var(--dsw-alias-label-secondary); }\n.row.forceHover .iconIdle { opacity: 0; }\n.row.forceHover .chevronHover { opacity: 1; }",
+     "html": "<div class=\"root\" style=\"width:420px;flex:none\"><div class=\"header\" data-disclosure-header><div class=\"row forceHover\" data-disclosure-row><button type=\"button\" class=\"leading\" aria-label=\"交付文件\" aria-expanded=\"false\"><span class=\"iconIdle\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M6.15479 4.91687H9.84543\" stroke=\"currentColor\"/><path d=\"M11.8798 9.55347V2.71525C11.8798 2.37416 11.564 2.09766 11.1744 2.09766H4.82577C4.43618 2.09766 4.12036 2.37416 4.12036 2.71525V9.55347\" stroke=\"currentColor\"/><path d=\"M2.28735 13.8022V8.84792C2.28735 8.77514 2.36262 8.72673 2.42884 8.75693L13.2936 13.7112C13.3914 13.7558 13.3596 13.9022 13.2521 13.9022H2.38735C2.33213 13.9022 2.28735 13.8575 2.28735 13.8022Z\" stroke=\"currentColor\"/><path d=\"M7.46929 10.979L13.5783 8.7416C13.6435 8.7177 13.7126 8.76601 13.7126 8.83551L13.7125 13.8022C13.7125 13.8574 13.6678 13.9022 13.6125 13.9022H7.99999\" stroke=\"currentColor\"/><path d=\"M6.15479 7.2395H9.05644\" stroke=\"currentColor\"/></svg></span><svg class=\"chevronHover\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></button><span class=\"c1-root\"><span class=\"c1-content\"><span class=\"c1-text title\">交付文件</span><span> · 已交付 变更说明.md</span></span></span></div></div></div>"
+    },
+    {
+     "label": "展开行（expandOnRowClick + keepContentWhenOpen）",
+     "html": "<div class=\"root\" data-open style=\"width:420px;flex:none\"><div class=\"header\" data-disclosure-header><div class=\"row\" data-disclosure-row data-expandable role=\"button\" tabindex=\"0\" aria-expanded=\"true\"><span class=\"leading\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10\" stroke=\"currentColor\"/></svg></span><span class=\"c1-root\"><span class=\"c1-content\"><span class=\"c1-text title\">思考</span><span> · 12 秒</span></span></span></div></div><div style=\"display:flex;flex-direction:column;gap:4px;padding:4px 0 8px 22px\"><span class=\"title\">用户想确认 UIUX 目录下的组件条目是否与 schema 一致。</span><span class=\"title\">先读 ENTRY-SCHEMA.md，再读 primitives.json 里的五个样例。</span></div></div>"
+    },
+    {
+     "label": "running：流式思考行，扫光冻结在掠过标题中段的一帧",
+     "note": "静态近似：扫光动画已冻结",
+     "css": "/* 状态模拟：扫光在真实组件里是 1.5s 无限循环（首次延迟 300ms），静态示例无法恰好停在中段；这里关掉两层动画并把位移固定为 translateX(0)，即扫光掠过标题中段的那一帧。 */\n.c1-sweep, .c1-highlight { animation: none; transform: translateX(0); }",
+     "html": "<div class=\"root\" data-open style=\"width:420px;flex:none\"><div class=\"header\" data-disclosure-header><div class=\"row\" data-disclosure-row data-expandable role=\"button\" tabindex=\"0\" aria-expanded=\"true\"><span class=\"leading\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10\" stroke=\"currentColor\"/></svg></span><span class=\"c1-root\" data-shimmer><span class=\"c1-content\"><span class=\"c1-text title\">思考</span><span> · 正在生成</span></span><span class=\"c1-decoration\" aria-hidden=\"true\" inert=\"\"><span class=\"c1-sweep\"><span class=\"c1-content c1-highlight\"><span class=\"c1-text title\" data-shimmer-text=\"思考\"></span><span> · 正在生成</span></span></span></span></span></div></div><div style=\"display:flex;flex-direction:column;gap:4px;padding:4px 0 8px 22px\"><span class=\"title\">用户想确认 UIUX 目录下的组件条目是否与 schema 一致。</span></div></div>"
+    },
+    {
+     "label": "不可展开的纯状态行（无箭头、无指针）",
+     "html": "<div class=\"root\" style=\"width:420px;flex:none\"><div class=\"header\" data-disclosure-header><div class=\"row\" data-disclosure-row><span class=\"leading\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M6.15479 4.91687H9.84543\" stroke=\"currentColor\"/><path d=\"M11.8798 9.55347V2.71525C11.8798 2.37416 11.564 2.09766 11.1744 2.09766H4.82577C4.43618 2.09766 4.12036 2.37416 4.12036 2.71525V9.55347\" stroke=\"currentColor\"/><path d=\"M2.28735 13.8022V8.84792C2.28735 8.77514 2.36262 8.72673 2.42884 8.75693L13.2936 13.7112C13.3914 13.7558 13.3596 13.9022 13.2521 13.9022H2.38735C2.33213 13.9022 2.28735 13.8575 2.28735 13.8022Z\" stroke=\"currentColor\"/><path d=\"M7.46929 10.979L13.5783 8.7416C13.6435 8.7177 13.7126 8.76601 13.7126 8.83551L13.7125 13.8022C13.7125 13.8574 13.6678 13.9022 13.6125 13.9022H7.99999\" stroke=\"currentColor\"/><path d=\"M6.15479 7.2395H9.05644\" stroke=\"currentColor\"/></svg></span><span class=\"c1-root\"><span class=\"c1-content\"><span class=\"c1-text title\">交付文件</span><span> · 正在投递</span></span></span></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "icon",
+     "type": "ReactNode",
+     "default": "—",
+     "desc": "左侧 16px 图标槽的内容；展开态被上箭头替换。"
+    },
+    {
+     "name": "title",
+     "type": "string",
+     "default": "—",
+     "desc": "标题文本，同时作为左侧按钮的无障碍名称。"
+    },
+    {
+     "name": "open",
+     "type": "boolean",
+     "default": "—",
+     "desc": "受控展开状态；为真时渲染 <code>children</code> 并显示上箭头。"
+    },
+    {
+     "name": "expandable",
+     "type": "boolean",
+     "default": "—",
+     "desc": "是否有可展开内容；为假时图标常显且不出现按钮。"
+    },
+    {
+     "name": "onToggle",
+     "type": "() => void",
+     "default": "—",
+     "desc": "请求切换展开状态；<code>memo</code> 浅比较要求回调稳定。"
+    },
+    {
+     "name": "running",
+     "type": "boolean | undefined",
+     "default": "false",
+     "desc": "把标题交给 <code>TextShimmer</code> 扫光，表示所属操作仍在进行。"
+    },
+    {
+     "name": "expandOnRowClick",
+     "type": "boolean | undefined",
+     "default": "false",
+     "desc": "整行成为披露目标（<code>role=\"button\"</code>、可 Tab、Enter/空格触发）；有 accessory 时标题行收缩到内容宽度。"
+    },
+    {
+     "name": "previewChevron",
+     "type": "boolean | undefined",
+     "default": "expandable",
+     "desc": "折叠时悬停把图标换成下箭头。"
+    },
+    {
+     "name": "keepContentWhenOpen",
+     "type": "boolean | undefined",
+     "default": "false",
+     "desc": "展开后仍保留 <code>collapsedContent</code>。"
+    },
+    {
+     "name": "collapsedContent",
+     "type": "ReactNode",
+     "default": "—",
+     "desc": "标题右侧的折叠态补充内容（状态、文件名、耗时等）。"
+    },
+    {
+     "name": "headerAccessory",
+     "type": "ReactNode",
+     "default": "—",
+     "desc": "标题右侧的独立动作，位于披露目标与扫光之外，间距 8px。"
+    },
+    {
+     "name": "children",
+     "type": "ReactNode",
+     "default": "—",
+     "desc": "展开后的内容区，由调用方负责缩进与间距。"
+    },
+    {
+     "name": "className / rowClassName / contentClassName / contentLayoutClassName / leadingClassName / chevronClassName / titleClassName",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "七个布局槽位，分别落在 <code>.root</code>、<code>.row</code>、文本区、文本区内层、图标槽、箭头与标题上。"
+    }
+   ],
+   "notes": "标题（及折叠态的补充内容）由 <code>TextShimmer</code> 包住：外层 <code>root</code>/<code>content</code> 负责文本区排版，内层再套一层 <code>text</code> 承受 <code>title</code> 的样式；<code>running</code> 时多渲染一份装饰副本（<code>decoration</code> &gt; <code>sweep</code> &gt; <code>content highlight</code>，带 <code>inert</code>），文字用 <code>data-shimmer-text</code> 经 <code>::after</code> 补回，扫光为 1.5s 循环、首次延迟 300ms。图标与箭头在扫光之外，不会被高亮。<code>memo</code> 只做浅比较，ReactNode 与回调需要保持稳定引用；行本身不画分隔线、也没有内边距，垂直间距由调用方容器给出，<code>.row</code> 的 <code>overflow: hidden</code> 保证长标题不会撑破工具栏。本条目内联两张样式表（<code>css[0]</code> DisclosureRow、<code>css[1]</code> TextShimmer），两者都声明了 <code>.root</code>，因此构建时按文件加 <code>c0-</code>/<code>c1-</code> 前缀；示例里 TextShimmer 自己的类写成了带前缀的形式（<code>c1-root</code> 等），而扫描光的示例把动画冻结在中段一帧。",
+   "keywords": [
+    "展开",
+    "折叠",
+    "披露",
+    "过程行",
+    "disclosure",
+    "accordion"
+   ]
+  },
+  {
+   "id": "hover-card",
+   "name": "HoverCard",
+   "exportName": "HoverCard",
+   "zh": "悬停卡",
+   "group": "display",
+   "summary": "悬停预览卡。<code>variant=\"compact\"</code> 是锚点右侧 244px 宽、12×16 内边距、圆角 lg 的深色卡（本地变量 <code>--dsw-hovercard-bg: #2C2C2E</code>，两种主题都是深色）；<code>variant=\"preview\"</code> 改成 <code>--dsw-alias-bg-layer-1</code> 面板、无内边距、24px 侧缩进、最高 420px，并带 100ms 透明度过渡；<code>inline</code> 让文件链接留在正文里，悬停或键盘聚焦时弹出菜单材质的 300px 媒体卡。默认停留 500ms（<code>openDelayMs</code>）出现，指针可以移进卡片继续阅读或点击复制。",
+   "source": "packages/client/ui-primitives/src/HoverCard.tsx#L38",
+   "css": [
+    "packages/client/ui-primitives/src/HoverCard.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-layer-1",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-scrollbar-bg-l2",
+    "--dsw-alias-scrollbar-hover-l2",
+    "--dsw-alias-state-business-primary",
+    "--dsw-elevation-panel",
+    "--dsw-focus-ring-color",
+    "--dsw-focus-ring-width",
+    "--dsw-hovercard-bg",
+    "--dsw-menu-backdrop-filter",
+    "--dsw-radius-lg",
+    "--dsw-shadow-lv3",
+    "--dsw-specific-menu"
+   ],
+   "specimens": [
+    {
+     "label": "variant=\"preview\"：变更预览面板（24px 侧缩进、无内边距）",
+     "note": "静态快照：卡片真实渲染是门户到 body 的 fixed 元素",
+     "bg": "platform",
+     "css": "/* 静态快照：卡片真实渲染由 createPortal 挂到 body，position: fixed 且坐标由 JS 写入；这里回到文档流参与排布，宽度、卡面配色、圆角与阴影仍由真实样式表决定。 */\n.card.snapshotStatic { position: static; }",
+     "html": "<div class=\"card preview snapshotStatic\" style=\"width:520px;flex:none\"><div style=\"display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px\"><span>packages/client/ui-primitives/src/JsonTree.tsx</span><span>+42 −8</span></div><div style=\"display:flex;flex-direction:column;gap:2px;padding:0 14px 12px\"><span>- const collapsedStringLines = 2</span><span>+ const collapsedStringLines = 3</span></div></div>"
+    },
+    {
+     "label": "compact + copyable：复制成功反馈（整卡可点）",
+     "note": "静态快照：门户卡片回到文档流",
+     "css": "/* 静态快照：卡片真实渲染由 createPortal 挂到 body，position: fixed 且坐标由 JS 写入；这里回到文档流参与排布，宽度、卡面配色、圆角与阴影仍由真实样式表决定。 */\n.card.snapshotStatic { position: static; }",
+     "html": "<div class=\"card copyable feedback snapshotStatic\" role=\"button\" tabindex=\"0\" aria-label=\"复制路径: /home/lk/deepseek-harness/packages/client/ui-primitives/src/JsonTree.tsx\"><span class=\"copied\">已复制</span></div>"
+    },
+    {
+     "label": "inline：正文文件链接的媒体预览（菜单材质，300px）",
+     "note": "静态快照：门户卡片回到文档流",
+     "css": "/* 静态快照：卡片真实渲染由 createPortal 挂到 body，position: fixed 且坐标由 JS 写入；这里回到文档流参与排布，宽度、卡面配色、圆角与阴影仍由真实样式表决定。 */\n.card.snapshotStatic { position: static; }",
+     "html": "<span class=\"root inline\" style=\"display:inline-flex;flex-direction:column;gap:8px;align-items:flex-start\"><span>packages/client/ui-primitives/src/JsonTree.tsx</span><span class=\"card media snapshotStatic\" style=\"width:300px\"><img src=\"data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22480%22%20height%3D%22270%22%20viewBox%3D%220%200%20480%20270%22%3E%3Crect%20width%3D%22480%22%20height%3D%22270%22%20fill%3D%22%2315171C%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%220%22%20width%3D%22112%22%20height%3D%22270%22%20fill%3D%22%231B1E24%22%2F%3E%3Crect%20x%3D%2216%22%20y%3D%2224%22%20width%3D%2280%22%20height%3D%2210%22%20rx%3D%225%22%20fill%3D%22%234D6BFE%22%2F%3E%3Crect%20x%3D%2216%22%20y%3D%2252%22%20width%3D%2272%22%20height%3D%228%22%20rx%3D%224%22%20fill%3D%22%233A3F4B%22%2F%3E%3Crect%20x%3D%2216%22%20y%3D%2272%22%20width%3D%2264%22%20height%3D%228%22%20rx%3D%224%22%20fill%3D%22%233A3F4B%22%2F%3E%3Crect%20x%3D%22140%22%20y%3D%2230%22%20width%3D%22300%22%20height%3D%2240%22%20rx%3D%2210%22%20fill%3D%22%2320242E%22%2F%3E%3Crect%20x%3D%22156%22%20y%3D%2245%22%20width%3D%22180%22%20height%3D%2210%22%20rx%3D%225%22%20fill%3D%22%238A93A6%22%2F%3E%3Crect%20x%3D%22140%22%20y%3D%2292%22%20width%3D%22320%22%20height%3D%2288%22%20rx%3D%2210%22%20fill%3D%22%231A1D25%22%20stroke%3D%22%232A2F3A%22%2F%3E%3Crect%20x%3D%22158%22%20y%3D%22112%22%20width%3D%22140%22%20height%3D%229%22%20rx%3D%224%22%20fill%3D%22%234D6BFE%22%2F%3E%3Crect%20x%3D%22158%22%20y%3D%22134%22%20width%3D%22220%22%20height%3D%228%22%20rx%3D%224%22%20fill%3D%22%2339D98A%22%2F%3E%3Crect%20x%3D%22158%22%20y%3D%22154%22%20width%3D%22170%22%20height%3D%228%22%20rx%3D%224%22%20fill%3D%22%238A93A6%22%2F%3E%3Crect%20x%3D%22140%22%20y%3D%22204%22%20width%3D%22260%22%20height%3D%2234%22%20rx%3D%2217%22%20fill%3D%22%232A2F3A%22%2F%3E%3C%2Fsvg%3E\" alt=\"JsonTree.tsx 的缩略预览\" style=\"width:100%;display:block\"/></span></span>"
+    }
+   ],
+   "props": [
+    {
+     "name": "anchor",
+     "type": "ReactNode",
+     "default": "—",
+     "desc": "悬停目标，原地渲染在一个 <code>.root</code> span 里；卡片测量它的矩形。"
+    },
+    {
+     "name": "content",
+     "type": "ReactNode",
+     "default": "—",
+     "desc": "卡片内容；指针可以停在上面，因此内容必须可读可选。"
+    },
+    {
+     "name": "variant",
+     "type": "'compact' | 'preview'",
+     "default": "'compact'",
+     "desc": "紧凑深色卡，或带 24px 侧缩进 / 420px 高度上限 / 100ms 过渡的预览面板。"
+    },
+    {
+     "name": "inline",
+     "type": "boolean",
+     "default": "false",
+     "desc": "正文内联样式：留在文本流里，悬停或键盘聚焦时弹出 300px 媒体卡。"
+    },
+    {
+     "name": "openDelayMs",
+     "type": "number",
+     "default": "500",
+     "desc": "悬停停留多久后显示；同组内第一张以外的卡片直接替换。"
+    },
+    {
+     "name": "widthAnchorRef",
+     "type": "RefObject<HTMLElement | null> | undefined",
+     "default": "—",
+     "desc": "用它的宽度与水平位置给 <code>preview</code> 卡片定位（宽度 − 48px）。"
+    },
+    {
+     "name": "disabled",
+     "type": "boolean",
+     "default": "false",
+     "desc": "抑制打开；已打开时置为 true 会立即开始关闭。"
+    },
+    {
+     "name": "grouped",
+     "type": "boolean",
+     "default": "false",
+     "desc": "与 <code>HoverCardGroup</code> 共享首次停留并保证同时只显示一张卡。"
+    },
+    {
+     "name": "copyText / copyLabel / copiedLabel",
+     "type": "string / string / string",
+     "default": "—",
+     "desc": "给出 <code>copyText</code> 时整卡成为可点、可 Enter/空格触发的复制按钮，另两个标签必填。"
+    }
+   ],
+   "notes": "卡片是 <code>createPortal</code> 到 body 的 fixed 层，坐标来自锚点矩形并跟随滚动与尺寸变化（<code>ResizeObserver</code> + 捕获阶段 scroll）。<code>variant=\"preview\"</code> 关闭时先播放 100ms 淡出（<code>data-closing</code>、<code>pointer-events: none</code>）再卸载，指针在淡出期间回到锚点会恢复；<code>@starting-style</code> 负责首次出现。<code>inline</code> 卡用键盘焦点也能打开，Escape 关闭且不冒泡给宿主。卡面只提供 244px 宽、深色底、圆角与阴影，卡内文字配色由调用方给（例如 ui-workspace 的 <code>.hoverContent</code> 用 #FFFFFF / #CFD3D6），所以上面的 compact 示例只展示组件自带的「已复制」反馈文案。",
+   "keywords": [
+    "悬停",
+    "预览",
+    "卡片",
+    "popover",
+    "hover",
+    "preview"
+   ]
+  },
+  {
+   "id": "image-preview",
+   "name": "ImagePreview",
+   "exportName": "ImagePreview",
+   "zh": "图片预览",
+   "group": "display",
+   "summary": "Markdown 图片链接的被动预览：固定 180px 高、圆角 sm、<code>--dsw-alias-bg-base</code> 底的容器，图片按 <code>object-fit: contain</code> 居中。图片就绪前 <code>.image</code> 透明（只有 <code>data-ready</code> 才显示），整块覆盖一层居中的 <code>role=\"status\"</code>：加载中显示 16px 弧线图标 + 文案，失败时撤掉图片只留文案。切换 <code>src</code> 会重挂载并回到加载态。",
+   "source": "packages/client/ui-primitives/src/ImagePreview.tsx#L11",
+   "css": [
+    "packages/client/ui-primitives/src/ImagePreview.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-base",
+    "--dsw-alias-label-tertiary",
+    "--dsw-radius-sm"
+   ],
+   "specimens": [
+    {
+     "label": "加载完成（180px 高，object-fit: contain）",
+     "bg": "platform",
+     "html": "<span class=\"frame\" style=\"width:320px;flex:none\"><img class=\"image\" data-ready src=\"data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22480%22%20height%3D%22270%22%20viewBox%3D%220%200%20480%20270%22%3E%3Crect%20width%3D%22480%22%20height%3D%22270%22%20fill%3D%22%2315171C%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%220%22%20width%3D%22112%22%20height%3D%22270%22%20fill%3D%22%231B1E24%22%2F%3E%3Crect%20x%3D%2216%22%20y%3D%2224%22%20width%3D%2280%22%20height%3D%2210%22%20rx%3D%225%22%20fill%3D%22%234D6BFE%22%2F%3E%3Crect%20x%3D%2216%22%20y%3D%2252%22%20width%3D%2272%22%20height%3D%228%22%20rx%3D%224%22%20fill%3D%22%233A3F4B%22%2F%3E%3Crect%20x%3D%2216%22%20y%3D%2272%22%20width%3D%2264%22%20height%3D%228%22%20rx%3D%224%22%20fill%3D%22%233A3F4B%22%2F%3E%3Crect%20x%3D%22140%22%20y%3D%2230%22%20width%3D%22300%22%20height%3D%2240%22%20rx%3D%2210%22%20fill%3D%22%2320242E%22%2F%3E%3Crect%20x%3D%22156%22%20y%3D%2245%22%20width%3D%22180%22%20height%3D%2210%22%20rx%3D%225%22%20fill%3D%22%238A93A6%22%2F%3E%3Crect%20x%3D%22140%22%20y%3D%2292%22%20width%3D%22320%22%20height%3D%2288%22%20rx%3D%2210%22%20fill%3D%22%231A1D25%22%20stroke%3D%22%232A2F3A%22%2F%3E%3Crect%20x%3D%22158%22%20y%3D%22112%22%20width%3D%22140%22%20height%3D%229%22%20rx%3D%224%22%20fill%3D%22%234D6BFE%22%2F%3E%3Crect%20x%3D%22158%22%20y%3D%22134%22%20width%3D%22220%22%20height%3D%228%22%20rx%3D%224%22%20fill%3D%22%2339D98A%22%2F%3E%3Crect%20x%3D%22158%22%20y%3D%22154%22%20width%3D%22170%22%20height%3D%228%22%20rx%3D%224%22%20fill%3D%22%238A93A6%22%2F%3E%3Crect%20x%3D%22140%22%20y%3D%22204%22%20width%3D%22260%22%20height%3D%2234%22%20rx%3D%2217%22%20fill%3D%22%232A2F3A%22%2F%3E%3C%2Fsvg%3E\" alt=\"会话中插入的截图：UIUX 目录结构\" loading=\"lazy\" decoding=\"async\" referrerpolicy=\"no-referrer\"/></span>"
+    },
+    {
+     "label": "加载中：图片透明 + 居中状态层",
+     "bg": "platform",
+     "html": "<span class=\"frame\" style=\"width:320px;flex:none\"><img class=\"image\" src=\"data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22480%22%20height%3D%22270%22%20viewBox%3D%220%200%20480%20270%22%3E%3Crect%20width%3D%22480%22%20height%3D%22270%22%20fill%3D%22%2315171C%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%220%22%20width%3D%22112%22%20height%3D%22270%22%20fill%3D%22%231B1E24%22%2F%3E%3Crect%20x%3D%2216%22%20y%3D%2224%22%20width%3D%2280%22%20height%3D%2210%22%20rx%3D%225%22%20fill%3D%22%234D6BFE%22%2F%3E%3Crect%20x%3D%2216%22%20y%3D%2252%22%20width%3D%2272%22%20height%3D%228%22%20rx%3D%224%22%20fill%3D%22%233A3F4B%22%2F%3E%3Crect%20x%3D%2216%22%20y%3D%2272%22%20width%3D%2264%22%20height%3D%228%22%20rx%3D%224%22%20fill%3D%22%233A3F4B%22%2F%3E%3Crect%20x%3D%22140%22%20y%3D%2230%22%20width%3D%22300%22%20height%3D%2240%22%20rx%3D%2210%22%20fill%3D%22%2320242E%22%2F%3E%3Crect%20x%3D%22156%22%20y%3D%2245%22%20width%3D%22180%22%20height%3D%2210%22%20rx%3D%225%22%20fill%3D%22%238A93A6%22%2F%3E%3Crect%20x%3D%22140%22%20y%3D%2292%22%20width%3D%22320%22%20height%3D%2288%22%20rx%3D%2210%22%20fill%3D%22%231A1D25%22%20stroke%3D%22%232A2F3A%22%2F%3E%3Crect%20x%3D%22158%22%20y%3D%22112%22%20width%3D%22140%22%20height%3D%229%22%20rx%3D%224%22%20fill%3D%22%234D6BFE%22%2F%3E%3Crect%20x%3D%22158%22%20y%3D%22134%22%20width%3D%22220%22%20height%3D%228%22%20rx%3D%224%22%20fill%3D%22%2339D98A%22%2F%3E%3Crect%20x%3D%22158%22%20y%3D%22154%22%20width%3D%22170%22%20height%3D%228%22%20rx%3D%224%22%20fill%3D%22%238A93A6%22%2F%3E%3Crect%20x%3D%22140%22%20y%3D%22204%22%20width%3D%22260%22%20height%3D%2234%22%20rx%3D%2217%22%20fill%3D%22%232A2F3A%22%2F%3E%3C%2Fsvg%3E\" alt=\"会话中插入的截图：UIUX 目录结构\" loading=\"lazy\" decoding=\"async\" referrerpolicy=\"no-referrer\"/><span class=\"status\" role=\"status\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M12.596 12.596C11.687 13.5049 10.5288 14.1239 9.26798 14.3747C8.00716 14.6255 6.70028 14.4968 5.51261 14.0048C4.32494 13.5129 3.30981 12.6798 2.59557 11.611C1.88134 10.5421 1.50008 9.2855 1.5 7.99998C1.50008 6.71446 1.88134 5.45783 2.59557 4.38898C3.30981 3.32013 4.32494 2.48707 5.51261 1.99513C6.70028 1.50319 8.00716 1.37447 9.26798 1.62524C10.5288 1.87602 11.687 2.49502 12.596 3.40398\" stroke=\"currentColor\"/></svg><span>图片加载中…</span></span></span>"
+    },
+    {
+     "label": "加载失败：撤掉图片，只留状态文案",
+     "bg": "platform",
+     "html": "<span class=\"frame\" style=\"width:320px;flex:none\"><span class=\"status\" role=\"status\"><span>图片加载失败</span></span></span>"
+    }
+   ],
+   "props": [
+    {
+     "name": "src",
+     "type": "string",
+     "default": "—",
+     "desc": "图片地址；变化时内部按 key 重挂载，状态回到 loading。"
+    },
+    {
+     "name": "alt",
+     "type": "string",
+     "default": "—",
+     "desc": "无障碍替代文本，同时是加载失败时的信息。"
+    },
+    {
+     "name": "loadingLabel",
+     "type": "string",
+     "default": "—",
+     "desc": "加载中文案，由调用方本地化。"
+    },
+    {
+     "name": "failedLabel",
+     "type": "string",
+     "default": "—",
+     "desc": "失败文案，由调用方本地化。"
+    }
+   ],
+   "notes": "组件刻意不引入第二个激活目标：放大到原图由外层按钮与 <code>ImageLightbox</code> 负责。图片带 <code>loading=\"lazy\"</code>、<code>decoding=\"async\"</code> 与 <code>referrerPolicy=\"no-referrer\"</code>；失败时 <code>&lt;img&gt;</code> 整个卸载，不会留下半张图。",
+   "keywords": [
+    "图片",
+    "预览",
+    "缩略图",
+    "image",
+    "thumbnail",
+    "markdown"
+   ]
+  },
+  {
+   "id": "image-lightbox",
+   "name": "ImageLightbox",
+   "exportName": "ImageLightbox",
+   "zh": "原图灯箱",
+   "group": "display",
+   "summary": "原图预览模态：<code>createPortal</code> 到 body 的全视口 fixed 层（<code>z-index: 1000</code>），<code>.stage</code> 从 Windows 标题栏下沿（<code>--dsh-frame-chrome-top</code>）铺满并留 40px 内边距；遮罩读 <code>--dsw-alias-bg-mask-1</code> 与 <code>--dsw-mask-blur</code>。图片最大 1600px 宽、圆角 lg、elevation-prominent 阴影，右上角 20px 处是 36px 圆形关闭按钮。打开时焦点移到关闭按钮，Esc 或点遮罩关闭，卸载时把焦点还给打开者。",
+   "source": "packages/client/ui-primitives/src/ImageLightbox.tsx#L27",
+   "css": [
+    "packages/client/ui-primitives/src/ImageLightbox.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-mask-1",
+    "--dsw-alias-border-l2-darkmode-thin",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-state-business-primary",
+    "--dsw-elevation-prominent",
+    "--dsw-focus-ring-color",
+    "--dsw-focus-ring-width",
+    "--dsw-mask-blur",
+    "--dsw-radius-lg",
+    "--dsw-specific-input-major"
+   ],
+   "specimens": [
+    {
+     "label": "打开状态：遮罩 + 原图 + 36px 圆形关闭按钮",
+     "note": "静态快照：backdrop 收进示例框内",
+     "bg": "dark",
+     "css": "/* 静态快照：backdrop 真实渲染是覆盖全视口的 position: fixed 门户；这里收进示例框内，遮罩、图片与关闭按钮的相对位置仍走真实样式。 */\n.backdrop.snapshotStatic { position: relative; inset: auto; width: 100%; height: 300px; }",
+     "html": "<div class=\"backdrop snapshotStatic\" role=\"dialog\" aria-modal=\"true\" aria-label=\"原图预览\"><div class=\"stage\"><div class=\"mask\" aria-hidden=\"true\"></div><img class=\"image\" src=\"data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22480%22%20height%3D%22270%22%20viewBox%3D%220%200%20480%20270%22%3E%3Crect%20width%3D%22480%22%20height%3D%22270%22%20fill%3D%22%2315171C%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%220%22%20width%3D%22112%22%20height%3D%22270%22%20fill%3D%22%231B1E24%22%2F%3E%3Crect%20x%3D%2216%22%20y%3D%2224%22%20width%3D%2280%22%20height%3D%2210%22%20rx%3D%225%22%20fill%3D%22%234D6BFE%22%2F%3E%3Crect%20x%3D%2216%22%20y%3D%2252%22%20width%3D%2272%22%20height%3D%228%22%20rx%3D%224%22%20fill%3D%22%233A3F4B%22%2F%3E%3Crect%20x%3D%2216%22%20y%3D%2272%22%20width%3D%2264%22%20height%3D%228%22%20rx%3D%224%22%20fill%3D%22%233A3F4B%22%2F%3E%3Crect%20x%3D%22140%22%20y%3D%2230%22%20width%3D%22300%22%20height%3D%2240%22%20rx%3D%2210%22%20fill%3D%22%2320242E%22%2F%3E%3Crect%20x%3D%22156%22%20y%3D%2245%22%20width%3D%22180%22%20height%3D%2210%22%20rx%3D%225%22%20fill%3D%22%238A93A6%22%2F%3E%3Crect%20x%3D%22140%22%20y%3D%2292%22%20width%3D%22320%22%20height%3D%2288%22%20rx%3D%2210%22%20fill%3D%22%231A1D25%22%20stroke%3D%22%232A2F3A%22%2F%3E%3Crect%20x%3D%22158%22%20y%3D%22112%22%20width%3D%22140%22%20height%3D%229%22%20rx%3D%224%22%20fill%3D%22%234D6BFE%22%2F%3E%3Crect%20x%3D%22158%22%20y%3D%22134%22%20width%3D%22220%22%20height%3D%228%22%20rx%3D%224%22%20fill%3D%22%2339D98A%22%2F%3E%3Crect%20x%3D%22158%22%20y%3D%22154%22%20width%3D%22170%22%20height%3D%228%22%20rx%3D%224%22%20fill%3D%22%238A93A6%22%2F%3E%3Crect%20x%3D%22140%22%20y%3D%22204%22%20width%3D%22260%22%20height%3D%2234%22%20rx%3D%2217%22%20fill%3D%22%232A2F3A%22%2F%3E%3C%2Fsvg%3E\" alt=\"会话中插入的截图：UIUX 目录结构\"/><button type=\"button\" class=\"close\" aria-label=\"关闭原图预览\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></div></div>"
+    },
+    {
+     "label": "关闭按钮的键盘焦点环（静态近似）",
+     "note": "焦点模拟；打开时组件会把焦点移到该按钮",
+     "bg": "dark",
+     "css": "/* 静态快照：backdrop 真实渲染是覆盖全视口的 position: fixed 门户；这里收进示例框内。 */\n.backdrop.snapshotStatic { position: relative; inset: auto; width: 100%; height: 300px; }\n/* 状态模拟：:focus-visible 无法静态触发，下面是 ImageLightbox.module.css 中 .close:focus-visible 的原样副本。 */\n.close.forceFocus { outline: var(--dsw-focus-ring-width) solid var(--dsw-focus-ring-color, var(--dsw-alias-state-business-primary)); outline-offset: 3px; }",
+     "html": "<div class=\"backdrop snapshotStatic\" role=\"dialog\" aria-modal=\"true\" aria-label=\"原图预览\"><div class=\"stage\"><div class=\"mask\" aria-hidden=\"true\"></div><img class=\"image\" src=\"data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22480%22%20height%3D%22270%22%20viewBox%3D%220%200%20480%20270%22%3E%3Crect%20width%3D%22480%22%20height%3D%22270%22%20fill%3D%22%2315171C%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%220%22%20width%3D%22112%22%20height%3D%22270%22%20fill%3D%22%231B1E24%22%2F%3E%3Crect%20x%3D%2216%22%20y%3D%2224%22%20width%3D%2280%22%20height%3D%2210%22%20rx%3D%225%22%20fill%3D%22%234D6BFE%22%2F%3E%3Crect%20x%3D%2216%22%20y%3D%2252%22%20width%3D%2272%22%20height%3D%228%22%20rx%3D%224%22%20fill%3D%22%233A3F4B%22%2F%3E%3Crect%20x%3D%2216%22%20y%3D%2272%22%20width%3D%2264%22%20height%3D%228%22%20rx%3D%224%22%20fill%3D%22%233A3F4B%22%2F%3E%3Crect%20x%3D%22140%22%20y%3D%2230%22%20width%3D%22300%22%20height%3D%2240%22%20rx%3D%2210%22%20fill%3D%22%2320242E%22%2F%3E%3Crect%20x%3D%22156%22%20y%3D%2245%22%20width%3D%22180%22%20height%3D%2210%22%20rx%3D%225%22%20fill%3D%22%238A93A6%22%2F%3E%3Crect%20x%3D%22140%22%20y%3D%2292%22%20width%3D%22320%22%20height%3D%2288%22%20rx%3D%2210%22%20fill%3D%22%231A1D25%22%20stroke%3D%22%232A2F3A%22%2F%3E%3Crect%20x%3D%22158%22%20y%3D%22112%22%20width%3D%22140%22%20height%3D%229%22%20rx%3D%224%22%20fill%3D%22%234D6BFE%22%2F%3E%3Crect%20x%3D%22158%22%20y%3D%22134%22%20width%3D%22220%22%20height%3D%228%22%20rx%3D%224%22%20fill%3D%22%2339D98A%22%2F%3E%3Crect%20x%3D%22158%22%20y%3D%22154%22%20width%3D%22170%22%20height%3D%228%22%20rx%3D%224%22%20fill%3D%22%238A93A6%22%2F%3E%3Crect%20x%3D%22140%22%20y%3D%22204%22%20width%3D%22260%22%20height%3D%2234%22%20rx%3D%2217%22%20fill%3D%22%232A2F3A%22%2F%3E%3C%2Fsvg%3E\" alt=\"会话中插入的截图：UIUX 目录结构\"/><button type=\"button\" class=\"close forceFocus\" aria-label=\"关闭原图预览\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "src",
+     "type": "string",
+     "default": "—",
+     "desc": "原图地址（可以是本地媒体路径解析后的 URL）。"
+    },
+    {
+     "name": "alt",
+     "type": "string",
+     "default": "—",
+     "desc": "图片替代文本。"
+    },
+    {
+     "name": "labels",
+     "type": "ImageLightboxLabels",
+     "default": "—",
+     "desc": "<code>dialog</code>（对话框无障碍名称）与 <code>close</code>（关闭按钮名称），由调用方本地化。"
+    },
+    {
+     "name": "onClose",
+     "type": "() => void",
+     "default": "—",
+     "desc": "Esc、点遮罩或点关闭按钮时调用；关闭动作由打开者拥有。"
+    }
+   ],
+   "notes": "打开期间在捕获阶段监听键盘：Esc 关闭并停止冒泡，Tab 被强制收敛到关闭按钮，形成单点焦点循环。<code>.mask</code> 只负责变暗与吞掉点击，图片和按钮在它上层（按钮 <code>z-index: 1</code>）。遮罩层与 <code>Modal</code> 一样不覆盖 Windows 标题栏，因此标题栏按钮在预览期间仍然可用。",
+   "keywords": [
+    "原图",
+    "灯箱",
+    "模态",
+    "放大",
+    "lightbox",
+    "modal"
+   ]
+  },
+  {
+   "id": "toast",
+   "name": "Toast",
+   "exportName": "Toast",
+   "zh": "浮层提示",
+   "group": "display",
+   "summary": "顶部居中横幅：<code>top: 40px</code>、<code>translateX(-50%)</code>（给了 <code>anchor</code> 就改用锚点中线），<code>z-index: 1100</code> 高于原图灯箱，整块 <code>pointer-events: none</code> 不挡点击，只有动作文字可点。宽度由内容决定（<code>max-content</code>，上限 <code>min(640px, 100vw - 48px)</code>），14px/22px、圆角 lg、<code>--dsw-alias-toast-bg</code> 深色底——浅色与深色主题下都是深色。160ms 滑入后保持 <code>holdMs</code>（默认 3000ms），再 1000ms 淡出，淡出结束调用 <code>onDone</code>；<code>tone=\"success\"</code> 用绿色圆圈勾，否则图标槽保持警告色。",
+   "source": "packages/client/ui-primitives/src/Toast.tsx#L46",
+   "css": [
+    "packages/client/ui-primitives/src/Toast.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-state-success-primary",
+    "--dsw-alias-state-warn-label",
+    "--dsw-alias-toast-bg",
+    "--dsw-alias-toast-label",
+    "--dsw-radius-lg",
+    "--dsw-shadow-lv3",
+    "--dsw-static-deepseek-400"
+   ],
+   "specimens": [
+    {
+     "label": "tone=\"success\" + 一个动作（撤销）",
+     "note": "静态快照：取消 fixed 定位与自动淡出",
+     "css": "/* 静态快照：banner 真实渲染由门户挂到 body，position: fixed，并带 160ms 滑入与 hold 后 1s 淡出的动画；这里取消定位与动画，让它在示例框内保持可见，尺寸与配色仍走真实样式。 */\n.toast.snapshotStatic { position: static; left: auto; top: auto; transform: none; animation: none; }",
+     "html": "<div class=\"toast snapshotStatic\" role=\"alert\" style=\"--dsh-toast-hold:3000ms\"><span class=\"icon success\" aria-hidden=\"true\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M12.5303 6.53027L8.80273 10.2578C8.54967 10.5109 8.31796 10.7439 8.10645 10.9141C7.88375 11.0932 7.616 11.2602 7.27344 11.3145C7.09229 11.3431 6.90771 11.3431 6.72656 11.3145C6.384 11.2602 6.11625 11.0932 5.89355 10.9141C5.68204 10.7439 5.45033 10.5109 5.19727 10.2578L3.46973 8.53027L4.53027 7.46973L6.25781 9.19727C6.53457 9.47402 6.70036 9.63859 6.83398 9.74609C6.95637 9.84453 6.98241 9.83644 6.96094 9.83301C6.98679 9.83709 7.01321 9.83709 7.03906 9.83301C7.01759 9.83644 7.04363 9.84453 7.16602 9.74609C7.29964 9.63859 7.46543 9.47402 7.74219 9.19727L11.4697 5.46973L12.5303 6.53027Z\" fill=\"currentColor\"/><path d=\"M14.5996 8C14.5996 4.35492 11.6451 1.40039 8 1.40039C4.35492 1.40039 1.40039 4.35492 1.40039 8C1.40039 11.6451 4.35492 14.5996 8 14.5996C11.6451 14.5996 14.5996 11.6451 14.5996 8ZM15.9004 8C15.9004 12.363 12.363 15.9004 8 15.9004C3.63695 15.9004 0.0996094 12.363 0.0996094 8C0.0996094 3.63695 3.63695 0.0996094 8 0.0996094C12.363 0.0996094 15.9004 3.63695 15.9004 8Z\" fill=\"currentColor\"/></svg></span><span class=\"text\">已删除会话 “重构会话存储层”<button type=\"button\" class=\"action\">撤销</button></span></div>"
+    },
+    {
+     "label": "两个动作 + prefix 连接词（归档会话）",
+     "note": "静态快照：取消 fixed 定位与自动淡出",
+     "css": "/* 静态快照：banner 真实渲染由门户挂到 body，position: fixed，并带 160ms 滑入与 hold 后 1s 淡出的动画；这里取消定位与动画，让它在示例框内保持可见，尺寸与配色仍走真实样式。 */\n.toast.snapshotStatic { position: static; left: auto; top: auto; transform: none; animation: none; }",
+     "html": "<div class=\"toast snapshotStatic\" role=\"alert\" style=\"--dsh-toast-hold:6000ms\"><span class=\"icon success\" aria-hidden=\"true\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M12.5303 6.53027L8.80273 10.2578C8.54967 10.5109 8.31796 10.7439 8.10645 10.9141C7.88375 11.0932 7.616 11.2602 7.27344 11.3145C7.09229 11.3431 6.90771 11.3431 6.72656 11.3145C6.384 11.2602 6.11625 11.0932 5.89355 10.9141C5.68204 10.7439 5.45033 10.5109 5.19727 10.2578L3.46973 8.53027L4.53027 7.46973L6.25781 9.19727C6.53457 9.47402 6.70036 9.63859 6.83398 9.74609C6.95637 9.84453 6.98241 9.83644 6.96094 9.83301C6.98679 9.83709 7.01321 9.83709 7.03906 9.83301C7.01759 9.83644 7.04363 9.84453 7.16602 9.74609C7.29964 9.63859 7.46543 9.47402 7.74219 9.19727L11.4697 5.46973L12.5303 6.53027Z\" fill=\"currentColor\"/><path d=\"M14.5996 8C14.5996 4.35492 11.6451 1.40039 8 1.40039C4.35492 1.40039 1.40039 4.35492 1.40039 8C1.40039 11.6451 4.35492 14.5996 8 14.5996C11.6451 14.5996 14.5996 11.6451 14.5996 8ZM15.9004 8C15.9004 12.363 12.363 15.9004 8 15.9004C3.63695 15.9004 0.0996094 12.363 0.0996094 8C0.0996094 3.63695 3.63695 0.0996094 8 0.0996094C12.363 0.0996094 15.9004 3.63695 15.9004 8Z\" fill=\"currentColor\"/></svg></span><span class=\"text\">会话已归档，可<button type=\"button\" class=\"action\">撤销</button>或<button type=\"button\" class=\"action\">筛选已归档会话</button></span></div>"
+    },
+    {
+     "label": "警告图标 + 长文案（holdMs 6000）",
+     "note": "静态快照：取消 fixed 定位与自动淡出",
+     "css": "/* 静态快照：banner 真实渲染由门户挂到 body，position: fixed，并带 160ms 滑入与 hold 后 1s 淡出的动画；这里取消定位与动画，让它在示例框内保持可见，尺寸与配色仍走真实样式。 */\n.toast.snapshotStatic { position: static; left: auto; top: auto; transform: none; animation: none; }",
+     "html": "<div class=\"toast snapshotStatic\" role=\"alert\" style=\"--dsh-toast-hold:6000ms\"><span class=\"icon\" aria-hidden=\"true\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1\" aria-hidden=\"true\"><path d=\"M8 14.5C11.5899 14.5 14.5 11.5899 14.5 8C14.5 4.41015 11.5899 1.5 8 1.5C4.41015 1.5 1.5 4.41015 1.5 8C1.5 11.5899 4.41015 14.5 8 14.5Z\" stroke=\"currentColor\"/><path d=\"M8 4.29199V9.79199\" stroke=\"currentColor\"/><path d=\"M8 10.708V11.708\" stroke=\"currentColor\"/></svg></span><span class=\"text\">无法写入 packages/client/ui-primitives/src/Toast.tsx：目标目录只读</span></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "text",
+     "type": "string",
+     "default": "—",
+     "desc": "横幅正文，由调用方本地化。"
+    },
+    {
+     "name": "icon",
+     "type": "ReactNode",
+     "default": "—",
+     "desc": "可选前置图标；<code>tone=\"success\"</code> 时被绿色圆圈勾取代。"
+    },
+    {
+     "name": "tone",
+     "type": "'success' | undefined",
+     "default": "—",
+     "desc": "成功色调：自带图标与 <code>--dsw-alias-state-success-primary</code>。"
+    },
+    {
+     "name": "actions",
+     "type": "readonly { label, prefix?, onClick }[] | undefined",
+     "default": "—",
+     "desc": "句内动作：<code>prefix</code> 是连接词，<code>label</code> 渲染为蓝色可点文字，点击由调用方处理。"
+    },
+    {
+     "name": "anchor",
+     "type": "HTMLElement | null | undefined",
+     "default": "—",
+     "desc": "让横幅水平中心跟随该元素（例如输入卡），窗口尺寸变化时重新测量。"
+    },
+    {
+     "name": "holdMs",
+     "type": "number",
+     "default": "3000",
+     "desc": "满不透明保持时长；同时驱动卸载定时器与 CSS 淡出延迟（<code>--dsh-toast-hold</code>）。"
+    },
+    {
+     "name": "onDone",
+     "type": "() => void",
+     "default": "—",
+     "desc": "淡出完成后回调，调用方在这里卸载横幅。"
+    }
+   ],
+   "notes": "同一个 <code>holdMs</code> 同时决定卸载定时器与样式表里的 <code>animation-delay</code>，两者不会错位；重渲染不会延长寿命，只有换 <code>key</code> 重新挂载才会重新计时。<code>role=\"alert\"</code> 让读屏立即播报；完全淡出后动作不再接收输入。减少动态效果时只保留淡出，不做位移。",
+   "keywords": [
+    "提示",
+    "横幅",
+    "通知",
+    "toast",
+    "notice",
+    "snackbar"
+   ]
+  },
+  {
+   "id": "tooltip",
+   "name": "Tooltip",
+   "exportName": "Tooltip",
+   "zh": "气泡提示",
+   "group": "display",
+   "summary": "给锚点元素挂悬停/聚焦提示：气泡 13px/20px、3×7 内边距、圆角 sm、<code>--dsw-alias-tooltip-bg</code> 深色底，<code>width: max-content</code> 且上限 50vw，不可断行的路径按 <code>overflow-wrap: break-word</code> 折行。<code>side</code> 选 right / bottom / top，<code>align=\"end\"</code> 让气泡右缘对齐锚点右缘。气泡先以 <code>visibility: hidden</code> 渲染，等 ResizeObserver 量到尺寸后贴边内推（两侧各留 12px），只有对面确实放得下时才翻转；<code>shortcutKeys</code> 会在文字后追加 16px 键帽，<code>portal</code> 时 z-index 升到 1100。",
+   "source": "packages/client/ui-primitives/src/Tooltip.tsx#L62",
+   "css": [
+    "packages/client/ui-primitives/src/Tooltip.module.css",
+    "packages/client/ui-primitives/src/ShortcutKeys.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-tooltip-bg",
+    "--dsw-alias-tooltip-key-bg",
+    "--dsw-alias-label-tertiary",
+    "--dsw-radius-sm",
+    "--dsw-static-neutral-bluish-00"
+   ],
+   "specimens": [
+    {
+     "label": "side=\"right\"：纯文字提示",
+     "note": "静态快照：气泡回到文档流",
+     "css": "/* 静态快照：气泡真实渲染是 position: fixed，先隐藏、量好尺寸后由 JS 写入 left/top 并显示；这里回到文档流并取消跟随锚点的位移，配色、内边距与键帽仍走真实样式。 */\n.bubble.snapshotStatic { position: static; transform: none; visibility: visible; }",
+     "html": "<span class=\"bubble snapshotStatic\" role=\"tooltip\" data-side=\"right\" data-align=\"center\"><span class=\"label\">复制路径</span></span>"
+    },
+    {
+     "label": "side=\"bottom\" + align=\"end\" + shortcutKeys：键帽组合",
+     "note": "静态快照：气泡回到文档流",
+     "css": "/* 静态快照：气泡真实渲染是 position: fixed，先隐藏、量好尺寸后由 JS 写入 left/top 并显示；这里回到文档流并取消跟随锚点的位移，配色、内边距与键帽仍走真实样式。 */\n.bubble.snapshotStatic { position: static; transform: none; visibility: visible; }",
+     "html": "<span class=\"bubble snapshotStatic\" role=\"tooltip\" data-side=\"bottom\" data-align=\"end\" data-has-shortcut aria-label=\"展开详情 ⌘ + B\"><span class=\"label\">展开详情</span><span class=\"keys tooltip joined\"><kbd class=\"key\">⌘</kbd><kbd class=\"separator\">+</kbd><kbd class=\"key\">B</kbd></span></span>"
+    },
+    {
+     "label": "portal + openOnClick 钉住：只有键帽，无文字",
+     "note": "静态快照：气泡回到文档流",
+     "css": "/* 静态快照：气泡真实渲染是 position: fixed 的门户内容，量好尺寸后由 JS 写入 left/top 并显示；这里回到文档流并取消跟随锚点的位移，配色、内边距与键帽仍走真实样式。 */\n.bubble.snapshotStatic { position: static; transform: none; visibility: visible; }",
+     "html": "<span class=\"bubble snapshotStatic\" role=\"tooltip\" data-side=\"right\" data-align=\"center\" data-portal data-pinned data-has-shortcut aria-label=\"⌘ K\"><span class=\"keys tooltip\"><kbd class=\"key\">⌘</kbd><kbd class=\"key\">K</kbd></span></span>"
+    }
+   ],
+   "props": [
+    {
+     "name": "label",
+     "type": "string | (() => string)",
+     "default": "—",
+     "desc": "气泡文本，或仅在可见时求值的取值函数；空字符串表示只显示快捷键。"
+    },
+    {
+     "name": "shortcutKeys",
+     "type": "readonly string[] | undefined",
+     "default": "—",
+     "desc": "有效按键标签，渲染为平台格式的键帽；含 <code>+</code> 的组合会合并成一个键块。"
+    },
+    {
+     "name": "side",
+     "type": "'right' | 'bottom' | 'top'",
+     "default": "'right'",
+     "desc": "气泡相对锚点的位置；放不下时会翻到对面。"
+    },
+    {
+     "name": "align",
+     "type": "'center' | 'end'",
+     "default": "'center'",
+     "desc": "bottom/top 气泡的水平对齐；<code>end</code> 把气泡右缘钉在锚点右缘，避免盖住相邻悬停面。"
+    },
+    {
+     "name": "delayMs / focusDelayMs",
+     "type": "number",
+     "default": "0",
+     "desc": "悬停延迟与键盘聚焦延迟；失焦、点击、移出、禁用与卸载都会取消待显示。"
+    },
+    {
+     "name": "gap",
+     "type": "number",
+     "default": "8",
+     "desc": "bottom/top 气泡与锚点的距离；right 侧固定 10px，忽略此值。"
+    },
+    {
+     "name": "disabled",
+     "type": "boolean",
+     "default": "false",
+     "desc": "为真时抑制气泡；锚点渲染不变，因此切换不会重挂载子元素。"
+    },
+    {
+     "name": "portal",
+     "type": "boolean",
+     "default": "false",
+     "desc": "把气泡挂到 body，躲开祖先的裁剪与层叠上下文（z-index 升到 1100）。"
+    },
+    {
+     "name": "maxWidth",
+     "type": "number | undefined",
+     "default": "—",
+     "desc": "气泡宽度上限，用于长文案不想铺满半个视口时。"
+    },
+    {
+     "name": "openOnClick",
+     "type": "boolean",
+     "default": "false",
+     "desc": "点击也钉住气泡供阅读，并用 <code>aria-describedby</code> 关联锚点；再点、Esc、Tab 或外部 pointerdown 关闭。"
+    },
+    {
+     "name": "children",
+     "type": "ReactElement",
+     "default": "—",
+     "desc": "唯一锚点元素；组件用 <code>cloneElement</code> 注入 ref 与事件，子元素自己的处理器先执行。"
+    }
+   ],
+   "notes": "hover 与 focus 是两个独立触发源，只有两者都清空才隐藏；指针模态下 focus 不弹气泡（读 <code>pointerModality()</code>，避免点击后残留提示）。嵌套提示由 <code>TooltipSuppression</code> 协调：内层显示时外层收起。显示前气泡不可见也不参与测量，因此不会闪烁；<code>prefers-reduced-motion</code> 下取消 150ms 淡入。键帽样式来自同包的 <code>ShortcutKeys</code>，本条目把它的样式表一并内联。",
+   "keywords": [
+    "提示",
+    "气泡",
+    "悬停说明",
+    "tooltip",
+    "hint",
+    "快捷键"
+   ]
+  }
+ ]
+}

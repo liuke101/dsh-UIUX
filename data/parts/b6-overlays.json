@@ -1,0 +1,1098 @@
+{
+ "schemaVersion": 1,
+ "note": "浮层（overlays）与 agent 面板条目：弹窗、下拉选择卡、会话内面板与录音控件。弹窗、菜单与浮层卡片在真实产品里 portal 到 body 且用 fixed 定位，这里以静态内联快照呈现，并在各示例自己的 css 里把定位改回文档流。",
+ "entries": [
+  {
+   "id": "feedback-dialog",
+   "name": "FeedbackDialog",
+   "exportName": "FeedbackDialog",
+   "zh": "反馈弹窗",
+   "group": "overlays",
+   "summary": "消息反馈的提交弹窗，由 <code>conversation.input.overlay</code> 条目渲染并经 <code>Modal</code> portal 到 body。卡片宽 <code>min(488px,100%)</code>、圆角 <code>--dsw-radius-panel</code>，标题行下是七个 28px 高的分类胶囊（选中态改用主按钮填充并翻转文字色），再往下是 116px 起、可随内容长到 280px 的备注框，底部是 44px 高、整宽的提交按钮。分类与备注都可选，提交成功后由 <code>Toast</code> 确认，失败时弹窗保持打开并另起一条 6 秒的警告 Toast。",
+   "source": "packages/client/ui-message-feedback/src/client/FeedbackDialog.tsx#L45",
+   "css": [
+    "packages/client/ui-primitives/src/Modal.module.css",
+    "packages/client/ui-message-feedback/src/client/FeedbackDialog.module.css",
+    "packages/client/ui-primitives/src/Button.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-layer-1",
+    "--dsw-alias-bg-layer-2",
+    "--dsw-alias-bg-mask-1",
+    "--dsw-alias-border-l3",
+    "--dsw-alias-border-l4",
+    "--dsw-alias-button-primary-fill",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-caption",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-primary-foreground",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-state-business-primary",
+    "--dsw-elevation-prominent",
+    "--dsw-focus-ring-color",
+    "--dsw-focus-ring-width",
+    "--dsw-mask-blur",
+    "--dsw-radius-lg",
+    "--dsw-radius-panel",
+    "--dsw-radius-sm",
+    "--dsh-frame-chrome-top",
+    "--dsh-frame-overlay-top"
+   ],
+   "specimens": [
+    {
+     "label": "打开态：分类胶囊 + 备注框 + 提交",
+     "note": "静态快照",
+     "html": "<div style='width:560px'><div class=\"root snapshotStatic\" role='presentation'><div class=\"mask\" aria-hidden='true'></div><div class=\"c0-dialog c1-dialog\" role='dialog' aria-modal='true' aria-label='提交反馈'><div class=\"content\"><div class=\"header\"><h2 class=\"title\">提交反馈</h2><button type='button' class=\"close\" aria-label='关闭'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M2.5 2.5L13.5 13.5' stroke='currentColor'/><path d='M13.5 2.5L2.5 13.5' stroke='currentColor'/></svg></button></div><div class=\"body\"><div class=\"categories\" role='group' aria-label='反馈分类'><button type='button' class=\"chip chipActive\" aria-pressed='true'>任务结果</button><button type='button' class=\"chip\" aria-pressed='false'>指令理解与遵循</button><button type='button' class=\"chip\" aria-pressed='false'>产品功能与交互</button><button type='button' class=\"chip\" aria-pressed='false'>稳定性和速度</button><button type='button' class=\"chip\" aria-pressed='false'>资源使用与费用</button><button type='button' class=\"chip\" aria-pressed='false'>安全隐私与权限</button><button type='button' class=\"chip\" aria-pressed='false'>其他</button></div><textarea class=\"detail\" aria-label='反馈详情' placeholder='填写详情以帮助我们改进体验，提交内容会包括当前对话的日志'>刚才两处链接点开后没有跳到对应文件，需要在侧边栏里手动搜索。</textarea></div></div><div class=\"footer\"><button type='button' class=\"button primary md submit\">提交</button></div></div></div></div>",
+     "css": "/* 静态快照：Modal 的 .root 在真实产品里是 body 上的 fixed 全屏遮罩层，这里改成\n   文档流内的相对定位，同时保留它作为 .mask 绝对定位的父级。\n   卡片同时承载 Modal(c0) 与 FeedbackDialog(c1) 两个模块的 .dialog —— 多模块条目用\n   显式所有者前缀把两侧的卡片规则合到同一元素上（见 build.mjs classPlan）。 */\n.root.snapshotStatic { position: relative; }\n.c0-dialog.c1-dialog { max-width: 100%; }"
+    },
+    {
+     "label": "提交中：分类与备注只读、提交按钮禁用",
+     "note": "静态快照",
+     "html": "<div style='width:560px'><div class=\"root snapshotStatic\" role='presentation'><div class=\"mask\" aria-hidden='true'></div><div class=\"c0-dialog c1-dialog\" role='dialog' aria-modal='true' aria-label='提交反馈' aria-busy='true'><div class=\"content\"><div class=\"header\"><h2 class=\"title\">提交反馈</h2><button type='button' class=\"close\" aria-label='关闭'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M2.5 2.5L13.5 13.5' stroke='currentColor'/><path d='M13.5 2.5L2.5 13.5' stroke='currentColor'/></svg></button></div><div class=\"body\"><div class=\"categories\" role='group' aria-label='反馈分类'><button type='button' class=\"chip chipActive\" aria-pressed='true' disabled>任务结果</button><button type='button' class=\"chip\" aria-pressed='false' disabled>指令理解与遵循</button><button type='button' class=\"chip\" aria-pressed='false' disabled>产品功能与交互</button><button type='button' class=\"chip\" aria-pressed='false' disabled>稳定性和速度</button><button type='button' class=\"chip\" aria-pressed='false' disabled>资源使用与费用</button><button type='button' class=\"chip\" aria-pressed='false' disabled>安全隐私与权限</button><button type='button' class=\"chip\" aria-pressed='false' disabled>其他</button></div><textarea class=\"detail\" aria-label='反馈详情' readonly placeholder='填写详情以帮助我们改进体验，提交内容会包括当前对话的日志'>刚才两处链接点开后没有跳到对应文件，需要在侧边栏里手动搜索。</textarea></div></div><div class=\"footer\"><button type='button' class=\"button primary md submit\" disabled>正在提交…</button></div></div></div></div>",
+     "css": "/* 静态快照：同上一例，Modal 的 .root 由 fixed 改为文档流内的相对定位。 */\n.root.snapshotStatic { position: relative; }\n.c0-dialog.c1-dialog { max-width: 100%; }"
+    }
+   ],
+   "props": [
+    {
+     "name": "useDialog",
+     "type": "HostObservable<FeedbackDialogState>",
+     "default": "—",
+     "desc": "注入的 hooks 舱位，渲染器绑定为 useDialog：当前目标的分类、备注、提交中与 Toast 序号。"
+    },
+    {
+     "name": "edit",
+     "type": "(draft: Partial<Pick<FeedbackDialogState, 'category' | 'text'>>) => void",
+     "default": "—",
+     "desc": "替换草稿的一部分；category 传 null 表示取消选中。"
+    },
+    {
+     "name": "submit",
+     "type": "() => Promise<void>",
+     "default": "—",
+     "desc": "把草稿提交到当前目标（某条消息的评分或整个会话）。"
+    },
+    {
+     "name": "dismiss",
+     "type": "() => void",
+     "default": "—",
+     "desc": "关闭弹窗并丢弃草稿。"
+    },
+    {
+     "name": "dismissFailure",
+     "type": "() => void",
+     "default": "—",
+     "desc": "收起提交失败的警告 Toast，但不关闭草稿。"
+    },
+    {
+     "name": "dismissToast",
+     "type": "(seq: number) => void",
+     "default": "—",
+     "desc": "视图展示完毕后回收确认 Toast。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'feedback'>",
+     "default": "—",
+     "desc": "feedback 命名空间的翻译座位（提交/取消等通用词来自 common 字典）。"
+    }
+   ],
+   "notes": "弹窗只提供「提交」一个页脚动作，取消路径是 Modal 头部右上角的关闭按钮（<code>aria-label</code> 取 common 字典的 <code>close</code>），因此示例里没有第二个页脚按钮。七个分类来自 <code>FeedbackCategory</code> 联合类型的完整记录，少一个或多一个都是编译错误；分类与备注都可留空直接提交。提交失败时弹窗不关闭，草稿保留以便修改。",
+   "keywords": [
+    "反馈",
+    "评分",
+    "submit feedback",
+    "评价弹窗",
+    "message-feedback"
+   ]
+  },
+  {
+   "id": "sign-in-dialog",
+   "name": "SignInDialog",
+   "exportName": "SignInDialog",
+   "zh": "登录弹窗",
+   "group": "overlays",
+   "summary": "DeepSeek 账号登录弹窗，以 <code>Modal</code> 的 <code>headless</code> 模式渲染：遮罩与卡片来自 Modal，标题行、正文与按钮行由本包自己排版。等待阶段显示设备码式的提示——正文里内嵌一个带下划线的「复制登录链接」按钮（复制结果显示 2 秒），主按钮退化为 36px 的加载圈；标题随阶段在「开始使用 / 等待登录 / 登录已超时 / 登录失败」之间切换。卡片描边用 <code>--dsw-alias-border-inverted</code>，两个按钮最小宽 72px、高 36px。",
+   "source": "packages/client/ui-settings-account/src/client/SignInDialog.tsx#L11",
+   "css": [
+    "packages/client/ui-primitives/src/Modal.module.css",
+    "packages/client/ui-settings-account/src/client/SignInDialog.module.css",
+    "packages/client/ui-primitives/src/Button.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-layer-2",
+    "--dsw-alias-bg-mask-1",
+    "--dsw-alias-border-inverted",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-primary-foreground",
+    "--dsw-alias-button-primary-fill",
+    "--dsw-elevation-prominent",
+    "--dsw-mask-blur",
+    "--dsw-radius-md",
+    "--dsw-radius-panel",
+    "--dsw-radius-sm",
+    "--dsh-frame-chrome-top",
+    "--dsh-frame-overlay-top"
+   ],
+   "specimens": [
+    {
+     "label": "设备码式等待：复制登录链接 + 加载中的主按钮",
+     "note": "静态快照",
+     "html": "<div style='width:460px'><div class=\"root snapshotStatic\" role='presentation'><div class=\"mask\" aria-hidden='true'></div><div class=\"c0-dialog c1-dialog\" role='dialog' aria-modal='true' aria-label='等待登录'><div class=\"c1-content\"><div class=\"c1-header\"><h2 class=\"c1-title\">等待登录</h2><button type='button' class=\"c1-close\" aria-label='关闭'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M2.5 2.5L13.5 13.5' stroke='currentColor'/><path d='M13.5 2.5L2.5 13.5' stroke='currentColor'/></svg></button></div><p class=\"c1-description\">没有自动打开新页面？<button type='button' class=\"link\">复制登录链接</button>，手动打开登录页完成登录。</p></div><div class=\"actions\"><button type='button' class=\"button outline md secondaryButton\">取消</button><button type='button' class=\"button primary md primaryButton\" aria-label='请在浏览器中继续' disabled><svg class=\"spinner\" width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M12.596 12.596C11.687 13.5049 10.5288 14.1239 9.26798 14.3747C8.00716 14.6255 6.70028 14.4968 5.51261 14.0048C4.32494 13.5129 3.30981 12.6798 2.59557 11.611C1.88134 10.5421 1.50008 9.2855 1.5 7.99998C1.50008 6.71446 1.88134 5.45783 2.59557 4.38898C3.30981 3.32013 4.32494 2.48707 5.51261 1.99513C6.70028 1.50319 8.00716 1.37447 9.26798 1.62524C10.5288 1.87602 11.687 2.49502 12.596 3.40398' stroke='currentColor'/></svg></button></div></div></div></div>",
+     "css": "/* 静态快照：Modal 的 .root 在真实产品里是 body 上的 fixed 全屏遮罩层，这里改回文档流，\n   同时保留它作为 .mask 绝对定位的父级；卡片同时承载 Modal(c0) 与 SignInDialog(c1)\n   两个模块的 .dialog。\n   .content/.header/.title/.close/.description 在两个模块里同名，而多模块条目里同名类\n   只解析到第一个列出的样式表（Modal），所以这里用显式所有者前缀把这几处指回\n   SignInDialog 自己的那份；Modal 的同名规则只服务非 headless 弹窗，不应命中本卡片。 */\n.root.snapshotStatic { position: relative; }\n.c0-dialog.c1-dialog { max-width: 100%; }\n.c1-content, .c1-header, .c1-title, .c1-close, .c1-description { box-sizing: border-box; }"
+    },
+    {
+     "label": "初始态：开始使用 + 添加 API Key / 登录",
+     "note": "静态快照",
+     "html": "<div style='width:460px'><div class=\"root snapshotStatic\" role='presentation'><div class=\"mask\" aria-hidden='true'></div><div class=\"c0-dialog c1-dialog\" role='dialog' aria-modal='true' aria-label='开始使用'><div class=\"c1-content\"><div class=\"c1-header\"><h2 class=\"c1-title\">开始使用</h2><button type='button' class=\"c1-close\" aria-label='关闭'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M2.5 2.5L13.5 13.5' stroke='currentColor'/><path d='M13.5 2.5L2.5 13.5' stroke='currentColor'/></svg></button></div><p class=\"c1-description\">登录 DeepSeek 账号，或添加 API Key，即可开始使用。你的项目和文件保存在本地。</p></div><div class=\"actions\"><button type='button' class=\"button outline md secondaryButton\">添加 API Key</button><button type='button' class=\"button primary md primaryButton\">登录</button></div></div></div></div>",
+     "css": "/* 静态快照：Modal 的 .root 在真实产品里是 body 上的 fixed 全屏遮罩层，这里改回文档流，\n   同时保留它作为 .mask 绝对定位的父级；卡片同时承载 Modal(c0) 与 SignInDialog(c1)\n   两个模块的 .dialog。\n   .content/.header/.title/.close/.description 在两个模块里同名，而多模块条目里同名类\n   只解析到第一个列出的样式表（Modal），所以这里用显式所有者前缀把这几处指回\n   SignInDialog 自己的那份；Modal 的同名规则只服务非 headless 弹窗，不应命中本卡片。 */\n.root.snapshotStatic { position: relative; }\n.c0-dialog.c1-dialog { max-width: 100%; }\n.c1-content, .c1-header, .c1-title, .c1-close, .c1-description { box-sizing: border-box; }"
+    }
+   ],
+   "props": [
+    {
+     "name": "account",
+     "type": "AccountSnapshot",
+     "default": "—",
+     "desc": "安全的账号状态快照：当前登录尝试的阶段、授权链接、错误码与登录失败标记。"
+    },
+    {
+     "name": "colorScheme",
+     "type": "'light' | 'dark'",
+     "default": "—",
+     "desc": "当前应用主题的解析结果，复制出去的授权链接会带上它。"
+    },
+    {
+     "name": "start",
+     "type": "() => Promise<void>",
+     "default": "—",
+     "desc": "发起一次登录尝试。"
+    },
+    {
+     "name": "cancel",
+     "type": "(id: SignInAttemptId) => Promise<void>",
+     "default": "—",
+     "desc": "取消进行中的尝试；关闭弹窗时先取消再关闭。"
+    },
+    {
+     "name": "close",
+     "type": "() => void",
+     "default": "—",
+     "desc": "关闭弹窗。"
+    },
+    {
+     "name": "useApiKey",
+     "type": "() => void",
+     "default": "—",
+     "desc": "未在登录途中时，次级按钮改为「添加 API Key」并走这条路径。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'settings.account'>",
+     "default": "—",
+     "desc": "账号命名空间的翻译座位。"
+    }
+   ],
+   "notes": "标题由阶段决定：失败取 <code>failureTitle</code>，进行中取 <code>browserTitle</code>，超时取 <code>timeoutTitle</code>，否则取 <code>loginTitle</code>；只有 <code>no-response</code> 失败才有专门的排查文案。等待阶段的「复制登录链接」按钮在不支持剪贴板时降级为「复制失败」，2 秒后回到原文案。正在提交（<code>committing</code>）时关闭与取消都被拒绝。",
+   "keywords": [
+    "登录",
+    "设备码",
+    "sign in",
+    "authorize",
+    "账号"
+   ]
+  },
+  {
+   "id": "question-reply-bubble",
+   "name": "QuestionReplyBubble",
+   "exportName": "QuestionReplyBubble",
+   "zh": "问答回复气泡",
+   "group": "overlays",
+   "summary": "迟到的问答回复在会话流里的右侧气泡：<code>.row</code> 右对齐、<code>.bubble</code> 限宽 72%，底色取 <code>--dsw-specific-bubble</code>、圆角 <code>--dsw-radius-xl</code>。折叠时只显示一行摘要（多个答案用逗号连接，全跳过时显示「已跳过」），展开后列出每题的问法、可选说明、候选项与「回答：」行。气泡下方是 28px 高的时间与复制按钮行，复制成功后图标换成对勾。",
+   "source": "packages/client/ui-user-questions/src/client/QuestionReplyView.tsx#L30",
+   "css": [
+    "packages/client/ui-user-questions/src/client/QuestionReplyView.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-state-business-primary",
+    "--dsw-focus-ring-color",
+    "--dsw-radius-sm",
+    "--dsw-radius-xl",
+    "--dsw-specific-bubble"
+   ],
+   "specimens": [
+    {
+     "label": "展开态：问题 + 选项 + 已回答",
+     "note": "展开态静态呈现",
+     "html": "<div style='width:420px'><div class=\"row\" data-question-reply='call-8f21' data-reply-outcome='answered' role='group' aria-label='回答先前等待中的问题'><div class=\"bubble\"><button type='button' class=\"toggle\" aria-expanded='true' aria-label='回答先前等待中的问题 · 收起问题详情'><span class=\"labelRow\"><span class=\"caret\" aria-hidden='true'><svg width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></span><span class=\"label\">回答先前等待中的问题</span></span></button><dl class=\"details\"><div><dt class=\"question\"><span class=\"questionText\">是否允许写入工作区？</span><span class=\"detail\">计划在 packages/client/ui-user-questions 下新增两个组件条目。</span><ul class=\"options\"><li>允许 — 继续执行并写入文件</li><li>拒绝 — 保持现有文件不变</li></ul></dt><dd class=\"answer\"><span class=\"answerLabel\">回答：</span>允许</dd></div></dl></div><div class=\"actions\"><span class=\"time\">20:23</span><button type='button' class=\"action\" aria-label='复制'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><rect x='1.52075' y='4.07373' width='10.3932' height='10.3932' rx='2' stroke='currentColor'/><path d='M11.9792 1.53296C13.36 1.53296 14.4792 2.65225 14.4792 4.03296V9.42847C14.4792 10.3756 13.9521 11.1987 13.1755 11.6228V10.3298C13.3652 10.0787 13.4792 9.7674 13.4792 9.42847V4.03296C13.4792 3.20453 12.8077 2.53296 11.9792 2.53296H6.58374C6.27966 2.53301 5.99684 2.6235 5.7605 2.77905H4.42358C4.85652 2.03463 5.66056 1.53304 6.58374 1.53296H11.9792Z' fill='currentColor'/></svg></button></div></div></div>"
+    },
+    {
+     "label": "折叠态：一行摘要",
+     "note": "折叠态静态呈现",
+     "html": "<div style='width:420px'><div class=\"row\" data-question-reply='call-8f21' data-reply-outcome='answered' role='group' aria-label='回答先前等待中的问题'><div class=\"bubble\"><button type='button' class=\"toggle\" aria-expanded='false' aria-label='回答先前等待中的问题 · 展开问题详情'><span class=\"labelRow\"><span class=\"caret\" aria-hidden='true'><svg width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4' stroke='currentColor'/></svg></span><span class=\"label\">回答先前等待中的问题</span></span><span class=\"summary\">允许, 拒绝</span></button></div><div class=\"actions\"><span class=\"time\">20:23</span><button type='button' class=\"action\" aria-label='复制'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><rect x='1.52075' y='4.07373' width='10.3932' height='10.3932' rx='2' stroke='currentColor'/><path d='M11.9792 1.53296C13.36 1.53296 14.4792 2.65225 14.4792 4.03296V9.42847C14.4792 10.3756 13.9521 11.1987 13.1755 11.6228V10.3298C13.3652 10.0787 13.4792 9.7674 13.4792 9.42847V4.03296C13.4792 3.20453 12.8077 2.53296 11.9792 2.53296H6.58374C6.27966 2.53301 5.99684 2.6235 5.7605 2.77905H4.42358C4.85652 2.03463 5.66056 1.53304 6.58374 1.53296H11.9792Z' fill='currentColor'/></svg></button></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "data",
+     "type": "QuestionReplyData",
+     "default": "—",
+     "desc": "迟到回复的展示数据：callId、outcome、questions、answers、模型可读文本与时间。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'question'>",
+     "default": "—",
+     "desc": "question 命名空间的翻译座位。"
+    }
+   ],
+   "notes": "折叠/展开只靠左侧 12px 的箭头表示，<code>aria-expanded</code> 落在按钮上，标签本身读起来仍是一行普通文字。摘要取每题的答案值并用「, 」连接，没有任何答案时显示「已跳过」。时间用 24 小时制的 <code>Intl.DateTimeFormat</code> 渲染；复制按钮的 <code>Tooltip</code> 只在悬停时出现，静态示例里不呈现其气泡。父级 <code>QuestionReplyView</code> 只是给这个气泡补上节点数据的 memo 包装。",
+   "keywords": [
+    "问答",
+    "回复气泡",
+    "question reply",
+    "bubble"
+   ]
+  },
+  {
+   "id": "plan-review-panel",
+   "name": "PlanReviewPanel",
+   "exportName": "PlanReviewPanel",
+   "zh": "计划审核面板",
+   "group": "overlays",
+   "summary": "计划审核卡：等待中的计划在输入框上方展开一块满宽卡片，头部是琥珀色的状态条（<code>StateDot</code> + 「计划待审」+ 右侧的预览动作插槽），主体是计划首行作为标题、首段作为两行截断的摘要，底部左对齐错误行、右对齐「要求修改」与「同意执行」两个按钮。卡片宽 <code>max-width: var(--dsh-chat-content-width)</code>、圆角 <code>--dsw-radius-xl</code>、底色 <code>--dsw-specific-input-major</code>，用 <code>--dsw-elevation-panel</code> 起浮，描边色被重绑到 <code>--dsw-alias-border-l2</code>。",
+   "source": "packages/client/ui-user-questions/src/client/PlanReviewPanel.tsx#L29",
+   "css": [
+    "packages/client/ui-user-questions/src/client/PlanReviewPanel.module.css",
+    "packages/client/ui-primitives/src/Button.module.css",
+    "packages/client/ui-primitives/src/StateDot.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-border-l2",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-primary-foreground",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-state-error-primary",
+    "--dsw-alias-state-warn-primary",
+    "--dsw-alias-state-warn-tertiary",
+    "--dsw-alias-button-primary-fill",
+    "--dsw-alias-button-primary-hover",
+    "--dsw-elevation-panel",
+    "--dsw-radius-md",
+    "--dsw-radius-xl",
+    "--dsw-specific-input-major",
+    "--dsh-chat-content-width",
+    "--dsh-composer-side-clearance"
+   ],
+   "specimens": [
+    {
+     "label": "待审：状态条 + 计划摘要 + 决策按钮",
+     "html": "<div style='width:560px'><div class=\"frame\" data-plan-review-key='req-7'><section class=\"card\" aria-label='是否开始执行这个计划？' aria-busy='false'><div class=\"strip\"><span class=\"dot\" data-state='warning' style='width:10px;height:10px'></span>计划待审<div class=\"previewActions\"></div></div><div class=\"summary\"><h3 class=\"title\">补齐 UIUX 目录的浮层组件条目</h3><p class=\"description\">1. 读取三个组件的源码与样式表；2. 按 ENTRY-SCHEMA 写入 b6-overlays.json；3. 运行 validate.mjs 修正类名与变量；4. 汇总无法忠实还原的部分。</p></div><div class=\"footer\"><div class=\"feedback\" role='status'></div><div class=\"actions\"><button type='button' class=\"button outline md discuss\"><span class=\"icon\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M11.5 1.5L14.5 4.5L5.5 13.5H2.5V10.5L11.5 1.5Z' stroke='currentColor'/></svg></span>要求修改</button><button type='button' class=\"button primary md\" title='继续执行并写入文件'>同意执行</button></div></div></section></div></div>"
+    },
+    {
+     "label": "提交中：卡片 aria-busy 且按钮禁用",
+     "note": "忙碌态静态呈现",
+     "html": "<div style='width:560px'><div class=\"frame\" data-plan-review-key='req-7'><section class=\"card\" aria-label='是否开始执行这个计划？' aria-busy='true'><div class=\"strip\"><svg class=\"spinner\" data-state='ongoing' width='14' height='14' viewBox='0 0 24 24' aria-hidden='true'><g class=\"spinnerMotion\"><circle class=\"spinnerTrack\" cx='12' cy='12' r='9.5'/><circle class=\"spinnerArc\" cx='12' cy='12' r='9.5'/></g></svg>计划待审<div class=\"previewActions\"></div></div><div class=\"summary\"><h3 class=\"title\">补齐 UIUX 目录的浮层组件条目</h3><p class=\"description\">1. 读取三个组件的源码与样式表；2. 按 ENTRY-SCHEMA 写入 b6-overlays.json；3. 运行 validate.mjs 修正类名与变量；4. 汇总无法忠实还原的部分。</p></div><div class=\"footer\"><div class=\"feedback\" role='status'>回答已发送；面板未能关闭。</div><div class=\"actions\"><button type='button' class=\"button outline md discuss\" disabled><span class=\"icon\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M11.5 1.5L14.5 4.5L5.5 13.5H2.5V10.5L11.5 1.5Z' stroke='currentColor'/></svg></span>要求修改</button><button type='button' class=\"button primary md\" disabled>同意执行</button></div></div></section></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "pending",
+     "type": "PendingQuestion",
+     "default": "—",
+     "desc": "等待中的问题句柄：key、answer()、dismiss()、snapshot()。"
+    },
+    {
+     "name": "review",
+     "type": "PlanReview",
+     "default": "—",
+     "desc": "收窄后的审核数据：问题文本、计划 markdown、approve/decline 选项。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'question'>",
+     "default": "—",
+     "desc": "question 命名空间的翻译座位。"
+    },
+    {
+     "name": "renderSlot",
+     "type": "PropsRenderSlots<...>['renderSlot']",
+     "default": "—",
+     "desc": "渲染 conversation.plan-review.actions 预览插槽（打开完整计划）。"
+    }
+   ],
+   "notes": "卡片只预览计划：标题是 markdown 首行、摘要是首段并按 <code>-webkit-line-clamp: 2</code> 截断，完整计划由插槽里的动作在右侧边栏打开，所以四步计划必须短到两行内才看得全。按钮可见文案固定为「要求修改」与「同意执行」（<code>plan.approve</code>），提交给 Host 的是 <code>review.approve.label</code> 这个选项值、不是按钮文字。发送失败时错误落在左侧 <code>.feedback</code> 行并重新启用按钮；RPC 通道下发送成功后面板自行消失。",
+   "keywords": [
+    "计划",
+    "审核",
+    "plan review",
+    "approve",
+    "计划待审"
+   ]
+  },
+  {
+   "id": "model-select",
+   "name": "ModelSelect",
+   "exportName": "ModelSelect",
+   "zh": "模型选择",
+   "group": "overlays",
+   "summary": "输入框右下角的模型座位：28px 高的胶囊触发器显示当前模型（可选地在后面跟一个会先被挤掉的推理等级），展开后是一个 portaled 的菜单卡——宽 <code>max-content</code>、限制在 <code>min(420px, 100vw - 32px)</code>、最高 <code>min(360px, 100vh - 96px)</code>，行高 34px、按供应商分组并带 sticky 组标题，当前模型用尾部对勾标记而不是填充。有推理等级时先显示「模型 / 推理等级」两行入口，再钻入对应列表。",
+   "source": "packages/client/ui-model-selection/src/client/ModelSelect.tsx#L64",
+   "css": [
+    "packages/client/ui-model-selection/src/client/ModelSelect.module.css",
+    "packages/client/ui-primitives/src/MenuSurface.module.css",
+    "packages/client/ui-primitives/src/MenuGroup.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-module-platform",
+    "--dsw-alias-border-l1",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-interactive-bg-hover-danger",
+    "--dsw-alias-label-caption",
+    "--dsw-alias-label-dimmed",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-menu-icon",
+    "--dsw-alias-scrollbar-bg-l2",
+    "--dsw-alias-scrollbar-hover-l2",
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-state-error-primary",
+    "--dsw-alias-state-warn-label",
+    "--dsw-elevation-prominent",
+    "--dsw-focus-ring-color",
+    "--dsw-menu-surface-fill",
+    "--dsw-radius-md",
+    "--dsw-radius-sm",
+    "--dsh-composer-model-icon-display",
+    "--dsh-composer-model-text-display"
+   ],
+   "specimens": [
+    {
+     "label": "触发器 + 展开的模型列表（当前项打勾）",
+     "note": "静态快照",
+     "html": "<div style='width:340px'><div class=\"root\"><button type='button' class=\"trigger\" aria-haspopup='menu' aria-expanded='true' title='deepseek-chat'><svg class=\"triggerIcon\" width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M7.8667 0.349609C8.96906 0.349634 10.0601 0.481272 11.0317 0.735352C11.9973 0.987845 12.8453 1.362 13.4644 1.84766C14.0744 2.32629 14.507 2.95539 14.5161 3.69336H14.5171V8.53516C14.0843 8.32076 13.6108 8.17679 13.1108 8.11816C13.1831 7.96848 13.2162 7.82856 13.2163 7.70312V5.76758C12.6269 6.16618 11.8739 6.47995 11.0317 6.7002C10.0602 6.95423 8.96896 7.08494 7.8667 7.08496C6.76461 7.08493 5.67411 6.95415 4.70264 6.7002C3.85994 6.48006 3.10694 6.1662 2.51709 5.76758V7.70312L2.521 7.78418C2.56374 8.19554 2.93361 8.74414 3.91357 9.23145C4.9281 9.73585 6.35004 10.0371 7.8667 10.0371C8.26373 10.0371 8.6543 10.0141 9.03271 9.97461C8.75596 10.3799 8.54664 10.8349 8.42041 11.3232C8.23666 11.3313 8.0518 11.3369 7.8667 11.3369C6.20108 11.3369 4.57025 11.01 3.33447 10.3955C3.04163 10.2499 2.76658 10.0836 2.51709 9.90039V11.6738C2.51728 12.1379 2.88589 12.7556 3.92236 13.292C4.93457 13.8157 6.35342 14.1289 7.8667 14.1289C8.12318 14.1289 8.37694 14.1161 8.62646 14.0986C8.82021 14.5535 9.08999 14.9682 9.41943 15.3271C8.91285 15.3934 8.39149 15.4287 7.8667 15.4287C6.19761 15.4287 4.56379 15.0869 3.32568 14.4463C2.11244 13.8185 1.21649 12.8562 1.21631 11.6738V3.76367C1.21595 3.74853 1.21438 3.733 1.21436 3.71777C1.21436 2.96917 1.65103 2.33053 2.26807 1.84668C2.88747 1.36112 3.73675 0.987685 4.70264 0.735352C5.67413 0.481376 6.76457 0.349636 7.8667 0.349609ZM7.8667 1.65039C6.86269 1.65042 5.88326 1.77028 5.03076 1.99316C4.17183 2.2176 3.50421 2.52956 3.06982 2.87012C2.65043 3.19909 2.52622 3.48898 2.51709 3.69336V3.74414C2.52719 3.94845 2.65185 4.23772 3.06982 4.56543C3.50425 4.90601 4.17172 5.21795 5.03076 5.44238C5.88326 5.66527 6.8627 5.78513 7.8667 5.78516C8.8707 5.78513 9.85015 5.66525 10.7026 5.44238C11.5611 5.21787 12.2286 4.9049 12.6626 4.56445C13.0982 4.22252 13.2163 3.9231 13.2163 3.71777L13.2104 3.63574C13.1818 3.43623 13.044 3.16941 12.6626 2.87012C12.2286 2.52957 11.5614 2.21773 10.7026 1.99316C9.85009 1.77025 8.8708 1.65041 7.8667 1.65039Z' fill='currentColor'/></svg><span class=\"triggerLabel\">deepseek-chat</span><svg class=\"chevron chevronOpen\" width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button><div class=\"surface menu snapshotStatic\" role='group' aria-label='模型'><div aria-hidden='true' class=\"material\"></div><section class=\"group\" role='group' data-menu-group=''><span aria-hidden='true' class=\"start\" data-menu-group-start=''></span><div class=\"heading\" data-menu-group-heading=''>DeepSeek</div><button type='button' role='menuitemradio' aria-checked='true' class=\"option modelOption selected\" title='deepseek-chat'><span class=\"optionCopy\"><span class=\"modelName\">deepseek-chat</span></span><span class=\"check\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4' stroke='currentColor'/></svg></span></button><button type='button' role='menuitemradio' aria-checked='false' class=\"option modelOption\" title='deepseek-reasoner'><span class=\"optionCopy\"><span class=\"modelName\">deepseek-reasoner</span></span><span class=\"check\"></span></button></section></div></div></div>",
+     "css": "/* 静态快照：菜单卡在真实产品里 portal 到 body 并用触发器矩形做 fixed 定位，\n   这里放回文档流；保持 relative 以便 .material 绝对定位仍以卡片为父级。 */\n.menu.snapshotStatic { position: relative; }"
+    },
+    {
+     "label": "两级入口：模型 / 推理等级",
+     "note": "静态快照",
+     "html": "<div style='width:340px'><div class=\"root\"><button type='button' class=\"trigger\" aria-haspopup='menu' aria-expanded='true' title='deepseek-reasoner'><span class=\"triggerLabel\">deepseek-reasoner</span><span class=\"triggerEffort\">中</span><svg class=\"chevron chevronOpen\" width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button><div class=\"surface menu snapshotStatic\" role='menu'><div aria-hidden='true' class=\"material\"></div><button type='button' role='menuitem' class=\"cell\"><span class=\"cellLabel\">模型</span><span class=\"cellValue\">deepseek-reasoner</span><svg class=\"cellChevron\" width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4' stroke='currentColor'/></svg></button><button type='button' role='menuitem' class=\"cell\"><span class=\"cellLabel\">推理等级</span><span class=\"cellValue\">中</span><svg class=\"cellChevron\" width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4' stroke='currentColor'/></svg></button></div></div></div>",
+     "css": "/* 静态快照：同上，portaled 的 fixed 菜单卡改为文档流内的相对定位。 */\n.menu.snapshotStatic { position: relative; }"
+    }
+   ],
+   "props": [
+    {
+     "name": "locked",
+     "type": "boolean",
+     "default": "—",
+     "desc": "会话锁定时触发器与所有行都不可用。"
+    },
+    {
+     "name": "available",
+     "type": "boolean",
+     "default": "—",
+     "desc": "该会话是否支持绑定 Agent 的模型检视与选择。"
+    },
+    {
+     "name": "directory",
+     "type": "SnapshotStore<ModelDirectoryState>",
+     "default": "—",
+     "desc": "与 /model 弹窗共用的模型目录 store。"
+    },
+    {
+     "name": "load",
+     "type": "() => void",
+     "default": "—",
+     "desc": "确保共享目录已加载，失败落在 store 上。"
+    },
+    {
+     "name": "select",
+     "type": "(selection: ModelSelection) => Promise<RemoteResult<void> | undefined>",
+     "default": "—",
+     "desc": "提交一次完整的 供应商/模型/推理等级 选择。"
+    },
+    {
+     "name": "renderSlot",
+     "type": "PropsRenderSlots<'conversation.input.model.label'>",
+     "default": "—",
+     "desc": "渲染模型显示名插槽（默认回落到目录里的名字）。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'model'>",
+     "default": "—",
+     "desc": "model 命名空间的翻译座位。"
+    }
+   ],
+   "notes": "触发器左侧的模型字形由 composer 发布的 <code>--dsh-composer-model-icon-display</code> 控制，组件之外（包括本目录）默认是 <code>none</code>，所以示例里只看到文字；窄行时文字先隐藏、图标再出现。菜单材质来自共享的 <code>MenuSurface</code>（<code>--dsw-menu-surface-fill</code> + 背景模糊），行与卡片的投影用 <code>--dsw-elevation-prominent</code>，选中标记是尾部对勾而不是填充。",
+   "keywords": [
+    "模型",
+    "选择模型",
+    "model select",
+    "推理等级",
+    "deepseek-chat"
+   ]
+  },
+  {
+   "id": "permission-select",
+   "name": "PermissionSelect",
+   "exportName": "PermissionSelect",
+   "zh": "权限选择",
+   "group": "overlays",
+   "summary": "输入框里的当前会话权限控件：28px 高的胶囊触发器显示当前模式（14px 的权限字形 + 文字 + 12px 箭头），展开后是共享材质的下拉卡，列出主机下发的预设。四个内置模式各有一个 16px 字形：只读是盾牌加对勾、工作区写入是盾牌加铅笔、完全访问是盾牌加感叹号、自动审查是盾牌加字母 A，自动审查另带一枚 8px 的 <code>EXP</code> 徽标。选择完全访问或自动审查会先弹出风险确认。",
+   "source": "packages/client/ui-permission-presets/src/client/PermissionSelect.tsx#L77",
+   "css": [
+    "packages/client/ui-permission-presets/src/client/PermissionSelect.module.css",
+    "packages/client/ui-primitives/src/Menu.module.css",
+    "packages/client/ui-primitives/src/MenuSurface.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-caption",
+    "--dsw-alias-label-dimmed",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-primary-foreground",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-menu-icon",
+    "--dsw-alias-state-business-primary",
+    "--dsw-elevation-prominent",
+    "--dsw-focus-ring-color",
+    "--dsw-menu-surface-fill",
+    "--dsw-radius-md",
+    "--dsw-radius-sm",
+    "--dsw-alias-border-l1"
+   ],
+   "specimens": [
+    {
+     "label": "触发器 + 展开的四种权限（含 EXP 徽标）",
+     "note": "静态快照",
+     "html": "<div style='width:300px;display:flex;flex-direction:column;gap:8px;align-items:flex-start'><button type='button' class=\"trigger\" aria-haspopup='menu' aria-expanded='true' aria-label='访问模式，当前：工作区内修改' title='在允许的目录内读写文件'><span class=\"triggerIcon\" aria-hidden='true'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M6.4209 1.68067C7.43922 1.299 8.56177 1.29898 9.58008 1.68067L14.0996 3.375C14.2946 3.44811 14.4236 3.63455 14.4238 3.84278V6.89063C14.1115 6.71853 13.7761 6.58312 13.4238 6.48926V4.18946L9.22852 2.61621C8.43657 2.31947 7.56341 2.31939 6.77148 2.61621L2.5752 4.18946V7.11914C2.5752 11.1796 5.52369 13.056 8 14.0391C8.27653 13.9293 8.55827 13.8067 8.8418 13.6729C9.07101 13.9468 9.33228 14.1929 9.62012 14.4053C9.12409 14.6579 8.63578 14.8696 8.17871 15.0449C8.0637 15.0889 7.93628 15.0889 7.82129 15.0449C5.22011 14.0472 1.5752 11.9381 1.5752 7.11914V3.84278C1.57541 3.63469 1.70463 3.44821 1.89941 3.375L6.4209 1.68067Z' fill='currentColor'/><path d='M5.26392 6.60339H10.7361' stroke='currentColor'/><path d='M5.26392 9.86902H8.32833' stroke='currentColor'/><path d='M10.0317 13.2229C10.263 13.3929 10.4943 13.563 10.7256 13.733C10.7932 13.6482 10.8608 13.5634 10.9284 13.4786C12.1455 11.9522 13.3626 10.4258 14.5798 8.89935C14.6474 8.81455 14.715 8.72975 14.7826 8.64495C14.4143 8.37419 14.046 8.10344 13.6777 7.83268C13.6169 7.92252 13.5562 8.01236 13.4954 8.10219C12.4016 9.71926 11.3078 11.3363 10.214 12.9534C10.1532 13.0432 10.0924 13.1331 10.0317 13.2229Z' fill='currentColor'/><path d='M12.6516 12.6696C12.6516 12.925 12.6516 13.1804 12.6516 13.4359C12.6952 13.4378 12.7387 13.4398 12.7823 13.4417C13.5663 13.4768 14.3504 13.5118 15.1345 13.5469C15.178 13.5488 15.2216 13.5508 15.2651 13.5527C15.2651 13.2194 15.2651 12.8861 15.2651 12.5527C15.2216 12.5547 15.178 12.5566 15.1345 12.5586C14.3504 12.5936 13.5663 12.6287 12.7823 12.6637C12.7387 12.6657 12.6952 12.6676 12.6516 12.6696Z' fill='currentColor'/></svg></span><span class=\"triggerLabel\">工作区内修改</span><span class=\"chevron chevronOpen\" aria-hidden='true'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></span></button><div class=\"surface list scrollable portal snapshotStatic\" role='menu' aria-label='访问模式'><div aria-hidden='true' class=\"material\"></div><div class=\"viewport\" role='presentation'><div class=\"itemWrap\"><button type='button' role='menuitem' class=\"item\"><span class=\"itemIcon\"><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M5.08545 8.13775L7.18455 10.2368C7.26636 10.3187 7.4003 10.3142 7.47649 10.2271L11.5148 5.61194' stroke='currentColor'/><path d='M6.59624 2.14853C7.50155 1.80917 8.49914 1.80919 9.40444 2.14859L13.9245 3.84317V7.11961C13.9245 11.6089 10.5565 13.5975 8.00035 14.5779C5.44423 13.5975 2.07544 11.6089 2.07544 7.11961V3.84317L6.59624 2.14853Z' stroke='currentColor' stroke-linejoin='round'/></svg></span><span class=\"itemLabel\">仅可查看</span></button></div><div class=\"itemWrap\"><button type='button' role='menuitem' class=\"item selected\"><span class=\"itemIcon\"><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M6.4209 1.68067C7.43922 1.299 8.56177 1.29898 9.58008 1.68067L14.0996 3.375C14.2946 3.44811 14.4236 3.63455 14.4238 3.84278V6.89063C14.1115 6.71853 13.7761 6.58312 13.4238 6.48926V4.18946L9.22852 2.61621C8.43657 2.31947 7.56341 2.31939 6.77148 2.61621L2.5752 4.18946V7.11914C2.5752 11.1796 5.52369 13.056 8 14.0391C8.27653 13.9293 8.55827 13.8067 8.8418 13.6729C9.07101 13.9468 9.33228 14.1929 9.62012 14.4053C9.12409 14.6579 8.63578 14.8696 8.17871 15.0449C8.0637 15.0889 7.93628 15.0889 7.82129 15.0449C5.22011 14.0472 1.5752 11.9381 1.5752 7.11914V3.84278C1.57541 3.63469 1.70463 3.44821 1.89941 3.375L6.4209 1.68067Z' fill='currentColor'/><path d='M5.26392 6.60339H10.7361' stroke='currentColor'/><path d='M5.26392 9.86902H8.32833' stroke='currentColor'/></svg></span><span class=\"itemLabel\">工作区内修改</span><span class=\"check\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4' stroke='currentColor'/></svg></span></button></div><div class=\"itemWrap\"><button type='button' role='menuitem' class=\"item\"><span class=\"itemIcon\"><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M6.59624 2.14853C7.50155 1.80917 8.49914 1.80919 9.40444 2.14859L13.9245 3.84317V7.11961C13.9245 11.6089 10.5565 13.5975 8.00035 14.5779C5.44423 13.5975 2.07544 11.6089 2.07544 7.11961V3.84317L6.59624 2.14853Z' stroke='currentColor' stroke-linejoin='round'/><path d='M8 4.39209V9.89209' stroke='currentColor'/><path d='M8 10.8081V11.8081' stroke='currentColor'/></svg></span><span class=\"itemLabel\">完全权限</span></button></div><div class=\"itemWrap\"><button type='button' role='menuitem' class=\"item\"><span class=\"itemIcon\"><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M6.59624 2.14853C7.50155 1.80917 8.49914 1.80919 9.40444 2.14859L13.9245 3.84317V7.11961C13.9245 11.6089 10.5565 13.5975 8.00035 14.5779C5.44423 13.5975 2.07544 11.6089 2.07544 7.11961V3.84317L6.59624 2.14853Z' stroke='currentColor' stroke-linejoin='round'/><path d='M5.75 10.15L8 4.95L10.25 10.15M6.43 8.59H9.57' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round'/></svg></span><span class=\"itemLabel\"><span class=\"optionLabel\" aria-label='自动审查 EXP'><span class=\"optionLabelText\">自动审查</span><span class=\"badge\">EXP</span></span></span></button></div></div></div></div>",
+     "css": "/* 静态快照：Menu 在 portal 模式下 fixed 定位于视口，这里放回文档流；\n   保持 relative 以便 .material 绝对定位仍以卡片为父级。 */\n.list.portal.snapshotStatic { position: relative; }"
+    },
+    {
+     "label": "触发器：默认 / 展开 / 锁定",
+     "html": "<div style='display:flex;align-items:center;gap:12px'><button type='button' class=\"trigger\" aria-haspopup='menu' aria-expanded='false' aria-label='访问模式，当前：仅可查看'><span class=\"triggerIcon\" aria-hidden='true'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M5.08545 8.13775L7.18455 10.2368C7.26636 10.3187 7.4003 10.3142 7.47649 10.2271L11.5148 5.61194' stroke='currentColor'/><path d='M6.59624 2.14853C7.50155 1.80917 8.49914 1.80919 9.40444 2.14859L13.9245 3.84317V7.11961C13.9245 11.6089 10.5565 13.5975 8.00035 14.5779C5.44423 13.5975 2.07544 11.6089 2.07544 7.11961V3.84317L6.59624 2.14853Z' stroke='currentColor' stroke-linejoin='round'/></svg></span><span class=\"triggerLabel\">仅可查看</span><span class=\"chevron\" aria-hidden='true'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></span></button><button type='button' class=\"trigger\" aria-haspopup='menu' aria-expanded='true' aria-label='访问模式，当前：完全权限'><span class=\"triggerIcon\" aria-hidden='true'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M6.59624 2.14853C7.50155 1.80917 8.49914 1.80919 9.40444 2.14859L13.9245 3.84317V7.11961C13.9245 11.6089 10.5565 13.5975 8.00035 14.5779C5.44423 13.5975 2.07544 11.6089 2.07544 7.11961V3.84317L6.59624 2.14853Z' stroke='currentColor' stroke-linejoin='round'/><path d='M8 4.39209V9.89209' stroke='currentColor'/><path d='M8 10.8081V11.8081' stroke='currentColor'/></svg></span><span class=\"triggerLabel\">完全权限</span><span class=\"chevron chevronOpen\" aria-hidden='true'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></span></button><button type='button' class=\"trigger\" disabled aria-label='访问模式，当前：工作区内修改'><span class=\"triggerIcon\" aria-hidden='true'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M6.4209 1.68067C7.43922 1.299 8.56177 1.29898 9.58008 1.68067L14.0996 3.375C14.2946 3.44811 14.4236 3.63455 14.4238 3.84278V6.89063C14.1115 6.71853 13.7761 6.58312 13.4238 6.48926V4.18946L9.22852 2.61621C8.43657 2.31947 7.56341 2.31939 6.77148 2.61621L2.5752 4.18946V7.11914C2.5752 11.1796 5.52369 13.056 8 14.0391C8.27653 13.9293 8.55827 13.8067 8.8418 13.6729C9.07101 13.9468 9.33228 14.1929 9.62012 14.4053C9.12409 14.6579 8.63578 14.8696 8.17871 15.0449C8.0637 15.0889 7.93628 15.0889 7.82129 15.0449C5.22011 14.0472 1.5752 11.9381 1.5752 7.11914V3.84278C1.57541 3.63469 1.70463 3.44821 1.89941 3.375L6.4209 1.68067Z' fill='currentColor'/><path d='M5.26392 6.60339H10.7361' stroke='currentColor'/><path d='M5.26392 9.86902H8.32833' stroke='currentColor'/></svg></span><span class=\"triggerLabel\">工作区内修改</span><span class=\"chevron\" aria-hidden='true'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></span></button></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "locked",
+     "type": "boolean",
+     "default": "—",
+     "desc": "会话锁定时触发器与待确认选择一起被禁用。"
+    },
+    {
+     "name": "usePermissionCatalog",
+     "type": "HostObservable<PermissionCatalogState>",
+     "default": "—",
+     "desc": "与斜杠弹窗共用的进程级权限目录（含 options 与当前值）。"
+    },
+    {
+     "name": "useProjection",
+     "type": "PropsRuntime<'conversation.input.permission'>['useProjection']",
+     "default": "—",
+     "desc": "读取会话的 permissions 投影，提供 currentValue。"
+    },
+    {
+     "name": "select",
+     "type": "(preset: string) => Promise<boolean>",
+     "default": "—",
+     "desc": "通过既有命令写入器切换当前会话的预设。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'settings.permission'>",
+     "default": "—",
+     "desc": "权限命名空间的翻译座位（内置标签与 EXP 徽标）。"
+    }
+   ],
+   "notes": "内置标签取字典：仅可查看 / 工作区内修改 / 完全权限 / 自动审查（英文是 Read Only / Workspace Write / Full access / Auto review）；主机下发的其它名字按 kebab-case 转标题式显示。触发器的字形比下拉行小一档（14px vs 16px），窄输入框里 <code>@container (max-width: 460px)</code> 会把带字形的触发器文字隐藏、只留图标。菜单材质由 <code>MenuSurface</code> 持有，本包不得覆盖 <code>--dsw-menu-surface-fill</code> 与 <code>--dsw-menu-backdrop-filter</code>。",
+   "keywords": [
+    "权限",
+    "访问模式",
+    "permission",
+    "只读",
+    "完全访问",
+    "自动审查",
+    "EXP"
+   ]
+  },
+  {
+   "id": "permission-row",
+   "name": "PermissionRow",
+   "exportName": "PermissionRow",
+   "zh": "权限设置行",
+   "group": "overlays",
+   "summary": "通用设置里的「权限」行：左侧是 14px 标题加 12px 说明，右侧是 36px 高、底色 <code>--dsw-alias-bg-module-platform</code> 的预设选择器（文字 + 12px 箭头），行底用 <code>--dsw-alias-border-l2</code> 的 0.5px 发丝线与下一行分隔。点开选择器后是与输入框权限控件同一套 <code>Menu</code> 下拉卡，列出宿主 <code>defaultPreset</code> 枚举里的预设。它只写「以后新建会话」的默认值，不切换当前会话。",
+   "source": "packages/client/ui-permission-presets/src/client/PermissionRow.tsx#L41",
+   "css": [
+    "packages/client/ui-permission-presets/src/client/PermissionRow.module.css",
+    "packages/client/ui-primitives/src/Menu.module.css",
+    "packages/client/ui-primitives/src/MenuSurface.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-module-platform",
+    "--dsw-alias-border-l1",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-state-error-primary",
+    "--dsw-elevation-prominent",
+    "--dsw-menu-surface-fill",
+    "--dsw-radius-md",
+    "--dsw-radius-sm"
+   ],
+   "specimens": [
+    {
+     "label": "设置行 + 展开的预设菜单",
+     "note": "静态快照",
+     "html": "<div style='width:460px;display:flex;flex-direction:column;gap:8px'><div class=\"row\"><div class=\"rowText\"><div class=\"title\">权限</div><div class=\"desc\">选择新会话的默认权限模式</div></div><button type='button' class=\"selector\" aria-haspopup='menu' aria-expanded='true'>工作区内修改<svg class=\"chevron\" width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button></div><div class=\"surface list scrollable portal snapshotStatic\" role='menu'><div aria-hidden='true' class=\"material\"></div><div class=\"viewport\" role='presentation'><div class=\"itemWrap\"><button type='button' role='menuitem' class=\"item\"><span class=\"itemLabel\">仅可查看</span></button></div><div class=\"itemWrap\"><button type='button' role='menuitem' class=\"item selected\"><span class=\"itemLabel\">工作区内修改</span><span class=\"check\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4' stroke='currentColor'/></svg></span></button></div><div class=\"itemWrap\"><button type='button' role='menuitem' class=\"item\"><span class=\"itemLabel\">完全权限</span></button></div></div></div></div>",
+     "css": "/* 静态快照：Menu 的 portal 卡片由 fixed 改为文档流内的相对定位，\n   保持 relative 以便 .material 绝对定位仍以卡片为父级。 */\n.list.portal.snapshotStatic { position: relative; }"
+    },
+    {
+     "label": "保存中与保存失败：选择器禁用、说明行转为 alert",
+     "html": "<div style='width:460px'><div class=\"row\"><div class=\"rowText\"><div class=\"title\">权限</div><div class=\"desc\" role='alert'>保存权限设置失败，请重试。</div></div><button type='button' class=\"selector\" aria-haspopup='menu' aria-expanded='false' disabled>正在保存…<svg class=\"chevron\" width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "usePermission",
+     "type": "SnapshotStore<PermissionSettingsState>",
+     "default": "—",
+     "desc": "注入的 hooks 舱位，渲染器绑定为 usePermission：选项、当前值、状态与错误。"
+    },
+    {
+     "name": "load",
+     "type": "() => Promise<void>",
+     "default": "—",
+     "desc": "首次渲染时读取 Settings 描述符。"
+    },
+    {
+     "name": "select",
+     "type": "(preset: string) => Promise<void>",
+     "default": "—",
+     "desc": "写一次 settings.mutate 路径操作（带描述符 revision）。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'settings.permission'>",
+     "default": "—",
+     "desc": "settings.permission 命名空间的翻译座位。"
+    }
+   ],
+   "notes": "这一行只改「以后新建的会话」；切换当前会话要走输入框里的 <code>PermissionSelect</code> 或 <code>/permission</code>。选项来自宿主暴露的 <code>defaultPreset</code> 枚举，因此当前会话独有的 <code>auto</code> 不会出现在这里。宿主没有暴露权限设置、或该描述符不可写时整行返回 <code>null</code>（不可用则显示「暂不可用」文案），状态变化时组件会关掉已打开的菜单并清掉待确认标记。选择完全权限时另起 <code>RiskConfirmation</code> 确认框（本条目未呈现该弹窗）。",
+   "keywords": [
+    "权限设置",
+    "默认权限",
+    "settings row",
+    "permission row"
+   ]
+  },
+  {
+   "id": "task-menu",
+   "name": "TaskMenu",
+   "exportName": "TaskMenu",
+   "zh": "任务菜单",
+   "group": "overlays",
+   "summary": "日程包自有的下拉菜单卡：34px 行高、13px 文字、选中行用尾部对勾标记、危险行改用 <code>--dsw-alias-state-error-primary</code> 文字与 <code>--dsw-alias-interactive-bg-hover-danger</code> 悬停底色；卡片自己持有 <code>--dsw-specific-menu</code> 填充加背景模糊、0.5px 发丝描边来自投影首层、圆角 <code>--dsw-radius-lg</code>。可选的行前标题（<code>type: 'label'</code>）与发丝分隔线（<code>type: 'separator'</code>）与行混排在同一个滚动视口里，卡片顶部还能钉一行 owner 内容（时间区搜索框就挂在那里）。",
+   "source": "packages/client/ui-schedule/src/client/TaskMenu.tsx#L123",
+   "css": [
+    "packages/client/ui-schedule/src/client/TaskMenu.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-border-l1",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-interactive-bg-hover-danger",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-scrollbar-bg-l2",
+    "--dsw-alias-scrollbar-hover-l2",
+    "--dsw-alias-state-error-primary",
+    "--dsw-elevation-prominent",
+    "--dsw-menu-backdrop-filter",
+    "--dsw-radius-lg",
+    "--dsw-radius-md",
+    "--dsw-radius-sm",
+    "--dsw-specific-menu",
+    "--dsh-frame-overlay-top"
+   ],
+   "specimens": [
+    {
+     "label": "三个操作行：编辑 / 暂停 / 删除（危险行）",
+     "note": "静态快照",
+     "html": "<div style='width:220px'><div class=\"list scrollable snapshotStatic\" role='menu'><div class=\"viewport\" role='presentation'><div class=\"itemWrap\"><button type='button' role='menuitem' class=\"item\"><span class=\"itemIcon\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M11.5 1.5L14.5 4.5L5.5 13.5H2.5V10.5L11.5 1.5Z' stroke='currentColor'/></svg></span><span class=\"itemLabel\">编辑</span></button></div><div class=\"itemWrap\"><button type='button' role='menuitem' class=\"item\"><span class=\"itemIcon\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M8 14.5C11.5899 14.5 14.5 11.5899 14.5 8C14.5 4.41015 11.5899 1.5 8 1.5C4.41015 1.5 1.5 4.41015 1.5 8C1.5 11.5899 4.41015 14.5 8 14.5Z' stroke='currentColor'/><path d='M6.5 5V11' stroke='currentColor'/><path d='M9.5 5V11' stroke='currentColor'/></svg></span><span class=\"itemLabel\">暂停</span></button></div><div class=\"itemWrap\"><button type='button' role='menuitem' class=\"item danger\"><span class=\"itemIcon\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M1.28149 3.88831H14.7187' stroke='currentColor'/><path d='M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833' stroke='currentColor'/><path d='M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831' stroke='currentColor'/></svg></span><span class=\"itemLabel\">删除</span></button></div></div></div></div>",
+     "css": "/* 静态快照：.list 在真实产品里绝对定位（或在 portal 模式下 fixed），\n   这里放回文档流并清掉贴住锚点的偏移。 */\n.list.snapshotStatic { position: relative; top: auto; left: auto; }"
+    },
+    {
+     "label": "标题行 + 分隔线 + 选中行与禁用行",
+     "note": "静态快照",
+     "html": "<div style='width:220px'><div class=\"list scrollable snapshotStatic\" role='menu'><div class=\"viewport\" role='presentation'><div class=\"label\" role='presentation'>运行频率</div><div class=\"itemWrap\"><button type='button' role='menuitem' class=\"item selected\"><span class=\"itemLabel\">每周一至周五</span><span class=\"check\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4' stroke='currentColor'/></svg></span></button></div><div class=\"separator\" role='separator'></div><div class=\"itemWrap\"><button type='button' role='menuitem' class=\"item\" disabled><span class=\"itemLabel\">自定义（cron）</span></button></div></div></div></div>",
+     "css": "/* 静态快照：同上，绝对定位的卡片改为文档流内的相对定位。 */\n.list.snapshotStatic { position: relative; top: auto; left: auto; }"
+    }
+   ],
+   "props": [
+    {
+     "name": "open",
+     "type": "boolean",
+     "default": "—",
+     "desc": "列表是否显示，由调用方控制。"
+    },
+    {
+     "name": "anchor",
+     "type": "ReactNode",
+     "default": "—",
+     "desc": "就地渲染的触发器节点。"
+    },
+    {
+     "name": "items",
+     "type": "readonly TaskMenuEntry[]",
+     "default": "[]",
+     "desc": "行、分隔线与标题行的有序列表。"
+    },
+    {
+     "name": "selectedId",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "标记为选中的行 id，尾部显示对勾。"
+    },
+    {
+     "name": "onSelect",
+     "type": "(id: string) => void",
+     "default": "—",
+     "desc": "行激活回调；禁用行不触发。"
+    },
+    {
+     "name": "onClose",
+     "type": "() => void",
+     "default": "—",
+     "desc": "外部指针按下、Escape 或窗口失焦（焦点进了 iframe）时调用。"
+    },
+    {
+     "name": "align",
+     "type": "'start' | 'end'",
+     "default": "'start'",
+     "desc": "相对锚点的对齐边。"
+    },
+    {
+     "name": "portal",
+     "type": "boolean",
+     "default": "false",
+     "desc": "把卡片渲染到 body 并按锚点矩形 fixed 定位。"
+    },
+    {
+     "name": "header",
+     "type": "ReactNode",
+     "default": "—",
+     "desc": "钉在滚动行区之上的 owner 内容；标记 data-menu-field 的控件会在卡片就位后接管键盘。"
+    },
+    {
+     "name": "className",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "锚点包裹 span 上的附加类。"
+    },
+    {
+     "name": "listClassName",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "卡片自身的附加类，也是 portal 列表唯一能到达的样式钩子。"
+    }
+   ],
+   "notes": "这是日程包对共享 <code>Menu</code> 的本地副本，<code>docs/web-styling.md</code> 的 Component rules 把 <code>TaskMenu</code> 与 <code>ClockPicker</code> 记为 <code>MenuSurface</code> 规则的显式例外：它自己持有 <code>--dsw-specific-menu</code> 填充与 <code>--dsw-menu-backdrop-filter</code>，而不是走 <code>MenuSurface</code> 的 <code>--dsw-menu-surface-fill</code>，因为钉住的 <code>header</code> 槽位与 <code>data-menu-field</code> 键盘交接只服务时间区搜索框，日程包选择留在本地而不去扩展共享卡片。行按 <code>role='menuitem'</code> 渲染，Tab 结算当前行、Escape 与 Shift+Tab 关闭并把焦点交回锚点的第一个可用按钮。",
+   "keywords": [
+    "任务菜单",
+    "日程",
+    "task menu",
+    "schedule",
+    "危险行"
+   ]
+  },
+  {
+   "id": "subagent-header-lineage",
+   "name": "SubagentHeaderLineage",
+   "exportName": "SubagentHeaderLineage",
+   "zh": "子智能体谱系",
+   "group": "agent",
+   "summary": "子会话标题栏里的面包屑与目录入口：一个显示当前（或祖先）标题的切换按钮，加一个「N 个子智能体」的计数按钮，两者都带 <code>aria-haspopup='tree'</code>。展开后是一张 336px 宽的子智能体树——每行 44px 高，从左到右是活动点、可展开的箭头、标题与状态摘要（标题 · 模式 · 活动），右侧是 token 与耗时两行指标，非当前行还带一个 28px 的侧边栏按钮；子级用 16px 缩进加 0.5px 的竖向导轨连到父行。",
+   "source": "packages/client/ui-subagent/src/client/SubagentHeaderLineage.tsx#L785",
+   "css": [
+    "packages/client/ui-subagent/src/client/SubagentHeaderLineage.module.css",
+    "packages/client/ui-primitives/src/StateDot.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-border-l1",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-scrollbar-bg-l2",
+    "--dsw-alias-scrollbar-hover-l2",
+    "--dsw-alias-state-error-primary",
+    "--dsw-elevation-prominent",
+    "--dsw-menu-backdrop-filter",
+    "--dsw-radius-lg",
+    "--dsw-radius-md",
+    "--dsw-radius-sm",
+    "--dsw-specific-menu"
+   ],
+   "specimens": [
+    {
+     "label": "面包屑：祖先标题 / 当前标题 + 子智能体计数",
+     "html": "<div style='display:flex;align-items:center;gap:10px'><div class=\"root switcherRoot\"><button type='button' class=\"switcherTrigger ancestorSwitcherTrigger\" aria-haspopup='tree' aria-expanded='false' aria-label='切换子智能体：UIUX 组件目录'><span class=\"switcherTitle\">UIUX 组件目录</span><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button></div><div class=\"root switcherRoot\"><button type='button' class=\"switcherTrigger\" aria-haspopup='tree' aria-expanded='false' aria-label='切换子智能体：梳理浮层组件条目'><span class=\"switcherTitle\">梳理浮层组件条目</span><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button></div><div class=\"root\"><button type='button' class=\"trigger\" aria-haspopup='tree' aria-expanded='false' aria-label='1 个子智能体'><span class=\"activitySlot\"><svg class=\"spinner\" data-state='ongoing' width='14' height='14' viewBox='0 0 24 24' aria-hidden='true'><g class=\"spinnerMotion\"><circle class=\"spinnerTrack\" cx='12' cy='12' r='9.5'/><circle class=\"spinnerArc\" cx='12' cy='12' r='9.5'/></g></svg></span><span>1 个子智能体</span><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button></div></div>"
+    },
+    {
+     "label": "展开的谱系树：父行 + 缩进子行 + 指标",
+     "note": "静态快照",
+     "html": "<div style='width:336px'><div class=\"menu snapshotStatic\"><div class=\"menuBody\" role='tree' aria-label='子智能体会话'><div class=\"node\"><div class=\"row\" role='treeitem' tabindex='0' aria-level='1' aria-expanded='true' aria-label='UIUX 组件目录 组件条目编写 · 可继续 · 已完成 12.4K tok 3分12秒'><button type='button' tabindex='-1' class=\"disclosure disclosureOpen\" aria-label='收起 UIUX 组件目录 的下级子智能体'><svg width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4' stroke='currentColor'/></svg></button><div class=\"clickarea\"><span class=\"rowActivitySlot\"><span class=\"dot\" data-state='done' style='width:10px;height:10px'></span></span><span class=\"content\"><span class=\"label\">UIUX 组件目录</span><span class=\"summary\">组件条目编写 · 可继续 · 已完成</span></span><span class=\"metrics\"><span class=\"metricToken\">12.4K tok</span><span class=\"metricDuration\" title='总活跃耗时：3分12秒'>3分12秒</span></span></div></div><div class=\"children\" role='group'><div class=\"node\"><div class=\"row\" role='treeitem' tabindex='0' aria-level='2' aria-current='true' aria-label='梳理浮层组件条目 浮层与 agent 组件 · 可继续 · 正在运行'><span class=\"disclosureSpace\"></span><div class=\"clickarea\"><span class=\"rowActivitySlot\"><svg class=\"spinner\" data-state='ongoing' width='14' height='14' viewBox='0 0 24 24' aria-hidden='true'><g class=\"spinnerMotion\"><circle class=\"spinnerTrack\" cx='12' cy='12' r='9.5'/><circle class=\"spinnerArc\" cx='12' cy='12' r='9.5'/></g></svg></span><span class=\"content\"><span class=\"label currentLabel\">梳理浮层组件条目</span><span class=\"summary\">浮层与 agent 组件 · 可继续 · 正在运行</span></span></div></div></div><div class=\"node\"><div class=\"row\" role='treeitem' tabindex='0' aria-level='2' aria-label='补齐表单组件条目 表单与设置条目 · 一次性 · 当前未运行'><span class=\"disclosureSpace\"></span><div class=\"clickarea\"><span class=\"rowActivitySlot\"><span class=\"dot\" data-state='idle' style='width:10px;height:10px'></span></span><span class=\"content\"><span class=\"label\">补齐表单组件条目</span><span class=\"summary\">表单与设置条目 · 一次性 · 当前未运行</span></span></div><button type='button' class=\"sidebarButton\" aria-label='在侧边栏打开 补齐表单组件条目'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4' stroke='currentColor'/></svg></button></div></div></div></div></div></div></div>",
+     "css": "/* 静态快照：菜单卡在真实产品里 fixed 于触发器下方，这里放回文档流；\n   保持 relative 让卡片自身的 ::before 材质层继续以卡片为父级。 */\n.menu.snapshotStatic { position: relative; }"
+    }
+   ],
+   "props": [
+    {
+     "name": "lineageSessionId",
+     "type": "SessionId",
+     "default": "—",
+     "desc": "当前显示标题的子会话；根会话下本组件返回 null。"
+    },
+    {
+     "name": "displayTitle",
+     "type": "string",
+     "default": "—",
+     "desc": "目录里还查不到该子会话时使用的可见标题。"
+    },
+    {
+     "name": "openTitle",
+     "type": "(() => void) | undefined",
+     "default": "—",
+     "desc": "提供时标题点击改为向上导航，切换按钮改用祖先态配色（tertiary / 400）。"
+    },
+    {
+     "name": "openChild",
+     "type": "(address: SubagentAddress) => void",
+     "default": "—",
+     "desc": "在当前栏位打开某个子会话。"
+    },
+    {
+     "name": "openChildAside",
+     "type": "(address: SubagentAddress) => void",
+     "default": "—",
+     "desc": "在侧边栏打开某个子会话。"
+    },
+    {
+     "name": "refreshProjection",
+     "type": "(parentSessionId: SessionId) => void",
+     "default": "—",
+     "desc": "刷新某层的子智能体目录投影。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'subagent'>",
+     "default": "—",
+     "desc": "subagent 命名空间的翻译座位。"
+    }
+   ],
+   "notes": "行结构是 <code>.row[role=treeitem]</code> 里套 <code>.clickarea</code>，箭头是独立的按钮（点击只展开分支，不会打开子会话），Tab 会跳过箭头；悬停底色画在 <code>.clickarea</code> 上，所以指标与侧边栏按钮都在同一片高亮里。计数触发器里的「N 个子智能体」文字在源码里引用了 <code>css.count</code>，但本模块的样式表没有声明 <code>.count</code>，因此这段文字实际只继承触发器的 12/18 tertiary 样式——示例按真实渲染结果不加类。菜单材质同样是 <code>--dsw-specific-menu</code> 加背景模糊，且由 <code>::before</code> 承担，避免背景模糊把卡片变成 fixed 后代的包含块。",
+   "keywords": [
+    "子智能体",
+    "谱系",
+    "lineage",
+    "面包屑",
+    "subagent 树"
+   ]
+  },
+  {
+   "id": "workflow-run-panel",
+   "name": "WorkflowRunPanel",
+   "exportName": "WorkflowRunPanel",
+   "zh": "工作流运行面板",
+   "group": "agent",
+   "summary": "会话流里的一次工作流运行：32px 高的运行标题条（平台底色、箭头、运行名、圆点分隔符、成员数、右侧状态），下面缩进 16px 是阶段列表，每个阶段又缩进 16px 列出成员行（24px 高、状态点 + 成员名 + 右对齐状态）。运行与阶段都按状态自动开合：运行中、失败、取消、中断的层级默认展开，已完成的保持收起。成员名可导航时走链接色并在悬停加虚线下划线，否则是普通次级文字。",
+   "source": "packages/client/ui-workflow-run/src/client/WorkflowRunPanel.tsx#L351",
+   "css": [
+    "packages/client/ui-workflow-run/src/client/WorkflowRunPanel.module.css",
+    "packages/client/ui-primitives/src/DisclosureRow.module.css",
+    "packages/client/ui-primitives/src/TextShimmer.module.css",
+    "packages/client/ui-primitives/src/StateDot.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-module-platform",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-link",
+    "--dsw-alias-state-business-primary",
+    "--dsw-focus-ring-color",
+    "--dsw-focus-ring-width",
+    "--dsw-radius-md",
+    "--dsw-radius-sm",
+    "--dsh-content-font-delta",
+    "--dsh-content-font-delta-secondary",
+    "--dsh-content-font-size",
+    "--dsh-content-font-size-secondary"
+   ],
+   "specimens": [
+    {
+     "label": "运行中：三个阶段与各自状态",
+     "html": "<div style='width:520px'><section class=\"root\" data-workflow-run='' data-run-status='running'><div class=\"header\"><div class=\"row runHeader\" data-disclosure-row='' data-expandable='' role='button' tabindex='0' aria-expanded='true'><span class=\"leading runLeading\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10' stroke='currentColor'/></svg></span><span class=\"headerContent\"><span class=\"content headerContentLayout\"><span class=\"text runTitle\">深度研究流程</span><span class=\"separator\" aria-hidden='true'></span><span class=\"runSummary\">4 个成员</span><span class=\"statusTail\" data-status='running'><svg class=\"spinner\" data-state='ongoing' width='14' height='14' viewBox='0 0 24 24' aria-hidden='true'><g class=\"spinnerMotion\"><circle class=\"spinnerTrack\" cx='12' cy='12' r='9.5'/><circle class=\"spinnerArc\" cx='12' cy='12' r='9.5'/></g></svg><span>运行中</span></span></span></span></div></div><div class=\"phaseList\"><div class=\"phase\"><div class=\"header\"><div class=\"row phaseHeader\" data-disclosure-row='' data-expandable='' role='button' tabindex='0' aria-expanded='false'><span class=\"leading phaseLeading\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4' stroke='currentColor'/></svg></span><span class=\"headerContent\"><span class=\"content headerContentLayout\"><span class=\"text phaseTitle\">检索</span><span class=\"separator\" aria-hidden='true'></span><span class=\"phaseCount\" data-phase-count=''>2 个成员</span><span class=\"phaseStatus\" data-phase-status-text=''>已完成 2</span></span></span></div></div></div><div class=\"phase\"><div class=\"header\"><div class=\"row phaseHeader\" data-disclosure-row='' data-expandable='' role='button' tabindex='0' aria-expanded='true'><span class=\"leading phaseLeading\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10' stroke='currentColor'/></svg></span><span class=\"headerContent\"><span class=\"content headerContentLayout\"><span class=\"text phaseTitle\">写作</span><span class=\"separator\" aria-hidden='true'></span><span class=\"phaseCount\" data-phase-count=''>1 个成员</span><span class=\"phaseStatus\" data-phase-status-text=''>运行中 1</span></span></span></div></div><div class=\"members\"><button type='button' class=\"memberButton\" data-member-status='running' aria-label='打开 写入 b6-overlays.json'><span class=\"dotSlot\"><svg class=\"spinner\" data-state='ongoing' width='14' height='14' viewBox='0 0 24 24' aria-hidden='true'><g class=\"spinnerMotion\"><circle class=\"spinnerTrack\" cx='12' cy='12' r='9.5'/><circle class=\"spinnerArc\" cx='12' cy='12' r='9.5'/></g></svg></span><span class=\"memberLabelWrap\" data-member-label-wrap=''><span class=\"memberLabel\" data-member-label=''>写入 b6-overlays.json</span></span><span class=\"memberStatus\" data-member-status-text=''>运行中</span></button></div></div><div class=\"phase\"><div class=\"header\"><div class=\"row phaseHeader\" data-disclosure-row='' data-expandable='' role='button' tabindex='0' aria-expanded='true'><span class=\"leading phaseLeading\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10' stroke='currentColor'/></svg></span><span class=\"headerContent\"><span class=\"content headerContentLayout\"><span class=\"text phaseTitle\">复核</span><span class=\"separator\" aria-hidden='true'></span><span class=\"phaseCount\" data-phase-count=''>1 个成员</span><span class=\"phaseStatus\" data-phase-status-text=''>失败 1</span></span></span></div></div><div class=\"members\"><div class=\"memberRow\" data-member-status='failed'><span class=\"dotSlot\"><span class=\"dot\" data-state='error' style='width:10px;height:10px'></span></span><span class=\"memberLabelWrap\" data-member-label-wrap=''><span class=\"memberLabel\" data-member-label=''>复核类名与设计变量</span></span><span class=\"memberStatus\" data-member-status-text=''>失败</span></div></div></div></div></section></div>",
+     "css": "/* 本示例的 DOM 与真实结构一致，只是把 DisclosureRow 的外层 .root 换成了无类\n   容器：该模块与 WorkflowRunPanel 同名声明 .root，一次类名只能解析到一个模块，\n   这里保留面板自己的 .root（见 build.mjs classPlan 的所有者规则）。 */\n.root { width: 100%; }"
+    },
+    {
+     "label": "已完成：运行与阶段都收起，只留状态摘要",
+     "html": "<div style='width:520px'><section class=\"root\" data-workflow-run='' data-run-status='completed'><div class=\"header\"><div class=\"row runHeader\" data-disclosure-row='' data-expandable='' role='button' tabindex='0' aria-expanded='false'><span class=\"leading runLeading\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4' stroke='currentColor'/></svg></span><span class=\"headerContent\"><span class=\"content headerContentLayout\"><span class=\"text runTitle\">深度研究流程</span><span class=\"separator\" aria-hidden='true'></span><span class=\"runSummary\">4 个成员</span><span class=\"statusTail\" data-status='completed'><span class=\"dot\" data-state='done' style='width:10px;height:10px'></span><span>已完成</span></span></span></span></div></div><div class=\"phaseList\"><div class=\"phase\"><div class=\"header\"><div class=\"row phaseHeader\" data-disclosure-row='' data-expandable='' role='button' tabindex='0' aria-expanded='false'><span class=\"leading phaseLeading\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4' stroke='currentColor'/></svg></span><span class=\"headerContent\"><span class=\"content headerContentLayout\"><span class=\"text phaseTitle\">检索</span><span class=\"separator\" aria-hidden='true'></span><span class=\"phaseCount\" data-phase-count=''>2 个成员</span><span class=\"phaseStatus\" data-phase-status-text=''>已完成 2</span></span></span></div></div></div><div class=\"phase\"><div class=\"header\"><div class=\"row phaseHeader\" data-disclosure-row='' data-expandable='' role='button' tabindex='0' aria-expanded='false'><span class=\"leading phaseLeading\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4' stroke='currentColor'/></svg></span><span class=\"headerContent\"><span class=\"content headerContentLayout\"><span class=\"text phaseTitle\">写作</span><span class=\"separator\" aria-hidden='true'></span><span class=\"phaseCount\" data-phase-count=''>1 个成员</span><span class=\"phaseStatus\" data-phase-status-text=''>已完成 1</span></span></span></div></div></div><div class=\"phase\"><div class=\"header\"><div class=\"row phaseHeader\" data-disclosure-row='' data-expandable='' role='button' tabindex='0' aria-expanded='false'><span class=\"leading phaseLeading\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4' stroke='currentColor'/></svg></span><span class=\"headerContent\"><span class=\"content headerContentLayout\"><span class=\"text phaseTitle\">复核</span><span class=\"separator\" aria-hidden='true'></span><span class=\"phaseCount\" data-phase-count=''>1 个成员</span><span class=\"phaseStatus\" data-phase-status-text=''>已完成 1</span></span></span></div></div></div></div></section></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "node",
+     "type": "PropsRuntime<'conversation.chat.node', 'workflow-run'>['node']",
+     "default": "—",
+     "desc": "工作流运行 Chat 节点数据：名称、状态与阶段/成员。"
+    },
+    {
+     "name": "sessionId",
+     "type": "SessionId",
+     "default": "—",
+     "desc": "发起这次运行的会话，用作成员导航的父会话。"
+    },
+    {
+     "name": "useSessions",
+     "type": "PropsRuntime<...>['useSessions']",
+     "default": "—",
+     "desc": "读取会话表，判断哪些成员可以打开。"
+    },
+    {
+     "name": "useSessionStatus",
+     "type": "PropsRuntime<...>['useSessionStatus']",
+     "default": "—",
+     "desc": "读取会话状态快照，参与导航可达性判断。"
+    },
+    {
+     "name": "openSession",
+     "type": "(target: SessionTarget) => void",
+     "default": "—",
+     "desc": "打开某个成员对应的子会话。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'workflowRun'>",
+     "default": "—",
+     "desc": "workflowRun 命名空间的翻译座位。"
+    }
+   ],
+   "notes": "状态点语义：运行中 = 旋转环，已完成 = 绿色实心点，失败 = 红色实心点，取消/中断 = 琥珀色点。阶段状态摘要是「状态 + 数量」的组合（如「运行中 1」「已完成 2」），运行标题右侧那一行同时显示状态点与状态文字。组件只展示身份与状态，脚本、输出、错误、日志与用量都不在这个面板里。上面的示例把共享 <code>DisclosureRow</code> 的外层 <code>.root</code> 简化为无类容器：本包与 <code>DisclosureRow</code> 都声明了 <code>.root</code>，而一次类名只能解析到一个模块，这里保留面板自己的那份。",
+   "keywords": [
+    "工作流",
+    "workflow",
+    "阶段",
+    "成员",
+    "运行状态"
+   ]
+  },
+  {
+   "id": "job-list-action",
+   "name": "JobListAction",
+   "exportName": "JobListAction",
+   "zh": "后台任务列表",
+   "group": "agent",
+   "summary": "会话标题栏的后台任务入口：一个 28px 高的触发器（运行中的转圈点 + 「N 个后台任务运行中」+ 12px 箭头），展开后是 500px 宽的浮层，按「进行中 / 已结束 N」分节。运行中的行包在带 <code>--dsw-alias-fill-l2</code> 底色的卡片里，显示等宽字体的命令、类型徽标、进度与实时耗时，右侧是 20px 的展开方块和两段式确认的停止按钮；已结束的行折在分节线下，静态行没有交互，有留存输出的行才带展开方块。",
+   "source": "packages/client/ui-jobs/src/client/JobListAction.tsx#L337",
+   "css": [
+    "packages/client/ui-jobs/src/client/JobListAction.module.css",
+    "packages/client/ui-primitives/src/MenuSurface.module.css",
+    "packages/client/ui-primitives/src/StateDot.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-border-l1",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-fill-l1",
+    "--dsw-alias-fill-l2",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-scrollbar-bg-l2",
+    "--dsw-alias-scrollbar-hover-l2",
+    "--dsw-alias-state-error-primary",
+    "--dsw-elevation-prominent",
+    "--dsw-font-mono",
+    "--dsw-menu-surface-fill",
+    "--dsw-radius-md",
+    "--dsw-radius-sm",
+    "--dsw-radius-xs"
+   ],
+   "specimens": [
+    {
+     "label": "触发器 + 两个运行中的任务（展开与停止）",
+     "note": "静态快照",
+     "html": "<div style='width:560px;display:flex;flex-direction:column;gap:6px'><button type='button' class=\"trigger\" aria-expanded='true' aria-label='2 个后台任务运行中'><svg class=\"spinner triggerDot\" data-state='ongoing' width='14' height='14' viewBox='0 0 24 24' aria-hidden='true'><g class=\"spinnerMotion\"><circle class=\"spinnerTrack\" cx='12' cy='12' r='9.5'/><circle class=\"spinnerArc\" cx='12' cy='12' r='9.5'/></g></svg><span class=\"count\">2 个后台任务运行中</span><svg class=\"triggerOpen\" width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button><div class=\"surface menu snapshotStatic\"><div aria-hidden='true' class=\"material\"></div><ul class=\"menuBody\" aria-label='后台任务'><li class=\"sectionHeader\" aria-hidden='true'>进行中</li><li class=\"item\"><div class=\"rowLine rowLineLive\"><button type='button' class=\"row\" aria-expanded='false' aria-label='展开 pnpm run test:gui 的实时输出'><svg class=\"spinner rowDot\" data-state='ongoing' width='14' height='14' viewBox='0 0 24 24' aria-hidden='true'><g class=\"spinnerMotion\"><circle class=\"spinnerTrack\" cx='12' cy='12' r='9.5'/><circle class=\"spinnerArc\" cx='12' cy='12' r='9.5'/></g></svg><span class=\"main\"><span class=\"primary\"><span class=\"label\" title='pnpm run test:gui'>pnpm run test:gui</span></span><span class=\"secondary\" title='12 个测试文件已通过'><span class=\"kind\">bash</span><span class=\"status\">12 个测试文件已通过</span><span class=\"duration\" title='已运行 1分20秒'>1分20秒</span></span></span><span class=\"chevronBox\"><svg class=\"chevron\" width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></span></button><button type='button' class=\"stop\" data-kill-state='idle' aria-label='停止任务 pnpm run test:gui' title='停止任务 pnpm run test:gui'><svg width='10' height='10' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M12.5 2.5H3.5C2.94772 2.5 2.5 2.94772 2.5 3.5V12.5C2.5 13.0523 2.94772 13.5 3.5 13.5H12.5C13.0523 13.5 13.5 13.0523 13.5 12.5V3.5C13.5 2.94772 13.0523 2.5 12.5 2.5Z' fill='currentColor'/></svg></button></div></li><li class=\"item\"><div class=\"rowLine rowLineLive\"><button type='button' class=\"row\" aria-expanded='false' aria-label='展开 node UIUX/tools/validate.mjs 的实时输出'><svg class=\"spinner rowDot\" data-state='ongoing' width='14' height='14' viewBox='0 0 24 24' aria-hidden='true'><g class=\"spinnerMotion\"><circle class=\"spinnerTrack\" cx='12' cy='12' r='9.5'/><circle class=\"spinnerArc\" cx='12' cy='12' r='9.5'/></g></svg><span class=\"main\"><span class=\"primary\"><span class=\"label\" title='node UIUX/tools/validate.mjs'>node UIUX/tools/validate.mjs</span></span><span class=\"secondary\" title='正在校验 parts/*.json'><span class=\"kind\">bash</span><span class=\"status\">正在校验 parts/*.json</span><span class=\"duration\" title='已运行 6秒'>6秒</span></span></span><span class=\"chevronBox\"><svg class=\"chevron\" width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></span></button><button type='button' class=\"stop\" data-kill-state='idle' aria-label='停止任务 node UIUX/tools/validate.mjs' title='停止任务 node UIUX/tools/validate.mjs'><svg width='10' height='10' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M12.5 2.5H3.5C2.94772 2.5 2.5 2.94772 2.5 3.5V12.5C2.5 13.0523 2.94772 13.5 3.5 13.5H12.5C13.0523 13.5 13.5 13.0523 13.5 12.5V3.5C13.5 2.94772 13.0523 2.5 12.5 2.5Z' fill='currentColor'/></svg></button></div></li></ul></div></div>",
+     "css": "/* 静态快照：浮层在真实产品里 portal 到 body 并按触发器矩形 fixed 定位，\n   这里放回文档流；保持 relative 让 .material 仍以卡片为父级。 */\n.menu.snapshotStatic { position: relative; }"
+    },
+    {
+     "label": "已结束分节：折叠开关 + 清空 + 无交互行",
+     "note": "静态快照",
+     "html": "<div style='width:560px;display:flex;flex-direction:column;gap:6px'><button type='button' class=\"trigger\" aria-expanded='true' aria-label='1 个后台任务'><span class=\"count\">1 个后台任务</span><svg class=\"triggerOpen\" width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button><div class=\"surface menu snapshotStatic\"><div aria-hidden='true' class=\"material\"></div><ul class=\"menuBody\" aria-label='后台任务'><li class=\"sectionHeader\"><button type='button' class=\"sectionToggle\" aria-expanded='true'><svg class=\"sectionChevron sectionChevronOpen\" width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg>已结束 1</button><button type='button' class=\"sectionClear\">清空</button></li><li class=\"item\"><div class=\"rowLine\"><span class=\"row rowSettled rowStatic\"><span class=\"dot\" data-state='done' style='width:10px;height:10px'></span><span class=\"kind\">bash</span><span class=\"label\" title='node UIUX/tools/validate.mjs'>node UIUX/tools/validate.mjs</span><span class=\"status\" title='已完成'>已完成</span><span class=\"duration\" title='耗时 8秒'>8秒</span></span></div></li></ul></div></div>",
+     "css": "/* 静态快照：同上，portaled 的 fixed 浮层改为文档流内的相对定位。 */\n.menu.snapshotStatic { position: relative; }"
+    },
+    {
+     "label": "停止确认：两段式按钮展开为危险色胶囊",
+     "note": "静态快照 · 仅截取列表主体",
+     "html": "<div style='width:520px'><ul class=\"menuBody\" aria-label='后台任务'><li class=\"item\"><div class=\"rowLine rowLineLive\"><button type='button' class=\"row\" aria-expanded='false' aria-label='展开 pnpm run test:gui 的实时输出'><svg class=\"spinner rowDot\" data-state='ongoing' width='14' height='14' viewBox='0 0 24 24' aria-hidden='true'><g class=\"spinnerMotion\"><circle class=\"spinnerTrack\" cx='12' cy='12' r='9.5'/><circle class=\"spinnerArc\" cx='12' cy='12' r='9.5'/></g></svg><span class=\"main\"><span class=\"primary\"><span class=\"label\" title='pnpm run test:gui'>pnpm run test:gui</span></span><span class=\"secondary\"><span class=\"kind\">bash</span><span class=\"status\">12 个测试文件已通过</span><span class=\"duration\">1分20秒</span></span></span><span class=\"chevronBox\"><svg class=\"chevron\" width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></span></button><button type='button' class=\"stop stopArmed\" data-kill-state='armed' aria-label='再次点击确认停止' title='再次点击确认停止'><svg width='10' height='10' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M12.5 2.5H3.5C2.94772 2.5 2.5 2.94772 2.5 3.5V12.5C2.5 13.0523 2.94772 13.5 3.5 13.5H12.5C13.0523 13.5 13.5 13.0523 13.5 12.5V3.5C13.5 2.94772 13.0523 2.5 12.5 2.5Z' fill='currentColor'/></svg><span class=\"stopLabel\">确认停止</span></button></div></li></ul></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "sessionId",
+     "type": "SessionId",
+     "default": "—",
+     "desc": "只显示这个会话的后台任务。"
+    },
+    {
+     "name": "useJobs",
+     "type": "InjectFace<JobListInjected>['hooks']['jobs']",
+     "default": "—",
+     "desc": "渲染器绑定为 useJobs 的任务快照（名册与观察结果）。"
+    },
+    {
+     "name": "watchRows",
+     "type": "(sessionId: SessionId) => () => void",
+     "default": "—",
+     "desc": "保持该会话名册最新，返回停止函数；由客户端服务按引用计数。"
+    },
+    {
+     "name": "observe",
+     "type": "(sessionId: SessionId | undefined, id: JobView['id']) => () => void",
+     "default": "—",
+     "desc": "开始观察某个任务的实时输出，返回停止函数。"
+    },
+    {
+     "name": "killJob",
+     "type": "(sessionId: SessionId, jobId: string) => Promise<boolean>",
+     "default": "—",
+     "desc": "代表用户请求终止任务；行状态本身由任务控制帧收敛。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'job'>",
+     "default": "—",
+     "desc": "job 命名空间的翻译座位。"
+    }
+   ],
+   "notes": "行状态点：运行中 = 旋转环，正在停止/已取消 = 琥珀点，已完成 = 绿点，失败 = 红点。停止按钮是两段确认——第一次按下把 20px 方块拉宽成带「确认停止」文字的胶囊，3 秒内没有第二次按下就复原，失败时按钮转成错误色。展开方块的 <code>aria-label</code> 是「展开/收起 {label} 的实时输出」，整行本身就是那个「查看输出」的开关；已结束且没有留存输出的行渲染为静态 span，既不可点也不显示箭头。",
+   "keywords": [
+    "后台任务",
+    "jobs",
+    "停止任务",
+    "bash 任务",
+    "实时输出"
+   ]
+  },
+  {
+   "id": "voice-input",
+   "name": "VoiceInput",
+   "exportName": "VoiceInput",
+   "zh": "语音输入",
+   "group": "overlays",
+   "summary": "输入框工具条上的语音入口（experimental 插件）：空闲时是一个 28px 见方、图标 18px 的描边麦克风按钮；一旦开始录音，它展开成 34px 高的整宽行——左侧 32px 的圆形取消按钮、中间自适应宽度的电平波形（24px 高、<code>viewBox 640×40</code>、80 根竖线）、右侧 32px 的圆形停止按钮。请求权限或识别中时中间换成一行状态文字（前置转圈点），识别失败则显示原因并可重试或把保留的文字插回草稿。",
+   "source": "packages/experimental/client-ui-voice-input/src/client/VoiceInput.tsx#L60",
+   "css": [
+    "packages/experimental/client-ui-voice-input/src/client/VoiceInput.module.css",
+    "packages/client/ui-primitives/src/Button.module.css",
+    "packages/client/ui-primitives/src/StateDot.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-border-l1",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-interactive-bg-hover-solid",
+    "--dsw-alias-label-primary-foreground",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-state-error-primary",
+    "--dsw-alias-state-success-primary",
+    "--dsw-radius-sm",
+    "--dsw-specific-selector"
+   ],
+   "specimens": [
+    {
+     "label": "空闲：麦克风按钮",
+     "html": "<span class=\"triggerAnchor\"><button type='button' class=\"button ghost sm trigger\" aria-label='开始录音'><svg width='18' height='18' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1' aria-hidden='true'><rect x='5' y='1.5' width='6' height='9' rx='3'/><path d='M2.35 8.675C3.075 11.3 5.2 13.125 8 13.125C10.8 13.125 12.925 11.3 13.65 8.675M8 13.125V15'/></svg></button></span>"
+    },
+    {
+     "label": "录音中：取消 / 波形 / 停止",
+     "note": "录音电平为静态模拟",
+     "html": "<div style='width:420px'><div class=\"captureRow\" data-voice-activity='recording'><button type='button' class=\"button ghost sm roundButton\" aria-label='取消'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M2.5 2.5L13.5 13.5' stroke='currentColor'/><path d='M13.5 2.5L2.5 13.5' stroke='currentColor'/></svg></button><svg class=\"waveform\" viewBox='0 0 640 40' preserveAspectRatio='none' role='img' aria-label='正在录音'><line x1='4' x2='4' y1='13.9' y2='26.1' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.25'></line><line x1='12' x2='12' y1='11.7' y2='28.3' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.258'></line><line x1='20' x2='20' y1='9.3' y2='30.7' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.267'></line><line x1='28' x2='28' y1='7.2' y2='32.8' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.275'></line><line x1='36' x2='36' y1='5.8' y2='34.2' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.283'></line><line x1='44' x2='44' y1='5.5' y2='34.5' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.292'></line><line x1='52' x2='52' y1='6.4' y2='33.6' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.3'></line><line x1='60' x2='60' y1='8.7' y2='31.3' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.308'></line><line x1='68' x2='68' y1='12' y2='28' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.317'></line><line x1='76' x2='76' y1='11.9' y2='28.1' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.325'></line><line x1='84' x2='84' y1='8' y2='32' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.333'></line><line x1='92' x2='92' y1='4.7' y2='35.3' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.342'></line><line x1='100' x2='100' y1='2.6' y2='37.4' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.35'></line><line x1='108' x2='108' y1='2.1' y2='37.9' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.358'></line><line x1='116' x2='116' y1='3.3' y2='36.7' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.367'></line><line x1='124' x2='124' y1='5.9' y2='34.1' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.375'></line><line x1='132' x2='132' y1='9.7' y2='30.3' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.383'></line><line x1='140' x2='140' y1='13.8' y2='26.2' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.392'></line><line x1='148' x2='148' y1='9.7' y2='30.3' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.4'></line><line x1='156' x2='156' y1='6.4' y2='33.6' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.408'></line><line x1='164' x2='164' y1='4.3' y2='35.7' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.417'></line><line x1='172' x2='172' y1='3.7' y2='36.3' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.425'></line><line x1='180' x2='180' y1='4.6' y2='35.4' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.433'></line><line x1='188' x2='188' y1='6.7' y2='33.3' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.442'></line><line x1='196' x2='196' y1='9.5' y2='30.5' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.45'></line><line x1='204' x2='204' y1='12.5' y2='27.5' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.458'></line><line x1='212' x2='212' y1='12.5' y2='27.5' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.467'></line><line x1='220' x2='220' y1='10.4' y2='29.6' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.475'></line><line x1='228' x2='228' y1='9.3' y2='30.7' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.483'></line><line x1='236' x2='236' y1='8.4' y2='31.6' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.492'></line><line x1='244' x2='244' y1='7.5' y2='32.5' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.5'></line><line x1='252' x2='252' y1='7.6' y2='32.4' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.508'></line><line x1='260' x2='260' y1='8.7' y2='31.3' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.517'></line><line x1='268' x2='268' y1='11' y2='29' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.525'></line><line x1='276' x2='276' y1='13.8' y2='26.2' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.533'></line><line x1='284' x2='284' y1='10.3' y2='29.7' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.542'></line><line x1='292' x2='292' y1='7' y2='33' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.55'></line><line x1='300' x2='300' y1='4.3' y2='35.7' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.558'></line><line x1='308' x2='308' y1='2.9' y2='37.1' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.567'></line><line x1='316' x2='316' y1='3.1' y2='36.9' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.575'></line><line x1='324' x2='324' y1='4.8' y2='35.2' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.583'></line><line x1='332' x2='332' y1='7.9' y2='32.1' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.592'></line><line x1='340' x2='340' y1='11.9' y2='28.1' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.6'></line><line x1='348' x2='348' y1='11.5' y2='28.5' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.608'></line><line x1='356' x2='356' y1='7.5' y2='32.5' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.617'></line><line x1='364' x2='364' y1='4.4' y2='35.6' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.625'></line><line x1='372' x2='372' y1='2.8' y2='37.2' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.633'></line><line x1='380' x2='380' y1='2.7' y2='37.3' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.642'></line><line x1='388' x2='388' y1='4.3' y2='35.7' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.65'></line><line x1='396' x2='396' y1='7' y2='33' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.658'></line><line x1='404' x2='404' y1='10.5' y2='29.5' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.667'></line><line x1='412' x2='412' y1='13.7' y2='26.3' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.675'></line><line x1='420' x2='420' y1='10.5' y2='29.5' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.683'></line><line x1='428' x2='428' y1='8.2' y2='31.8' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.692'></line><line x1='436' x2='436' y1='7.1' y2='32.9' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.7'></line><line x1='444' x2='444' y1='7' y2='33' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.708'></line><line x1='452' x2='452' y1='8' y2='32' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.717'></line><line x1='460' x2='460' y1='9.6' y2='30.4' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.725'></line><line x1='468' x2='468' y1='10.9' y2='29.1' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.733'></line><line x1='476' x2='476' y1='12.8' y2='27.2' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.742'></line><line x1='484' x2='484' y1='12.4' y2='27.6' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.75'></line><line x1='492' x2='492' y1='9.5' y2='30.5' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.758'></line><line x1='500' x2='500' y1='6.8' y2='33.2' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.767'></line><line x1='508' x2='508' y1='4.9' y2='35.1' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.775'></line><line x1='516' x2='516' y1='4.1' y2='35.9' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.783'></line><line x1='524' x2='524' y1='4.8' y2='35.2' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.792'></line><line x1='532' x2='532' y1='6.9' y2='33.1' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.8'></line><line x1='540' x2='540' y1='10.2' y2='29.8' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.808'></line><line x1='548' x2='548' y1='13.6' y2='26.4' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.817'></line><line x1='556' x2='556' y1='9.4' y2='30.6' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.825'></line><line x1='564' x2='564' y1='5.7' y2='34.3' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.833'></line><line x1='572' x2='572' y1='3.1' y2='36.9' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.842'></line><line x1='580' x2='580' y1='2' y2='38' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.85'></line><line x1='588' x2='588' y1='2.7' y2='37.3' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.858'></line><line x1='596' x2='596' y1='4.8' y2='35.2' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.867'></line><line x1='604' x2='604' y1='8.2' y2='31.8' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.875'></line><line x1='612' x2='612' y1='12.2' y2='27.8' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.883'></line><line x1='620' x2='620' y1='11.6' y2='28.4' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.892'></line><line x1='628' x2='628' y1='8.2' y2='31.8' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.9'></line><line x1='636' x2='636' y1='5.9' y2='34.1' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.908'></line></svg><button type='button' class=\"button ghost sm roundButton\" aria-label='停止并识别'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M12.5 2.5H3.5C2.94772 2.5 2.5 2.94772 2.5 3.5V12.5C2.5 13.0523 2.94772 13.5 3.5 13.5H12.5C13.0523 13.5 13.5 13.0523 13.5 12.5V3.5C13.5 2.94772 13.0523 2.5 12.5 2.5Z' fill='currentColor'/></svg></button></div></div>"
+    },
+    {
+     "label": "识别失败：保留文字，可插入或重试",
+     "html": "<div style='width:420px'><div class=\"captureRow\" data-voice-activity='feedback'><button type='button' class=\"button ghost sm roundButton\" aria-label='取消'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M2.5 2.5L13.5 13.5' stroke='currentColor'/><path d='M13.5 2.5L2.5 13.5' stroke='currentColor'/></svg></button><span class=\"activityMessage\" role='status' title='你的草稿已改动，识别结果已保留，可以插到当前光标处。'>你的草稿已改动，识别结果已保留，可以插到当前光标处。</span><button type='button' class=\"button ghost sm inlineAction\">插入文字</button></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "sessionId",
+     "type": "SessionId",
+     "default": "—",
+     "desc": "所属会话；切换会话会取消进行中的录音并丢弃待插入文本。"
+    },
+    {
+     "name": "inputActions",
+     "type": "VoiceInputActions & { captureInsertion, insertText }",
+     "default": "—",
+     "desc": "输入框草稿动作：记录插入跨度并把识别结果写回草稿。"
+    },
+    {
+     "name": "locked",
+     "type": "boolean",
+     "default": "—",
+     "desc": "输入框锁定时所有按钮不可用。"
+    },
+    {
+     "name": "onActiveChange",
+     "type": "(active: boolean) => void",
+     "default": "—",
+     "desc": "展开/收起录音行时通知输入框，让它为这一行让位。"
+    },
+    {
+     "name": "createRecording",
+     "type": "() => Recording",
+     "default": "—",
+     "desc": "由插件生命周期持有的麦克风录音对象。"
+    },
+    {
+     "name": "transcribe",
+     "type": "(request: TranscriptionRequest, signal: AbortSignal) => Promise<RemoteResult<Transcript>>",
+     "default": "—",
+     "desc": "把音频交给所选识别服务。"
+    },
+    {
+     "name": "useSpeechReadiness",
+     "type": "HostObservable<SpeechReadiness>",
+     "default": "—",
+     "desc": "注入的 hooks 舱位：识别服务目录与就绪状态。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<typeof NS>",
+     "default": "—",
+     "desc": "语音输入命名空间的翻译座位。"
+    }
+   ],
+   "notes": "波形不是固定的装饰：组件用 <code>requestAnimationFrame</code> 每 50ms 读取一次麦克风电平，把 80 根线的 <code>y1/y2</code> 从静音基线（19/21）推开，最高到 ±18；目录里没有音频输入，所以示例给出的是静态电平。录音行只在识别服务就绪时开启，未就绪时麦克风按钮改为打开安装引导对话框；窗口失焦、页面隐藏或按下 Escape 都会取消录音。第三个示例里的文案是识别冲突分支（草稿在识别期间被改动），此时按钮变成「插入文字」。",
+   "keywords": [
+    "语音",
+    "录音",
+    "voice input",
+    "麦克风",
+    "听写",
+    "波形"
+   ]
+  }
+ ]
+}
