@@ -27,11 +27,11 @@
 示例不是截图，也不是照着截图重写的近似样式，而是**直接加载组件自己的样式表源码**渲染出来的：
 
 1. 每个组件的 `*.module.css` 原文被内联进一个声明式 Shadow DOM（`<template shadowrootmode="open">`），因此组件 CSS 逐字生效，且不会泄漏到目录页自身。
-2. 页面的 `<body>` 内联了 `packages/client/ui-theme/src/styles/` 下的真实主题样式表，所以示例消费的是真实的 `--dsw-*` 变量。自定义属性会继承穿过 shadow 边界，点左栏底部的主题按钮即可让所有示例在浅色与深色取值之间切换；组件 CSS 里针对 `body[data-ds-dark-theme]` 的规则在 shadow root 里改写成 `:host(...)`，因此切换时预览宿主也会带上同一个属性。
+2. 页面的 `<body>` 内联了 `packages/client/ui-theme/src/styles/` 下的真实主题样式表，所以示例消费的是真实的 `--dsw-*` 变量。自定义属性会继承穿过 shadow 边界，点右上角的主题按钮（太阳 / 月亮图标）即可让所有示例在浅色与深色取值之间切换；选择写进 `localStorage` 的 `dsh-uiux-theme`，在 `<body>` 的第一个子节点里读回，因此翻到别的页面仍是同一个主题，也不会先闪一下浅色。组件 CSS 里针对 `body[data-ds-dark-theme]` 的规则在 shadow root 里改写成 `:host(...)`，因此切换时预览宿主也会带上同一个属性。
 3. 示例里的 HTML 使用组件 `.tsx` 里实际 `clsx` 的类名，由抽取到的源码结构决定；构建脚本只做三件机械改写：去掉 `:global(...)` 包装、把 `:root` / `html` / `body` 选择器改成 `:host`（shadow root 里没有文档级选择器），以及在组件 CSS 之前插入一条预览重置 `button, input, select, textarea { font-family: inherit }`——浏览器给表单控件的默认字体不含中文，真实产品靠操作系统字体补上，目录页改用内嵌子集。
 4. 需要 JavaScript 才能产生的状态（悬停、展开、打开、焦点）以静态近似呈现：条目自带一小段附加 CSS 复刻真实规则的视觉效果，并在示例标题旁标注。
 
-依赖布局父级的组件（侧边栏、设置页、面板）在示例里补一层只声明 `width` / `display` 的无类名容器。
+依赖布局父级的组件（侧边栏、设置页、面板）在示例里补一层只声明 `width` / `display` 的无类名容器。示例框 `.stage` 自身是 `position: relative` 加 `isolation: isolate`：组件里 `inset: 0` 的绝对定位层（例如 `MenuSurface` 的 `.material`）本由调用方提供的定位父级兜住，少了这一层就会以初始包含块为参照铺满整个视口——而铺满视口的 `backdrop-filter` 会让 Chromium 干脆不画这一页。同样地，条目里的静态快照把浮层拉回文档流时要用 `position: relative` 加 `inset: auto`，不要用 `position: static`：`relative` 既回到文档流，又留住子层需要的包含块。
 
 ## 覆盖范围
 
@@ -51,7 +51,12 @@ node tools/build.mjs           # 组装五张页面
 node tools/check.mjs           # 条目校验 + 仓库引用规则 + 页面产物体积
 ```
 
-前两个脚本要读 `packages/client/` 下的源码，因此必须把本目录放在 deepseek-harness 检出的 `UIUX/` 位置再运行；`build.mjs` 与 `check.mjs` 只需要本目录自己的数据。
+前两个脚本要读 `packages/client/` 下的源码，因此必须把本目录放在 deepseek-harness 检出的 `UIUX/` 位置再运行；`build.mjs` 与 `check.mjs` 只需要本目录自己的数据。发布副本（本仓库根目录，上方没有检出）要加 `--root <检出>` 才能读到组件样式表，否则条目校验会把每个类名都报成未声明：
+
+```sh
+node tools/build.mjs --root ~/deepseek-harness
+node tools/check.mjs --root ~/deepseek-harness
+```
 
 源码链接默认指向上游仓库（`https://github.com/deepseek-ai/deepseek-harness/blob/master/<路径>#L<行号>`），这样发布出去的副本点得开；加 `--source-base local` 则改回相对路径，供在检出内离线查阅。`check.mjs` 会核对这些链接目标是否都属于当前检出的已跟踪文件——发布副本因此不会带着失效链接出门。
 
@@ -76,7 +81,7 @@ node <本目录>/tools/build.mjs
 
 ## 发布副本
 
-目录同时发布在 <https://github.com/liuke101/dsh-UIUX>，并开启 GitHub Pages 在线浏览：<https://liuke101.github.io/dsh-UIUX/>。仓库根目录的 `.nojekyll` 关闭 Jekyll 处理，页面按字节原样提供。
+目录同时发布在 <https://github.com/liuke101/dsh-UIUX>，并开启 GitHub Pages 在线浏览：<https://liuke101.github.io/dsh-UIUX/>。仓库根目录的 `.nojekyll` 关闭 Jekyll 处理，页面按字节原样提供。每张页面右上角有两个入口：GitHub 小猫图标指向本仓库，太阳 / 月亮图标切换浅色与深色。
 
 ## 数据字段
 

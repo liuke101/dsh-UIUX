@@ -912,6 +912,24 @@ button, input, select, textarea { font-family: inherit; }
 .brandmark { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
 .brandmark svg { display: block; }
 
+/* Top-right controls: the repository link and the palette switch. The column
+   stretches to the masthead's height so the buttons sit in the corner while the
+   snapshot metadata stays on the baseline; growing along the main axis keeps
+   them flush right when the masthead wraps on a narrow viewport. */
+.masthead-side { display: flex; flex: 1 1 auto; min-width: 0; flex-direction: column; align-items: flex-end; justify-content: space-between; gap: 14px; align-self: stretch; }
+.topbar { display: flex; align-items: center; gap: 8px; }
+.iconbtn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; padding: 0; cursor: pointer;
+  border: 0.5px solid var(--dsw-alias-border-l3); border-radius: var(--dsw-radius-md);
+  background: transparent; color: var(--dsw-alias-label-secondary);
+}
+.iconbtn:hover { background: var(--dsw-alias-interactive-bg-hover); color: var(--dsw-alias-label-primary); text-decoration: none; }
+.iconbtn:focus-visible { outline: var(--dsw-focus-ring-width) solid var(--dsw-alias-state-business-primary); outline-offset: 2px; }
+.iconbtn svg { display: block; }
+.iconbtn .i-moon, body[data-ds-dark-theme] .iconbtn .i-sun { display: none; }
+body[data-ds-dark-theme] .iconbtn .i-moon { display: block; }
+
 .rail { position: sticky; top: 24px; align-self: start; max-height: calc(100vh - 48px); overflow: auto; padding-right: 8px; }
 .rail h2 { font: var(--dsw-font-xxs-strong-12); text-transform: uppercase; letter-spacing: 0.08em; color: var(--dsw-alias-label-caption); margin: 22px 0 8px; }
 .rail h2:first-child { margin-top: 0; }
@@ -954,7 +972,14 @@ button, input, select, textarea { font-family: inherit; }
 .spec { margin: 0; min-width: 0; }
 .spec figcaption { font: var(--dsw-font-xxs-12); color: var(--dsw-alias-label-caption); margin-bottom: 6px; }
 .spec-note { color: var(--dsw-alias-label-dimmed); }
-.stage { border: 0.5px solid var(--dsw-alias-border-l1); border-radius: var(--dsw-radius-md); padding: 20px; display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; min-width: 120px; }
+/* A specimen stage is the containing block for whatever the component CSS
+   positions. Without it, an absolutely positioned inset-0 overlay inside a
+   component whose caller normally supplies the positioned wrapper resolves
+   against the initial containing block and covers the viewport — and a
+   full-viewport backdrop-filter layer is enough to make Chromium stop painting
+   the page altogether. The isolation keeps a specimen's negative z-index
+   layers inside their own stage as well. */
+.stage { position: relative; isolation: isolate; border: 0.5px solid var(--dsw-alias-border-l1); border-radius: var(--dsw-radius-md); padding: 20px; display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; min-width: 120px; }
 .stage[data-bg=layer1] { background: var(--dsw-alias-bg-layer-1); }
 .stage[data-bg=layer2] { background: var(--dsw-alias-bg-layer-2); }
 .stage[data-bg=platform] { background: var(--dsw-alias-bg-module-platform); }
@@ -1025,6 +1050,9 @@ td .zh { color: var(--dsw-alias-label-caption); font: var(--dsw-font-xxxs-11); m
 </style>
 </head>
 <body data-catalog="index.html">
+<script>
+try { if (localStorage.getItem('dsh-uiux-theme') === 'dark') document.body.setAttribute('data-ds-dark-theme', ''); } catch (err) {}
+</script>
 <div class="layout">
   <header class="masthead">
     <div>
@@ -1032,18 +1060,22 @@ td .zh { color: var(--dsw-alias-label-caption); font: var(--dsw-font-xxxs-11); m
       <h1>总览 · DeepSeek Harness UI 组件调研</h1>
       <p>把 DeepSeek Harness Web 客户端的全部 React UI 组件按名称、导出变量、外观与代码来源整理成可检索的目录。外观示例不是截图，而是直接加载组件自身的 CSS Module 源码重绘。</p>
     </div>
-    <div class="meta">
-      源码快照 2026-10-17<br>
-      扫描 352 个 .tsx · 61 个客户端包<br>
-      2026-10-18 12:52:03 UTC
+    <div class="masthead-side">
+      <div class="topbar">
+        <a class="iconbtn" href="https://github.com/liuke101/dsh-UIUX" target="_blank" rel="noreferrer" title="GitHub 仓库：liuke101/dsh-UIUX" aria-label="GitHub 仓库：liuke101/dsh-UIUX"><svg width="18" height="18" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg></a>
+        <button class="iconbtn" type="button" data-theme-toggle aria-pressed="false" aria-label="切换浅色 / 深色主题" title="切换浅色 / 深色主题"><svg class="i-sun" width="18" height="18" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="3.15" fill="currentColor"/><g stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M8 1.05v1.7M8 13.25v1.7M1.05 8h1.7M13.25 8h1.7M3.09 3.09l1.2 1.2M11.71 11.71l1.2 1.2M12.91 3.09l-1.2 1.2M4.29 11.71l-1.2 1.2"/></g></svg><svg class="i-moon" width="18" height="18" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M13.4 9.63a5.86 5.86 0 0 1-6.98-6.98.6.6 0 0 0-.79-.7 6.9 6.9 0 1 0 8.47 8.47.6.6 0 0 0-.7-.79Z"/></svg></button>
+      </div>
+      <div class="meta">
+        源码快照 2026-10-17<br>
+        扫描 352 个 .tsx · 61 个客户端包<br>
+        2026-10-18 12:52:03 UTC
+      </div>
     </div>
   </header>
   <nav class="rail">
     <h2>目录</h2>
     <a class="home is-active" href="index.html" style="background:var(--dsw-alias-interactive-bg-hover)">总览</a><a class="home" href="primitives.html">基础组件库<span class="n">53</span></a><a class="home" href="product.html">产品组件<span class="n">63</span></a><a class="home" href="tokens.html">设计变量<span class="n">419</span></a><a class="home" href="inventory.html">全量清单<span class="n">601</span></a>
     
-    <h2>操作</h2>
-    <button data-theme-toggle style="width:100%;height:32px;border:0.5px solid var(--dsw-alias-border-l3);border-radius:var(--dsw-radius-sm);background:transparent;color:var(--dsw-alias-label-secondary);cursor:pointer;font:var(--dsw-font-xs-13)">深色</button>
   </nav>
   <main>
 <section class="section">
@@ -1057,7 +1089,7 @@ td .zh { color: var(--dsw-alias-label-caption); font: var(--dsw-font-xxxs-11); m
     <div class="stat"><b>53</b><span>已重绘 —— 基础组件</span></div>
     <div class="stat"><b>63</b><span>已重绘 —— 产品组件</span></div>
   </div>
-  <div class="callout"><b>外观示例的生成方式。</b>每个示例把组件自己的 <code>*.module.css</code> 原文放进一个声明式 Shadow DOM（<code>&lt;template shadowrootmode&gt;</code>），并直接使用真实的 <code>--dsw-*</code> 变量。因此示例不是仿制图：点左栏底部的主题按钮即可让所有示例跟随浅色 / 深色变量一起变化。条目列出多张样式表时，构建脚本按文件把类名改写成 <code>c&lt;下标&gt;-&lt;原名&gt;</code>，还原 CSS Module 在真实构建里的哈希隔离，避免 <code>.root</code> 这类同名类互相串味——细节见目录自带的 <code>README.md</code>。需要 JavaScript 才能产生的状态（悬停、菜单展开、弹窗、portal 定位）以静态快照配合状态附加样式呈现，并在示例标题旁标注。</div>
+  <div class="callout"><b>外观示例的生成方式。</b>每个示例把组件自己的 <code>*.module.css</code> 原文放进一个声明式 Shadow DOM（<code>&lt;template shadowrootmode&gt;</code>），并直接使用真实的 <code>--dsw-*</code> 变量。因此示例不是仿制图：点右上角的主题按钮即可让所有示例跟随浅色 / 深色变量一起变化，选择记在 <code>localStorage</code> 里，翻到别的页面也保持。条目列出多张样式表时，构建脚本按文件把类名改写成 <code>c&lt;下标&gt;-&lt;原名&gt;</code>，还原 CSS Module 在真实构建里的哈希隔离，避免 <code>.root</code> 这类同名类互相串味——细节见目录自带的 <code>README.md</code>。需要 JavaScript 才能产生的状态（悬停、菜单展开、弹窗、portal 定位）以静态快照配合状态附加样式呈现，并在示例标题旁标注。</div>
   <div class="callout"><b>覆盖范围。</b>清单页收录全部 601 个组件的元数据（名称、变量名、来源、设计变量、CSS 类名）。重绘页覆盖共 116 个具代表性的组件：基础组件库的全部导出，加上产品层最常出现在用户视野里的组件。其余组件可在清单页按包与关键词定位到源码。</div>
 </section>
 
@@ -1126,8 +1158,7 @@ node tools/build.mjs                # 组装 index / primitives / product / toke
 <p class="footnote">数据源：<code>packages/client/**/src/**/*.tsx</code>、<code>packages/experimental/**</code>、<code>packages/extensions/**</code> 与 <code>packages/client/ui-theme/src/styles/*.css</code>。源码快照日期 2026-10-17。源码链接指向 <a href="https://github.com/deepseek-ai/deepseek-harness/" target="_blank" rel="noreferrer">deepseek-ai/deepseek-harness @ master</a>，即生成这份目录时的上游版本。语言：中文说明 + 英文标识符（与源码一致）。</p>
   </main>
 </div>
-<script>
-(function () {
+<script>(function () {
   var input = document.querySelector('[data-filter]');
   var cards = Array.prototype.slice.call(document.querySelectorAll('[data-search]'));
   var rows = Array.prototype.slice.call(document.querySelectorAll('tbody tr[data-search]'));
@@ -1154,12 +1185,7 @@ node tools/build.mjs                # 组装 index / primitives / product / toke
   if (input) input.addEventListener('input', apply);
   if (kindFilter) kindFilter.addEventListener('change', apply);
   if (pkgFilter) pkgFilter.addEventListener('change', apply);
-  const toggle = document.querySelector('[data-theme-toggle]');
-  if (toggle) toggle.addEventListener('click', function () {
-    var dark = !document.body.hasAttribute('data-ds-dark-theme');
-    applyTheme(dark);
-    toggle.textContent = dark ? '浅色' : '深色';
-  });
+
   // Component CSS that targets the dark palette through a document selector
   // (a :global body[dark] rule) is rewritten into a :host([dark]) rule for the
   // shadow root, so each preview stage carries the attribute too. Token values
@@ -1169,6 +1195,42 @@ node tools/build.mjs                # 组装 index / primitives / product / toke
     var stages = document.querySelectorAll('.stage');
     for (var i = 0; i < stages.length; i++) stages[i].toggleAttribute('data-ds-dark-theme', dark);
   }
+  // The choice outlives a page load, so the catalog keeps one palette while the
+  // reader walks the five pages. The key is namespaced because GitHub Pages
+  // serves every project of an account from one origin.
+  var STORE_KEY = 'dsh-uiux-theme';
+  function readStored() {
+    try {
+      var value = localStorage.getItem(STORE_KEY);
+      return value === 'dark' ? true : value === 'light' ? false : null;
+    } catch (err) { return null; }
+  }
+  function writeStored(dark) {
+    try { localStorage.setItem(STORE_KEY, dark ? 'dark' : 'light'); } catch (err) {}
+  }
+  var toggle = document.querySelector('[data-theme-toggle]');
+  // The button advertises the palette it switches to, which is also its label
+  // for screen readers: the icons alone carry no text.
+  function syncToggle(dark) {
+    if (!toggle) return;
+    var label = dark ? '切换到浅色主题' : '切换到深色主题';
+    toggle.setAttribute('aria-pressed', dark ? 'true' : 'false');
+    toggle.setAttribute('aria-label', label);
+    toggle.setAttribute('title', label);
+  }
+  var dark = document.body.hasAttribute('data-ds-dark-theme');
+  // A stored choice wins over the state the bootstrap script painted with; when
+  // nothing is stored (or storage is unavailable) the document stands.
+  var stored = readStored();
+  if (stored !== null) dark = stored;
+  applyTheme(dark);
+  syncToggle(dark);
+  if (toggle) toggle.addEventListener('click', function () {
+    dark = !document.body.hasAttribute('data-ds-dark-theme');
+    applyTheme(dark);
+    syncToggle(dark);
+    writeStored(dark);
+  });
   apply();
 })();
 </script>

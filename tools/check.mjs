@@ -3,7 +3,12 @@
  * One-shot verification of the UIUX catalog: entry schema and class/token
  * resolution, the repository's prohibited-reference rule, and page totals.
  *
- * Usage: node tools/check.mjs
+ * The entry checks resolve class names against the documented sources, so they
+ * need the checkout. The catalog normally sits at `<checkout>/UIUX/` and finds
+ * it by walking up; a copy published on its own, with no checkout above it,
+ * has to name one: `node tools/check.mjs --root <checkout>`.
+ *
+ * Usage: node tools/check.mjs [--root <repoRoot>]
  */
 
 import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs'
@@ -13,6 +18,8 @@ import { execFileSync } from 'node:child_process'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const UIUX = join(HERE, '..')
+const argv = process.argv.slice(2)
+const rootFlag = argv.indexOf('--root')
 /** Nearest ancestor holding the documented sources, for the reference scan. */
 function findCheckout(start) {
   let dir = start
@@ -24,7 +31,14 @@ function findCheckout(start) {
   }
   return null
 }
-const ROOT = findCheckout(UIUX) ?? join(UIUX, '..')
+const checkout = findCheckout(UIUX)
+const ROOT = rootFlag >= 0 ? argv[rootFlag + 1] : (checkout ?? join(UIUX, '..'))
+if (rootFlag < 0 && checkout == null) {
+  process.stdout.write(
+    '注意：本目录上方没有 deepseek-harness 检出，条目校验读不到组件样式表，会把每个类名都报成未声明。\n' +
+      '      用 --root <checkout> 指定检出位置可得到真实结果。\n',
+  )
+}
 
 const run = (label, args) => {
   process.stdout.write(`\n== ${label}\n`)
@@ -137,7 +151,7 @@ function pageTotals() {
 }
 
 const ok = [
-  run('条目校验（tools/validate.mjs）', [join(HERE, 'validate.mjs')]),
+  run('条目校验（tools/validate.mjs）', [join(HERE, 'validate.mjs'), ...(rootFlag >= 0 ? ['--root', ROOT] : [])]),
   referenceCheck(),
   sourceLinkCheck(),
   pageTotals(),

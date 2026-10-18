@@ -63,6 +63,12 @@
 8. 组件的 CSS 会逐字生效，但如果组件依赖父级布局（flex 容器、绝对定位父级），
    在示例里补一层薄薄的容器元素是可以的——容器不要加 class，用 `style` 只写
    `display:flex;gap:12px` 这类布局。
+9. 静态快照要把浮层（`position: absolute` 的门户卡片）拉回文档流时，写
+   `position: relative; inset: auto`，**不要写 `position: static`**。`relative` 同样让原来的
+   `top` / `left` 失效（`inset: auto` 抵消），但留住包含块——`MenuSurface` 的 `.material`
+   这类 `inset: 0` 的绝对定位子层靠它确定尺寸，少了它就会以初始包含块为参照铺满整个视口，
+   而铺满视口的 `backdrop-filter` 会让浏览器整页画不出来（示例框 `.stage` 虽然也兜了一层，
+   但那只保证不画崩，尺寸仍然是错的）。
 
 ## 多张样式表与同名类
 
