@@ -74,6 +74,10 @@ node <本目录>/tools/build.mjs
 
 类名归属的判定顺序是「与组件源文件同名的那张样式表」→「`css` 中第一张声明了该类的表」。当元素属于非主样式表、而类名在主表里也存在时，条目直接写带前缀的类名，构建脚本原样保留；规则见 [data/ENTRY-SCHEMA.md](data/ENTRY-SCHEMA.md) 的「多张样式表与同名类」。
 
+## 发布副本
+
+目录同时发布在 <https://github.com/liuke101/dsh-UIUX>，并开启 GitHub Pages 在线浏览：<https://liuke101.github.io/dsh-UIUX/>。仓库根目录的 `.nojekyll` 关闭 Jekyll 处理，页面按字节原样提供。
+
 ## 数据字段
 
 `data/components.json` 的每个组件记录包含：`name`（组件名）、`exportName`（导出变量名）、`kind`（分层判定）、`package`、`file` 与 `line`（代码来源）、`propsType`、`doc`（源码 JSDoc）、`cssModule`、`cssClasses`、`tokens`（该组件 CSS 引用的设计变量）、`publicExport`（是否在包的 `src/index.ts` 中公开导出）。
