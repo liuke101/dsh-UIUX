@@ -156,10 +156,18 @@ function moduleCss(relPath) {
   text = text
     .replace(/:global\(([^)]*)\)/g, '$1')
     .replace(/(^|\})\s*:root\b/g, '$1 :host')
+    // A bare `body` or `html` becomes the shadow host. When the document
+    // selector carries an attribute (`body[data-ds-dark-theme]`), that
+    // attribute has to stay inside the `:host()` functional pseudo-class:
+    // the result must be `:host([data-ds-dark-theme])`. Without the
+    // parentheses the selector matches nothing, so dark-palette overrides
+    // never reach the specimen and a card keeps its light fill under
+    // dark-mode text.
+    .replace(/(^|\})\s*html\[[^\]]*\]\s+body(\[[^\]]+\])/g, '$1 :host($2)')
+    .replace(/(^|\})\s*body(\[[^\]]+\])/g, '$1 :host($2)')
     .replace(/(^|\})\s*html\[[^\]]*\]\s+body\b/g, '$1 :host')
     .replace(/(^|\})\s*html\b/g, '$1 :host')
     .replace(/(^|\})\s*body\b/g, '$1 :host')
-    .replace(/body\[/g, ':host([')
   cssCache.set(key, text)
   return text
 }
