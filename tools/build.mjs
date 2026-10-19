@@ -273,11 +273,22 @@ function guardInjection(entry, css, html) {
   if (/<script/i.test(html)) console.warn(`entry ${entry.id}: specimen HTML contains a <script> tag, which the catalog does not execute`)
 }
 
+/**
+ * Drops the focus-hijacking attributes a specimen may carry. `autofocus`
+ * focuses its field on load, and focusing an element scrolls it into view: the
+ * goal editor specimen alone carried it, and opening a page therefore landed
+ * the reader on that card, thousands of pixels down. The catalog is a static
+ * snapshot with no focus to seed, so the attribute is inert here — but only if
+ * it never reaches the document. The product's own `data-modal-autofocus` hook
+ * stays: the dialog's focus manager reads it, the browser does not.
+ */
+const stripAutofocus = (html) => String(html ?? '').replace(/\sautofocus(?:="[^"]*")?(?=[\s/>])/g, '')
+
 /** Renders one preview stage as a declarative shadow root. */
 function stage(specimen, entry) {
   const css = specimenCss(entry, specimen)
   const plan = classPlan(entry)
-  const html = plan ? prefixHtml(specimen.html, plan) : specimen.html
+  const html = stripAutofocus(plan ? prefixHtml(specimen.html, plan) : specimen.html)
   guardInjection(entry, css, html)
   const bg = specimen.bg ?? 'layer1'
   const pad = specimen.pad ?? 'md'

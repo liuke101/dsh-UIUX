@@ -339,10 +339,11 @@
     },
     {
      "label": "编辑态：InlineEditor + 保存 / 取消",
-     "note": "编辑器最多长到 6 行（127px）后自己滚动；高度由 JS 按内容设置",
+     "note": "编辑器最多长到 6 行（127px）后自己滚动；高度由 JS 按内容设置；聚焦描边为静态模拟",
      "bg": "platform",
      "pad": "lg",
-     "html": "<div style=\"--dsh-composer-card-max-width:720px;--dsh-composer-side-clearance:16px;--dsh-composer-dock-inset:8px;width:720px\"><div class=\"dock\" data-goal-bar><div class=\"bar editBar\"><textarea class=\"editor\" rows=\"1\" aria-label=\"目标内容\" autofocus>把 UIUX 组件目录补齐</textarea><div class=\"actions\"><button type=\"button\" class=\"iconBtn\" aria-label=\"保存目标\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"iconBtn\" aria-label=\"取消编辑\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></div></div></div></div>"
+     "html": "<div style=\"--dsh-composer-card-max-width:720px;--dsh-composer-side-clearance:16px;--dsh-composer-dock-inset:8px;width:720px\"><div class=\"dock\" data-goal-bar><div class=\"bar editBar\"><textarea class=\"editor\" rows=\"1\" aria-label=\"目标内容\" autofocus>把 UIUX 组件目录补齐</textarea><div class=\"actions\"><button type=\"button\" class=\"iconBtn\" aria-label=\"保存目标\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"iconBtn\" aria-label=\"取消编辑\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></div></div></div></div>",
+     "css": "/* 静态模拟聚焦态：编辑态进入时 InlineEditor 自己 autofocus，聚焦描边取自\n   InlineEditor.module.css 的 .editor:focus。目录是静态快照、不带焦点（示例 HTML 里的\n   autofocus 会让浏览器在载入时把整页滚到这张卡），所以把那条规则原样搬过来。 */\n.editor { border-color: var(--dsw-alias-state-business-primary); }"
     },
     {
      "label": "受阻：只剩编辑 / 清除",
