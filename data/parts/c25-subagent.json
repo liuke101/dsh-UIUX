@@ -1,0 +1,761 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "id": "fixed-chat-conversation-view",
+      "name": "FixedChatConversationView",
+      "exportName": "FixedChatConversationView",
+      "zh": "固定会话视图",
+      "group": "agent",
+      "summary": "内嵌会话的视图适配器：自身不产生任何 DOM，只把 <code>conversation.session</code> 固定渲染成 <code>view: 'chat'</code>，因此右侧栏里的子会话永远是聊天流，不会跟着主面板切到轨迹等其它视图。外观完全由 ui-chat 的 <code>ChatView</code> 决定：<code>.frame</code> 竖排容器 → <code>.root</code> → 可滚动的 <code>.scroll</code> → 以 <code>--dsh-chat-content-width</code> 居中收窄的消息列 <code>.column</code>。它由 <code>ConversationSlotPanel</code> 作为 <code>conversation.content</code> 工厂的 <code>views</code> 座位注入，只服务右侧栏这类内嵌 occurrence。",
+      "source": "packages/client/ui-subagent/src/client/sidebar-chat/index.tsx#L121",
+      "css": [
+        "packages/client/ui-chat/src/client/chat/ChatView.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l1",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-button-floating-fill",
+        "--dsw-alias-button-floating-hover",
+        "--dsw-alias-interactive-bg-hover-solid",
+        "--dsw-alias-label-deep-diving",
+        "--dsw-alias-label-deep-diving-shimmer",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-state-error-primary",
+        "--dsw-elevation-panel",
+        "--dsw-radius-sm"
+      ],
+      "specimens": [
+        {
+          "label": "内嵌会话：ChatView 外框与座位",
+          "note": "该组件本身无独立外观：外框里是它固定选中的 ChatView，.hint 是 ChatView 在历史未就绪时的真实提示；其余文字是座位说明，不是产品文案。",
+          "html": "<div style='width:460px;height:300px'><div class=\"frame\" style='height:100%'><div class=\"root\" style='flex:1 1 auto'><div class=\"scroll\" style='flex:1 1 auto'><div class=\"column\" style='gap:8px;padding:16px'><div class=\"hint\">载入历史…</div><div>conversation.session · view = chat</div><div>右侧栏内嵌会话：消息流、回合导航与「回到最新」浮动按钮都在 ChatView 里；这里只保留外框，框内文字是座位说明。</div></div></div></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "renderSlot",
+          "type": "PropsRenderSlots<'conversation.session'>['renderSlot']",
+          "default": "—",
+          "desc": "工厂注入的渲染函数；本组件只用它渲染 conversation.session，并强制传 view: 'chat'。"
+        }
+      ],
+      "notes": "选择是写死的：调用点只把这一份 <code>Views</code> 交给内嵌 occurrence，主面板的 <code>ConversationMainPanel</code> 不传 <code>views</code>，所以主面板仍按会话自己的视图状态切换。组件没有自己的样式表，装饰全部来自 <code>ChatView.module.css</code>。",
+      "keywords": [
+        "内嵌会话",
+        "固定视图",
+        "embedded chat",
+        "sidebar chat view",
+        "view: chat"
+      ]
+    },
+    {
+      "id": "sidebar-chat-tab",
+      "name": "SidebarChatTab",
+      "exportName": "SidebarChatTab",
+      "zh": "侧栏会话页",
+      "group": "agent",
+      "summary": "右侧栏中承载一个子智能体会话的 tab 主体。最外层是 <code>SidebarChat.module.css</code> 的 <code>.root</code>：<code>100%×100%</code> 的 flex 容器并带 <code>data-sidebar-chat</code> 标记；资源解析出来后用子会话引用包一层 <code>SessionProvider</code>，再渲染 <code>sidebar.chat.conversation</code> 槽。槽里的 <code>ConversationSlotPanel</code> 以 <code>variant: 'embedded'</code> 给出会话内容——列宽 <code>min(calc(100% - 32px), 920px)</code>、输入卡两侧留白 8px；资源 <code>value</code> 未到时只渲染空容器，不显示加载占位。",
+      "source": "packages/client/ui-subagent/src/client/sidebar-chat/index.tsx#L155",
+      "css": [
+        "packages/client/ui-subagent/src/client/sidebar-chat/SidebarChat.module.css",
+        "packages/client/ui-conversation/src/client/skeleton/ConversationRoot.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-base",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-scrollbar-bg-l1",
+        "--dsw-alias-state-business-primary",
+        "--dsw-radius-md"
+      ],
+      "specimens": [
+        {
+          "label": "子会话已解析：embedded 会话内容（座位示意）",
+          "note": "该组件最外层只有一个满尺寸容器；框内是它托管的子会话内容，文字是座位说明，不是产品文案。",
+          "html": "<div style='width:420px;height:320px'><div class=\"c0-root\" data-sidebar-chat=''><div class=\"body embeddedBody\" data-conversation-content='' data-content-phase='active'><div class=\"scrollBody\" data-conversation-scroll=''><div style='padding:16px'><div>子会话「复查 Agent 预设卡片」</div><div>embedded 会话：标题行、聊天流与输入卡分别由 conversation.session 与 conversation.composer 槽提供；框内文字是座位说明。</div></div></div></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "useResource",
+          "type": "PropsRuntime<'sidebar.right.pane.tab'>['useResource']",
+          "default": "—",
+          "desc": "按 tab.contentId 读取 subagentchat 资源；值里带着子会话引用（address + reference）。"
+        },
+        {
+          "name": "useTabInfo",
+          "type": "PropsRuntime<'sidebar.right.pane.tab'>['useTabInfo']",
+          "default": "—",
+          "desc": "当前 tab 的元信息与动作；本组件只取 tab.contentId 作为资源地址。"
+        },
+        {
+          "name": "SessionProvider",
+          "type": "SessionProviderComponent",
+          "default": "—",
+          "desc": "把子会话引用确立成会话作用域，供 sidebar.chat.conversation 槽里的条目读取 useSession 等标准源。"
+        },
+        {
+          "name": "renderSlot",
+          "type": "PropsRenderSlots<'sidebar.chat.conversation'>['renderSlot']",
+          "default": "—",
+          "desc": "渲染 sidebar.chat.conversation 这个单选子槽，槽里是 ConversationSlotPanel。"
+        }
+      ],
+      "notes": "tab 标题由同文件的 <code>registerSidebarChat</code> 提供：取子会话投影里的 <code>subagent.label</code>，取不到时回落到子会话 id。资源 <code>value</code> 为 undefined 时子树不渲染，容器仍保持满尺寸，因此不会出现「加载中」的闪屏。",
+      "keywords": [
+        "子智能体侧栏",
+        "右侧栏聊天",
+        "sidebar chat",
+        "subagentchat",
+        "SessionProvider"
+      ]
+    },
+    {
+      "id": "subagent-catalog-action",
+      "name": "SubagentCatalogAction",
+      "exportName": "SubagentCatalogAction",
+      "zh": "子智能体目录",
+      "group": "agent",
+      "summary": "根会话标题行末尾的「N 个子智能体」下拉入口，挂在 <code>conversation.session.header.actions</code> 列表槽、排在 Agent 预设标签之后。收起态是 28px 高、12px tertiary 文字的按钮，有子智能体在运行时左侧多一枚 14px 的 ongoing 转子，右侧 chevron 在展开时旋转 180°。展开后是 336px 宽的门户菜单（<code>position: fixed</code>，<code>--dsw-specific-menu</code> 材质 + <code>--dsw-menu-backdrop-filter</code>），内部 <code>role=\"tree\"</code>：每行 44px 起，左起 14px 展开槽、状态点、标题与「标题 · 模式 · 活动」副行，右侧是 token 用量与活跃耗时两行指标，非当前行还有一个 28px 的「在侧边栏打开」按钮。子会话本身不渲染这个入口。",
+      "source": "packages/client/ui-subagent/src/client/SubagentHeaderLineage.tsx#L760",
+      "css": [
+        "packages/client/ui-subagent/src/client/SubagentHeaderLineage.module.css",
+        "packages/client/ui-primitives/src/StateDot.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l1",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-primary-foreground",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-scrollbar-bg-l2",
+        "--dsw-alias-scrollbar-hover-l2",
+        "--dsw-alias-state-error-primary",
+        "--dsw-alias-state-idle-primary",
+        "--dsw-alias-state-success-primary",
+        "--dsw-alias-state-warn-primary",
+        "--dsw-elevation-prominent",
+        "--dsw-menu-backdrop-filter",
+        "--dsw-radius-lg",
+        "--dsw-radius-md",
+        "--dsw-radius-sm",
+        "--dsw-specific-menu"
+      ],
+      "specimens": [
+        {
+          "label": "收起态：3 个子智能体，其中一个正在运行",
+          "note": "静态快照",
+          "html": "<div style='display:flex;align-items:center;height:44px'><div class=\"root\"><button type='button' class=\"trigger\" aria-haspopup='tree' aria-expanded='false' aria-label='3 个子智能体，正在运行'><span class=\"activitySlot\"><svg class=\"spinner\" data-state='ongoing' width='14' height='14' viewBox='0 0 24 24' aria-hidden='true'><g class=\"spinnerMotion\"><circle class=\"spinnerTrack\" cx='12' cy='12' r='9.5'/><circle class=\"spinnerArc\" cx='12' cy='12' r='9.5'/></g></svg></span><span>3 个子智能体</span><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M3.5 6L8 10.5L12.5 6' stroke='currentColor'/></svg></button></div></div>"
+        },
+        {
+          "label": "展开态：目录树（浮层菜单拉回文档流）",
+          "note": "打开态模拟",
+          "html": "<div style='width:380px'><div style='display:flex;flex-direction:column;align-items:flex-start;gap:5px'><div class=\"root\"><button type='button' class=\"trigger\" aria-haspopup='tree' aria-expanded='true' aria-label='3 个子智能体，正在运行'><span class=\"activitySlot\"><svg class=\"spinner\" data-state='ongoing' width='14' height='14' viewBox='0 0 24 24' aria-hidden='true'><g class=\"spinnerMotion\"><circle class=\"spinnerTrack\" cx='12' cy='12' r='9.5'/><circle class=\"spinnerArc\" cx='12' cy='12' r='9.5'/></g></svg></span><span>3 个子智能体</span><svg class=\"triggerOpen\" width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M3.5 6L8 10.5L12.5 6' stroke='currentColor'/></svg></button></div><div class=\"menu snapshotStatic\"><div class=\"menuBody\" role='tree' aria-label='子智能体会话'><div class=\"row\" role='treeitem' tabindex='0' aria-level='1' aria-label='复查 Agent 预设卡片 抽查卡片的禁用与损坏态 · 可继续 · 正在运行 12.4K tok · 2分18秒' aria-current='true' aria-expanded='true'><button type='button' tabindex='-1' class=\"disclosure disclosureOpen\" aria-label='收起 复查 Agent 预设卡片 的下级子智能体'><svg width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M6 3.5L10.5 8L6 12.5' stroke='currentColor'/></svg></button><div class=\"clickarea\"><span class=\"rowActivitySlot\"><svg class=\"spinner\" data-state='ongoing' width='14' height='14' viewBox='0 0 24 24' aria-hidden='true'><g class=\"spinnerMotion\"><circle class=\"spinnerTrack\" cx='12' cy='12' r='9.5'/><circle class=\"spinnerArc\" cx='12' cy='12' r='9.5'/></g></svg></span><span class=\"content\"><span class=\"label currentLabel\">复查 Agent 预设卡片</span><span class=\"summary\">抽查卡片的禁用与损坏态 · 可继续 · 正在运行</span></span><span class=\"metrics\"><span class=\"metricToken\">12.4K tok</span><span class=\"metricDuration\">2分18秒</span></span></div></div><div role='group' class=\"children\"><div class=\"row\" role='treeitem' tabindex='0' aria-level='2' aria-label='核对 AgentPresetSection 卡片网格与描边 · 可继续 · 已完成 6.8K tok · 1分04秒'><span class=\"disclosureSpace\"></span><div class=\"clickarea\"><span class=\"rowActivitySlot\"><span class=\"dot\" data-state='done' style=\"width:10px;height:10px\"></span></span><span class=\"content\"><span class=\"label\">核对 AgentPresetSection</span><span class=\"summary\">卡片网格与描边 · 可继续 · 已完成</span></span><span class=\"metrics\"><span class=\"metricToken\">6.8K tok</span><span class=\"metricDuration\">1分04秒</span></span><button type='button' class=\"sidebarButton\" aria-label='在侧边栏打开 核对 AgentPresetSection'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M6 3.5L10.5 8L6 12.5' stroke='currentColor'/></svg></button></div></div><div class=\"row\" role='treeitem' tabindex='0' aria-level='2' aria-label='核对 lint 输出 pnpm test · 一次性 · 当前未运行'><span class=\"disclosureSpace\"></span><div class=\"clickarea\"><span class=\"rowActivitySlot\"><span class=\"dot\" data-state='idle' style=\"width:10px;height:10px\"></span></span><span class=\"content\"><span class=\"label\">核对 lint 输出</span><span class=\"summary\">pnpm test · 一次性 · 当前未运行</span></span><button type='button' class=\"sidebarButton\" aria-label='在侧边栏打开 核对 lint 输出'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M6 3.5L10.5 8L6 12.5' stroke='currentColor'/></svg></button></div></div></div><div class=\"row\" role='treeitem' tabindex='0' aria-level='1' aria-label='补预设卡片的交互用例 预设设置区 · 可继续 · 当前未运行 3.1K tok · 42秒'><span class=\"disclosureSpace\"></span><div class=\"clickarea\"><span class=\"rowActivitySlot\"><span class=\"dot\" data-state='idle' style=\"width:10px;height:10px\"></span></span><span class=\"content\"><span class=\"label\">补预设卡片的交互用例</span><span class=\"summary\">预设设置区 · 可继续 · 当前未运行</span></span><span class=\"metrics\"><span class=\"metricToken\">3.1K tok</span><span class=\"metricDuration\">42秒</span></span><button type='button' class=\"sidebarButton\" aria-label='在侧边栏打开 补预设卡片的交互用例'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M6 3.5L10.5 8L6 12.5' stroke='currentColor'/></svg></button></div></div><div class=\"row\" role='treeitem' tabindex='-1' aria-disabled='true' aria-level='1' aria-label='导出截图 导出三张界面截图 · 外部任务'><span class=\"disclosureSpace\"></span><div class=\"clickarea\"><span class=\"rowActivitySlot\"><span class=\"dot\" data-state='idle' style=\"width:10px;height:10px\"></span></span><span class=\"content\"><span class=\"label\">导出截图</span><span class=\"summary\">导出三张界面截图 · 外部任务</span></span></div></div></div></div></div></div>",
+          "css": "/* 状态模拟：菜单在真实产品里是挂在 body 上的 position: fixed 门户浮层，\n   这里拉回文档流，保留它作为 .menuBody 与 ::before 材质的包含块。 */\n.c0-menu.snapshotStatic { position: relative; inset: auto; }"
+        },
+        {
+          "label": "加载失败：错误行 + 重试",
+          "note": "静态快照",
+          "html": "<div style='width:340px'><div style='display:flex;flex-direction:column;align-items:flex-start;gap:5px'><div class=\"root\"><button type='button' class=\"trigger\" aria-haspopup='tree' aria-expanded='true' aria-label='0 个子智能体'><span>0 个子智能体</span><svg class=\"triggerOpen\" width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M3.5 6L8 10.5L12.5 6' stroke='currentColor'/></svg></button></div><div class=\"menu snapshotStatic\"><div class=\"menuBody\" role='tree' aria-label='子智能体会话'><div class=\"error\"><span>无法加载子智能体</span><button type='button' class=\"refresh\"><svg width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M13 8a5 5 0 11-1.6-3.7' stroke='currentColor'/><path d='M13 2.5V5h-2.5' stroke='currentColor'/></svg>重试</button></div></div></div></div></div>",
+          "css": "/* 状态模拟：同上一例，门户菜单改为文档流内的相对定位。 */\n.c0-menu.snapshotStatic { position: relative; inset: auto; }"
+        }
+      ],
+      "props": [
+        {
+          "name": "sessionId",
+          "type": "SessionId",
+          "default": "—",
+          "desc": "当前会话 id；该会话 origin 为 subagent 时组件直接返回 null，目录入口只属于根会话。"
+        },
+        {
+          "name": "useSessions",
+          "type": "PropsRuntime<'conversation.session.header.actions'>['useSessions']",
+          "default": "—",
+          "desc": "读会话列表快照：投影里的 subagentCatalog 是树的数据源，byId 提供标题、时间与 token 用量。"
+        },
+        {
+          "name": "useSessionStatus",
+          "type": "PropsRuntime<'conversation.session.header.actions'>['useSessionStatus']",
+          "default": "—",
+          "desc": "读各子会话的运行状态，决定行前的 ongoing 转子和「正在运行」副行。"
+        },
+        {
+          "name": "openChild",
+          "type": "(address: SubagentAddress) => void",
+          "default": "—",
+          "desc": "点击行时在当前面板打开该子会话。"
+        },
+        {
+          "name": "openChildAside",
+          "type": "(address: SubagentAddress) => void",
+          "default": "—",
+          "desc": "点击行尾 28px 的按钮时把子会话放到右侧栏；当前会话所在行不显示该按钮。"
+        },
+        {
+          "name": "refreshProjection",
+          "type": "(parentSessionId: SessionId) => void",
+          "default": "—",
+          "desc": "展开分支或点击「重试」时刷新该会话的子智能体投影。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'subagent'>",
+          "default": "—",
+          "desc": "subagent 命名空间的翻译座位：计数、模式、活动、时长与 token 文案都从这里取。"
+        }
+      ],
+      "notes": "菜单开合不只是点击：悬停 150ms 打开、移出 120ms 关闭，点击过触发器后改为 pinned 并忽略移出；键盘支持 ArrowDown/Up、Home/End 与 Escape，Escape 关闭后焦点回到触发器。只有目录里有子智能体或投影加载失败时才渲染；空 catalog 且仍在加载不算「有子智能体」，入口保持隐藏。菜单皮肤画在 <code>::before</code> 上，避免 <code>backdrop-filter</code> 把菜单变成 fixed 子元素的包含块。",
+      "keywords": [
+        "子智能体目录",
+        "子会话列表",
+        "catalog",
+        "descendant count",
+        "subagent tree"
+      ]
+    },
+    {
+      "id": "subagent-readonly-composer",
+      "name": "SubagentReadOnlyComposer",
+      "exportName": "SubagentReadOnlyComposer",
+      "zh": "只读输入位",
+      "group": "agent",
+      "summary": "子智能体会话不能接收输入时顶替 composer 的只读说明条：<code>role=\"status\"</code>，0.5px <code>--dsw-alias-border-l4</code> 描边、<code>--dsw-radius-lg</code> 圆角、<code>--dsw-alias-bg-layer-1</code> 底的横条，最小高 54px，左右各 24px、下 20px 外边距，内容居中一行：主色加粗标题（字重 510）+ 13px tertiary 说明。文案由 <code>reason</code> 决定——一次性任务显示「一次性子智能体记录」，父会话不在线显示「此子智能体暂时只读」，还没读到子会话时正文换成「读取子会话后才能确定是否可继续」。",
+      "source": "packages/client/ui-subagent/src/client/SubagentReadOnlyComposer.tsx#L19",
+      "css": [
+        "packages/client/ui-subagent/src/client/SubagentReadOnlyComposer.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-layer-1",
+        "--dsw-alias-border-l4",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-radius-lg"
+      ],
+      "specimens": [
+        {
+          "label": "一次性子智能体：查看完整执行记录",
+          "note": "静态快照",
+          "html": "<div style='width:560px'><div class=\"frame\" role='status'><strong>一次性子智能体记录</strong><span>一次性任务不支持后续消息，可在这里查看完整执行记录。</span></div></div>"
+        },
+        {
+          "label": "父会话不在线：重新打开后可继续",
+          "note": "静态快照",
+          "html": "<div style='width:560px'><div class=\"frame\" role='status'><strong>此子智能体暂时只读</strong><span>父会话当前不在线，重新打开父会话后即可继续发送消息。</span></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "matched",
+          "type": "SubagentReadOnlyMatch",
+          "default": "—",
+          "desc": "选择器注入的匹配结果，只有 reason 一个字段：'one-shot' | 'parent-unavailable' | 'unknown'。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'subagent'>",
+          "default": "—",
+          "desc": "subagent 命名空间的翻译座位，标题与正文两组键都由它解析。"
+        }
+      ],
+      "notes": "它出现在 <code>conversation.composer</code> 这条链上，是整块接管而不是把输入框置灰，因此不存在禁用的 textarea 焦点。三种 reason 的文案里 <code>unknown</code> 只换正文（<code>readonly.unknown.body</code>），标题仍复用 <code>readonly.title</code>；<code>one-shot</code> 才换标题。",
+      "keywords": [
+        "只读会话",
+        "子智能体只读",
+        "readonly composer",
+        "一次性任务"
+      ]
+    },
+    {
+      "id": "agent-preset-label",
+      "name": "AgentPresetLabel",
+      "exportName": "AgentPresetLabel",
+      "zh": "预设标签",
+      "group": "agent",
+      "summary": "会话标题行里的只读预设标签，用来标明这个会话在创建时选了哪个 Agent 预设：22px 高的内联 flex，4px gap，14px 描边图标（opacity 0.7）+ 12px tertiary 文字，底色 <code>--dsw-alias-fill-tsp-secondary</code>、圆角 <code>--dsw-radius-xs</code>，最大宽 180px 且单行省略。标题行的 inline-size 容器 ≤540px 时（容器查询）整块 <code>display: none</code>，把宽度让给可交互的标题动作；会话没有记录预设时直接返回 <code>null</code>。",
+      "source": "packages/client/ui-agent-preset/src/client/AgentPresetLabel.tsx#L43",
+      "css": [
+        "packages/client/ui-agent-preset/src/client/AgentPresetLabel.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-fill-tsp-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-radius-xs"
+      ],
+      "specimens": [
+        {
+          "label": "默认：标准模式",
+          "note": "静态快照",
+          "html": "<div style='display:flex;align-items:center;height:30px'><span class=\"label\" title='处理代码、文件和资料，适合大多数任务。Agent 会按需使用检索、编辑和终端等工具。'><svg class=\"icon\" width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><circle cx='8' cy='5.6' r='2.2' stroke='currentColor'/><path d='M3.4 13.2c.6-2.7 2.4-4.2 4.6-4.2s4 1.5 4.6 4.2' stroke='currentColor'/><circle cx='2.4' cy='10.8' r='1.3' stroke='currentColor'/><circle cx='13.6' cy='10.8' r='1.3' stroke='currentColor'/></svg>标准模式</span></div>"
+        },
+        {
+          "label": "长名称：超过 180px 后省略",
+          "note": "静态快照",
+          "html": "<div style='display:flex;align-items:center;height:30px'><span class=\"label\" title='把长文档按章节整理成要点，并在需要时生成对照表。'><svg class=\"icon\" width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><circle cx='8' cy='5.6' r='2.2' stroke='currentColor'/><path d='M3.4 13.2c.6-2.7 2.4-4.2 4.6-4.2s4 1.5 4.6 4.2' stroke='currentColor'/><circle cx='2.4' cy='10.8' r='1.3' stroke='currentColor'/><circle cx='13.6' cy='10.8' r='1.3' stroke='currentColor'/></svg>数据分析与长文档整理专用模式</span></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "sessionId",
+          "type": "SessionId",
+          "default": "—",
+          "desc": "要标注的会话；预设 id 从该会话投影的 agentPreset 字段读取。"
+        },
+        {
+          "name": "useSessions",
+          "type": "PropsRuntime<'conversation.session.header.actions'>['useSessions']",
+          "default": "—",
+          "desc": "读会话投影取值；没有预设记录的会话不渲染标签。"
+        },
+        {
+          "name": "useAgentPresets",
+          "type": "SnapshotStore<AgentPresetSettingsState>",
+          "default": "—",
+          "desc": "注入的 agentPresets 钩子，读花名册的 options 以把预设 id 换成显示名与说明。"
+        },
+        {
+          "name": "load",
+          "type": "() => Promise<void>",
+          "default": "—",
+          "desc": "只在会话确实记录了预设时拉一次花名册，没配预设的部署不会发这个请求。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'settings.agentPreset'>",
+          "default": "—",
+          "desc": "预设命名空间的翻译座位；title 回落用 headerHint。"
+        }
+      ],
+      "notes": "只读是刻意的：会话一旦开始，工具组合就固定在那个预设上，宿主拒绝中途切换，所以这里只报名字、不提供控件，真正的选择在新建会话页（<code>AgentPresetSeat</code>）。<code>title</code> 优先用预设的 <code>description</code>，否则用 <code>headerHint</code>（「本任务的 Agent 预设，在任务开始时确定」）。外层标题行是 inline-size 容器，540px 以下隐藏标签是它最先让出的位置。",
+      "keywords": [
+        "预设标签",
+        "agent preset",
+        "会话标题",
+        "只读标签"
+      ]
+    },
+    {
+      "id": "agent-preset-seat",
+      "name": "AgentPresetSeat",
+      "exportName": "AgentPresetSeat",
+      "zh": "预设胶囊",
+      "group": "agent",
+      "summary": "新建会话空态里、工作区选择器右侧的 Agent 预设胶囊。胶囊 28px 高、<code>--dsw-radius-sm</code> 圆角、左右 8px 内边距，13px/500 主色文字，16px 预设图标与 14px chevron 分列两端；文字区可一路省略到 0，靠 <code>.menuAnchor</code> 的 54px 下限保证图标和箭头不被挤掉。点击打开 <code>Menu</code>：每行是「名称 + 说明」两行（列最多 280px），当前项带勾，<code>aria-expanded</code> 时胶囊保持 hover 底色。选中被宿主拒绝时用 8 秒 Toast 说明原因；从设置页改过默认值后还有一段图标 0.15s 入场、名字逐字 0.4s 上浮的 introduce 序列。",
+      "source": "packages/client/ui-agent-preset/src/client/AgentPresetSeat.tsx#L81",
+      "css": [
+        "packages/client/ui-agent-preset/src/client/AgentPresetSeat.module.css",
+        "packages/client/ui-primitives/src/Menu.module.css",
+        "packages/client/ui-primitives/src/MenuSurface.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-base",
+        "--dsw-alias-border-l1",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-interactive-bg-hover-danger",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-quaternary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-menu-icon",
+        "--dsw-alias-scrollbar-bg-l2",
+        "--dsw-alias-scrollbar-hover-l2",
+        "--dsw-alias-state-error-primary",
+        "--dsw-elevation-prominent",
+        "--dsw-menu-backdrop-filter",
+        "--dsw-menu-surface-fill",
+        "--dsw-radius-lg",
+        "--dsw-radius-md",
+        "--dsw-radius-sm"
+      ],
+      "specimens": [
+        {
+          "label": "默认：标准模式",
+          "note": "静态快照",
+          "html": "<div style='display:flex;align-items:center;height:44px'><span class=\"root menuAnchor\"><button type='button' class=\"seat\" aria-haspopup='menu' aria-expanded='false' title='选择新任务使用的 Agent 预设'><svg class=\"seatIcon\" width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><circle cx='8' cy='5.6' r='2.2' stroke='currentColor'/><path d='M3.4 13.2c.6-2.7 2.4-4.2 4.6-4.2s4 1.5 4.6 4.2' stroke='currentColor'/><circle cx='2.4' cy='10.8' r='1.3' stroke='currentColor'/><circle cx='13.6' cy='10.8' r='1.3' stroke='currentColor'/></svg><span class=\"seatLabel\">标准模式</span><svg class=\"chevron\" width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M3.5 6L8 10.5L12.5 6' stroke='currentColor'/></svg></button></span></div>"
+        },
+        {
+          "label": "打开态：预设菜单（名称 + 说明）",
+          "note": "打开态模拟：菜单在真实产品里是挂到 body 上的门户，这里放到锚点下方并拉回文档流。",
+          "html": "<div style='width:320px;display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding-top:8px'><span class=\"root menuAnchor\"><button type='button' class=\"seat\" aria-haspopup='menu' aria-expanded='true' title='选择新任务使用的 Agent 预设'><svg class=\"seatIcon\" width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><circle cx='8' cy='5.6' r='2.2' stroke='currentColor'/><path d='M3.4 13.2c.6-2.7 2.4-4.2 4.6-4.2s4 1.5 4.6 4.2' stroke='currentColor'/><circle cx='2.4' cy='10.8' r='1.3' stroke='currentColor'/><circle cx='13.6' cy='10.8' r='1.3' stroke='currentColor'/></svg><span class=\"seatLabel\">标准模式</span><svg class=\"chevron\" width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M3.5 6L8 10.5L12.5 6' stroke='currentColor'/></svg></button></span><div class=\"surface list scrollable portal snapshotStatic\" role='menu'><div aria-hidden='true' class=\"material\"></div><div class=\"viewport\" role='presentation'><div class=\"itemWrap\"><button type='button' role='menuitem' class=\"c1-item\"><span class=\"itemLabel\"><span class=\"c0-item\"><span class=\"itemName\">标准模式</span><span class=\"itemDesc\">处理代码、文件和资料，适合大多数任务。Agent 会按需使用检索、编辑和终端等工具。</span></span></span><svg class=\"check\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1.4\"><path d=\"M3 8.5L6.5 12L13 4.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"itemWrap\"><button type='button' role='menuitem' class=\"c1-item\"><span class=\"itemLabel\"><span class=\"c0-item\"><span class=\"itemName\">PTC 模式</span><span class=\"itemDesc\">包含标准模式的所有能力，更适合批量调用工具，并对结果进行筛选、整理、去重、统计或汇总的任务。</span></span></span></button></div><div class=\"itemWrap\"><button type='button' role='menuitem' class=\"c1-item\"><span class=\"itemLabel\"><span class=\"c0-item\"><span class=\"itemName\">创造模式</span><span class=\"itemDesc\">用对话定制 DSH：让 Agent 编写插件，添加新功能或界面；也能组合工具和提示词，创建自己的模式。</span></span></span></button></div></div></div></div>",
+          "css": "/* 状态模拟：Menu 在 portal 模式下是挂在 body 上的 position: fixed 卡片，\n   这里把它放回锚点下方的文档流，并保留 surface / list / scrollable / portal 这些真实类。 */\n.c1-list.snapshotStatic { position: relative; top: auto; left: auto; }"
+        }
+      ],
+      "props": [
+        {
+          "name": "sessionId",
+          "type": "SessionId | undefined",
+          "default": "—",
+          "desc": "当前会话 id；undefined 时视为没有主视图归属，芯片仍然保留。"
+        },
+        {
+          "name": "useSessionRetainInfo",
+          "type": "PropsRuntime<'conversation.hero.agentPreset'>['useSessionRetainInfo']",
+          "default": "—",
+          "desc": "判断会话是否仍被主视图保留；不在主视图时组件返回 null。"
+        },
+        {
+          "name": "useAgentPresetSeat",
+          "type": "SnapshotStore<AgentPresetSeatState>",
+          "default": "—",
+          "desc": "注入的 agentPresetSeat 钩子：候选预设、当前选择、busy、拒绝原因与 introduce 标记。"
+        },
+        {
+          "name": "useDeveloperTools",
+          "type": "ObservableSnapshot<boolean>",
+          "default": "—",
+          "desc": "开发者工具开关；关闭时从菜单里过滤掉需要编码工具的 PTC / 极简模式。"
+        },
+        {
+          "name": "load",
+          "type": "() => Promise<void>",
+          "default": "—",
+          "desc": "首次渲染时拉取预设花名册。"
+        },
+        {
+          "name": "select",
+          "type": "(id: string) => Promise<string | undefined>",
+          "default": "—",
+          "desc": "暂存一个预设给下一个会话；被拒绝时 resolve 出原因字符串，由 Toast 展示。"
+        },
+        {
+          "name": "dismissRefusal",
+          "type": "(error: AgentPresetSeatState['error']) => void",
+          "default": "—",
+          "desc": "Toast 播完后确认这条拒绝，避免同一错误反复弹出。"
+        },
+        {
+          "name": "introduced",
+          "type": "() => void",
+          "default": "—",
+          "desc": "introduce 动画播完后清掉一次性提示标记。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'settings.agentPreset'>",
+          "default": "—",
+          "desc": "预设命名空间的翻译座位：seatHint、noDescription 与 switchRefused 等。"
+        }
+      ],
+      "notes": "选项在 <code>state.busy</code> 或候选为空时禁用（胶囊转成 <code>--dsw-alias-label-quaternary</code>）。开场动画只在 <code>state.introduce</code> 为真且候选就绪时播放：图标用 <code>seat-icon-in</code> 0.15s 入场，名字逐字用 <code>seat-char-in</code> 0.4s、按 <code>40ms</code> 与 <code>200ms/(n-1)</code> 取较小值错峰；<code>prefers-reduced-motion</code> 下整段跳过并直接确认提示。拒绝 Toast 锚定在 <code>[data-composer-card]</code> 上，避免侧栏打开时居中偏移。",
+      "keywords": [
+        "预设选择",
+        "hero chip",
+        "agent preset seat",
+        "新建会话"
+      ]
+    },
+    {
+      "id": "agent-preset-section",
+      "name": "AgentPresetSection",
+      "exportName": "AgentPresetSection",
+      "zh": "预设设置区",
+      "group": "agent",
+      "summary": "设置里的 Agent 预设页：<code>.section</code> 纵向排列标题、说明与「内置 / 自定义」两组卡片，最大宽 720px。卡片是 <code>minmax(268px, 1fr)</code> 自适应网格里的一列：0.5px <code>--dsw-alias-settings-card-stroke</code> 描边 + <code>--dsw-radius-xl</code> 圆角，头部是名称、Tag 与等宽 id，中部是 13px 描述（最多四行截断），底部一条 0.5px 分隔线，内置卡左侧是两个 ghost 帮助按钮、右侧 28px 的查看配置图标按钮；自定义卡只有查看按钮。默认卡换成 platform 底 + bluish-400 描边；加载失败的卡换成错误色描边、保留在 tab 序里但不可选，并显示「加载失败」徽标。自定义组末尾是 44px 的虚线创建按钮；「查看配置」是 <code>min(720px, 100%)</code> 的 Modal，正文为可滚动的等宽 YAML。",
+      "source": "packages/client/ui-agent-preset/src/client/AgentPresetSection.tsx#L64",
+      "css": [
+        "packages/client/ui-primitives/src/Tag.module.css",
+        "packages/client/ui-primitives/src/Button.module.css",
+        "packages/client/ui-primitives/src/Modal.module.css",
+        "packages/client/ui-agent-preset/src/client/AgentPresetSection.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-layer-1",
+        "--dsw-alias-bg-layer-2",
+        "--dsw-alias-bg-layer-3",
+        "--dsw-alias-bg-mask-1",
+        "--dsw-alias-bg-module-platform",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-border-l4",
+        "--dsw-alias-button-primary-fill",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-primary-foreground",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-scrollbar-bg-l2",
+        "--dsw-alias-scrollbar-hover-l2",
+        "--dsw-alias-settings-card-fill",
+        "--dsw-alias-settings-card-stroke",
+        "--dsw-alias-state-business-primary",
+        "--dsw-alias-state-error-primary",
+        "--dsw-elevation-prominent",
+        "--dsw-focus-ring-color",
+        "--dsw-focus-ring-width",
+        "--dsw-font-mono",
+        "--dsw-mask-blur",
+        "--dsw-radius-lg",
+        "--dsw-radius-panel",
+        "--dsw-radius-sm",
+        "--dsw-radius-xl",
+        "--dsw-static-neutral-bluish-400"
+      ],
+      "specimens": [
+        {
+          "label": "名册：内置组 + 自定义组 + 创建入口",
+          "note": "静态快照",
+          "html": "<div style='width:660px'><section class=\"section\"><h2 class=\"c3-title\">Agent 预设</h2><p class=\"intro\">选择 Agent 的工具和工作方式。日常任务用「标准模式」，扩展 DSH 的能力用「创造模式」。</p><section class=\"group\"><h3 class=\"groupHead\">内置</h3><ul class=\"cards\"><li class=\"card cardActive\" data-agent-preset-id='standard'><button type='button' class=\"cardMain\" aria-pressed='true' disabled aria-label='新任务默认: 标准模式' title='新任务默认'><span class=\"cardHead\"><span class=\"cardIdentity\"><span class=\"cardName\" title='标准模式'>标准模式</span><span class=\"tag\" data-tone='solid'>新任务默认</span></span><code class=\"cardId\" title='standard'>standard</code></span><span class=\"cardDesc\" title=''>处理代码、文件和资料，适合大多数任务。Agent 会按需使用检索、编辑和终端等工具。</span></button><div class=\"cardFoot\"><div class=\"cardHelp\"><button type='button' class=\"button ghost md helpButton\" aria-label='模式说明：标准模式'>模式说明</button><button type='button' class=\"button ghost md helpButton\" aria-label='如何使用：标准模式'>如何使用</button></div><button type='button' class=\"iconButton\" data-tip='查看配置' aria-label='查看配置：标准模式'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4 1.5h8a1 1 0 011 1v11a1 1 0 01-1 1H4a1 1 0 01-1-1v-11a1 1 0 011-1z' stroke='currentColor'/><path d='M5.5 5.5h5' stroke='currentColor'/><path d='M5.5 8.5h3' stroke='currentColor'/></svg></button></div></li><li class=\"card\" data-agent-preset-id='ptc'><button type='button' class=\"cardMain\" aria-pressed='false' aria-label='设为新任务默认: PTC 模式' title='设为新任务默认'><span class=\"cardHead\"><span class=\"cardIdentity\"><span class=\"cardName\" title='PTC 模式'>PTC 模式</span><span class=\"tag\" data-tone='outline'>内置</span></span><code class=\"cardId\" title='ptc'>ptc</code></span><span class=\"cardDesc\" title=''>包含标准模式的所有能力，更适合批量调用工具，并对结果进行筛选、整理、去重、统计或汇总的任务。</span></button><div class=\"cardFoot\"><div class=\"cardHelp\"><button type='button' class=\"button ghost md helpButton\" aria-label='模式说明：PTC 模式'>模式说明</button><button type='button' class=\"button ghost md helpButton\" aria-label='如何使用：PTC 模式'>如何使用</button></div><button type='button' class=\"iconButton\" data-tip='查看配置' aria-label='查看配置：PTC 模式'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4 1.5h8a1 1 0 011 1v11a1 1 0 01-1 1H4a1 1 0 01-1-1v-11a1 1 0 011-1z' stroke='currentColor'/><path d='M5.5 5.5h5' stroke='currentColor'/><path d='M5.5 8.5h3' stroke='currentColor'/></svg></button></div></li></ul></section><section class=\"group\"><h3 class=\"groupHead\">自定义</h3><ul class=\"cards\"><li class=\"card\" data-agent-preset-id='code-review'><button type='button' class=\"cardMain\" aria-pressed='false' aria-label='设为新任务默认: 代码审查' title='设为新任务默认'><span class=\"cardHead\"><span class=\"cardIdentity\"><span class=\"cardName\" title='代码审查'>代码审查</span><span class=\"tag\" data-tone='outline'>自定义</span></span><code class=\"cardId\" title='code-review'>code-review</code></span><span class=\"cardDesc\" title=''>优先找潜在缺陷与测试缺口，引用文件路径和行号，改动文件前先询问。</span></button><div class=\"cardFoot\"><button type='button' class=\"iconButton\" data-tip='查看配置' aria-label='查看配置：代码审查'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4 1.5h8a1 1 0 011 1v11a1 1 0 01-1 1H4a1 1 0 01-1-1v-11a1 1 0 011-1z' stroke='currentColor'/><path d='M5.5 5.5h5' stroke='currentColor'/><path d='M5.5 8.5h3' stroke='currentColor'/></svg></button></div></li></ul><button type='button' class=\"creatorButton\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M8 2.5V13.5' stroke='currentColor'/><path d='M2.5 8H13.5' stroke='currentColor'/></svg>让 Agent 帮我创建预设模式</button></section></section></div>",
+          "pad": "lg"
+        },
+        {
+          "label": "加载失败：错误描边 + 悬浮原因（悬停模拟）",
+          "note": "悬停模拟",
+          "html": "<div style='width:340px'><section class=\"section\"><section class=\"group\"><h3 class=\"groupHead\">自定义</h3><ul class=\"cards\"><li class=\"card cardBroken\" data-agent-preset-id='notes-helper'><button type='button' class=\"cardMain\" aria-pressed='false' aria-disabled='true' aria-label='加载失败: 笔记整理' title='加载失败'><span class=\"cardHead\"><span class=\"cardIdentity\"><span class=\"cardName\" title='笔记整理'>笔记整理</span><span class=\"brokenBadge\">加载失败<span class=\"brokenTip showTip\" aria-hidden=\"true\">packages/presets/notes-helper: Cannot find module &quot;@deepseek-ai/dsh-preset-notes&quot;</span></span><span class=\"tag\" data-tone='outline'>自定义</span></span><code class=\"cardId\" title='notes-helper'>notes-helper</code></span><span class=\"cardDesc\" title=''>把工作区里的会议记录整理成周报，缺失项标记为待确认。</span><span class=\"cardBrokenReason\" role=\"alert\">Cannot find module &quot;@deepseek-ai/dsh-preset-notes&quot;</span></button><div class=\"cardFoot\"><button type='button' class=\"iconButton\" data-tip='查看配置' aria-label='查看配置：笔记整理'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4 1.5h8a1 1 0 011 1v11a1 1 0 01-1 1H4a1 1 0 01-1-1v-11a1 1 0 011-1z' stroke='currentColor'/><path d='M5.5 5.5h5' stroke='currentColor'/><path d='M5.5 8.5h3' stroke='currentColor'/></svg></button></div></li></ul></section></section></div>",
+          "css": "/* 状态模拟：真实规则是 .brokenBadge:hover .brokenTip 与 .cardMain:focus-visible .brokenTip\n   才把原因浮层点亮，静态快照无法触发，这里用一个附加类把它展开。 */\n.showTip { opacity: 1; }",
+          "pad": "lg"
+        },
+        {
+          "label": "查看配置：Modal 里的等宽 YAML",
+          "note": "静态快照：Modal 的门户层拉回文档流",
+          "html": "<div style='width:720px'><div class=\"root snapshotStatic\"><div class=\"mask\" aria-hidden='true'></div><div class=\"c3-dialog c2-dialog\" role='dialog' aria-modal='true' aria-label='查看配置 · 标准模式'><div class=\"content\"><div class=\"header\"><h2 class=\"c2-title\">查看配置 · 标准模式</h2><button type='button' class=\"close\" aria-label='关闭'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M3 3L13 13' stroke='currentColor'/><path d='M13 3L3 13' stroke='currentColor'/></svg></button></div><div class=\"body\"><pre class=\"viewerCode\">id: standard\nname: 标准模式\ndescription: 处理代码、文件和资料，适合大多数任务。\ntools:\n  - read_file\n  - edit_file\n  - run_terminal\n  - search\ncontext:\n  compaction: auto\n  skills: true</pre></div></div><div class=\"footer\"><button type='button' class=\"button outline md\">关闭</button></div></div></div></div>",
+          "css": "/* 静态快照：Modal 的 .root 在真实产品里是 body 上的 fixed 全屏层，这里改回文档流，\n   同时保留它作为 .mask 绝对定位的父级。\n   卡片同时承载 AgentPresetSection(c3) 与 Modal(c2) 两个模块的 .dialog ——\n   多模块条目用显式所有者前缀把两侧的卡片规则合到同一元素上。 */\n.root.snapshotStatic { position: relative; inset: auto; }\n.c3-dialog.c2-dialog { max-width: 100%; }",
+          "pad": "lg"
+        }
+      ],
+      "props": [
+        {
+          "name": "useAgentPresetSection",
+          "type": "SnapshotStore<AgentPresetSectionState>",
+          "default": "—",
+          "desc": "注入的 agentPresetSection 钩子：rows、view、saving 与 error。"
+        },
+        {
+          "name": "useDeveloperTools",
+          "type": "ObservableSnapshot<boolean>",
+          "default": "—",
+          "desc": "开发者工具开关；关闭时隐藏内置的 PTC 与极简模式卡片。"
+        },
+        {
+          "name": "load",
+          "type": "() => Promise<void>",
+          "default": "—",
+          "desc": "进入页面时拉取花名册。"
+        },
+        {
+          "name": "view",
+          "type": "(id: string) => Promise<void>",
+          "default": "—",
+          "desc": "读取一个预设声明的组合（YAML），打开只读查看弹窗。"
+        },
+        {
+          "name": "closeView",
+          "type": "() => void",
+          "default": "—",
+          "desc": "关闭查看弹窗；组件卸载时也会调用一次。"
+        },
+        {
+          "name": "makeDefault",
+          "type": "(id: string) => Promise<void>",
+          "default": "—",
+          "desc": "把某个可用预设设为新任务默认；损坏的预设不可选。"
+        },
+        {
+          "name": "startCreatorDraft",
+          "type": "() => void",
+          "default": "—",
+          "desc": "可选：暂存 cordis 预设并开一个创造模式任务；不传时创建按钮不渲染。"
+        },
+        {
+          "name": "close",
+          "type": "PropsRuntime<'settings.section'>['close']",
+          "default": "—",
+          "desc": "关闭设置面板；创建按钮点击后先进入创造模式再关闭设置。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'settings.agentPreset'>",
+          "default": "—",
+          "desc": "预设命名空间的翻译座位：分组、帮助入口、帮助弹窗与创建按钮的文案都从这里取。"
+        }
+      ],
+      "notes": "默认卡用 <code>aria-pressed</code> + <code>disabled</code> 表达「已经是默认」；损坏卡不设 <code>disabled</code>，改用 <code>aria-disabled</code> 保留在 tab 序里，这样键盘仍能聚焦并读到原因。<code>title</code> 与 <code>aria-label</code> 取同一个动作词（<code>setDefault</code> / <code>inUse</code> / <code>brokenBadge</code>）。帮助入口只对四个内置预设出现（<code>presetGuide</code> 只认 system 信任），自定义卡只剩「查看配置」。「查看配置」弹窗关闭后焦点回到触发它的图标按钮。",
+      "keywords": [
+        "预设设置",
+        "agent preset settings",
+        "预设卡片",
+        "创造模式"
+      ]
+    },
+    {
+      "id": "create-plugin-menu-item",
+      "name": "CreatePluginMenuItem",
+      "exportName": "CreatePluginMenuItem",
+      "zh": "创建插件项",
+      "group": "agent",
+      "summary": "「添加插件」菜单里的一行，复用 Creator 流程创建插件：<code>MenuItemButton</code> 的标准菜单行（最小高 34px、6/8 内边距、左侧 14px 预设图标），标签列里是 13px 主文案加两行 12px secondary 说明，说明最多两行、超出省略。花名册 ready 且含 <code>cordis</code> 预设时可选；否则整行 <code>disabled</code>（<code>opacity: 0.4</code>），说明按状态换成「正在确认创造模式是否可用」「暂时不可用，请重新打开菜单重试」或「当前配置未提供创造模式」。",
+      "source": "packages/client/ui-agent-preset/src/client/CreatePluginMenuItem.tsx#L27",
+      "css": [
+        "packages/client/ui-agent-preset/src/client/CreatePluginMenuItem.module.css",
+        "packages/client/ui-primitives/src/Menu.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l1",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-menu-icon",
+        "--dsw-elevation-prominent",
+        "--dsw-radius-md",
+        "--dsw-radius-sm"
+      ],
+      "specimens": [
+        {
+          "label": "可用：进入创造模式创建插件",
+          "note": "静态快照",
+          "html": "<div style='width:320px'><div class=\"itemWrap\"><button type='button' role='menuitem' class=\"item\"><span class=\"itemIcon\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><circle cx='8' cy='5.6' r='2.2' stroke='currentColor'/><path d='M3.4 13.2c.6-2.7 2.4-4.2 4.6-4.2s4 1.5 4.6 4.2' stroke='currentColor'/><circle cx='2.4' cy='10.8' r='1.3' stroke='currentColor'/><circle cx='13.6' cy='10.8' r='1.3' stroke='currentColor'/></svg></span><span class=\"itemLabel\"><span class=\"copy\"><span>让 Agent 创建插件</span><span class=\"description\" title='进入创造模式，制作属于你的 DSH 插件'>进入创造模式，制作属于你的 DSH 插件</span></span></span></button></div></div>"
+        },
+        {
+          "label": "禁用：当前配置未提供创造模式",
+          "note": "静态快照",
+          "html": "<div style='width:320px'><div class=\"itemWrap\"><button type='button' role='menuitem' class=\"item\" disabled><span class=\"itemIcon\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><circle cx='8' cy='5.6' r='2.2' stroke='currentColor'/><path d='M3.4 13.2c.6-2.7 2.4-4.2 4.6-4.2s4 1.5 4.6 4.2' stroke='currentColor'/><circle cx='2.4' cy='10.8' r='1.3' stroke='currentColor'/><circle cx='13.6' cy='10.8' r='1.3' stroke='currentColor'/></svg></span><span class=\"itemLabel\"><span class=\"copy\"><span>让 Agent 创建插件</span><span class=\"description\" title='当前配置未提供创造模式'>当前配置未提供创造模式</span></span></span></button></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "useAgentPresets",
+          "type": "SnapshotStore<AgentPresetSettingsState>",
+          "default": "—",
+          "desc": "读花名册状态与 options，用来判断 cordis（创造模式）预设是否可用。"
+        },
+        {
+          "name": "load",
+          "type": "() => Promise<void>",
+          "default": "—",
+          "desc": "行挂载时拉取花名册。"
+        },
+        {
+          "name": "onDismiss",
+          "type": "() => void",
+          "default": "—",
+          "desc": "选中后先关闭「添加插件」菜单。"
+        },
+        {
+          "name": "startCreatorDraft",
+          "type": "() => void",
+          "default": "—",
+          "desc": "打开创造模式草稿；与 onDismiss 一起构成「不留消息、直接进创造模式」。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'settings.agentPreset'>",
+          "default": "—",
+          "desc": "预设命名空间的翻译座位：createPlugin 与四种说明文案都从这里取。"
+        }
+      ],
+      "notes": "说明文案有四种：默认「进入创造模式…」；花名册 idle/loading 时「正在确认创造模式是否可用」；error/unavailable 时「暂时不可用，请重新打开菜单重试」；ready 但缺 cordis 时「当前配置未提供创造模式」。行本身不关闭菜单，关闭由 owner 的 <code>onDismiss</code> 决定，所以这个条目能被任意菜单复用。",
+      "keywords": [
+        "创建插件",
+        "create plugin",
+        "创造模式",
+        "添加插件菜单"
+      ]
+    },
+    {
+      "id": "preset-guide-dialog",
+      "name": "PresetGuideDialog",
+      "exportName": "PresetGuideDialog",
+      "zh": "预设帮助",
+      "group": "agent",
+      "summary": "预设的只读帮助弹窗，用 <code>Modal</code> 的 <code>headless</code> 模式撑出 <code>min(640px, 100%)</code> × <code>min(600px, 100%)</code> 的卡片：头部是 20px 标题与 32px 幽灵关闭按钮，下面是 <code>SegmentedTabs</code>（34px 胶囊 + 滑动指示层）切换「模式说明 / 如何使用」，两页各自独立滚动（<code>overscroll-behavior: contain</code>）。说明页是 Markdown 正文，16px / 1.625 行高；使用页按 <code>### </code> 切成示例卡，每张卡头部是标题 + neutral Tag 的「示例任务」，正文用引用块强调示例输入、普通段落写预期产出。",
+      "source": "packages/client/ui-agent-preset/src/client/PresetGuideDialog.tsx#L87",
+      "css": [
+        "packages/client/ui-primitives/src/Modal.module.css",
+        "packages/client/ui-primitives/src/markdown/MarkdownText.module.css",
+        "packages/client/ui-primitives/src/Pill.module.css",
+        "packages/client/ui-primitives/src/SegmentedTabs.module.css",
+        "packages/client/ui-primitives/src/Button.module.css",
+        "packages/client/ui-primitives/src/Tag.module.css",
+        "packages/client/ui-agent-preset/src/client/PresetGuideDialog.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-layer-2",
+        "--dsw-alias-bg-layer-3",
+        "--dsw-alias-bg-mask-1",
+        "--dsw-alias-bg-module-platform",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-border-l4",
+        "--dsw-alias-button-ghost-active-fill",
+        "--dsw-alias-button-ghost-active-border",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-primary-foreground",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-link",
+        "--dsw-alias-markdown-inline-code",
+        "--dsw-alias-scrollbar-bg-l2",
+        "--dsw-alias-scrollbar-hover-l2",
+        "--dsw-alias-state-business-primary",
+        "--dsw-elevation-prominent",
+        "--dsw-focus-ring-color",
+        "--dsw-focus-ring-width",
+        "--dsw-font-markdown-base",
+        "--dsw-font-markdown-h3",
+        "--dsw-mask-blur",
+        "--dsw-radius-lg",
+        "--dsw-radius-md",
+        "--dsw-radius-panel",
+        "--dsw-radius-sm"
+      ],
+      "specimens": [
+        {
+          "label": "模式说明页：标准模式",
+          "note": "静态快照：Modal 门户层拉回文档流",
+          "html": "<div style='width:640px'><div class=\"root snapshotStatic\" style='height:600px'><div class=\"mask\" aria-hidden='true'></div><div class=\"dialog guideDialog\" role='dialog' aria-modal='true' aria-label='标准模式'><div class=\"guideLayout\" role='presentation'><div class=\"guideHeader\"><div class=\"guideTitleRow\"><h2 class=\"guideTitle\">标准模式</h2><button type='button' class=\"button ghost md guideClose\" aria-label='关闭'><svg width='18' height='18' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M3 3L13 13' stroke='currentColor'/><path d='M13 3L3 13' stroke='currentColor'/></svg></button></div><p class=\"guideIntro\">新建任务时选择「标准模式」，说明要完成什么、相关文件在哪里，以及怎样判断任务完成。</p></div><div role='tablist' aria-label='帮助内容' class=\"tabs guideTabs\" style=\"grid-template-columns:repeat(2,minmax(0,1fr))\"><span class=\"indicator\" aria-hidden='true' style=\"width:calc((100% - 8px) / 2);transform:translateX(0)\"></span><button type='button' role='tab' id='guide-explanation-tab' aria-selected='true' aria-controls='guide-explanation-panel' tabindex='0' class=\"pill interactive tab\">模式说明</button><button type='button' role='tab' id='guide-usage-tab' aria-selected='false' aria-controls='guide-usage-panel' tabindex='-1' class=\"pill interactive tab\">如何使用</button></div><div id='guide-explanation-panel' role='tabpanel' aria-labelledby='guide-explanation-tab' class=\"guidePanel\" data-guide-page='explanation' tabindex='0'><div class=\"markdown\"><h3>工作方式</h3><p>Agent 直接调用工具来读写文件、检索资料和执行终端命令。包含 Skills、计划、目标、子 Agent、工作流和上下文压缩等能力。</p><h3>什么时候选</h3><p>日常编程、文件处理和资料整理可以从这里开始。标准模式也能编写脚本、批量处理文件；PTC 改变的是工具调用方式，批量任务并不必须使用 PTC。</p></div></div><div id='guide-usage-panel' role='tabpanel' aria-labelledby='guide-usage-tab' class=\"guidePanel\" data-guide-page='usage' tabindex='0' hidden></div></div></div></div></div>",
+          "css": "/* 静态快照：Modal 的 .root 在真实产品里是 body 上的 fixed 全屏层，这里改回文档流，\n   同时保留它作为 .mask 绝对定位的父级；固定高度让 .guidePanel 的两页滚动区成立。 */\n.root.snapshotStatic { position: relative; inset: auto; }"
+        },
+        {
+          "label": "如何使用页：两个示例任务",
+          "note": "静态快照：Modal 门户层拉回文档流",
+          "html": "<div style='width:640px'><div class=\"root snapshotStatic\" style='height:600px'><div class=\"mask\" aria-hidden='true'></div><div class=\"dialog guideDialog\" role='dialog' aria-modal='true' aria-label='标准模式'><div class=\"guideLayout\" role='presentation'><div class=\"guideHeader\"><div class=\"guideTitleRow\"><h2 class=\"guideTitle\">标准模式</h2><button type='button' class=\"button ghost md guideClose\" aria-label='关闭'><svg width='18' height='18' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M3 3L13 13' stroke='currentColor'/><path d='M13 3L3 13' stroke='currentColor'/></svg></button></div><p class=\"guideIntro\">新建任务时选择「标准模式」，说明要完成什么、相关文件在哪里，以及怎样判断任务完成。</p></div><div role='tablist' aria-label='帮助内容' class=\"tabs guideTabs\" style=\"grid-template-columns:repeat(2,minmax(0,1fr))\"><span class=\"indicator\" aria-hidden='true' style=\"width:calc((100% - 8px) / 2);transform:translateX(100%)\"></span><button type='button' role='tab' id='guide-explanation-tab' aria-selected='false' aria-controls='guide-explanation-panel' tabindex='-1' class=\"pill interactive tab\">模式说明</button><button type='button' role='tab' id='guide-usage-tab' aria-selected='true' aria-controls='guide-usage-panel' tabindex='0' class=\"pill interactive tab\">如何使用</button></div><div id='guide-explanation-panel' role='tabpanel' aria-labelledby='guide-explanation-tab' class=\"guidePanel\" data-guide-page='explanation' tabindex='0' hidden><div class=\"markdown\"><h3>工作方式</h3><p>Agent 直接调用工具来读写文件、检索资料和执行终端命令。包含 Skills、计划、目标、子 Agent、工作流和上下文压缩等能力。</p><h3>什么时候选</h3><p>日常编程、文件处理和资料整理可以从这里开始。标准模式也能编写脚本、批量处理文件；PTC 改变的是工具调用方式，批量任务并不必须使用 PTC。</p></div></div><div id='guide-usage-panel' role='tabpanel' aria-labelledby='guide-usage-tab' class=\"guidePanel\" data-guide-page='usage' tabindex='0'><section class=\"guideExample\"><div class=\"guideExampleHeader\"><h3>修复一个问题</h3><span class=\"tag guideExampleTag\" data-tone='neutral'><svg width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M3 3h10' stroke='currentColor'/><path d='M3 8h7' stroke='currentColor'/><path d='M3 13h5' stroke='currentColor'/></svg>示例任务</span></div><div class=\"markdown\"><blockquote><p>搜索表单连续提交两次后，结果会消失。请定位原因、修复问题并运行相关测试，最后说明原因和修改内容。</p></blockquote><p>预期产出：代码修改、相关测试结果，以及问题原因说明。</p></div></section><section class=\"guideExample\"><div class=\"guideExampleHeader\"><h3>整理项目资料</h3><span class=\"tag guideExampleTag\" data-tone='neutral'><svg width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M3 3h10' stroke='currentColor'/><path d='M3 8h7' stroke='currentColor'/><path d='M3 13h5' stroke='currentColor'/></svg>示例任务</span></div><div class=\"markdown\"><blockquote><p>阅读项目中的 Markdown 记录，整理已经达成的结论和仍待确认的问题，并附上对应文件链接。</p></blockquote><p>预期产出：一份带来源引用的总结，方便回到原文核对。</p></div></section></div></div></div></div></div>",
+          "css": "/* 静态快照：Modal 的 .root 由 fixed 改为文档流内的相对定位，并给卡片一个固定高度，\n   让使用页的示例列表在 .guidePanel 里滚动。 */\n.root.snapshotStatic { position: relative; inset: auto; }"
+        }
+      ],
+      "props": [
+        {
+          "name": "guide",
+          "type": "PresetGuide",
+          "default": "—",
+          "desc": "一份内置预设的帮助字典引用：name / intro / explanation / usage 四个 locale 键。"
+        },
+        {
+          "name": "initialPage",
+          "type": "PresetGuidePage",
+          "default": "—",
+          "desc": "'explanation' 或 'usage'，决定打开时选中的页签。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'settings.agentPreset'>",
+          "default": "—",
+          "desc": "预设命名空间的翻译座位：页签标题、关闭、示例任务与代码块工具栏文案都从这里取。"
+        },
+        {
+          "name": "onClose",
+          "type": "() => void",
+          "default": "—",
+          "desc": "关闭弹窗；Escape 只关这一层，不冒泡到设置。"
+        }
+      ],
+      "notes": "帮助内容只覆盖四个内置预设（standard / ptc / minimal / cordis），<code>presetGuide(id, trust)</code> 对自定义预设返回 undefined，因此设置页不会给自定义卡渲染帮助入口。打开时焦点落在 <code>[role=tab][aria-selected=true]</code> 上，Tab 在弹窗内循环（<code>trapPresetReaderTab</code>），两个面板各自记住滚动位置。",
+      "keywords": [
+        "预设帮助",
+        "模式说明",
+        "如何使用",
+        "preset guide",
+        "帮助弹窗"
+      ]
+    }
+  ]
+}

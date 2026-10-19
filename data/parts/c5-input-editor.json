@@ -1,0 +1,717 @@
+{
+ "schemaVersion": 1,
+ "entries": [
+  {
+   "id": "reference-chip-node",
+   "name": "ReferenceChipNode",
+   "exportName": "ReferenceChipNode",
+   "zh": "引用芯片节点",
+   "group": "conversation",
+   "summary": "草稿里的一个行内引用（@ 文件 / 会话 / 文件夹）作为一个原子 Lexical 装饰节点：节点自己一像素都不画，只在文本流里占一个 <code>contenteditable=\"false\"</code> 的宿主 span（<code>data-composer-chip=\"&lt;source&gt;\"</code> 是测试与 e2e 的锚点），再由 DecoratorPortals 把 <code>ReferenceChip</code> 的 React 面 portal 进去。插入时缓存 owner 的投影（label / appearance / clipboardText），<code>getTextContent()</code> 直接回答剪贴板与持久化投影，因此原生复制和草稿镜像不需要展开代码；检测投影把每个芯片算作一个 U+FFFC。外观是 14px 的行内标签：图标（没有 appearance 时是 <code>@</code> 标记）加最长 240px、超长省略的 label，左右各 4px 内边距、<code>--dsw-radius-sm</code> 圆角；owner 解析失败时整块转错误色加删除线。箭头上一步跨过它、Backspace 一次删掉它（<code>isKeyboardSelectable()</code> 为 false），这正是「原子」的含义。",
+   "source": "packages/client/ui-conversation/src/client/input/editor/chip-node.tsx#L29",
+   "css": [
+    "packages/client/ui-conversation/src/client/skeleton/InputBar.module.css",
+    "packages/client/ui-conversation/src/client/input/editor/composer-editor.module.css",
+    "packages/client/ui-conversation/src/client/input/editor/ReferenceChip.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-state-business-tertiary",
+    "--dsw-alias-state-error-primary",
+    "--dsw-radius-sm",
+    "--dsw-alias-label-primary"
+   ],
+   "specimens": [
+    {
+     "label": "三种字形：@ 标记 / 文件 / 会话",
+     "note": "只有 appearance 为 file 的芯片加 .openable（可点开）；没有 appearance 时退回 @ 标记",
+     "html": "<div style=\"width:560px\"><div class=\"card\" data-composer-card><div class=\"scroll\" data-input-scroll><div class=\"grow\"><div class=\"input\" data-composer-input data-phase=\"plain\" data-placeholder=\"发消息或创建任务, / 调用指令, @ 文件或对话\" role=\"textbox\" aria-multiline=\"true\" aria-label=\"发消息或创建任务, / 调用指令, @ 文件或对话\" contenteditable=\"true\"><p>读一下 <span data-composer-chip=\"file\" contenteditable=\"false\"><span class=\"reference chip openable\" title=\"packages/client/ui-conversation/src/client/input/editor/chip-node.tsx\"><svg class=\"icon\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4.9375 5.90295H11.0625\" stroke=\"currentColor\"/><path d=\"M4.9375 9.02991H8.27841\" stroke=\"currentColor\"/><path d=\"M12.5 1.32617C13.3039 1.32617 14 1.95171 14 2.77637V13.2246C13.9996 14.0489 13.3036 14.6738 12.5 14.6738H3.5C2.69637 14.6738 2.00042 14.0489 2 13.2246V2.77637C2 1.95171 2.69613 1.32617 3.5 1.32617H12.5ZM3.5 2.32617C3.1993 2.32617 3 2.55186 3 2.77637V13.2246C3.00044 13.4489 3.19963 13.6738 3.5 13.6738H12.5C12.8004 13.6738 12.9996 13.4489 13 13.2246V2.77637C13 2.55186 12.8007 2.32617 12.5 2.32617H3.5Z\" fill=\"currentColor\"/></svg><span class=\"label\">packages/client/ui-conversation/src/client/input/editor/chip-node.tsx</span></span></span> 的实现，别动 <span data-composer-chip=\"ui-conversation\" contenteditable=\"false\"><span class=\"reference chip\" title=\"ui-conversation\"><span class=\"marker\" aria-hidden=\"true\">@</span><span class=\"label\">ui-conversation</span></span></span>，再看看 <span data-composer-chip=\"session\" contenteditable=\"false\"><span class=\"reference chip\" title=\"重构输入编辑器的引用芯片\"><svg class=\"icon\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M5 6.75H11\" stroke=\"currentColor\"/><path d=\"M5 9H8\" stroke=\"currentColor\"/><path d=\"M2.37067 11.2497C1.5872 9.89252 1.32042 8.29798 1.61945 6.7597C1.91847 5.22141 2.76317 3.84293 3.99801 2.87809C5.23285 1.91325 6.7747 1.427 8.33964 1.50888C9.90458 1.59076 11.3873 2.23526 12.5147 3.32369C13.6422 4.41232 14.3384 5.8717 14.4751 7.43304C14.6118 8.99438 14.1797 10.5525 13.2585 11.8205C12.3372 13.0885 10.9889 13.9809 9.4617 14.3334C8.18666 14.6277 6.8587 14.529 5.64964 14.0601C5.17095 13.8745 4.76937 13.4929 4.26509 13.3963C3.67389 13.2832 2.95232 13.5595 2.0377 14.3334\" stroke=\"currentColor\"/></svg><span class=\"label\">重构输入编辑器的引用芯片</span></span></span>。</p></div></div></div></div></div>"
+    },
+    {
+     "label": "无效引用：owner 解析失败",
+     "note": "invalid 位由草稿投影带回来：错误色 + 删除线 + 0.7 透明度，并且不再带 .openable",
+     "html": "<div style=\"width:560px\"><div class=\"card\" data-composer-card><div class=\"scroll\" data-input-scroll><div class=\"grow\"><div class=\"input\" data-composer-input data-phase=\"plain\" data-placeholder=\"发消息或创建任务, / 调用指令, @ 文件或对话\" role=\"textbox\" aria-multiline=\"true\" aria-label=\"发消息或创建任务, / 调用指令, @ 文件或对话\" contenteditable=\"true\"><p>这条引用指向的文件已经不在工作区：<span data-composer-chip=\"file\" contenteditable=\"false\"><span class=\"reference chip invalid\" title=\"packages/client/ui-conversation/src/client/input/editor/gone.tsx\"><svg class=\"icon\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4.9375 5.90295H11.0625\" stroke=\"currentColor\"/><path d=\"M4.9375 9.02991H8.27841\" stroke=\"currentColor\"/><path d=\"M12.5 1.32617C13.3039 1.32617 14 1.95171 14 2.77637V13.2246C13.9996 14.0489 13.3036 14.6738 12.5 14.6738H3.5C2.69637 14.6738 2.00042 14.0489 2 13.2246V2.77637C2 1.95171 2.69613 1.32617 3.5 1.32617H12.5ZM3.5 2.32617C3.1993 2.32617 3 2.55186 3 2.77637V13.2246C3.00044 13.4489 3.19963 13.6738 3.5 13.6738H12.5C12.8004 13.6738 12.9996 13.4489 13 13.2246V2.77637C13 2.55186 12.8007 2.32617 12.5 2.32617H3.5Z\" fill=\"currentColor\"/></svg><span class=\"label\">packages/client/ui-conversation/src/client/input/editor/gone.tsx</span></span></span>，需要重新 @ 一次。</p></div></div></div></div></div>"
+    },
+    {
+     "label": "悬停模拟：引用底色",
+     "note": "悬停模拟",
+     "html": "<div style=\"width:560px\"><div class=\"card\" data-composer-card><div class=\"scroll\" data-input-scroll><div class=\"grow\"><div class=\"input\" data-composer-input data-phase=\"plain\" data-placeholder=\"发消息或创建任务, / 调用指令, @ 文件或对话\" role=\"textbox\" aria-multiline=\"true\" aria-label=\"发消息或创建任务, / 调用指令, @ 文件或对话\" contenteditable=\"true\"><p>悬停 <span data-composer-chip=\"file\" contenteditable=\"false\"><span class=\"reference chip openable\" title=\"packages/client/ui-conversation/src/client/input/editor/chip-node.tsx\"><svg class=\"icon\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4.9375 5.90295H11.0625\" stroke=\"currentColor\"/><path d=\"M4.9375 9.02991H8.27841\" stroke=\"currentColor\"/><path d=\"M12.5 1.32617C13.3039 1.32617 14 1.95171 14 2.77637V13.2246C13.9996 14.0489 13.3036 14.6738 12.5 14.6738H3.5C2.69637 14.6738 2.00042 14.0489 2 13.2246V2.77637C2 1.95171 2.69613 1.32617 3.5 1.32617H12.5ZM3.5 2.32617C3.1993 2.32617 3 2.55186 3 2.77637V13.2246C3.00044 13.4489 3.19963 13.6738 3.5 13.6738H12.5C12.8004 13.6738 12.9996 13.4489 13 13.2246V2.77637C13 2.55186 12.8007 2.32617 12.5 2.32617H3.5Z\" fill=\"currentColor\"/></svg><span class=\"label\">packages/client/ui-conversation/src/client/input/editor/chip-node.tsx</span></span></span> 时只换底色，文字度量不动。</p></div></div></div></div></div>",
+     "css": "/* 状态模拟：:hover 静态触发不了，把 composer-editor.module.css 里的\n   .reference:hover { background: var(--dsw-alias-state-business-tertiary); } 原样搬过来。 */\n.reference { background: var(--dsw-alias-state-business-tertiary); }"
+    }
+   ],
+   "props": [
+    {
+     "name": "insert",
+     "type": "Omit<ReferenceInsert, 'appearance'> & { appearance?: ReferenceInsert['appearance'] }",
+     "default": "—",
+     "desc": "构造参数：owner 的引用插入（source / ref / label / clipboardText，可选领域字形）。"
+    },
+    {
+     "name": "invalid",
+     "type": "boolean",
+     "default": "false",
+     "desc": "owner 解析失败位；渲染成错误色删除线，且该节点的序列化应失败而不是静默丢引用。"
+    },
+    {
+     "name": "key",
+     "type": "NodeKey | undefined",
+     "default": "—",
+     "desc": "Lexical 克隆路径传入的节点键；新建节点时不传，<code>clone()</code> 靠它保持身份。"
+    }
+   ],
+   "notes": "节点是 <code>DecoratorNode</code>：<code>isInline()</code> 为 true，<code>updateDOM()</code> 恒返回 false（宿主元素形状不变，内容由门户负责更新）。芯片周围的文字编辑不会重挂门户——<code>DecoratorPortals</code> 拿 NodeKey 当 React key。序列化形如 <code>{ type: 'reference-chip', version: 1, source, ref, label, appearance?, clipboardText, invalid }</code>，复原时走 <code>importJSON</code>（新 key）。剪贴板投影是 owner 给的 <code>clipboardText</code>（例如 <code>@packages/client/ui-conversation</code>），不是模型形态。",
+   "keywords": [
+    "引用芯片",
+    "装饰节点",
+    "decorator node",
+    "@ 引用",
+    "lexical",
+    "原子芯片"
+   ]
+  },
+  {
+   "id": "command-chip-node",
+   "name": "CommandChipNode",
+   "exportName": "CommandChipNode",
+   "zh": "命令芯片节点",
+   "group": "conversation",
+   "summary": "草稿开头的斜杠命令作为一个原子装饰节点：宿主 span 带 <code>data-composer-command=\"&lt;name&gt;\"</code> 与 <code>contenteditable=\"false\"</code>，React 面是只显示 token 的 <code>CommandChip</code>（例如 <code>/goal</code>）。节点携带的是 claim 本身（含提交闭包），因此历史回退把节点恢复回来时命令也一起恢复；序列化只有 token，<code>importJSON</code> 因此还原出一条普通文本节点。席位由 <code>registerCommandChipSeat</code> 守着：芯片必须是第一个块的第一个子节点，前面插入任何兄弟、或被移到别的块，都会被替换成字面 token（等于释放 claim）。删除是两段式：首次按删除键只把宿主标成 <code>data-selected</code>（芯片保留悬停底色、根元素带 <code>data-composer-chip-selected</code> 让光标透明），再按一次才整块删掉。",
+   "source": "packages/client/ui-conversation/src/client/input/editor/command-chip-node.tsx#L22",
+   "css": [
+    "packages/client/ui-conversation/src/client/skeleton/InputBar.module.css",
+    "packages/client/ui-conversation/src/client/input/editor/composer-editor.module.css",
+    "packages/client/ui-conversation/src/client/input/editor/ReferenceChip.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-state-business-tertiary",
+    "--dsw-radius-sm",
+    "--dsw-alias-label-primary"
+   ],
+   "specimens": [
+    {
+     "label": "行首席位：/goal ＋ 参数",
+     "note": "芯片必须是第一个块的第一个子节点；参数是芯片后面的普通文本",
+     "html": "<div style=\"width:560px\"><div class=\"card\" data-composer-card><div class=\"scroll\" data-input-scroll><div class=\"grow\"><div class=\"input\" data-composer-input data-phase=\"plain\" data-placeholder=\"发消息或创建任务, / 调用指令, @ 文件或对话\" role=\"textbox\" aria-multiline=\"true\" aria-label=\"发消息或创建任务, / 调用指令, @ 文件或对话\" contenteditable=\"true\"><p><span data-composer-command=\"goal\" contenteditable=\"false\"><span class=\"reference chip\"><span class=\"label\">/goal</span></span></span> 把输入编辑器的引用芯片补齐</p></div></div></div></div></div>"
+    },
+    {
+     "label": "首次删除：宿主 data-selected",
+     "note": "这条底色就是真实规则 [data-composer-command][data-selected] > .reference，直接静态命中",
+     "html": "<div style=\"width:560px\"><div class=\"card\" data-composer-card><div class=\"scroll\" data-input-scroll><div class=\"grow\"><div class=\"input\" data-composer-input data-phase=\"plain\" data-placeholder=\"发消息或创建任务, / 调用指令, @ 文件或对话\" role=\"textbox\" aria-multiline=\"true\" aria-label=\"发消息或创建任务, / 调用指令, @ 文件或对话\" contenteditable=\"true\" data-composer-chip-selected><p><span data-composer-command=\"goal\" contenteditable=\"false\" data-selected><span class=\"reference chip\"><span class=\"label\">/goal</span></span></span> 把输入编辑器的引用芯片补齐</p></div></div></div></div></div>"
+    },
+    {
+     "label": "掉出席位：降级成字面 token",
+     "note": "在芯片前插入兄弟 / 把芯片挪到别的块之后，节点变换把它换成字面 token，claim 随之释放",
+     "html": "<div style=\"width:560px\"><div class=\"card\" data-composer-card><div class=\"scroll\" data-input-scroll><div class=\"grow\"><div class=\"input\" data-composer-input data-phase=\"plain\" data-placeholder=\"发消息或创建任务, / 调用指令, @ 文件或对话\" role=\"textbox\" aria-multiline=\"true\" aria-label=\"发消息或创建任务, / 调用指令, @ 文件或对话\" contenteditable=\"true\"><p>/goal 把输入编辑器的引用芯片补齐</p></div></div></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "claim",
+     "type": "CommandClaim",
+     "default": "—",
+     "desc": "构造参数：这条命令的认领（token 与提交闭包）；闭包没有 JSON 形态，所以序列化只留 token。"
+    },
+    {
+     "name": "key",
+     "type": "NodeKey | undefined",
+     "default": "—",
+     "desc": "Lexical 克隆路径传入的节点键；<code>clone()</code> 连同 claim 一起复制。"
+    }
+   ],
+   "notes": "<code>getTextContent()</code> 返回 <code>trimEnd()</code> 后的 token——参数分隔符是芯片后面的普通文本节点，所以复制出去不带尾随空格。两段式删除与选中标记在 <code>registerCommandChipSelection</code>：单击、失焦、光标不再贴着芯片、或按下不产生删除的键，都会清掉标记。宿主元素的 <code>data-composer-command</code> 值是 claim 的 name；<code>isKeyboardSelectable()</code> 与引用芯片同样为 false。",
+   "keywords": [
+    "命令芯片",
+    "斜杠命令",
+    "claim",
+    "slash command",
+    "命令节点"
+   ]
+  },
+  {
+   "id": "command-chip",
+   "name": "CommandChip",
+   "exportName": "CommandChip",
+   "zh": "命令芯片",
+   "group": "conversation",
+   "summary": "命令芯片的纯展示面：把 claim 的 token（如 <code>/goal</code>）渲染成一个行内芯片，整套外观复用引用芯片的 <code>.reference</code> 处理——左右各 4px 内边距、<code>--dsw-radius-sm</code> 圆角、业务蓝文字，悬停只把底色换成 <code>--dsw-alias-state-business-tertiary</code>（不动文字度量）；内部只有一个不截断的 <code>.label</code>。它不画字形、不带 <code>@</code> 标记，也没有无效态；席位规则、两段式删除与 claim 的生命周期都在 <code>CommandChipNode</code> 和 shell 上，这里只负责长相。",
+   "source": "packages/client/ui-conversation/src/client/input/editor/CommandChip.tsx#L22",
+   "css": [
+    "packages/client/ui-conversation/src/client/skeleton/InputBar.module.css",
+    "packages/client/ui-conversation/src/client/input/editor/composer-editor.module.css",
+    "packages/client/ui-conversation/src/client/input/editor/ReferenceChip.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-state-business-tertiary",
+    "--dsw-radius-sm",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-caption"
+   ],
+   "specimens": [
+    {
+     "label": "行首命令芯片：/goal 与参数同行",
+     "note": "芯片后面跟着的文本就是命令参数",
+     "html": "<div style=\"width:560px\"><div class=\"card\" data-composer-card><div class=\"scroll\" data-input-scroll><div class=\"grow\"><div class=\"input\" data-composer-input data-phase=\"plain\" data-placeholder=\"发消息或创建任务, / 调用指令, @ 文件或对话\" role=\"textbox\" aria-multiline=\"true\" aria-label=\"发消息或创建任务, / 调用指令, @ 文件或对话\" contenteditable=\"true\"><p><span data-composer-command=\"goal\" contenteditable=\"false\"><span class=\"reference chip\"><span class=\"label\">/goal</span></span></span> 把输入编辑器的引用芯片补齐</p></div></div></div></div></div>"
+    },
+    {
+     "label": "参数提示：--dsh-composer-hint 的 ghost 文案",
+     "note": "提示不是组件画的：输入卡按 claim 状态把它作为 JSON 字符串写进 --dsh-composer-hint，由 .input p:last-child::after 生成",
+     "html": "<div style=\"width:560px\"><div class=\"card\" data-composer-card><div class=\"scroll\" data-input-scroll><div class=\"grow\"><div class=\"input\" data-composer-input data-phase=\"plain\" data-placeholder=\"发消息或创建任务, / 调用指令, @ 文件或对话\" role=\"textbox\" aria-multiline=\"true\" aria-label=\"发消息或创建任务, / 调用指令, @ 文件或对话\" contenteditable=\"true\" style='--dsh-composer-hint: \"输入目标，智能体将持续执行\"'><p><span data-composer-command=\"goal\" contenteditable=\"false\"><span class=\"reference chip\"><span class=\"label\">/goal</span></span></span></p></div></div></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "token",
+     "type": "string",
+     "default": "—",
+     "desc": "要显示的认领 token，去掉参数分隔符，例如 <code>/goal</code>。"
+    }
+   ],
+   "notes": "真实 DOM 里芯片是宿主 span 的子元素：<code>&lt;span data-composer-command=\"goal\" contenteditable=\"false\"&gt;</code> 包着 <code>.reference.chip</code>，所以「首次删除」的底色规则 <code>[data-composer-command][data-selected] &gt; .reference</code> 命中的也是同一份 <code>.reference</code>。组件不接收任何交互回调——点击与键盘都由编辑器命令层处理。",
+   "keywords": [
+    "命令芯片",
+    "斜杠命令",
+    "/goal",
+    "chip",
+    "命令标签"
+   ]
+  },
+  {
+   "id": "composer-content-editable",
+   "name": "ComposerContentEditable",
+   "exportName": "ComposerContentEditable",
+   "zh": "可编辑输入面",
+   "group": "conversation",
+   "summary": "composer 的 contenteditable 宿主：把 shell 持有的 Lexical 编辑器绑到常驻的 <code>&lt;div&gt;</code> 上（<code>setRootElement</code>），并把 <code>editable</code> 单向写进编辑器（<code>setEditable</code>）。这个 div 就是文本区本身：<code>role=\"textbox\"</code>、<code>aria-multiline</code>、<code>min-height:36px</code>、内边距 <code>4px 8px 0 14px</code>、<code>white-space: pre-wrap</code>、光标用业务蓝，字号与 24px 行高从卡片继承。会话可为空：<code>editor</code> 为 null 时渲染同一个 div 但不绑定（无会话时它当工作区选择触发器用），所以切换状态不会换掉元素树；<code>className</code>、<code>data-phase</code>、<code>aria-disabled</code>、<code>data-placeholder</code> 等都由 DraftEditor 透传。",
+   "source": "packages/client/ui-conversation/src/client/input/editor/ComposerContentEditable.tsx#L26",
+   "css": [
+    "packages/client/ui-conversation/src/client/skeleton/InputBar.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-caption",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-state-business-primary",
+    "--dsw-specific-input-major",
+    "--dsw-elevation-soft",
+    "--dsw-alias-border-l2",
+    "--dsw-radius-panel"
+   ],
+   "specimens": [
+    {
+     "label": "绑定编辑器：可编辑面 + 单行占位",
+     "note": "空草稿时占位行绝对定位压在可编辑面上；data-placeholder 留原文，aria-label 才是无障碍名",
+     "html": "<div style=\"width:720px\"><div class=\"card\" data-composer-card><div class=\"scroll\" data-input-scroll><div class=\"grow\"><div class=\"input\" data-composer-input data-phase=\"plain\" data-placeholder=\"发消息或创建任务, / 调用指令, @ 文件或对话\" role=\"textbox\" aria-multiline=\"true\" aria-label=\"发消息或创建任务, / 调用指令, @ 文件或对话\" contenteditable=\"true\"><p><br></p></div><div aria-hidden=\"true\" class=\"placeholder\" data-composer-placeholder>发消息或创建任务, / 调用指令, @ 文件或对话</div></div></div></div></div>"
+    },
+    {
+     "label": "未绑定（editor 为 null）：同一个 div 当工作区触发器",
+     "note": "同一个 div 换成 contenteditable=\"false\"、data-phase=\"inert\"，并带上 menu 弹出语义；卡片此时加 .cardWorkspaceTrigger 的虚线内描边",
+     "html": "<div style=\"width:720px\"><div class=\"card cardWorkspaceTrigger\" data-composer-card><div class=\"scroll\" data-input-scroll><div class=\"grow\"><div class=\"input\" data-composer-input data-phase=\"inert\" data-placeholder=\"选择一个工作区开始\" role=\"textbox\" aria-multiline=\"true\" aria-label=\"选择工作区\" contenteditable=\"false\" aria-haspopup=\"menu\" aria-expanded=\"false\" tabindex=\"0\"><p><br></p></div><div aria-hidden=\"true\" class=\"placeholder\" data-composer-placeholder>选择一个工作区开始</div></div></div></div></div>"
+    },
+    {
+     "label": "只读：会话已移除",
+     "note": "editorDisabled 只换类名与 aria 状态，不动 DOM：三级文字色 + not-allowed",
+     "html": "<div style=\"width:720px\"><div class=\"card\" data-composer-card><div class=\"scroll\" data-input-scroll><div class=\"grow\"><div class=\"input inputDisabled\" data-composer-input data-phase=\"inert\" data-placeholder=\"会话不可用\" role=\"textbox\" aria-multiline=\"true\" aria-label=\"会话不可用\" contenteditable=\"true\" aria-disabled=\"true\"><p><br></p></div><div aria-hidden=\"true\" class=\"placeholder\" data-composer-placeholder>会话不可用</div></div></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "editor",
+     "type": "LexicalEditor | null",
+     "default": "—",
+     "desc": "shell 持有的编辑器；null 时渲染同一个 div 但不绑定，也不可编辑（无会话的工作区触发器态）。"
+    },
+    {
+     "name": "editable",
+     "type": "boolean",
+     "default": "—",
+     "desc": "用户能否编辑（只读 / 禁用折叠在这里）；组件是唯一写者，变化时调 <code>editor.setEditable</code>。"
+    },
+    {
+     "name": "...rest",
+     "type": "HTMLAttributes<HTMLDivElement>",
+     "default": "—",
+     "desc": "div 透传：DraftEditor 用它挂 <code>className</code>、<code>data-phase</code>、<code>data-placeholder</code>、<code>aria-label</code>、<code>aria-haspopup</code>、<code>tabIndex</code>、<code>onKeyDown</code> 与 hint 的 CSS 变量。"
+    }
+   ],
+   "notes": "<code>contenteditable</code> 由这次渲染决定（Lexical 的 <code>setRootElement</code> 不碰这个属性），卸载时 <code>setRootElement(null)</code> 解绑。占位行不是它渲染的：那是 DraftEditor 里 <code>.grow</code> 的绝对定位兄弟。真正的空白段落是 Lexical 的 <code>&lt;p&gt;&lt;br&gt;&lt;/p&gt;</code>，<code>.input p</code> 把 UA 外边距清零以保持 textarea 的行距。",
+   "keywords": [
+    "contenteditable",
+    "输入面",
+    "文本区",
+    "编辑宿主",
+    "lexical root"
+   ]
+  },
+  {
+   "id": "decorator-portals",
+   "name": "DecoratorPortals",
+   "exportName": "DecoratorPortals",
+   "zh": "装饰门户",
+   "group": "conversation",
+   "summary": "composer 的装饰渲染循环：它自己不产生任何 DOM，只是把编辑器里每个装饰节点（<code>ReferenceChipNode</code> / <code>CommandChipNode</code>）的 React 面用 <code>createPortal</code> 挂进各自的宿主元素（<code>editor.getElementByKey(key)</code>）；宿主还没出现的那一条直接跳过。<code>editor</code> 为 null 时整个门户集合不渲染——无会话与工作区触发器状态就是这样，同一份草稿只剩文字。门户的 React key 是 NodeKey，所以芯片周围的文字编辑不会让它重挂，DOM 身份保持不变（选区与动画都不受影响）。",
+   "source": "packages/client/ui-conversation/src/client/input/editor/DecoratorPortals.tsx#L23",
+   "css": [
+    "packages/client/ui-conversation/src/client/skeleton/InputBar.module.css",
+    "packages/client/ui-conversation/src/client/input/editor/composer-editor.module.css",
+    "packages/client/ui-conversation/src/client/input/editor/ReferenceChip.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-state-business-tertiary",
+    "--dsw-radius-sm",
+    "--dsw-alias-label-primary"
+   ],
+   "specimens": [
+    {
+     "label": "门户集合：命令芯片与引用芯片各挂进宿主 span",
+     "note": "该组件本身无独立外观，这里展示它渲染的内容：两个装饰节点的 React 面",
+     "html": "<div style=\"width:560px\"><div class=\"card\" data-composer-card><div class=\"scroll\" data-input-scroll><div class=\"grow\"><div class=\"input\" data-composer-input data-phase=\"plain\" data-placeholder=\"发消息或创建任务, / 调用指令, @ 文件或对话\" role=\"textbox\" aria-multiline=\"true\" aria-label=\"发消息或创建任务, / 调用指令, @ 文件或对话\" contenteditable=\"true\"><p><span data-composer-command=\"goal\" contenteditable=\"false\"><span class=\"reference chip\"><span class=\"label\">/goal</span></span></span> 把 <span data-composer-chip=\"file\" contenteditable=\"false\"><span class=\"reference chip openable\" title=\"packages/client/ui-conversation/src/client/input/editor/DraftEditor.tsx\"><svg class=\"icon\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4.9375 5.90295H11.0625\" stroke=\"currentColor\"/><path d=\"M4.9375 9.02991H8.27841\" stroke=\"currentColor\"/><path d=\"M12.5 1.32617C13.3039 1.32617 14 1.95171 14 2.77637V13.2246C13.9996 14.0489 13.3036 14.6738 12.5 14.6738H3.5C2.69637 14.6738 2.00042 14.0489 2 13.2246V2.77637C2 1.95171 2.69613 1.32617 3.5 1.32617H12.5ZM3.5 2.32617C3.1993 2.32617 3 2.55186 3 2.77637V13.2246C3.00044 13.4489 3.19963 13.6738 3.5 13.6738H12.5C12.8004 13.6738 12.9996 13.4489 13 13.2246V2.77637C13 2.55186 12.8007 2.32617 12.5 2.32617H3.5Z\" fill=\"currentColor\"/></svg><span class=\"label\">packages/client/ui-conversation/src/client/input/editor/DraftEditor.tsx</span></span></span> 的 props 表抄完</p></div></div></div></div></div>"
+    },
+    {
+     "label": "editor 为 null：门户集合不渲染",
+     "note": "无会话 / 工作区触发器状态传入 null；文字仍由同一个可编辑面承载，只是没有任何门户",
+     "html": "<div style=\"width:560px\"><div class=\"card\" data-composer-card><div class=\"scroll\" data-input-scroll><div class=\"grow\"><div class=\"input\" data-composer-input data-phase=\"inert\" data-placeholder=\"发消息或创建任务, / 调用指令, @ 文件或对话\" role=\"textbox\" aria-multiline=\"true\" aria-label=\"发消息或创建任务, / 调用指令, @ 文件或对话\" contenteditable=\"false\"><p>/goal 把 packages/client/ui-conversation/src/client/input/editor/DraftEditor.tsx 的 props 表抄完</p></div></div></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "editor",
+     "type": "LexicalEditor | null",
+     "default": "—",
+     "desc": "要观察的编辑器；null 时返回 null，不注册监听也不渲染任何门户。"
+    }
+   ],
+   "notes": "它代替 <code>@lexical/react</code> 的 composer 做同一件事，但只服务于这个输入框：<code>getDecorators()</code> 取当前集合，<code>registerDecoratorListener</code> 跟着编辑器状态更新；每个装饰在 <code>getElementByKey</code> 找到宿主后用 <code>createPortal(jsx, el, key)</code> 挂载。因此条目里看到的 <code>data-composer-chip</code> / <code>data-composer-command</code> 宿主 span 是节点 <code>createDOM</code> 造的，内容则由这里填。",
+   "keywords": [
+    "门户",
+    "portal",
+    "装饰节点",
+    "decorator",
+    "芯片挂载"
+   ]
+  },
+  {
+   "id": "draft-editor",
+   "name": "DraftEditor",
+   "exportName": "DraftEditor",
+   "zh": "草稿编辑器",
+   "group": "conversation",
+   "summary": "输入卡里的文本区：唯一的滚动口 <code>.scroll</code>（<code>max-height: var(--dsh-composer-text-max-height)</code>，即 14 行 × 24px = 336px）里放相对定位的 <code>.grow</code>、可编辑面 <code>.input</code>（<code>min-height:36px</code>）与绝对定位的占位行 <code>.placeholder</code>，末尾再挂 DecoratorPortals。它自己无状态、无 Hook：编辑器、可编辑性、阶段（<code>data-phase</code>）、占位文案与无障碍名都是 InputBar 借给它的；<code>workspaceTrigger</code> 为真时不给 ComposerContentEditable 传编辑器，并把那个 div 当工作区选择触发器（<code>aria-haspopup=\"menu\"</code> + Enter / 空格触发），<code>hint</code> 非空时把它作为 JSON 字符串写进 <code>--dsh-composer-hint</code>，由 <code>.input p:last-child::after</code> 画成命令参数提示。",
+   "source": "packages/client/ui-conversation/src/client/input/editor/DraftEditor.tsx#L31",
+   "css": [
+    "packages/client/ui-conversation/src/client/skeleton/InputBar.module.css",
+    "packages/client/ui-conversation/src/client/input/editor/composer-editor.module.css",
+    "packages/client/ui-conversation/src/client/input/editor/ReferenceChip.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-caption",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-state-business-primary",
+    "--dsw-specific-input-major",
+    "--dsw-elevation-soft",
+    "--dsw-alias-border-l2",
+    "--dsw-radius-panel",
+    "--dsw-alias-scrollbar-bg-l2",
+    "--dsw-alias-scrollbar-hover-l2"
+   ],
+   "specimens": [
+    {
+     "label": "空草稿：占位行 + 36px 文本下限",
+     "note": "占位行是 .grow 的绝对定位兄弟，行高与文本区完全一致",
+     "html": "<div style=\"width:720px\"><div class=\"card\" data-composer-card><div class=\"scroll\" data-input-scroll><div class=\"grow\"><div class=\"input\" data-composer-input data-phase=\"plain\" data-placeholder=\"发消息或创建任务, / 调用指令, @ 文件或对话\" role=\"textbox\" aria-multiline=\"true\" aria-label=\"发消息或创建任务, / 调用指令, @ 文件或对话\" contenteditable=\"true\"><p><br></p></div><div aria-hidden=\"true\" class=\"placeholder\" data-composer-placeholder>发消息或创建任务, / 调用指令, @ 文件或对话</div></div></div></div></div>"
+    },
+    {
+     "label": "有草稿：两段文字 + 引用芯片",
+     "note": "芯片是门户挂进来的宿主 span；超长草稿到 14 行后由 .scroll 单独滚动",
+     "html": "<div style=\"width:720px\"><div class=\"card\" data-composer-card><div class=\"scroll\" data-input-scroll><div class=\"grow\"><div class=\"input\" data-composer-input data-phase=\"plain\" data-placeholder=\"发消息或创建任务, / 调用指令, @ 文件或对话\" role=\"textbox\" aria-multiline=\"true\" aria-label=\"发消息或创建任务, / 调用指令, @ 文件或对话\" contenteditable=\"true\"><p>把 <span data-composer-chip=\"file\" contenteditable=\"false\"><span class=\"reference chip openable\" title=\"packages/client/ui-conversation/src/client/input/editor/DraftEditor.tsx\"><svg class=\"icon\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4.9375 5.90295H11.0625\" stroke=\"currentColor\"/><path d=\"M4.9375 9.02991H8.27841\" stroke=\"currentColor\"/><path d=\"M12.5 1.32617C13.3039 1.32617 14 1.95171 14 2.77637V13.2246C13.9996 14.0489 13.3036 14.6738 12.5 14.6738H3.5C2.69637 14.6738 2.00042 14.0489 2 13.2246V2.77637C2 1.95171 2.69613 1.32617 3.5 1.32617H12.5ZM3.5 2.32617C3.1993 2.32617 3 2.55186 3 2.77637V13.2246C3.00044 13.4489 3.19963 13.6738 3.5 13.6738H12.5C12.8004 13.6738 12.9996 13.4489 13 13.2246V2.77637C13 2.55186 12.8007 2.32617 12.5 2.32617H3.5Z\" fill=\"currentColor\"/></svg><span class=\"label\">packages/client/ui-conversation/src/client/input/editor/DraftEditor.tsx</span></span></span> 的 props 表抄完。</p><p>然后把 pnpm run lint 跑一遍。</p></div></div></div></div></div>"
+    },
+    {
+     "label": "禁用态：会话已移除",
+     "note": "同一份 DOM：只换 .inputDisabled 与 aria 状态，不卸载编辑器",
+     "html": "<div style=\"width:720px\"><div class=\"card\" data-composer-card><div class=\"scroll\" data-input-scroll><div class=\"grow\"><div class=\"input inputDisabled\" data-composer-input data-phase=\"inert\" data-placeholder=\"会话不可用\" role=\"textbox\" aria-multiline=\"true\" aria-label=\"会话不可用\" contenteditable=\"true\" aria-disabled=\"true\"><p><br></p></div><div aria-hidden=\"true\" class=\"placeholder\" data-composer-placeholder>会话不可用</div></div></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "classNames",
+     "type": "Readonly<Record<string, string>>",
+     "default": "—",
+     "desc": "InputBar 的 CSS Module 类名表（scroll / grow / input / inputDisabled / placeholder）；本组件不自己 import 样式表。"
+    },
+    {
+     "name": "editor",
+     "type": "LexicalEditor | null",
+     "default": "—",
+     "desc": "借来的编辑器；workspaceTrigger 为真时不往下传（传 null）。"
+    },
+    {
+     "name": "scrollRef",
+     "type": "RefObject<HTMLDivElement>",
+     "default": "—",
+     "desc": "InputBar 留着的滚动口引用，用于把光标滚进视野与滚轮接力。"
+    },
+    {
+     "name": "editable",
+     "type": "boolean",
+     "default": "—",
+     "desc": "用户能否编辑，透传给 ComposerContentEditable。"
+    },
+    {
+     "name": "editorDisabled",
+     "type": "boolean",
+     "default": "—",
+     "desc": "是否给可编辑面加 .inputDisabled（会话被移除、无会话、被 owner 阻塞等）。"
+    },
+    {
+     "name": "phase",
+     "type": "InputState['phase'] | 'inert'",
+     "default": "—",
+     "desc": "机器阶段（plain / claimed / adjudicating / submitting）或无会话的 inert，写到 data-phase。"
+    },
+    {
+     "name": "placeholderText",
+     "type": "string",
+     "default": "—",
+     "desc": "占位文案，同时作为 data-placeholder 与（无会话以外的）无障碍名。"
+    },
+    {
+     "name": "ariaLabel",
+     "type": "string",
+     "default": "—",
+     "desc": "可编辑面的 aria-label：工作区触发器时是「选择工作区」，否则等于占位文案。"
+    },
+    {
+     "name": "workspaceTrigger",
+     "type": "boolean",
+     "default": "—",
+     "desc": "无会话且可请求工作区：不绑编辑器，div 变成 menu 触发器（aria-haspopup / aria-expanded / tabIndex）。"
+    },
+    {
+     "name": "workspacePickerOpen",
+     "type": "boolean",
+     "default": "—",
+     "desc": "工作区选择器是否打开，反射到触发器的 aria-expanded。"
+    },
+    {
+     "name": "onWorkspaceKeyDown",
+     "type": "KeyboardEventHandler<HTMLDivElement>",
+     "default": "—",
+     "desc": "触发器状态下 Enter / 空格打开选择器。"
+    },
+    {
+     "name": "hint",
+     "type": "string | null",
+     "default": "null",
+     "desc": "命令参数提示；非空时作为 JSON 字符串写进 --dsh-composer-hint。"
+    },
+    {
+     "name": "showPlaceholder",
+     "type": "boolean",
+     "default": "—",
+     "desc": "是否渲染占位行（草稿为空、没有附件、也没有生效的命令认领时）。"
+    }
+   ],
+   "notes": "滚动口是 <code>.scroll</code> 而不是可编辑面：<code>.input</code> 随内容长高，到 14 行上限后只有 <code>.scroll</code> 滚（其滚动条轨道有 8px 上边距，避开卡片圆角）。<code>.grow</code> 只负责给占位行一个包含块。<code>classNames</code> 之所以是 prop 而不是 import，是因为样式表属于 InputBar（它才是这条卡片的 owner）；因此条目里的每一张表都列在 <code>css</code> 里。",
+   "keywords": [
+    "草稿",
+    "文本区",
+    "滚动口",
+    "占位",
+    "draft editor",
+    "composer 文本"
+   ]
+  },
+  {
+   "id": "enter-behavior-row",
+   "name": "EnterBehaviorRow",
+   "exportName": "EnterBehaviorRow",
+   "zh": "回车行为行",
+   "group": "conversation",
+   "summary": "通用设置里的一行「繁忙时的发送行为」：左侧是 14px/22px 的标题加 12px/18px 的三级说明（右侧留 48px 空白），右侧是 36px 高、左右 14px 内边距、<code>--dsw-radius-md</code> 圆角、<code>--dsw-alias-bg-module-platform</code> 底色的选择器（当前值 + 12px 间距的 14px 箭头），行底压一条 <code>--dsw-alias-border-l2</code> 的 0.5px 发丝线。点开是与输入框命令菜单同一套 <code>Menu</code>：门户卡片列出「排队发送 / 插话发送」两项，当前项在行尾带对勾，选中即写回偏好并收起。它只决定智能体运行中 Enter 与发送按钮的行为，Cmd/Ctrl+Enter 固定走另一行为。",
+   "source": "packages/client/ui-conversation/src/client/settings/EnterBehaviorRow.tsx#L39",
+   "css": [
+    "packages/client/ui-conversation/src/client/settings/EnterBehaviorRow.module.css",
+    "packages/client/ui-primitives/src/Menu.module.css",
+    "packages/client/ui-primitives/src/MenuSurface.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-module-platform",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-radius-md",
+    "--dsw-radius-lg",
+    "--dsw-alias-border-l1",
+    "--dsw-elevation-prominent",
+    "--dsw-menu-surface-fill",
+    "--dsw-menu-backdrop-filter",
+    "--dsw-alias-scrollbar-bg-l2"
+   ],
+   "specimens": [
+    {
+     "label": "默认：排队发送",
+     "note": "选择器是 aria-haspopup=menu 的普通按钮，高度 36px",
+     "html": "<div style=\"width:620px\"><div class=\"row\"><div class=\"rowText\"><div class=\"title\">繁忙时的发送行为</div><div class=\"desc\">智能体运行时 Enter 键和发送按钮的行为；Cmd/Ctrl+Enter 使用另一行为</div></div><span class=\"root\"><button type=\"button\" class=\"selector\" aria-haspopup=\"menu\" aria-expanded=\"false\">排队发送<svg class=\"chevron\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></button></span></div></div>"
+    },
+    {
+     "label": "打开态：Menu 门户卡片",
+     "note": "静态快照：门户卡片由 fixed 拉回文档流内的相对定位；选中项行尾是对勾",
+     "html": "<div style=\"width:460px\"><div style=\"display:flex;flex-direction:column;gap:8px\"><div class=\"row\"><div class=\"rowText\"><div class=\"title\">繁忙时的发送行为</div><div class=\"desc\">智能体运行时 Enter 键和发送按钮的行为；Cmd/Ctrl+Enter 使用另一行为</div></div><span class=\"root\"><button type=\"button\" class=\"selector\" aria-haspopup=\"menu\" aria-expanded=\"true\">排队发送<svg class=\"chevron\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></button></span></div><div class=\"surface list scrollable portal snapshotStatic\" role=\"menu\"><div aria-hidden=\"true\" class=\"material\"></div><div class=\"viewport\" role=\"presentation\"><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item selected\"><span class=\"itemLabel\">排队发送</span><svg class=\"check\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4\" stroke=\"currentColor\"/></svg></button></div><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item\"><span class=\"itemLabel\">插话发送</span></button></div></div></div></div></div>",
+     "css": "/* 静态快照：Menu 的 .list.portal 在真实产品里是 portal 到 body、position: fixed 的门户卡片；\n   这里拉回文档流，换成相对定位并抵消 .portal 的 top/left，保留包含块让 .material（inset: 0）盖满卡片。 */\n.list.portal.snapshotStatic { position: relative; inset: auto; }"
+    },
+    {
+     "label": "悬停模拟：选择器换基底",
+     "note": "悬停模拟",
+     "html": "<div style=\"width:620px\"><div class=\"row\"><div class=\"rowText\"><div class=\"title\">繁忙时的发送行为</div><div class=\"desc\">智能体运行时 Enter 键和发送按钮的行为；Cmd/Ctrl+Enter 使用另一行为</div></div><span class=\"root\"><button type=\"button\" class=\"selector\" aria-haspopup=\"menu\" aria-expanded=\"false\">插话发送<svg class=\"chevron\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></button></span></div></div>",
+     "css": "/* 状态模拟：:hover 静态触发不了，把 EnterBehaviorRow.module.css 里的\n   .selector:hover { background: var(--dsw-alias-interactive-bg-hover); } 原样搬过来。 */\n.selector { background: var(--dsw-alias-interactive-bg-hover); }"
+    }
+   ],
+   "props": [
+    {
+     "name": "useBusyEnter",
+     "type": "SnapshotStore<BusyEnterBehavior>",
+     "default": "—",
+     "desc": "注入舱位：持久化的繁忙时 Enter 偏好；行内的当前值与菜单选中项都从它读。"
+    },
+    {
+     "name": "setBusyEnter",
+     "type": "(behavior: BusyEnterBehavior) => void",
+     "default": "—",
+     "desc": "写回偏好；菜单选项 id 直接就是 <code>queue</code> / <code>steer</code>。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'conversation'>",
+     "default": "—",
+     "desc": "conversation 词典：标题、说明与两个选项名。"
+    }
+   ],
+   "notes": "这一行注册进 <code>settings.general.item</code> 槽，因此外观由设置页的行容器决定（本组件只负责行内部）。菜单复用 <code>Menu</code> 的 <code>portal</code> 模式：卡片 fixed 定位、层叠在对话框之上（z-index 1100），本例把它拉回文档流。选项只有两项，所以卡片不会触发 <code>.scrollable</code> 的视口高度上限。",
+   "keywords": [
+    "繁忙时发送",
+    "Enter 行为",
+    "排队发送",
+    "插话发送",
+    "设置行"
+   ]
+  },
+  {
+   "id": "conversation-content",
+   "name": "ConversationContent",
+   "exportName": "ConversationContent",
+   "zh": "会话内容",
+   "group": "conversation",
+   "summary": "一次会话的共享主体：最外层是纵向 flex 的 <code>.body</code>（<code>data-conversation-content</code>、<code>data-conversation-region=\"chat\"</code>、<code>data-content-phase</code>），里面是唯一滚动口 <code>.scrollBody</code>（<code>scrollbar-gutter: stable</code>，右侧留 2px）与吸底的 <code>.composerSeat</code>。宽度轴也在这一层发布：<code>--dsh-chat-content-width: clamp(680px, 列宽 × 0.64, 920px)</code>，输入卡上限是它 +32px；<code>embedded</code> 变体改成 <code>min(100% - 32px, 920px)</code> 并把两侧 clearance 收到 8px。它按 <code>hero</code> 把 composer 标成居中的 <code>.composerHero</code> 栈（品牌头 + 工作区选择行 + 输入卡），否则标成贴底的 <code>.composerStack</code>；视图与输入行本身都来自 renderSlot，两个本地工厂槽（views / widthControls）决定谁被渲染。座上的 ResizeObserver 把 <code>--dsh-composer-height</code> 与 <code>--dsh-conversation-viewport-height</code> 写到滚动口，浮动的视图控件据此避让。",
+   "source": "packages/client/ui-conversation/src/client/skeleton/ConversationContent.tsx#L22",
+   "css": [
+    "packages/client/ui-conversation/src/client/skeleton/ConversationRoot.module.css",
+    "packages/client/ui-conversation/src/client/skeleton/HeroShell.module.css",
+    "packages/client/ui-conversation/src/client/skeleton/InputBar.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-base",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-caption",
+    "--dsw-alias-label-primary-bluish",
+    "--dsw-alias-state-business-tertiary",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-radius-sm",
+    "--dsw-specific-input-major",
+    "--dsw-elevation-soft",
+    "--dsw-alias-border-l2",
+    "--dsw-radius-panel",
+    "--dsw-specific-selector",
+    "--dsw-alias-button-info-fill"
+   ],
+   "specimens": [
+    {
+     "label": "hero 相位：品牌头 + 工作区选择 + 输入卡",
+     "note": "空会话：composer 栈居中，文本区下限 52px（两行），占位文案换成 hero 版；外层 .root 是 ConversationRoot 的容器，hero 的居中规则挂在它身上",
+     "bg": "platform",
+     "pad": "lg",
+     "html": "<div style=\"width:1100px;display:flex;justify-content:center\"><div style=\"width:1040px;height:520px\"><div class=\"c0-root\" data-phase=\"hero\"><div class=\"c0-body\" data-conversation-content data-conversation-region=\"chat\" data-content-phase=\"hero\"><div class=\"scrollBody\" data-conversation-scroll><div class=\"composerSeat\" data-composer-seat data-conversation-region=\"composer\"><div class=\"composerStack composerHero\"><div class=\"c1-root\"><div class=\"stack\"><div class=\"headline\"><span class=\"fishHitbox\"><svg class=\"fish\" width=\"34\" height=\"25\" viewBox=\"0 0 23.16 17.04\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M22.9168 1.43018C22.6713 1.31018 22.5658 1.53918 22.4223 1.65519C22.3733 1.69269 22.3318 1.74169 22.2903 1.78669C21.9317 2.1697 21.5127 2.42121 20.9657 2.39121C20.1657 2.34621 19.4827 2.59771 18.8787 3.20973C18.7502 2.45521 18.3236 2.0047 17.6746 1.71569C17.3351 1.56568 16.9916 1.41518 16.7536 1.08867C16.5876 0.856163 16.5421 0.597155 16.4591 0.341647C16.4061 0.187643 16.3536 0.0301382 16.1761 0.00363739C15.9836 -0.0263635 15.9081 0.135141 15.8326 0.270145C15.5306 0.822162 15.4136 1.43018 15.4251 2.0462C15.4516 3.43174 16.0366 4.53527 17.1991 5.3203C17.3311 5.4103 17.3651 5.5003 17.3236 5.63181C17.2441 5.90231 17.1501 6.16482 17.0671 6.43533C17.0141 6.60784 16.9351 6.64584 16.7501 6.57033C16.1121 6.30383 15.5611 5.90931 15.074 5.4328C14.2475 4.63328 13.5 3.75075 12.568 3.05973C12.349 2.89822 12.13 2.74822 11.9034 2.60522C10.9524 1.68169 12.028 0.923165 12.277 0.833162C12.5375 0.739159 12.3675 0.41615 11.5259 0.42015C10.6844 0.42365 9.91439 0.705658 8.93286 1.08117C8.78935 1.13767 8.63835 1.17867 8.48384 1.21267C7.59332 1.04367 6.66829 1.00617 5.70226 1.11517C3.88321 1.31768 2.43016 2.1777 1.36213 3.64575C0.0790928 5.4103 -0.222916 7.41536 0.146595 9.50642C0.535106 11.7105 1.66014 13.535 3.38869 14.9616C5.18125 16.4406 7.24581 17.1657 9.60138 17.0266C11.0319 16.9441 12.6245 16.7526 14.421 15.2321C14.874 15.4576 15.3496 15.5476 16.1381 15.6151C16.7456 15.6716 17.3306 15.5851 17.7836 15.4911C18.4931 15.3411 18.4441 14.6841 18.1876 14.5636C16.1081 13.595 16.5646 13.9891 16.1496 13.67C17.2061 12.42 18.8202 10.1979 19.3182 7.17235C19.3672 6.83834 19.4297 6.36783 19.4222 6.09732C19.4182 5.93231 19.4562 5.86831 19.6447 5.84931C20.1657 5.78931 20.6712 5.64681 21.1357 5.3913C22.4833 4.65528 23.0268 3.44624 23.1548 1.9972C23.1738 1.77569 23.1508 1.54668 22.9168 1.43018ZM11.1749 14.4736C9.15936 12.889 8.18184 12.3675 7.77832 12.39C7.40081 12.4125 7.46881 12.8445 7.55182 13.126C7.63882 13.404 7.75182 13.5955 7.91033 13.8396C8.01983 14.0011 8.09533 14.2411 7.80083 14.4216C7.15181 14.8231 6.02327 14.2866 5.97027 14.2601C4.65673 13.4865 3.5587 12.4655 2.78467 11.069C2.03715 9.72493 1.60314 8.28289 1.53164 6.74384C1.51264 6.37233 1.62214 6.24082 1.99215 6.17332C2.47916 6.08332 2.98118 6.06432 3.46769 6.13582C5.52476 6.43633 7.27581 7.35586 8.74385 8.8129C9.58188 9.64243 10.2159 10.634 10.8689 11.6025C11.5634 12.631 12.3105 13.611 13.262 14.4146C13.598 14.6961 13.866 14.9101 14.1225 15.0681C13.349 15.1546 12.058 15.1731 11.1749 14.4746L11.1749 14.4736ZM12.141 8.25988C12.141 8.09488 12.273 7.96338 12.439 7.96338C12.4765 7.96338 12.5105 7.97088 12.541 7.98188C12.5825 7.99688 12.6205 8.01938 12.6505 8.05338C12.7035 8.10588 12.7335 8.18088 12.7335 8.25988C12.7335 8.42489 12.6015 8.55639 12.4355 8.55639C12.2695 8.55639 12.141 8.42489 12.141 8.25988ZM15.1415 9.79893C14.949 9.87793 14.7565 9.94544 14.5715 9.95294C14.2845 9.96794 13.9715 9.85143 13.8015 9.70893C13.5375 9.48742 13.3485 9.36342 13.2695 8.97691C13.2355 8.8119 13.2545 8.55639 13.2845 8.40989C13.3525 8.09438 13.277 7.89187 13.0545 7.70787C12.8735 7.55786 12.643 7.51636 12.39 7.51636C12.2955 7.51636 12.209 7.47486 12.1445 7.44136C12.039 7.38886 11.9519 7.25735 12.035 7.09585C12.0615 7.04335 12.19 6.91584 12.22 6.89334C12.5635 6.69784 12.9595 6.76184 13.326 6.90834C13.6655 7.04735 13.9225 7.30236 14.292 7.66287C14.6695 8.09838 14.7375 8.21838 14.9525 8.54539C15.1225 8.8009 15.277 9.06341 15.3831 9.36392C15.4471 9.55142 15.3641 9.70493 15.1415 9.79893Z\" fill=\"currentColor\"/></svg></span><span class=\"titleGroup\"><span>探索未至之境</span><span class=\"previewBadge\">预览版</span></span></div><div class=\"c1-body\"></div></div></div><div class=\"heroWorkspaceRow\"><button type=\"button\" class=\"workspace\" aria-label=\"选择工作区\" aria-haspopup=\"menu\" aria-expanded=\"false\"><svg class=\"folder\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.55912 7.93683C2.67584 7.49906 3.0723 7.19446 3.52536 7.19446H13.6491C14.3061 7.19446 14.7846 7.81725 14.6153 8.45209L13.4411 12.856C13.3244 13.2938 12.9279 13.5984 12.4748 13.5984H2.35113C1.69411 13.5984 1.21562 12.9756 1.38489 12.3407L2.55912 7.93683Z\" fill=\"currentColor\" opacity=\"0.16\"/><path d=\"M13.6491 6.69446C14.6346 6.69453 15.3522 7.62895 15.0983 8.58118L13.9245 12.9845C13.7494 13.6412 13.1539 14.0988 12.4743 14.0988H2.35126C1.36574 14.0988 0.648153 13.1643 0.902044 12.212L2.07587 7.80774C2.25102 7.15128 2.84567 6.69455 3.52509 6.69446H13.6491ZM3.52509 7.69446C3.29865 7.69455 3.10004 7.84674 3.04169 8.06555L1.86786 12.4698C1.78345 12.7872 2.02285 13.0988 2.35126 13.0988H12.4743C12.7007 13.0988 12.8992 12.9463 12.9577 12.7277L14.1325 8.32336C14.2171 8.00598 13.9776 7.69453 13.6491 7.69446H3.52509Z\" fill=\"currentColor\"/><path d=\"M4.7666 1.90137C5.13227 1.90144 5.48571 2.03525 5.75977 2.27734L7.27246 3.61328C7.36379 3.69382 7.48174 3.73828 7.60352 3.73828H12.3994C13.2276 3.73841 13.8993 4.41005 13.8994 5.23828V6.7168C13.8183 6.70327 13.735 6.69436 13.6494 6.69434H12.8994V5.23828C12.8993 4.96233 12.6754 4.73841 12.3994 4.73828H7.60352C7.23781 4.73828 6.88446 4.60438 6.61035 4.3623L5.09766 3.02637C5.00636 2.94576 4.88838 2.90144 4.7666 2.90137H2.0498C1.77366 2.90137 1.5498 3.12523 1.5498 3.40137V9.78223L0.902344 12.2119C0.648452 13.1642 1.36604 14.0986 2.35156 14.0986H2.0498C1.2214 14.0986 0.549838 13.427 0.549805 12.5986V3.40137C0.549805 2.57294 1.22138 1.90137 2.0498 1.90137H4.7666Z\" fill=\"currentColor\"/></svg><span class=\"workspaceLabel\">deepseek-harness</span><svg class=\"chevron\" width=\"12\" height=\"12\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></button></div><div class=\"c2-root c2-hero\"><div class=\"card\" data-composer-card><div class=\"scroll\" data-input-scroll><div class=\"grow\"><div class=\"input\" data-composer-input data-phase=\"plain\" data-placeholder=\"描述你想要构建的内容, / 调用指令, @ 文件或对话\" role=\"textbox\" aria-multiline=\"true\" aria-label=\"描述你想要构建的内容, / 调用指令, @ 文件或对话\" contenteditable=\"true\"><p><br></p></div><div aria-hidden=\"true\" class=\"placeholder\" data-composer-placeholder>描述你想要构建的内容, / 调用指令, @ 文件或对话</div></div></div><div class=\"row\"><div class=\"tools\"><button type=\"button\" class=\"add\" aria-label=\"添加文件或调用指令\" aria-haspopup=\"listbox\" aria-expanded=\"false\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1.3\"><path d=\"M8 2V14\" stroke=\"currentColor\"/><path d=\"M2 8H14\" stroke=\"currentColor\"/></svg></button></div><div class=\"trailing\"><div class=\"standardControls\"></div><button type=\"button\" class=\"primary\" aria-label=\"发送消息\" disabled><svg viewBox=\"0 0 16 16\" width=\"16\" height=\"16\" aria-hidden=\"true\"><path d=\"M8.3125 0.980183C8.66767 1.0531 8.97902 1.20418 9.2627 1.43233C9.48724 1.61297 9.73029 1.85793 9.97949 2.10714L14.707 6.83468L13.293 8.24874L9 3.95577V15.0417H7V3.95577L2.70703 8.24874L1.29297 6.83468L6.02051 2.10714C6.26971 1.85793 6.51277 1.61297 6.7373 1.43233C6.97662 1.23986 7.28445 1.04402 7.6875 0.980183C7.8973 0.947006 8.1031 0.95516 8.3125 0.980183Z\" fill=\"currentColor\"/></svg></button></div></div></div><div class=\"dock\" data-composer-dock></div></div></div></div></div></div></div></div></div>"
+    },
+    {
+     "label": "active 相位：滚动口 + 吸底输入座",
+     "note": "输入座 sticky 吸底并带 36px 的渐隐遮罩；视图区（.viewArea）留空，真实内容由 conversation.session 的占用者渲染",
+     "bg": "platform",
+     "pad": "lg",
+     "html": "<div style=\"width:1100px;display:flex;justify-content:center\"><div style=\"width:1040px;height:440px;--dsh-conversation-column-width:1200px\"><div class=\"c0-root\" data-phase=\"active\"><div class=\"c0-body\" data-conversation-content data-conversation-region=\"chat\" data-content-phase=\"active\"><div class=\"scrollBody\" data-conversation-scroll><div class=\"viewArea\"></div><div class=\"composerSeat\" data-composer-seat data-conversation-region=\"composer\"><div class=\"composerStack\"><div class=\"c2-root\"><div class=\"card\" data-composer-card><div class=\"scroll\" data-input-scroll><div class=\"grow\"><div class=\"input\" data-composer-input data-phase=\"plain\" data-placeholder=\"发消息或创建任务, / 调用指令, @ 文件或对话\" role=\"textbox\" aria-multiline=\"true\" aria-label=\"发消息或创建任务, / 调用指令, @ 文件或对话\" contenteditable=\"true\"><p>把输入卡剩下的样式对完</p><p>然后跑一遍 pnpm run lint</p></div></div></div><div class=\"row\"><div class=\"tools\"><button type=\"button\" class=\"add\" aria-label=\"添加文件或调用指令\" aria-haspopup=\"listbox\" aria-expanded=\"false\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1.3\"><path d=\"M8 2V14\" stroke=\"currentColor\"/><path d=\"M2 8H14\" stroke=\"currentColor\"/></svg></button></div><div class=\"trailing\"><div class=\"standardControls\"></div><button type=\"button\" class=\"primary\" aria-label=\"发送消息\"><svg viewBox=\"0 0 16 16\" width=\"16\" height=\"16\" aria-hidden=\"true\"><path d=\"M8.3125 0.980183C8.66767 1.0531 8.97902 1.20418 9.2627 1.43233C9.48724 1.61297 9.73029 1.85793 9.97949 2.10714L14.707 6.83468L13.293 8.24874L9 3.95577V15.0417H7V3.95577L2.70703 8.24874L1.29297 6.83468L6.02051 2.10714C6.26971 1.85793 6.51277 1.61297 6.7373 1.43233C6.97662 1.23986 7.28445 1.04402 7.6875 0.980183C7.8973 0.947006 8.1031 0.95516 8.3125 0.980183Z\" fill=\"currentColor\"/></svg></button></div></div></div><div class=\"dock\" data-composer-dock></div></div></div></div></div></div></div></div></div>"
+    },
+    {
+     "label": "embedded 变体：宽度轴换成 100% - 32px",
+     "note": "embedded 只换容器变量与 overflow：卡片上限 min(100% - 16px, 952px)，两侧 clearance 8px",
+     "bg": "platform",
+     "pad": "lg",
+     "html": "<div style=\"width:760px\"><div style=\"width:720px;height:400px\"><div class=\"c0-root\" data-phase=\"active\"><div class=\"c0-body embeddedBody\" data-conversation-content data-conversation-region=\"chat\" data-content-phase=\"active\"><div class=\"scrollBody\" data-conversation-scroll><div class=\"viewArea\"></div><div class=\"composerSeat\" data-composer-seat data-conversation-region=\"composer\"><div class=\"composerStack\"><div class=\"c2-root\"><div class=\"card\" data-composer-card><div class=\"scroll\" data-input-scroll><div class=\"grow\"><div class=\"input\" data-composer-input data-phase=\"plain\" data-placeholder=\"发消息或创建任务, / 调用指令, @ 文件或对话\" role=\"textbox\" aria-multiline=\"true\" aria-label=\"发消息或创建任务, / 调用指令, @ 文件或对话\" contenteditable=\"true\"><p>嵌入在任务详情里的同一个会话</p></div></div></div><div class=\"row\"><div class=\"tools\"><button type=\"button\" class=\"add\" aria-label=\"添加文件或调用指令\" aria-haspopup=\"listbox\" aria-expanded=\"false\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1.3\"><path d=\"M8 2V14\" stroke=\"currentColor\"/><path d=\"M2 8H14\" stroke=\"currentColor\"/></svg></button></div><div class=\"trailing\"><div class=\"standardControls\"></div><button type=\"button\" class=\"primary\" aria-label=\"发送消息\"><svg viewBox=\"0 0 16 16\" width=\"16\" height=\"16\" aria-hidden=\"true\"><path d=\"M8.3125 0.980183C8.66767 1.0531 8.97902 1.20418 9.2627 1.43233C9.48724 1.61297 9.73029 1.85793 9.97949 2.10714L14.707 6.83468L13.293 8.24874L9 3.95577V15.0417H7V3.95577L2.70703 8.24874L1.29297 6.83468L6.02051 2.10714C6.26971 1.85793 6.51277 1.61297 6.7373 1.43233C6.97662 1.23986 7.28445 1.04402 7.6875 0.980183C7.8973 0.947006 8.1031 0.95516 8.3125 0.980183Z\" fill=\"currentColor\"/></svg></button></div></div></div><div class=\"dock\" data-composer-dock></div></div></div></div></div></div></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "variant",
+     "type": "'main' | 'embedded'",
+     "default": "—",
+     "desc": "两种挂载位：embedded 换宽度轴与滚动策略（用于面板 / 任务详情）。"
+    },
+    {
+     "name": "phase",
+     "type": "'settling' | 'hero' | 'active'",
+     "default": "—",
+     "desc": "settling 先把输入座藏起来（visibility: hidden），hero 居中、active 吸底。"
+    },
+    {
+     "name": "hero",
+     "type": "boolean",
+     "default": "—",
+     "desc": "是否渲染 hero 栈（品牌头 + 工作区行 + hero 变体输入卡）。"
+    },
+    {
+     "name": "sessionId",
+     "type": "SessionId | undefined",
+     "default": "—",
+     "desc": "当前会话；undefined 时没有视图、输入座标成 inert，工作区选择器接管输入面。"
+    },
+    {
+     "name": "useSession / useSessions / useSessionStatus",
+     "type": "MaybeSnapshotSelectorHook<…>",
+     "default": "—",
+     "desc": "会话快照、列表（取 cwd 与 workspace）与状态（pendingInteraction）的选择器。"
+    },
+    {
+     "name": "useInput",
+     "type": "MaybeSnapshotSelectorHook<InputState>",
+     "default": "—",
+     "desc": "输入机快照；undefined 表示当前没有会话，据此决定 hero / inert。"
+    },
+    {
+     "name": "useWorkspaces",
+     "type": "SnapshotSelectorHook<WorkspaceSnapshot>",
+     "default": "—",
+     "desc": "工作区列表与 ready 相位，用于给工作区芯片解析标题。"
+    },
+    {
+     "name": "useComposerBlock",
+     "type": "ObservableSnapshot<ComposerBlock | undefined>",
+     "default": "—",
+     "desc": "业务方注入的输入阻塞（例如「该会话不能发送」）；有值时输入卡只读并显示它的 reason。"
+    },
+    {
+     "name": "selectWorkspace",
+     "type": "(workspaceId: WorkspaceId) => Promise<void>",
+     "default": "—",
+     "desc": "选工作区：连接并打开它的空会话；失败时回滚待选芯片。"
+    },
+    {
+     "name": "renderSlot",
+     "type": "PropsRenderSlots<'conversation.composer.bar' | 'input.dock' | …>",
+     "default": "—",
+     "desc": "渲染输入卡、输入底座、hero 工作区行 / 选项等槽位。"
+    },
+    {
+     "name": "renderSlotChain",
+     "type": "ChainRenderOpts",
+     "default": "—",
+     "desc": "渲染 conversation.composer 链：fallback 常驻，被选中的 overlay 与它并排（fallbackOnly 在无会话时生效）。"
+    },
+    {
+     "name": "useFactorySlot",
+     "type": "UseFactorySlot<'conversation.content'>",
+     "default": "—",
+     "desc": "选出的本地组件：views（默认渲染 conversation.session）与 widthControls（默认不渲染）。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'conversation'>",
+     "default": "—",
+     "desc": "conversation 词典：占位文案、hero 标题与工作区兜底名。"
+    }
+   ],
+   "notes": "标题 <code>.header</code> 不在这个组件里——它由 ConversationHeader 渲染，ConversationContent 只占用头部以下的列。宽度轴变量的兜底是 <code>clamp(680px, 0, 920px)</code>：应用里由外层发布 <code>--dsh-conversation-column-width</code>，示例按真实取值写在容器 style 上（1200px → 768px 内容列）。hero 的 <code>.scrollBody</code> 改成 <code>justify-content: center</code>，<code>.composerHero</code> 自己再上浮 32px（padding-bottom）以离开几何中心。",
+   "keywords": [
+    "会话主体",
+    "composer 座",
+    "hero",
+    "embedded",
+    "宽度轴",
+    "滚动口"
+   ]
+  },
+  {
+   "id": "conversation-header",
+   "name": "ConversationHeader",
+   "exportName": "ConversationHeader",
+   "zh": "会话页头",
+   "group": "conversation",
+   "summary": "常驻在会话列顶部的 <code>&lt;header&gt;</code>：<code>grid-template-columns: auto minmax(0,1fr)</code>、<code>min-height:76px</code>（与侧栏页签条 + 面板头的 38 + 38 对齐，好让两条横线在列边相接）、内边距 <code>10px 28px 0 20px</code>，底部一条 0.5px 的 <code>--dsw-alias-border-l3</code> 发丝线；没有页签时自动收成 min-height 0 + 10px 下边距。左列是 <code>.headerLeading</code> 座位（全局导航，例如侧栏开关），右列 <code>.titleRow</code> 在无会话时是空行、有会话时交给 <code>conversation.session.header</code> 的占用者（面包屑、动作、工具、角位与页签条）。空会话加 <code>.headerBlank</code>：收掉标题与页签、不画底线；无会话另加 <code>.headerSessionless</code>，macOS 之外不再留标题栏拖拽高度。整块带 <code>data-window-drag</code>，macOS 上窗口可由标题行拖动。",
+   "source": "packages/client/ui-conversation/src/client/skeleton/ConversationHeader.tsx#L12",
+   "css": [
+    "packages/client/ui-conversation/src/client/skeleton/ConversationRoot.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-border-l3",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-label-caption",
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-radius-md"
+   ],
+   "specimens": [
+    {
+     "label": "无会话：常驻导航 + 空标题行",
+     "note": "示例按 darwin 默认几何渲染（:global(html…) 在 Shadow DOM 里匹配不到宿主），非 macOS 的两条收紧规则不生效；标题行仍在，占 30px",
+     "html": "<div style=\"width:900px\"><header class=\"header headerSessionless\" data-window-drag><div class=\"headerLeading\" data-conversation-header-leading></div><div class=\"titleRow\"></div></header></div>"
+    },
+    {
+     "label": "空会话：保住导航、收掉标题与页签",
+     "note": "headerBlank 去掉底线与标题，只剩导航座位，避免空会话上方出现一条无内容的规则线",
+     "html": "<div style=\"width:900px\"><header class=\"header headerBlank\" data-window-drag><div class=\"headerLeading\" data-conversation-header-leading></div><div class=\"titleRow\"><div class=\"headerCorner\" data-conversation-header-corner></div></div></header></div>"
+    },
+    {
+     "label": "有会话：面包屑 + 视图页签",
+     "note": "会话头部由 conversation.session.header 的占用者填：子会话层级用 12px 的 crumbSubagent，当前级不可点",
+     "html": "<div style=\"width:900px\"><header class=\"header\" data-window-drag><div class=\"headerLeading\" data-conversation-header-leading></div><div class=\"titleRow\"><div class=\"titleCluster\"><nav class=\"crumbs\" aria-label=\"会话层级\"><span class=\"crumbSeg\"><button type=\"button\" class=\"crumb\">重构输入编辑器的引用芯片</button></span><span class=\"crumbSeg\"><span class=\"crumbSep\">/</span><button type=\"button\" class=\"crumb crumbSubagent\">核对输入编辑器的类名</button></span><span class=\"crumbSeg\"><span class=\"crumbSep\">/</span><span class=\"crumb crumbCurrent\">补 DraftEditor 的 props 表</span></span></nav><div class=\"headerActions\"></div></div><div class=\"headerUtilities\"></div><div class=\"headerCorner\" data-conversation-header-corner></div></div><div class=\"tabs\" role=\"tablist\" data-conversation-tabs><button type=\"button\" role=\"tab\" aria-selected=\"true\" class=\"tab tabActive\">对话</button><button type=\"button\" role=\"tab\" aria-selected=\"false\" class=\"tab\">轨迹</button></div></header></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "sessionId",
+     "type": "SessionId | undefined",
+     "default": "—",
+     "desc": "当前会话；undefined 时右列渲染空标题行（常驻导航仍然可用）。"
+    },
+    {
+     "name": "useSession",
+     "type": "MaybeSnapshotSelectorHook<SessionSnapshot>",
+     "default": "—",
+     "desc": "取会话快照，判断是否为空白会话（blank）以决定是否收起标题与页签。"
+    },
+    {
+     "name": "useConversation",
+     "type": "MaybeSnapshotSelectorHook<ConversationSnapshot>",
+     "default": "—",
+     "desc": "取会话装配快照，配合 <code>conversationPhase</code> 判断 blank 相位。"
+    },
+    {
+     "name": "renderSlot",
+     "type": "PropsRenderSlots<'conversation.header.leading' | 'conversation.session.header'>",
+     "default": "—",
+     "desc": "两个座位：左列全局导航，右列整块会话头（由 ConversationSessionHeader 默认占用）。"
+    }
+   ],
+   "notes": "空白判定合成一个 <code>blank</code>：会话或装配快照缺失，或者 <code>session.blank</code> 且 <code>conversationPhase(...)</code> 为 blank，都算空——于是「新会话的 hero」上方不会出现一条空标题栏。<code>.header:where(:not(:has(.tabs)))</code> 是这条几何的关键：页签条缺席时头部自动收紧。<code>:global(html:not([data-platform='darwin']))</code> 的两条覆盖在声明式 Shadow DOM 里匹配不到宿主 html，因此示例呈现的是 darwin 默认布局。",
+   "keywords": [
+    "会话头",
+    "页头",
+    "面包屑",
+    "视图页签",
+    "标题栏",
+    "header"
+   ]
+  }
+ ]
+}

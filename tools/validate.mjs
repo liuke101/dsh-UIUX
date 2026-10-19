@@ -57,7 +57,7 @@ function parsePart(path) {
 }
 const GROUP_ALIASES = new Set([
   'controls', 'display', 'input', 'overlay', 'output', 'settings', 'brand',
-  'conversation', 'shell', 'panels', 'overlays', 'agent',
+  'conversation', 'shell', 'preview', 'dock', 'tools', 'panels', 'overlays', 'agent',
 ])
 
 /** @returns {object[]} every curated entry, tagged with its source file. */
@@ -95,8 +95,8 @@ function classesOf(relPath) {
 /** Class names an HTML fragment applies, with any explicit module prefix removed. */
 function classesUsed(html) {
   const used = new Set()
-  for (const match of String(html ?? '').matchAll(/class="([^"]*)"/g)) {
-    for (const name of match[1].split(/\s+/)) if (name) used.add(name.replace(/^c\d+-/, ''))
+  for (const match of String(html ?? '').matchAll(/class=(?:"([^"]*)"|'([^']*)')/g)) {
+    for (const name of (match[1] ?? match[2] ?? '').split(/\s+/)) if (name) used.add(name.replace(/^c\d+-/, ''))
   }
   return used
 }

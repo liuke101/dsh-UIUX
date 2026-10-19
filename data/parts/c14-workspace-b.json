@@ -1,0 +1,730 @@
+{
+ "schemaVersion": 1,
+ "note": "批次 c14-workspace-b：会话操作行、Workspace 通知适配器与共享 Toast 工厂、工作区选择流程（核心）、文件 tab 标题、提问卡片、迟到回答气泡与审批面板。无自有样式表的条目（SessionIdMenuItem / ToastEntry / WorkspaceToast / FilesTitle）列出它真实渲染出的子组件的样式表；有序浮层的条目按 MenuSurface → Menu → Modal → Button 的顺序列出，构建时按文件加 c<下标>- 前缀。",
+ "entries": [
+  {
+   "id": "session-id-menu-item",
+   "name": "SessionIdMenuItem",
+   "exportName": "SessionIdMenuItem",
+   "zh": "会话 ID 行",
+   "group": "panels",
+   "summary": "会话行「⋯」菜单里排在最末的一项（order 450）：14px 拷贝图标 + 「复制 Session ID」标签，行高 34px、<code>6px 8px</code> 内边距、<code>--dsw-radius-md</code> 圆角，悬停取 <code>--dsw-alias-interactive-bg-hover</code> 填充；它自己不带样式表，<code>Menu.module.css</code> 的 <code>.itemWrap &gt; .item</code> 就是它的全部外观。点选时先 <code>setMenuOpen(false)</code> 收起菜单、再 <code>copySessionId(sessionId)</code> 写剪贴板，成败都由 workspace 通知（<code>sessionIdCopied</code> / <code>sessionIdCopyFailed</code>）在顶部播报，行本身不给反馈。",
+   "source": "packages/client/ui-workspace/src/client/session-actions/SessionId.tsx#L10",
+   "css": [
+    "packages/client/ui-primitives/src/Menu.module.css",
+    "packages/client/ui-primitives/src/MenuSurface.module.css"
+   ],
+   "tokens": [
+    "--dsw-radius-lg",
+    "--dsw-radius-md",
+    "--dsw-radius-sm",
+    "--dsw-elevation-prominent",
+    "--dsw-alias-border-l1",
+    "--dsw-alias-border-l2",
+    "--dsw-menu-surface-fill",
+    "--dsw-menu-backdrop-filter",
+    "--dsw-alias-bg-base",
+    "--dsw-alias-scrollbar-bg-l2",
+    "--dsw-alias-scrollbar-hover-l2",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-label-caption",
+    "--dsw-alias-menu-icon",
+    "--dsw-alias-interactive-bg-hover"
+   ],
+   "specimens": [
+    {
+     "label": "会话行菜单：复制 Session ID 是最后一项",
+     "note": "整个菜单由 <code>sidebar.workspaces.session.menu.item</code> 的 5 条注册按 order 渲染，本条目只贡献最后一行；卡片是 Menu 的 portal 浮层，示例里拉回文档流",
+     "css": "/* 静态快照：Menu 的卡片真实由 createPortal 挂到 document.body 且 position: fixed（坐标由 JS 写入）；这里拉回文档流并保留 relative 作为包含块——MenuSurface 的 .material 是 inset: 0 的绝对定位子层，父级丢了包含块会以初始包含块为参照铺满视口。宽度按 min-width:144px 与内容补位。 */\n.list.portal.listStatic { position: relative; inset: auto; width: 240px; }",
+     "html": "<div style=\"display:flex;flex-direction:column;align-items:flex-start;width:260px\"><div class=\"surface list scrollable portal listStatic\" data-menu-material=\"translucent\" role=\"menu\" style=\"--dsh-menu-anchor:--dsh-menu-demo\"><div class=\"material\" aria-hidden=\"true\"></div><div class=\"viewport\" role=\"presentation\"><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item\"><span class=\"itemIcon\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M9.96976 1.70572L13.1554 3.93629L10.9019 8.12317L11.5158 11.605L10.7192 12.7427L2.52767 7.00693L3.3243 5.86922L6.80612 5.25528L9.96976 1.70572Z\" stroke=\"currentColor\" stroke-linejoin=\"round\"/><path d=\"M6.05285 9.47511C6.27284 9.16094 6.70586 9.08458 7.02003 9.30457C7.3342 9.52455 7.41055 9.95757 7.19057 10.2717L3.98587 14.4708L3.21223 13.9291L6.05285 9.47511Z\" fill=\"currentColor\"/></svg></span><span class=\"itemLabel\">置顶会话</span></button></div><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item\"><span class=\"itemIcon\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8.85596 2.69971H4.19971C3.37141 2.69971 2.69992 3.37146 2.69971 4.19971V11.8003C2.69992 12.6285 3.37141 13.3003 4.19971 13.3003H11.8003C12.6283 13.2999 13.3001 12.6283 13.3003 11.8003V7.89893H14.3003V11.8003C14.3001 13.1806 13.1806 14.2999 11.8003 14.3003H4.19971C2.81913 14.3003 1.69992 13.1808 1.69971 11.8003V4.19971C1.69992 2.81918 2.81913 1.69971 4.19971 1.69971H8.85596V2.69971Z\" fill=\"currentColor\"/><path d=\"M7.7849 8.23878L13.888 2.13574\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">重命名</span></button></div><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item\"><span class=\"itemIcon\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M1.01503 8.0001L5.6964 8.0001C6.41913 8.0001 6.78049 8.0001 7.12115 7.91951C7.4232 7.84804 7.71233 7.73014 7.97821 7.57C8.27809 7.38939 8.5364 7.13669 9.05303 6.63129L11.3281 4.40564\" stroke=\"currentColor\"/><path d=\"M1.01221 7.9999L5.6964 7.9999C6.41913 7.9999 6.78049 7.9999 7.12115 8.08049C7.4232 8.15196 7.71233 8.26986 7.97821 8.43C8.27809 8.61061 8.5364 8.86331 9.05303 9.36871L11.3281 11.5944\" stroke=\"currentColor\"/><circle cx=\"12.4502\" cy=\"3.3079\" r=\"1.56962\" stroke=\"currentColor\"/><circle cx=\"12.4502\" cy=\"12.6921\" r=\"1.56962\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">分叉会话</span></button></div><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item\"><span class=\"itemIcon\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M13.5 2.5H2.5C1.94772 2.5 1.5 2.94772 1.5 3.5V4.5C1.5 5.05228 1.94772 5.5 2.5 5.5H13.5C14.0523 5.5 14.5 5.05228 14.5 4.5V3.5C14.5 2.94772 14.0523 2.5 13.5 2.5Z\" stroke=\"currentColor\"/><path d=\"M2.5 5.5V13.5C2.5 13.7652 2.60536 14.0196 2.79289 14.2071C2.98043 14.3946 3.23478 14.5 3.5 14.5H12.5C12.7652 14.5 13.0196 14.3946 13.2071 14.2071C13.3946 14.0196 13.5 13.7652 13.5 13.5V5.5\" stroke=\"currentColor\"/><path d=\"M6.5 9.5H9.5\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">归档会话</span></button></div><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item\"><span class=\"itemIcon\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><rect x=\"1.52075\" y=\"4.07373\" width=\"10.3932\" height=\"10.3932\" rx=\"2\" stroke=\"currentColor\"/><path d=\"M11.9792 1.53296C13.36 1.53296 14.4792 2.65225 14.4792 4.03296V9.42847C14.4792 10.3756 13.9521 11.1987 13.1755 11.6228V10.3298C13.3652 10.0787 13.4792 9.7674 13.4792 9.42847V4.03296C13.4792 3.20453 12.8077 2.53296 11.9792 2.53296H6.58374C6.27966 2.53301 5.99684 2.6235 5.7605 2.77905H4.42358C4.85652 2.03463 5.66056 1.53304 6.58374 1.53296H11.9792Z\" fill=\"currentColor\"/></svg></span><span class=\"itemLabel\">复制 Session ID</span></button></div></div></div></div>"
+    },
+    {
+     "label": "行本身与悬停填充",
+     "note": "悬停模拟：把 Menu.module.css 里 <code>.item:hover:not(:disabled)</code> 的那条规则原样搬到 <code>.forceHover</code> 上",
+     "css": "/* 悬停模拟：:hover 无法静态触发，下面这条按 Menu.module.css 的同名规则原样搬运。 */\n.item.forceHover:not(:disabled) { background: var(--dsw-alias-interactive-bg-hover); }",
+     "html": "<div style=\"display:flex;flex-direction:column;align-items:flex-start;width:240px\"><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item\"><span class=\"itemIcon\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><rect x=\"1.52075\" y=\"4.07373\" width=\"10.3932\" height=\"10.3932\" rx=\"2\" stroke=\"currentColor\"/><path d=\"M11.9792 1.53296C13.36 1.53296 14.4792 2.65225 14.4792 4.03296V9.42847C14.4792 10.3756 13.9521 11.1987 13.1755 11.6228V10.3298C13.3652 10.0787 13.4792 9.7674 13.4792 9.42847V4.03296C13.4792 3.20453 12.8077 2.53296 11.9792 2.53296H6.58374C6.27966 2.53301 5.99684 2.6235 5.7605 2.77905H4.42358C4.85652 2.03463 5.66056 1.53304 6.58374 1.53296H11.9792Z\" fill=\"currentColor\"/></svg></span><span class=\"itemLabel\">复制 Session ID</span></button></div><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item forceHover\"><span class=\"itemIcon\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><rect x=\"1.52075\" y=\"4.07373\" width=\"10.3932\" height=\"10.3932\" rx=\"2\" stroke=\"currentColor\"/><path d=\"M11.9792 1.53296C13.36 1.53296 14.4792 2.65225 14.4792 4.03296V9.42847C14.4792 10.3756 13.9521 11.1987 13.1755 11.6228V10.3298C13.3652 10.0787 13.4792 9.7674 13.4792 9.42847V4.03296C13.4792 3.20453 12.8077 2.53296 11.9792 2.53296H6.58374C6.27966 2.53301 5.99684 2.6235 5.7605 2.77905H4.42358C4.85652 2.03463 5.66056 1.53304 6.58374 1.53296H11.9792Z\" fill=\"currentColor\"/></svg></span><span class=\"itemLabel\">复制 Session ID</span></button></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "sessionId",
+     "type": "SessionId",
+     "default": "—",
+     "desc": "这一行的会话身份，原样交给 <code>copySessionId</code>，复制的是完整 ID 而不是标题。"
+    },
+    {
+     "name": "useMenuOpenState",
+     "type": "UseMenuOpenState",
+     "default": "—",
+     "desc": "行菜单的开合对；条目在复制前先 <code>setMenuOpen(false)</code>，菜单不因复制结果停留。"
+    },
+    {
+     "name": "copySessionId",
+     "type": "(sessionId: SessionId) => Promise<void>",
+     "default": "—",
+     "desc": "注入的剪贴板动作；成功与失败都走 workspace 通知，条目自身不渲染结果。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'workspace'>",
+     "default": "—",
+     "desc": "workspace 词典，行标签取 <code>menu.sessionId</code>（「复制 Session ID」）。"
+    }
+   ],
+   "notes": "菜单行的键盘行为来自 Menu：方向键走真实焦点、Tab 结算当前行、Escape 关闭并把焦点还给触发器；行上的 <code>role=\"menuitem\"</code> 由 <code>MenuItemButton</code> 提供。会话行的「⋯」菜单里这行恒在最后（order 450），分叉行在无权分叉时会自己缺席，因此它上面的行数不固定。",
+   "keywords": [
+    "复制 Session ID",
+    "会话 ID",
+    "菜单行",
+    "剪贴板",
+    "session id"
+   ]
+  },
+  {
+   "id": "toast-entry",
+   "name": "ToastEntry",
+   "exportName": "ToastEntry",
+   "zh": "通知条目",
+   "group": "panels",
+   "summary": "键控通知的适配器：把 <code>workspace.toast</code> 槽里的一条业务通知（<code>sessionIdCopied</code> / <code>createFailed</code> / <code>forkRequiresOpen</code> …）经注入的 <code>display</code> 映射成纯展示字段，再由 <code>renderFactorySlot('workspace.toast.content')</code> 交给共享工厂渲染。它自身不产生任何 DOM——用户看到的就是那条主题固定的深色横幅（14px/22px、<code>12px 16px</code> 内边距、<code>--dsw-radius-lg</code>、<code>--dsw-shadow-lv3</code>，顶部 40px 居中、<code>z-index:1100</code>），<code>tone:'success'</code> 用绿色圆圈勾、<code>'warning'</code> 用注入的警告图标，动作是句内的蓝色可点文字。",
+   "source": "packages/client/ui-workspace/src/client/toast/Toast.tsx#L11",
+   "css": [
+    "packages/client/ui-primitives/src/Toast.module.css"
+   ],
+   "tokens": [
+    "--dsw-radius-lg",
+    "--dsw-shadow-lv3",
+    "--dsw-alias-toast-bg",
+    "--dsw-alias-toast-label",
+    "--dsw-alias-state-success-primary",
+    "--dsw-alias-state-warn-label",
+    "--dsw-static-deepseek-400"
+   ],
+   "specimens": [
+    {
+     "label": "复制成功：tone='success'，默认 3000ms",
+     "note": "该组件本身无独立外观，这里展示它交给共享工厂后用户实际看到的那条横幅",
+     "css": "/* 静态快照：横幅真实渲染由门户挂到 body，position: fixed 并带 160ms 滑入与 hold 后 1s 淡出的动画；这里取消定位与动画，让它在示例框内保持可见，尺寸、配色与字号仍走真实样式表。 */\n.toast.snapshotStatic { position: static; left: auto; top: auto; transform: none; animation: none; }",
+     "html": "<div class=\"toast snapshotStatic\" role=\"alert\" style=\"--dsh-toast-hold:3000ms\"><span class=\"icon success\" aria-hidden=\"true\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M12.5303 6.53027L8.80273 10.2578C8.54967 10.5109 8.31796 10.7439 8.10645 10.9141C7.88375 11.0932 7.616 11.2602 7.27344 11.3145C7.09229 11.3431 6.90771 11.3431 6.72656 11.3145C6.384 11.2602 6.11625 11.0932 5.89355 10.9141C5.68204 10.7439 5.45033 10.5109 5.19727 10.2578L3.46973 8.53027L4.53027 7.46973L6.25781 9.19727C6.53457 9.47402 6.70036 9.63859 6.83398 9.74609C6.95637 9.84453 6.98241 9.83644 6.96094 9.83301C6.98679 9.83709 7.01321 9.83709 7.03906 9.83301C7.01759 9.83644 7.04363 9.84453 7.16602 9.74609C7.29964 9.63859 7.46543 9.47402 7.74219 9.19727L11.4697 5.46973L12.5303 6.53027Z\" fill=\"currentColor\"/><path d=\"M14.5996 8C14.5996 4.35492 11.6451 1.40039 8 1.40039C4.35492 1.40039 1.40039 4.35492 1.40039 8C1.40039 11.6451 4.35492 14.5996 8 14.5996C11.6451 14.5996 14.5996 11.6451 14.5996 8ZM15.9004 8C15.9004 12.363 12.363 15.9004 8 15.9004C3.63695 15.9004 0.0996094 12.363 0.0996094 8C0.0996094 3.63695 3.63695 0.0996094 8 0.0996094C12.363 0.0996094 15.9004 3.63695 15.9004 8Z\" fill=\"currentColor\"/></svg></span><span class=\"text\">Session ID 已复制</span></div>"
+    },
+    {
+     "label": "新建会话失败：warning + holdMs 6000",
+     "note": "display 给了 <code>holdMs: 6000</code>，横幅在满不透明处停留更久；文案里带 Host 的 <code>code: message</code> 以便检索",
+     "css": "/* 静态快照：横幅真实渲染由门户挂到 body，position: fixed 并带 160ms 滑入与 hold 后 1s 淡出的动画；这里取消定位与动画，让它在示例框内保持可见，尺寸、配色与字号仍走真实样式表。 */\n.toast.snapshotStatic { position: static; left: auto; top: auto; transform: none; animation: none; }",
+     "html": "<div class=\"toast snapshotStatic\" role=\"alert\" style=\"--dsh-toast-hold:6000ms\"><span class=\"icon\" aria-hidden=\"true\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 14.5C11.5899 14.5 14.5 11.5899 14.5 8C14.5 4.41015 11.5899 1.5 8 1.5C4.41015 1.5 1.5 4.41015 1.5 8C1.5 11.5899 4.41015 14.5 8 14.5Z\" stroke=\"currentColor\"/><path d=\"M8 4.29199V9.79199\" stroke=\"currentColor\"/><path d=\"M8 10.708V11.708\" stroke=\"currentColor\"/></svg></span><span class=\"text\">新建会话失败：ENOENT: no such file or directory, open '/home/lk/deepseek-harness/packages/client/ui-workspace'</span></div>"
+    },
+    {
+     "label": "请先打开原会话：warning + 一个动作（打开原会话）",
+     "note": "动作前缀不是连接词时只渲染 <code>label</code>；点击后由 owner 的 <code>openForkSource</code> 打开来源会话并卸载横幅",
+     "css": "/* 静态快照：横幅真实渲染由门户挂到 body，position: fixed 并带 160ms 滑入与 hold 后 1s 淡出的动画；这里取消定位与动画，让它在示例框内保持可见，尺寸、配色与字号仍走真实样式表。 */\n.toast.snapshotStatic { position: static; left: auto; top: auto; transform: none; animation: none; }",
+     "html": "<div class=\"toast snapshotStatic\" role=\"alert\" style=\"--dsh-toast-hold:6000ms\"><span class=\"icon\" aria-hidden=\"true\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 14.5C11.5899 14.5 14.5 11.5899 14.5 8C14.5 4.41015 11.5899 1.5 8 1.5C4.41015 1.5 1.5 4.41015 1.5 8C1.5 11.5899 4.41015 14.5 8 14.5Z\" stroke=\"currentColor\"/><path d=\"M8 4.29199V9.79199\" stroke=\"currentColor\"/><path d=\"M8 10.708V11.708\" stroke=\"currentColor\"/></svg></span><span class=\"text\">请先打开原会话完成迁移，再创建分支<button type=\"button\" class=\"action\">打开原会话</button></span></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "display",
+     "type": "(notice, t, dismiss) => ToastDisplay",
+     "default": "—",
+     "desc": "注册方注入的本地化映射：返回 <code>{ text, tone, holdMs?, actions? }</code>，通知长什么样全由它决定。"
+    },
+    {
+     "name": "dismissToast",
+     "type": "() => void",
+     "default": "—",
+     "desc": "owner 给的关闭动作；既作为 <code>onDone</code> 交给横幅，也作为 <code>dismiss</code> 参数传给 <code>display</code>（动作里通常先播报再卸载）。"
+    },
+    {
+     "name": "renderFactorySlot",
+     "type": "PropsRenderFactories",
+     "default": "—",
+     "desc": "把 <code>workspace.toast.content</code> 这一工厂座渲染出来；默认实现是 WorkspaceToast。"
+    },
+    {
+     "name": "seq",
+     "type": "number",
+     "default": "—",
+     "desc": "本次展示的序号（随 keyed 载荷一起传入），作为横幅的 <code>key</code>：同一条通知重复出现时靠它重挂载以重新计时。"
+    },
+    {
+     "name": "t",
+     "type": "PropsLocale<'workspace'>",
+     "default": "—",
+     "desc": "workspace 词典，映射函数用它取 <code>toast.*</code> 文案。"
+    }
+   ],
+   "notes": "外观、时长与门户定位都不在这个组件里，而在 <code>WorkspaceToast</code> → 原子 <code>Toast</code>：同一份 <code>holdMs</code> 同时驱动卸载定时器与 CSS 淡出延迟（<code>--dsh-toast-hold</code>），因此不会出现卸载到一半的情况。业务侧有 11 条通知注册共用这条通路（其中 <code>archived</code> / <code>stoppedAndArchived</code> 走多一个动作的 <code>ArchiveToastEntry</code>，先读视图 store 再决定要不要补「筛选已归档会话」）。",
+   "keywords": [
+    "通知",
+    "toast",
+    "notice",
+    "适配器",
+    "workspace 通知"
+   ]
+  },
+  {
+   "id": "workspace-toast",
+   "name": "WorkspaceToast",
+   "exportName": "WorkspaceToast",
+   "zh": "通知横幅",
+   "group": "panels",
+   "summary": "共享通知工厂的默认实现：把纯展示字段映射到原子 <code>Toast</code>——<code>tone:'success'</code> 换成绿色圆圈勾，<code>'warning'</code> 注入 <code>IconWarningOutlineRegular</code>（图标槽保持 <code>--dsw-alias-state-warn-label</code> 警告色），<code>holdMs</code> 给了才透传（默认 3000，淡出另加 1000ms），<code>actions</code> 只在存在时透传。横幅本身宽 <code>max-content</code>、上限 <code>min(640px, 100vw - 48px)</code>，深色底浅色字（<code>--dsw-alias-toast-bg</code> / <code>--dsw-alias-toast-label</code>）在明暗两个主题下都不翻转，整块 <code>pointer-events:none</code>，只有动作文字可点。它没有自有样式表、也不建卡片，只决定用哪种 tone 与图标。",
+   "source": "packages/client/ui-workspace/src/client/toast/Toast.tsx#L38",
+   "css": [
+    "packages/client/ui-primitives/src/Toast.module.css"
+   ],
+   "tokens": [
+    "--dsw-radius-lg",
+    "--dsw-shadow-lv3",
+    "--dsw-alias-toast-bg",
+    "--dsw-alias-toast-label",
+    "--dsw-alias-state-success-primary",
+    "--dsw-alias-state-warn-label",
+    "--dsw-static-deepseek-400"
+   ],
+   "specimens": [
+    {
+     "label": "success：绿色圆圈勾 + 句内动作（撤销）",
+     "note": "静态快照：取消 fixed 定位与自动淡出；动作文字与正文同段排版，点它不会连带点到横幅",
+     "css": "/* 静态快照：横幅真实渲染由门户挂到 body，position: fixed 并带 160ms 滑入与 hold 后 1s 淡出的动画；这里取消定位与动画，让它在示例框内保持可见，尺寸、配色与字号仍走真实样式表。 */\n.toast.snapshotStatic { position: static; left: auto; top: auto; transform: none; animation: none; }",
+     "html": "<div class=\"toast snapshotStatic\" role=\"alert\" style=\"--dsh-toast-hold:6000ms\"><span class=\"icon success\" aria-hidden=\"true\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M12.5303 6.53027L8.80273 10.2578C8.54967 10.5109 8.31796 10.7439 8.10645 10.9141C7.88375 11.0932 7.616 11.2602 7.27344 11.3145C7.09229 11.3431 6.90771 11.3431 6.72656 11.3145C6.384 11.2602 6.11625 11.0932 5.89355 10.9141C5.68204 10.7439 5.45033 10.5109 5.19727 10.2578L3.46973 8.53027L4.53027 7.46973L6.25781 9.19727C6.53457 9.47402 6.70036 9.63859 6.83398 9.74609C6.95637 9.84453 6.98241 9.83644 6.96094 9.83301C6.98679 9.83709 7.01321 9.83709 7.03906 9.83301C7.01759 9.83644 7.04363 9.84453 7.16602 9.74609C7.29964 9.63859 7.46543 9.47402 7.74219 9.19727L11.4697 5.46973L12.5303 6.53027Z\" fill=\"currentColor\"/><path d=\"M14.5996 8C14.5996 4.35492 11.6451 1.40039 8 1.40039C4.35492 1.40039 1.40039 4.35492 1.40039 8C1.40039 11.6451 4.35492 14.5996 8 14.5996C11.6451 14.5996 14.5996 11.6451 14.5996 8ZM15.9004 8C15.9004 12.363 12.363 15.9004 8 15.9004C3.63695 15.9004 0.0996094 12.363 0.0996094 8C0.0996094 3.63695 3.63695 0.0996094 8 0.0996094C12.363 0.0996094 15.9004 3.63695 15.9004 8Z\" fill=\"currentColor\"/></svg></span><span class=\"text\">会话已归档，可<button type=\"button\" class=\"action\">撤销</button></span></div>"
+    },
+    {
+     "label": "warning + 连接词「或」的两个动作",
+     "note": "前缀连接词与动作标签是两段文本，中间有 3px 呼吸位；两个动作各自带 <code>pointer-events: auto</code>",
+     "css": "/* 静态快照：横幅真实渲染由门户挂到 body，position: fixed 并带 160ms 滑入与 hold 后 1s 淡出的动画；这里取消定位与动画，让它在示例框内保持可见，尺寸、配色与字号仍走真实样式表。 */\n.toast.snapshotStatic { position: static; left: auto; top: auto; transform: none; animation: none; }",
+     "html": "<div class=\"toast snapshotStatic\" role=\"alert\" style=\"--dsh-toast-hold:3000ms\"><span class=\"icon\" aria-hidden=\"true\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 14.5C11.5899 14.5 14.5 11.5899 14.5 8C14.5 4.41015 11.5899 1.5 8 1.5C4.41015 1.5 1.5 4.41015 1.5 8C1.5 11.5899 4.41015 14.5 8 14.5Z\" stroke=\"currentColor\"/><path d=\"M8 4.29199V9.79199\" stroke=\"currentColor\"/><path d=\"M8 10.708V11.708\" stroke=\"currentColor\"/></svg></span><span class=\"text\">已归档对话暂时无法查看，请取消归档后查看<button type=\"button\" class=\"action\">撤销</button></span></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "seq",
+     "type": "number",
+     "default": "—",
+     "desc": "展示序号，直接作为原子 Toast 的 <code>key</code>：只有它变化才会重挂载并重新计时。"
+    },
+    {
+     "name": "text",
+     "type": "string",
+     "default": "—",
+     "desc": "已本地化的横幅正文。"
+    },
+    {
+     "name": "tone",
+     "type": "'plain' | 'warning' | 'success'",
+     "default": "'plain'",
+     "desc": "<code>'success'</code> 用自带图标渲染绿色圆圈勾；<code>'warning'</code> 换成警告图标；<code>'plain'</code> 不传图标。"
+    },
+    {
+     "name": "holdMs",
+     "type": "number | undefined",
+     "default": "undefined（原子 Toast 默认 3000）",
+     "desc": "满不透明停留时长；<code>undefined</code> 时不传，让原子组件用自己的默认值。"
+    },
+    {
+     "name": "actions",
+     "type": "readonly { label, prefix?, onClick }[] | undefined",
+     "default": "undefined",
+     "desc": "句内动作；<code>undefined</code> 时不传，避免给横幅一个空数组。"
+    },
+    {
+     "name": "onDone",
+     "type": "() => void",
+     "default": "—",
+     "desc": "淡出完成后的卸载回调（业务侧就是 <code>dismissToast</code>）。"
+    }
+   ],
+   "notes": "这里的三元展开是刻意的：<code>tone === 'success'</code> 才传 <code>tone</code>、<code>'warning'</code> 才注入图标、<code>holdMs</code> / <code>actions</code> 为 <code>undefined</code> 时完全不传，因此原子 Toast 的默认值不会被 <code>undefined</code> 覆盖。横幅是 <code>role=\"alert\"</code>，读屏立即播报；减少动态效果时只保留 1s 淡出，不做位移动画。",
+   "keywords": [
+    "通知横幅",
+    "toast",
+    "工厂",
+    "workspace toast",
+    "snackbar"
+   ]
+  },
+  {
+   "id": "workspace-pick-flow",
+   "name": "WorkspacePickFlow",
+   "exportName": "WorkspacePickFlow",
+   "zh": "工作区流程",
+   "group": "panels",
+   "summary": "工作区选择/添加的可复用核心（WorkspacePicker 与 WorkspaceBrowser 共用）：一张 144–360px 的菜单卡，已注册工作区各占一行（16px 文件夹图标 + 单行省略标签 + 当前项尾部 14px 勾），有列表时「添加工作区…」被 <code>.footer</code> 的发丝线钉在滚动区下方、列表为空时它就是整个菜单；<code>side</code> 支持上下右三个方向，行在流程打开或目录采纳中全部 <code>disabled</code>（<code>opacity:.4</code>）。基线还没到时菜单照常展开、下面挂一条 12px 的 <code>.menuStatus</code>（「正在加载工作区…」，<code>role=\"status\"</code>），列表已就绪且只剩添加动作时展开手势直接进目录流程、不显示单行菜单。采纳失败弹 380px 的 Modal 卡片：正文是错误原文（<code>--dsw-alias-state-error-primary</code>、<code>role=\"alert\"</code>），页脚两个最小 72px 宽的按钮，占位者缺席时「重新选择」不可用。",
+   "source": "packages/client/ui-workspace/src/client/WorkspacePicker.tsx#L61",
+   "css": [
+    "packages/client/ui-primitives/src/MenuSurface.module.css",
+    "packages/client/ui-primitives/src/Menu.module.css",
+    "packages/client/ui-primitives/src/Modal.module.css",
+    "packages/client/ui-primitives/src/Button.module.css",
+    "packages/client/ui-workspace/src/client/WorkspacePicker.module.css"
+   ],
+   "tokens": [
+    "--dsw-radius-lg",
+    "--dsw-radius-md",
+    "--dsw-radius-sm",
+    "--dsw-radius-panel",
+    "--dsw-menu-surface-fill",
+    "--dsw-menu-backdrop-filter",
+    "--dsw-elevation-prominent",
+    "--dsw-alias-bg-base",
+    "--dsw-alias-bg-layer-2",
+    "--dsw-alias-bg-mask-1",
+    "--dsw-mask-blur",
+    "--dsw-alias-border-l1",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-border-l3",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-menu-icon",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-scrollbar-bg-l2",
+    "--dsw-alias-scrollbar-hover-l2",
+    "--dsw-alias-state-error-primary",
+    "--dsw-alias-button-primary-fill",
+    "--dsw-alias-button-primary-hover",
+    "--dsw-alias-label-primary-foreground"
+   ],
+   "specimens": [
+    {
+     "label": "选择菜单：工作区列表 + 钉在底部的添加行",
+     "note": "当前工作区（deepseek-harness）行尾带勾；添加行属于 Menu 的 <code>.footer</code>，这里按 <code>c1-footer</code> 钉到 Menu 那张表上（Modal 也有一个同名 <code>.footer</code>）",
+     "css": "/* 静态快照：Menu 的卡片真实由 createPortal 挂到 document.body 且 position: fixed；这里拉回文档流并保留 relative 作为包含块（.material 是 inset:0 的绝对定位子层）。宽度按实际 min-width:144px 与内容补位。 */\n.list.portal.listStatic { position: relative; inset: auto; width: 240px; }",
+     "html": "<div style=\"width:280px\"><div class=\"surface list scrollable portal listStatic\" data-menu-material=\"translucent\" role=\"menu\" style=\"--dsh-menu-anchor:--dsh-menu-demo\"><div class=\"material\" aria-hidden=\"true\"></div><div class=\"viewport\" role=\"presentation\"><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item selected\"><span class=\"itemIcon\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M1.50439 3.11059C1.50439 2.55831 1.95211 2.1106 2.50439 2.1106H5.43389C5.67773 2.1106 5.91318 2.19969 6.09593 2.36113L7.71649 3.79265C7.89924 3.95409 8.1347 4.04319 8.3785 4.04319H13.4958C14.0481 4.04319 14.4958 4.4909 14.4958 5.04319V12.8894C14.4958 13.4417 14.0481 13.8894 13.4958 13.8894H2.50439C1.95211 13.8894 1.50439 13.4417 1.50439 12.8894V4.04319V3.11059Z\" stroke=\"currentColor\"/><path d=\"M3.63501 7.66614H12.3647\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">deepseek-harness</span><svg class=\"check\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4\" stroke=\"currentColor\"/></svg></button></div><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item\"><span class=\"itemIcon\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M1.50439 3.11059C1.50439 2.55831 1.95211 2.1106 2.50439 2.1106H5.43389C5.67773 2.1106 5.91318 2.19969 6.09593 2.36113L7.71649 3.79265C7.89924 3.95409 8.1347 4.04319 8.3785 4.04319H13.4958C14.0481 4.04319 14.4958 4.4909 14.4958 5.04319V12.8894C14.4958 13.4417 14.0481 13.8894 13.4958 13.8894H2.50439C1.95211 13.8894 1.50439 13.4417 1.50439 12.8894V4.04319V3.11059Z\" stroke=\"currentColor\"/><path d=\"M3.63501 7.66614H12.3647\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">dsh-UIUX</span></button></div><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item\"><span class=\"itemIcon\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M1.50439 3.11059C1.50439 2.55831 1.95211 2.1106 2.50439 2.1106H5.43389C5.67773 2.1106 5.91318 2.19969 6.09593 2.36113L7.71649 3.79265C7.89924 3.95409 8.1347 4.04319 8.3785 4.04319H13.4958C14.0481 4.04319 14.4958 4.4909 14.4958 5.04319V12.8894C14.4958 13.4417 14.0481 13.8894 13.4958 13.8894H2.50439C1.95211 13.8894 1.50439 13.4417 1.50439 12.8894V4.04319V3.11059Z\" stroke=\"currentColor\"/><path d=\"M3.63501 7.66614H12.3647\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">dsh-local-build</span></button></div></div><div class=\"c1-footer\" role=\"presentation\"><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item\"><span class=\"itemIcon\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 2V14\" stroke=\"currentColor\"/><path d=\"M2 8H14\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">添加工作区…</span></button></div></div></div></div>"
+    },
+    {
+     "label": "基线未就绪：单行添加 + 菜单外的加载状态",
+     "note": "<code>phase</code> 不是 <code>ready</code> 时列表还没确认，展开不会直接进目录流程，而是照常显示菜单并在卡外挂一条 <code>role=\"status\"</code>",
+     "bg": "sidebar",
+     "css": "/* 静态快照：Menu 的卡片真实由 createPortal 挂到 document.body 且 position: fixed；这里拉回文档流并保留 relative 作为包含块。 */\n.list.portal.listStatic { position: relative; inset: auto; width: 200px; }",
+     "html": "<div style=\"display:flex;flex-direction:column;align-items:flex-start;width:240px\"><div class=\"surface list scrollable portal listStatic\" data-menu-material=\"translucent\" role=\"menu\" style=\"--dsh-menu-anchor:--dsh-menu-demo\"><div class=\"material\" aria-hidden=\"true\"></div><div class=\"viewport\" role=\"presentation\"><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item\"><span class=\"itemIcon\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 2V14\" stroke=\"currentColor\"/><path d=\"M2 8H14\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">添加工作区…</span></button></div></div></div><div class=\"menuStatus\" role=\"status\">正在加载工作区…</div></div>"
+    },
+    {
+     "label": "采纳中：目录正在被采纳，所有行禁用",
+     "note": "<code>flowBusy</code>（流程打开或目录采纳中）期间菜单不关闭，但每一行都不可点，避免并发的第二次选择抢在同一动作前面",
+     "css": "/* 静态快照：Menu 的卡片真实由 createPortal 挂到 document.body 且 position: fixed；这里拉回文档流并保留 relative 作为包含块。 */\n.list.portal.listStatic { position: relative; inset: auto; width: 240px; }",
+     "html": "<div style=\"width:280px\"><div class=\"surface list scrollable portal listStatic\" data-menu-material=\"translucent\" role=\"menu\" style=\"--dsh-menu-anchor:--dsh-menu-demo\"><div class=\"material\" aria-hidden=\"true\"></div><div class=\"viewport\" role=\"presentation\"><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item selected\" disabled><span class=\"itemIcon\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M1.50439 3.11059C1.50439 2.55831 1.95211 2.1106 2.50439 2.1106H5.43389C5.67773 2.1106 5.91318 2.19969 6.09593 2.36113L7.71649 3.79265C7.89924 3.95409 8.1347 4.04319 8.3785 4.04319H13.4958C14.0481 4.04319 14.4958 4.4909 14.4958 5.04319V12.8894C14.4958 13.4417 14.0481 13.8894 13.4958 13.8894H2.50439C1.95211 13.8894 1.50439 13.4417 1.50439 12.8894V4.04319V3.11059Z\" stroke=\"currentColor\"/><path d=\"M3.63501 7.66614H12.3647\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">deepseek-harness</span><svg class=\"check\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4\" stroke=\"currentColor\"/></svg></button></div><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item\" disabled><span class=\"itemIcon\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M13.5 2.5H2.5C1.94772 2.5 1.5 2.94772 1.5 3.5V4.5C1.5 5.05228 1.94772 5.5 2.5 5.5H13.5C14.0523 5.5 14.5 5.05228 14.5 4.5V3.5C14.5 2.94772 14.0523 2.5 13.5 2.5Z\" stroke=\"currentColor\"/><path d=\"M2.5 5.5V13.5C2.5 13.7652 2.60536 14.0196 2.79289 14.2071C2.98043 14.3946 3.23478 14.5 3.5 14.5H12.5C12.7652 14.5 13.0196 14.3946 13.2071 14.2071C13.3946 14.0196 13.5 13.7652 13.5 13.5V5.5\" stroke=\"currentColor\"/><path d=\"M6.5 9.5H9.5\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">dsh-UIUX</span></button></div></div><div class=\"c1-footer\" role=\"presentation\"><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item\" disabled><span class=\"itemIcon\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 2V14\" stroke=\"currentColor\"/><path d=\"M2 8H14\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">添加工作区…</span></button></div></div></div></div>"
+    },
+    {
+     "label": "采纳失败：Modal 里的错误卡片",
+     "note": "静态快照：只渲染 Modal 的 <code>.dialog</code> 卡片（真实的 <code>.root</code> 是 <code>position: fixed</code> 全屏层、<code>.mask</code> 还带背景模糊，示例里会盖住整页）；页脚按 <code>c2-footer</code> 钉到 Modal 那张表",
+     "pad": "lg",
+     "css": "/* 静态快照：Modal 的 .root 是 inset:0 的固定全屏层、.mask 带背景模糊，整棵放进示例会盖住页面；这里只保留居中的 .dialog 卡片本身，宽度按 min(380px,100%) 补位。 */\n.dialog.staticCard { width: 380px; }",
+     "html": "<div class=\"dialog staticCard\" role=\"dialog\" aria-modal=\"true\" aria-label=\"无法打开文件夹\" tabindex=\"-1\"><div class=\"content\"><div class=\"header\"><h2 class=\"title\">无法打开文件夹</h2><button type=\"button\" class=\"close\" aria-label=\"关闭\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"body\"><div class=\"modalError\" role=\"alert\">EPERM: operation not permitted, scandir '/home/lk/deepseek-harness/packages/client/ui-workspace'</div></div></div><div class=\"c2-footer\"><button type=\"button\" class=\"button outline md modalAction\">取消</button><button type=\"button\" class=\"button primary md modalAction\">重新选择</button></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "open",
+     "type": "boolean",
+     "default": "—",
+     "desc": "菜单是否展开（owner 控制）；列表已就绪且只剩添加动作时，这个请求会被直接消费成「进目录流程」。"
+    },
+    {
+     "name": "anchorRef",
+     "type": "RefObject<HTMLElement | null>",
+     "default": "—",
+     "desc": "portal 菜单的定位锚点；返回 null 时列表保持隐藏，避免先画错位置再跳。"
+    },
+    {
+     "name": "useWorkspaces",
+     "type": "<S>(selector: (state: WorkspaceSnapshot) => S) => S",
+     "default": "—",
+     "desc": "工作区快照的 selector hook：<code>items</code> 决定列表行，<code>phase</code> 决定要不要显示加载状态。"
+    },
+    {
+     "name": "createWorkspace",
+     "type": "(input: { path: string }) => Promise<WorkspaceView>",
+     "default": "—",
+     "desc": "采纳一个宿主目录为真实工作区；失败把 <code>Error.message</code> 交给错误卡片。"
+    },
+    {
+     "name": "useDirectoryFlow",
+     "type": "SnapshotSelectorHook<boolean>",
+     "default": "—",
+     "desc": "目录流程占位的占用状态；空占位时这个面完全没有添加动作，占位者中途卸载会让已打开的流程收回。"
+    },
+    {
+     "name": "renderDirectoryFlow",
+     "type": "(owner: DirectoryFlowOwnerProps) => ReactNode",
+     "default": "—",
+     "desc": "把选目录交互渲染进本面的洞；owner 里带 <code>open/busy/onPicked/onCancel/onError</code>，采纳期间 <code>busy</code> 让菜单保持禁用。"
+    },
+    {
+     "name": "onPick",
+     "type": "(workspaceId: WorkspaceId) => void",
+     "default": "—",
+     "desc": "选中已有工作区或新建成功后的回调。"
+    },
+    {
+     "name": "onClose",
+     "type": "() => void",
+     "default": "—",
+     "desc": "关闭菜单（外部点击 / Escape / 选中后）；进目录流程前也会先调它。"
+    },
+    {
+     "name": "onBusyChange",
+     "type": "(busy: boolean) => void",
+     "default": "—",
+     "desc": "上报 picking 交互与采纳占用，owner 可以据此冻结自己的锚点按钮。"
+    },
+    {
+     "name": "addOnly",
+     "type": "boolean",
+     "default": "false",
+     "desc": "只给添加入口、不列已有工作区（WorkspaceBrowser 的添加菜单用）。"
+    },
+    {
+     "name": "side",
+     "type": "'bottom' | 'top' | 'right'",
+     "default": "'bottom'",
+     "desc": "菜单相对锚点的展开方向。"
+    },
+    {
+     "name": "selectedId",
+     "type": "WorkspaceId | undefined",
+     "default": "undefined",
+     "desc": "当前工作区，行尾渲染 14px 勾。"
+    }
+   ],
+   "notes": "添加工作区只有一条路——选一个宿主目录（新建文件夹由目录流程占位者自己的动作覆盖）。菜单是 <code>portal</code> 模式（<code>position: fixed</code>，坐标每帧按锚点矩形写入），所以 <code>anchorRef</code> 比包裹元素更可信。错误卡片的「重新选择」在 <code>flowAvailable</code> 为假时禁用：没有占位者时它会打开一个没人能应答、也没人能取消的流程。",
+   "keywords": [
+    "工作区",
+    "选择工作区",
+    "添加工作区",
+    "目录流程",
+    "workspace pick flow"
+   ]
+  },
+  {
+   "id": "files-title",
+   "name": "FilesTitle",
+   "exportName": "FilesTitle",
+   "zh": "文件标题",
+   "group": "panels",
+   "summary": "「文件」类型 tab 的那一小段标题：16px 的文件夹图纸（<code>FileTypeIcon kind=\"folder\"</code>，28 视图框缩放、<code>--dsw-static-amber-400</code> 描线）+ 该 tab 的标题文案（<code>sidebarFiles.type.label</code>，中文「文件」）。它注册在 <code>sidebar.right.pane.tab.title</code> 上，所以右侧栏的 tab chip 与浮动面板头部共用同一段；没有它时 chip 只显示裸文案。<code>.titleIcon</code> 只负责 <code>flex:none</code>，让它不被长文案挤扁——与文字的间距、行内居中都由 chip 自己的标题行给。",
+   "source": "packages/client/ui-sidebar-files/src/client/FilesTitle.tsx#L17",
+   "css": [
+    "packages/client/ui-sidebar-files/src/client/FilesBody.module.css",
+    "packages/client/ui-primitives/src/FileTypeIcon.module.css"
+   ],
+   "tokens": [
+    "--dsw-static-amber-400",
+    "--dsw-static-neutral-00"
+   ],
+   "specimens": [
+    {
+     "label": "tab chip 里的「文件」标题",
+     "note": "静态快照：外层补了一层无类的行容器（真实间距来自 sidebar 的 chip 标题行）；svg 的三个类来自 FileTypeIcon 的 <code>clsx(css.icon, css.folder, className)</code>，其中 <code>icon</code> 两张表都有，所以钉成 <code>c1-icon</code>",
+     "html": "<div style=\"display:flex;align-items:center;gap:6px\"><svg class=\"c1-icon c1-folder titleIcon\" width=\"16\" height=\"16\" viewBox=\"0 0 28 28\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M2.80078 10.2112C2.80078 9.52802 2.80078 9.18642 2.85314 8.866C2.98648 8.05 3.36942 7.29538 3.94925 6.70595C4.17694 6.4745 4.45264 6.2728 5.00404 5.86939C5.29197 5.65874 5.43594 5.55342 5.58711 5.46632C5.97089 5.24521 6.39638 5.10618 6.83667 5.05803C7.01011 5.03906 7.18849 5.03906 7.54524 5.03906H11.6543C12.4669 5.03906 12.8732 5.03906 13.2599 5.13697C13.3882 5.16945 13.5143 5.20986 13.6375 5.25795C14.0091 5.40294 14.3398 5.63902 15.0012 6.1112L16.2632 7.01224C16.5526 7.21881 16.6972 7.3221 16.8598 7.38553C16.9137 7.40657 16.9689 7.42425 17.025 7.43846C17.1942 7.4813 17.372 7.4813 17.7275 7.4813H19.8008C22.0506 7.4813 23.1755 7.4813 23.9641 8.05425C24.2188 8.23928 24.4428 8.46326 24.6278 8.71794C25.2008 9.50654 25.2008 10.6315 25.2008 12.8813V18.7283C25.2008 20.9781 25.2008 22.1031 24.6278 22.8917C24.4428 23.1463 24.2188 23.3703 23.9641 23.5554C23.1755 24.1283 22.0506 24.1283 19.8008 24.1283H8.20077C5.95094 24.1283 4.82602 24.1283 4.03743 23.5554C3.78274 23.3703 3.55877 23.1463 3.37373 22.8917C2.80078 22.1031 2.80078 20.9781 2.80078 18.7283V10.2112Z\" fill=\"currentColor\"/><g color=\"var(--dsw-static-neutral-00)\" data-file-type-mark transform=\"translate(14 13.0693) scale(1.12) translate(-14 -13.0693)\"><path d=\"M6.31445 13.0693H21.6893\" stroke=\"currentColor\" stroke-width=\"2.38\"/></g></svg><span>文件</span></div>",
+     "bg": "sidebar"
+    },
+    {
+     "label": "英文词典下的同一段标题",
+     "note": "文案来自 tab 注册表的 <code>title()</code>（<code>sidebarFiles.type.label</code>），因此换语言时图纸不变、只有文字变",
+     "html": "<div style=\"display:flex;align-items:center;gap:6px\"><svg class=\"c1-icon c1-folder titleIcon\" width=\"16\" height=\"16\" viewBox=\"0 0 28 28\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M2.80078 10.2112C2.80078 9.52802 2.80078 9.18642 2.85314 8.866C2.98648 8.05 3.36942 7.29538 3.94925 6.70595C4.17694 6.4745 4.45264 6.2728 5.00404 5.86939C5.29197 5.65874 5.43594 5.55342 5.58711 5.46632C5.97089 5.24521 6.39638 5.10618 6.83667 5.05803C7.01011 5.03906 7.18849 5.03906 7.54524 5.03906H11.6543C12.4669 5.03906 12.8732 5.03906 13.2599 5.13697C13.3882 5.16945 13.5143 5.20986 13.6375 5.25795C14.0091 5.40294 14.3398 5.63902 15.0012 6.1112L16.2632 7.01224C16.5526 7.21881 16.6972 7.3221 16.8598 7.38553C16.9137 7.40657 16.9689 7.42425 17.025 7.43846C17.1942 7.4813 17.372 7.4813 17.7275 7.4813H19.8008C22.0506 7.4813 23.1755 7.4813 23.9641 8.05425C24.2188 8.23928 24.4428 8.46326 24.6278 8.71794C25.2008 9.50654 25.2008 10.6315 25.2008 12.8813V18.7283C25.2008 20.9781 25.2008 22.1031 24.6278 22.8917C24.4428 23.1463 24.2188 23.3703 23.9641 23.5554C23.1755 24.1283 22.0506 24.1283 19.8008 24.1283H8.20077C5.95094 24.1283 4.82602 24.1283 4.03743 23.5554C3.78274 23.3703 3.55877 23.1463 3.37373 22.8917C2.80078 22.1031 2.80078 20.9781 2.80078 18.7283V10.2112Z\" fill=\"currentColor\"/><g color=\"var(--dsw-static-neutral-00)\" data-file-type-mark transform=\"translate(14 13.0693) scale(1.12) translate(-14 -13.0693)\"><path d=\"M6.31445 13.0693H21.6893\" stroke=\"currentColor\" stroke-width=\"2.38\"/></g></svg><span>Files</span></div>",
+     "bg": "sidebar"
+    }
+   ],
+   "props": [
+    {
+     "name": "useTabInfo",
+     "type": "UseSidebarRightTabInfo",
+     "default": "—",
+     "desc": "标准 tab 读取器；返回的 <code>tab.title</code> 就是标题文字（文件类型的 <code>title()</code> 取 <code>sidebarFiles.type.label</code>）。"
+    }
+   ],
+   "notes": "图纸是 <code>FileTypeIcon</code> 的传统类型分支：类名 <code>icon</code> + <code>folder</code>，颜色取 <code>--dsh-file-type-default-color</code>（folder 档为 <code>--dsw-static-amber-400</code>），折角用 <code>--dsw-static-neutral-00</code> 的 70% 白。树里的每一行不用它——树有自己的行内图纸（FilesBody 的 <code>.icon</code> 走 tertiary 墨色）。",
+   "keywords": [
+    "文件标题",
+    "tab 标题",
+    "文件夹图标",
+    "files title"
+   ]
+  },
+  {
+   "id": "question-composer",
+   "name": "QuestionComposer",
+   "exportName": "QuestionComposer",
+   "zh": "提问卡片",
+   "group": "panels",
+   "summary": "输入框位置上的提问接管（composer takeover）：一张满宽卡片（<code>max-width: var(--dsh-chat-content-width)</code>、上限 <code>min(60vh, 520px)</code>、圆角 <code>--dsw-radius-xl</code>、底色 <code>--dsw-specific-input-major</code>、<code>--dsw-elevation-panel</code> 起浮），头部是 16px/22px 标题（上面一行 11px tertiary 的 eyebrow）与右侧 24px 圆形图标按钮组（收起 / 关闭，另有倒计时文案与「慢慢回答」）。主体是 40px 高的选项行（单选给 20×20 序号砖、多选换成 14×14 复选框，选中行取 hover 填充 + 0.5px <code>--dsw-alias-border-l2</code> 描边），行尾可挂「推荐」badge（<code>0 4px</code>、11px/18px/600）与 tertiary 描述，末尾是跟随内容增高的自定义答案行；无选项的题直接给整块 <code>.customBlock</code> 输入框（<code>min-height:64px</code>、0.5px 描边、聚焦转品牌色）。页脚左侧是 24px 的上一题 / 下一题与 <code>--dsw-alias-label-secondary</code> 的「1 / 3」，中间是 11px 红色反馈行，右侧「跳过」与「下一题 / 提交」（未作答或通道未就绪时提交禁用）。收起态只留头部（<code>padding-bottom:14px</code>）让上面的对话保持可读；声明了计划审核意图的请求不走这里，交给 PlanReviewPanel。",
+   "source": "packages/client/ui-user-questions/src/client/QuestionComposer.tsx#L139",
+   "css": [
+    "packages/client/ui-primitives/src/Button.module.css",
+    "packages/client/ui-user-questions/src/client/QuestionComposer.module.css"
+   ],
+   "tokens": [
+    "--dsw-radius-xl",
+    "--dsw-radius-lg",
+    "--dsw-radius-md",
+    "--dsw-radius-xs",
+    "--dsw-specific-input-major",
+    "--dsw-elevation-panel",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-border-l2-darkmode-thin",
+    "--dsw-alias-border-l4",
+    "--dsw-alias-bg-overlay",
+    "--dsw-alias-bg-module-platform",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-label-caption",
+    "--dsw-alias-label-dimmed",
+    "--dsw-alias-label-primary-foreground",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-scrollbar-bg-l2",
+    "--dsw-alias-scrollbar-hover-l2",
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-state-error-primary",
+    "--dsw-specific-sidebar-nav-item-active-accent",
+    "--dsw-alias-button-info-fill",
+    "--dsw-alias-button-primary-fill",
+    "--dsw-alias-button-primary-hover",
+    "--dsw-alias-border-l3",
+    "--dsh-chat-content-width",
+    "--dsh-composer-side-clearance"
+   ],
+   "specimens": [
+    {
+     "label": "多选题：选项 + 推荐标签 + 自定义答案行",
+     "note": "多选时选项前的指示器换成复选框（已勾一项用 <code>.checkboxChecked</code>），自定义行也给一个同款复选框；页脚右端在非末题时是「下一题」",
+     "pad": "lg",
+     "css": "/* 静态快照 + 布局补位：真实卡片宽由会话列的 --dsh-chat-content-width 决定（示例里该变量不存在，max-width 失效），这里用固定宽度还原一屏；frame 的左右内边距来自 --dsh-composer-side-clearance。 */\n.frame { padding-inline: 16px; }",
+     "html": "<div style=\"width:680px\"><div class=\"frame\" data-question-key=\"question:call-7f31\"><section class=\"card\" aria-labelledby=\"question-call-7f31-0\"><header class=\"header\"><div class=\"headingBlock\"><div class=\"eyebrow\">改动范围</div><h2 class=\"title\" id=\"question-call-7f31-0\">这次重构先动哪几个包？</h2></div><div class=\"headerActions\"><span class=\"waitStatus\">会一直等你回答</span><button type=\"button\" class=\"iconButton\" aria-label=\"收起问题卡片\" title=\"收起问题卡片\" aria-expanded=\"true\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"iconButton\" aria-label=\"放弃整组问题\" title=\"放弃整组问题\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></div></header><div class=\"body\" data-question-scroll=\"\"><div class=\"options\" role=\"group\"><button type=\"button\" class=\"option\" role=\"checkbox\" aria-checked=\"true\" aria-label=\"ui-schedule 与 ui-plan\"><span class=\"checkbox checkboxChecked\" aria-hidden=\"true\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4\" stroke=\"currentColor\"/></svg></span><span class=\"optionCopy\"><span class=\"optionLine\"><span class=\"optionLabel\">ui-schedule 与 ui-plan</span><span class=\"badge\">推荐</span><span class=\"description\">两边共用任务卡片，一起改完再验</span></span></span></button><button type=\"button\" class=\"option\" role=\"checkbox\" aria-checked=\"false\" aria-label=\"只动 ui-schedule\"><span class=\"checkbox\" aria-hidden=\"true\"></span><span class=\"optionCopy\"><span class=\"optionLine\"><span class=\"optionLabel\">只动 ui-schedule</span><span class=\"description\">ui-plan 保持现状，回归面更小</span></span></span></button><button type=\"button\" class=\"option\" role=\"checkbox\" aria-checked=\"false\" aria-label=\"先只改样式表，逻辑不动\"><span class=\"checkbox\" aria-hidden=\"true\"></span><span class=\"optionCopy\"><span class=\"optionLine\"><span class=\"optionLabel\">先只改样式表，逻辑不动</span></span></span></button><div class=\"customRow\"><span class=\"checkbox\" aria-hidden=\"true\"></span><div class=\"field customInline\"><div aria-hidden=\"true\" class=\"fieldMirror\">&#10;</div><textarea class=\"fieldInput\" rows=\"1\" placeholder=\"输入你的答案\"></textarea></div></div></div></div><footer class=\"footer\"><div class=\"pager\"><button type=\"button\" class=\"iconButton\" aria-label=\"上一题\" disabled><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M10 4L6.70711 7.29289C6.31658 7.68342 6.31658 8.31658 6.70711 8.70711L10 12\" stroke=\"currentColor\"/></svg></button><span class=\"progress\">1 / 3</span><button type=\"button\" class=\"iconButton\" aria-label=\"下一题\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4\" stroke=\"currentColor\"/></svg></button></div><div class=\"feedback\" role=\"status\"></div><div class=\"footerActions\"><button type=\"button\" class=\"button outline md\">跳过</button><button type=\"button\" class=\"button primary md\">下一题</button></div></footer></section></div></div>"
+    },
+    {
+     "label": "无选项题：整块自由回答输入",
+     "note": "<code>hasOptions</code> 为假时选项列表为空、自由输入升级成主体：<code>.customBlock</code> 自带 0.5px 描边与 8px 12px 内边距，聚焦时描边转 <code>--dsw-alias-state-business-primary</code>",
+     "pad": "lg",
+     "css": "/* 静态快照 + 布局补位：真实卡片宽由会话列的 --dsh-chat-content-width 决定（示例里该变量不存在，max-width 失效），这里用固定宽度还原一屏；frame 的左右内边距来自 --dsh-composer-side-clearance。 */\n.frame { padding-inline: 16px; }",
+     "html": "<div style=\"width:680px\"><div class=\"frame\" data-question-key=\"question:call-7f31\"><section class=\"card\" aria-labelledby=\"question-call-7f31-1\"><header class=\"header\"><div class=\"headingBlock\"><div class=\"eyebrow\">发布节奏</div><h2 class=\"title\" id=\"question-call-7f31-1\">这次改动什么时候合进主干？</h2></div><div class=\"headerActions\"><span class=\"waitStatus\">28 秒后继续工作</span><button type=\"button\" class=\"button outline md waitButton\">慢慢回答</button><button type=\"button\" class=\"iconButton\" aria-label=\"收起问题卡片\" title=\"收起问题卡片\" aria-expanded=\"true\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"iconButton\" aria-label=\"放弃整组问题\" title=\"放弃整组问题\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></div></header><div class=\"body\" data-question-scroll=\"\"><div class=\"options\" role=\"radiogroup\"><div class=\"field customBlock\"><div aria-hidden=\"true\" class=\"fieldMirror\">&#10;</div><textarea class=\"fieldInput\" rows=\"1\" placeholder=\"输入你的答案\"></textarea></div></div></div><footer class=\"footer\"><div class=\"pager\"><button type=\"button\" class=\"iconButton\" aria-label=\"上一题\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M10 4L6.70711 7.29289C6.31658 7.68342 6.31658 8.31658 6.70711 8.70711L10 12\" stroke=\"currentColor\"/></svg></button><span class=\"progress\">2 / 3</span><button type=\"button\" class=\"iconButton\" aria-label=\"下一题\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4\" stroke=\"currentColor\"/></svg></button></div><div class=\"feedback\" role=\"status\"></div><div class=\"footerActions\"><button type=\"button\" class=\"button outline md\">跳过</button><button type=\"button\" class=\"button primary md\" disabled>提交</button></div></footer></section></div></div>"
+    },
+    {
+     "label": "通道未就绪：关闭被拦下，反馈落在页脚",
+     "note": "单选已选一项（<code>.optionSelected</code> + 序号砖），但通道是 <code>none</code>：末题提交按 <code>canSubmit</code> 禁用，点关闭会在 11px 反馈行给出 <code>error.unavailable</code>",
+     "pad": "lg",
+     "css": "/* 静态快照 + 布局补位：真实卡片宽由会话列的 --dsh-chat-content-width 决定（示例里该变量不存在，max-width 失效），这里用固定宽度还原一屏。 */\n.frame { padding-inline: 16px; }",
+     "html": "<div style=\"width:680px\"><div class=\"frame\" data-question-key=\"question:call-7f31\"><section class=\"card\" aria-labelledby=\"question-call-7f31-2\"><header class=\"header\"><div class=\"headingBlock\"><div class=\"eyebrow\">权限确认</div><h2 class=\"title\" id=\"question-call-7f31-2\">这条命令会在工作区外写入文件，是否允许这一次？</h2></div><div class=\"headerActions\"><button type=\"button\" class=\"iconButton\" aria-label=\"收起问题卡片\" title=\"收起问题卡片\" aria-expanded=\"true\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"iconButton\" aria-label=\"放弃整组问题\" title=\"放弃整组问题\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></div></header><div class=\"body\" data-question-scroll=\"\"><div class=\"options\" role=\"radiogroup\"><button type=\"button\" class=\"option optionSelected\" role=\"radio\" aria-checked=\"true\" aria-label=\"允许这一次\"><span class=\"number\">1</span><span class=\"optionCopy\"><span class=\"optionLine\"><span class=\"optionLabel\">允许这一次</span></span></span></button><button type=\"button\" class=\"option\" role=\"radio\" aria-checked=\"false\" aria-label=\"拒绝，改用工作区内的临时目录\"><span class=\"number\">2</span><span class=\"optionCopy\"><span class=\"optionLine\"><span class=\"optionLabel\">拒绝，改用工作区内的临时目录</span><span class=\"description\">推荐：不碰工作区外的路径</span></span></span></button><div class=\"customRow customRowYielded\"><span class=\"number\" aria-hidden=\"true\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8.85596 2.69971H4.19971C3.37141 2.69971 2.69992 3.37146 2.69971 4.19971V11.8003C2.69992 12.6285 3.37141 13.3003 4.19971 13.3003H11.8003C12.6283 13.2999 13.3001 12.6283 13.3003 11.8003V7.89893H14.3003V11.8003C14.3001 13.1806 13.1806 14.2999 11.8003 14.3003H4.19971C2.81913 14.3003 1.69992 13.1808 1.69971 11.8003V4.19971C1.69992 2.81918 2.81913 1.69971 4.19971 1.69971H8.85596V2.69971Z\" fill=\"currentColor\"/><path d=\"M7.7849 8.23878L13.888 2.13574\" stroke=\"currentColor\"/></svg></span><div class=\"field customInline\"><div aria-hidden=\"true\" class=\"fieldMirror\">&#10;</div><textarea class=\"fieldInput\" rows=\"1\" placeholder=\"输入你的答案\"></textarea></div></div></div></div><footer class=\"footer\"><div class=\"pager\"><button type=\"button\" class=\"iconButton\" aria-label=\"上一题\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M10 4L6.70711 7.29289C6.31658 7.68342 6.31658 8.31658 6.70711 8.70711L10 12\" stroke=\"currentColor\"/></svg></button><span class=\"progress\">3 / 3</span><button type=\"button\" class=\"iconButton\" aria-label=\"下一题\" disabled><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4\" stroke=\"currentColor\"/></svg></button></div><div class=\"feedback\" role=\"status\">当前无法提交，请稍候再试。</div><div class=\"footerActions\"><button type=\"button\" class=\"button outline md\">跳过</button><button type=\"button\" class=\"button primary md\" disabled>提交</button></div></footer></section></div></div>"
+    },
+    {
+     "label": "收起态：只剩标题行，倒计时仍在走",
+     "note": "静态快照：<code>.cardMinimized</code> 去掉高度上限并把头部下内边距加到 14px，主体与页脚整段不渲染；倒计时属于载体而不是本组件，面板收起后照样计时",
+     "pad": "lg",
+     "css": "/* 静态快照 + 布局补位：真实卡片宽由会话列的 --dsh-chat-content-width 决定（示例里该变量不存在，max-width 失效），这里用固定宽度还原一屏。 */\n.frame { padding-inline: 16px; }",
+     "html": "<div style=\"width:680px\"><div class=\"frame\" data-question-key=\"question:call-7f31\"><section class=\"card cardMinimized\" aria-labelledby=\"question-call-7f31-0\"><header class=\"header\"><div class=\"headingBlock\"><div class=\"eyebrow\">改动范围</div><h2 class=\"title\" id=\"question-call-7f31-0\">这次重构先动哪几个包？</h2></div><div class=\"headerActions\"><span class=\"waitStatus\">28 秒后继续工作</span><button type=\"button\" class=\"button outline md waitButton\">慢慢回答</button><button type=\"button\" class=\"iconButton\" aria-label=\"展开问题卡片\" title=\"展开问题卡片\" aria-expanded=\"false\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"iconButton\" aria-label=\"放弃整组问题\" title=\"放弃整组问题\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></div></header></section></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "matched",
+     "type": "QuestionWait（PendingQuestion）",
+     "default": "—",
+     "desc": "选择器命中的待答载具：<code>key</code>、<code>questions</code>、<code>dismissal</code>、<code>review</code> 与 <code>answer/dismiss/takeTime/engage/holdFocus/releaseFocus/liveKeys/snapshot</code> 一整套行为面。"
+    },
+    {
+     "name": "t",
+     "type": "PropsLocale<'question'>",
+     "default": "—",
+     "desc": "question 词典：标题之外的文案（倒计时、校验反馈、按钮、占位符）全走它，反馈存 key、渲染时翻译，切换语言后已显示的提示也跟着变。"
+    },
+    {
+     "name": "useStore",
+     "type": "PropsStore<createQuestionDraftStore>",
+     "default": "—",
+     "desc": "Session 作用域的草稿 store；按 pending.key 存 <code>{ index, drafts, wait }</code>，面板重挂载后能恢复同一份请求的作答进度。"
+    },
+    {
+     "name": "useQuestionCard",
+     "type": "(key, selector) => QuestionCardSnapshot",
+     "default": "—",
+     "desc": "载具的外部快照（<code>state</code> / <code>waitState</code> / <code>countdown</code> / <code>channel</code> / <code>closed</code>）；<code>channel</code> 决定能否提交，<code>countdown</code> 决定头部显示倒计时还是「会一直等你回答」。"
+    },
+    {
+     "name": "actions",
+     "type": "{ replace, clear, prune }",
+     "default": "—",
+     "desc": "草稿 store 的写入口：<code>replace</code> 落进度、<code>clear</code> 在卡片关闭后清理、<code>prune</code> 按 <code>liveKeys()</code> 回收同会话里的孤儿草稿。"
+    },
+    {
+     "name": "renderSlot",
+     "type": "PropsRenderSlots<'conversation.plan-review.actions'>",
+     "default": "—",
+     "desc": "带计划审核意图的请求改由 PlanReviewPanel 渲染，它的动作插槽从这一份渲染器透传下去。"
+    }
+   ],
+   "notes": "路由就在这一个入口：<code>planReviewOf(question.questions)</code> 有结果就整请求交给 PlanReviewPanel（一个计划一个决定，不是一组问题），否则走通用问答流。单选点选后会自动跳到下一题，多选停留；<code>Enter</code> 在自由输入里继续、<code>Shift+Enter</code> 换行，输入法合成中的回车不结算。自由输入框是「textarea + 隐形 mirror」共用一个网格单元，mirror 撑高度、上限 6 行（144px），超出后由 textarea 自己滚动。已回答的 review 卡片只留分页与「已回答」状态、去掉跳过与提交；被跳过的问题显示 <code>.reviewNote</code>。",
+   "keywords": [
+    "提问",
+    "问答卡片",
+    "接管输入框",
+    "ask user question",
+    "composer takeover"
+   ]
+  },
+  {
+   "id": "question-reply-view",
+   "name": "QuestionReplyView",
+   "exportName": "QuestionReplyView",
+   "zh": "回答气泡",
+   "group": "panels",
+   "summary": "迟到的回答在对话里右侧对齐的紧凑气泡：<code>max-width:72%</code>、<code>10px 16px</code> 内边距、圆角 <code>--dsw-radius-xl</code>、底色 <code>--dsw-specific-bubble</code>，正文 14px/22px（跟随内容字号变量）。折叠时按钮里是一行 12px 的 caret + 13px/18px secondary 的「回答先前等待中的问题」，下面一行 14px 的多题答案摘要（用逗号连接，全跳过时显示「已跳过」）；展开后 <code>.details</code> 用 24% secondary 的 1px 上分线接一组问答，每题给 12px 的问题（可带 11px 的 header / detail / 选项表）与 14px 的「回答：」值。气泡下方一行 28px 高的动作条：13px/24px tertiary 的时刻 + 一个 28×28 的拷贝按钮（<code>--dsw-radius-sm</code>，悬停取 hover 填充并把图标提亮到 secondary）。载荷读不出来（<code>questions</code> 为空）时展开只显示模型面向的原文 <code>.text</code>。",
+   "source": "packages/client/ui-user-questions/src/client/QuestionReplyView.tsx#L21",
+   "css": [
+    "packages/client/ui-user-questions/src/client/QuestionReplyView.module.css"
+   ],
+   "tokens": [
+    "--dsw-radius-xl",
+    "--dsw-radius-sm",
+    "--dsw-specific-bubble",
+    "--dsw-focus-ring-color",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-state-business-primary"
+   ],
+   "specimens": [
+    {
+     "label": "折叠态：标签 + 一行答案摘要",
+     "note": "折叠时只渲染 <code>.labelRow</code> 与 <code>.summary</code>；caret 是唯一提示它能展开的记号，开合状态在按钮的 <code>aria-expanded</code> 上",
+     "pad": "lg",
+     "html": "<div style=\"width:620px\"><div class=\"row\" data-question-reply=\"call-7f31\" data-reply-outcome=\"answered\" role=\"group\" aria-label=\"回答先前等待中的问题\"><div class=\"bubble\"><button type=\"button\" class=\"toggle\" aria-expanded=\"false\" aria-label=\"回答先前等待中的问题 · 展开问题详情\"><span class=\"labelRow\"><span class=\"caret\" aria-hidden=\"true\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4\" stroke=\"currentColor\"/></svg></span><span class=\"label\">回答先前等待中的问题</span></span><span class=\"summary\">ui-schedule 与 ui-plan, 下周一，等回归跑完</span></button></div><div class=\"actions\"><span class=\"time\">14:26</span><button type=\"button\" class=\"action\" aria-label=\"复制\"><svg width=\"15\" height=\"15\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><rect x=\"1.52075\" y=\"4.07373\" width=\"10.3932\" height=\"10.3932\" rx=\"2\" stroke=\"currentColor\"/><path d=\"M11.9792 1.53296C13.36 1.53296 14.4792 2.65225 14.4792 4.03296V9.42847C14.4792 10.3756 13.9521 11.1987 13.1755 11.6228V10.3298C13.3652 10.0787 13.4792 9.7674 13.4792 9.42847V4.03296C13.4792 3.20453 12.8077 2.53296 11.9792 2.53296H6.58374C6.27966 2.53301 5.99684 2.6235 5.7605 2.77905H4.42358C4.85652 2.03463 5.66056 1.53304 6.58374 1.53296H11.9792Z\" fill=\"currentColor\"/></svg></button></div></div></div>"
+    },
+    {
+     "label": "展开态：一题一段问答，带选项表",
+     "note": "展开后 caret 转 12px 下箭头，<code>.details</code> 的分线用 <code>color-mix(secondary 24%)</code> 而不是边框 token，因此深浅两主题下都比发丝线更淡",
+     "pad": "lg",
+     "html": "<div style=\"width:620px\"><div class=\"row\" data-question-reply=\"call-7f31\" data-reply-outcome=\"answered\" role=\"group\" aria-label=\"回答先前等待中的问题\"><div class=\"bubble\"><button type=\"button\" class=\"toggle\" aria-expanded=\"true\" aria-label=\"回答先前等待中的问题 · 收起问题详情\"><span class=\"labelRow\"><span class=\"caret\" aria-hidden=\"true\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></span><span class=\"label\">回答先前等待中的问题</span></span></button><dl class=\"details\"><div><dt class=\"question\"><span class=\"header\">改动范围</span><span class=\"questionText\">这次重构先动哪几个包？</span><ul class=\"options\"><li>ui-schedule 与 ui-plan — 两边共用任务卡片，一起改完再验</li><li>只动 ui-schedule — ui-plan 保持现状，回归面更小</li><li>先只改样式表，逻辑不动</li></ul></dt><dd class=\"answer\"><span class=\"answerLabel\">回答：</span>ui-schedule 与 ui-plan</dd></div><div><dt class=\"question\"><span class=\"questionText\">这次改动什么时候合进主干？</span></dt><dd class=\"answer\"><span class=\"answerLabel\">回答：</span>下周一，等回归跑完</dd></div></dl></div><div class=\"actions\"><span class=\"time\">14:26</span><button type=\"button\" class=\"action\" aria-label=\"复制\"><svg width=\"15\" height=\"15\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><rect x=\"1.52075\" y=\"4.07373\" width=\"10.3932\" height=\"10.3932\" rx=\"2\" stroke=\"currentColor\"/><path d=\"M11.9792 1.53296C13.36 1.53296 14.4792 2.65225 14.4792 4.03296V9.42847C14.4792 10.3756 13.9521 11.1987 13.1755 11.6228V10.3298C13.3652 10.0787 13.4792 9.7674 13.4792 9.42847V4.03296C13.4792 3.20453 12.8077 2.53296 11.9792 2.53296H6.58374C6.27966 2.53301 5.99684 2.6235 5.7605 2.77905H4.42358C4.85652 2.03463 5.66056 1.53304 6.58374 1.53296H11.9792Z\" fill=\"currentColor\"/></svg></button></div></div></div>"
+    },
+    {
+     "label": "回退态：载荷读不成问答对",
+     "note": "Client 解析不出 <code>questions</code> 时，摘要退化为「已跳过」，展开显示模型面向的原文；这份文本也会被拷贝按钮原样带走",
+     "pad": "lg",
+     "html": "<div style=\"width:620px\"><div class=\"row\" data-question-reply=\"call-7f31\" data-reply-outcome=\"answered\" role=\"group\" aria-label=\"回答先前等待中的问题\"><div class=\"bubble\"><button type=\"button\" class=\"toggle\" aria-expanded=\"true\" aria-label=\"回答先前等待中的问题 · 收起问题详情\"><span class=\"labelRow\"><span class=\"caret\" aria-hidden=\"true\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></span><span class=\"label\">回答先前等待中的问题</span></span></button><p class=\"text\">{\"questions\":[{\"id\":\"scope\",\"question\":\"这次重构先动哪几个包？\"}],\"answers\":[{\"id\":\"scope\",\"selected\":[\"ui-schedule 与 ui-plan\"]}]}</p></div><div class=\"actions\"><span class=\"time\">14:26</span><button type=\"button\" class=\"action\" aria-label=\"复制\"><svg width=\"15\" height=\"15\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><rect x=\"1.52075\" y=\"4.07373\" width=\"10.3932\" height=\"10.3932\" rx=\"2\" stroke=\"currentColor\"/><path d=\"M11.9792 1.53296C13.36 1.53296 14.4792 2.65225 14.4792 4.03296V9.42847C14.4792 10.3756 13.9521 11.1987 13.1755 11.6228V10.3298C13.3652 10.0787 13.4792 9.7674 13.4792 9.42847V4.03296C13.4792 3.20453 12.8077 2.53296 11.9792 2.53296H6.58374C6.27966 2.53301 5.99684 2.6235 5.7605 2.77905H4.42358C4.85652 2.03463 5.66056 1.53304 6.58374 1.53296H11.9792Z\" fill=\"currentColor\"/></svg></button></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "node",
+     "type": "ChatNode<'question-reply'>",
+     "default": "—",
+     "desc": "迟答消息投影出的节点：<code>data.callId</code>、<code>data.outcome</code>、<code>data.questions</code>、<code>data.answers</code>、<code>data.text</code>、<code>data.time</code>；<code>callId</code> 与 <code>outcome</code> 也会写到 DOM 的 <code>data-question-reply</code> / <code>data-reply-outcome</code> 上便于定位。"
+    },
+    {
+     "name": "t",
+     "type": "PropsLocale<'question'>",
+     "default": "—",
+     "desc": "question 词典：<code>reply.label</code>「回答先前等待中的问题」、<code>reply.open</code> / <code>reply.close</code>、<code>reply.answerLabel</code>「回答：」与 <code>reply.skipped</code>「已跳过」。"
+    }
+   ],
+   "notes": "整条消息由 <code>questionReplyDefinition</code> 在 chat 目标上独占认领（<code>user/message</code> 的 <code>source.kind === 'user-question-reply'</code>），所以通用消息节点不会重复渲染它。<code>summary</code> 与拷贝文本都由 <code>replyAnswerValues</code> 从记录里重算：摘要把所有题的答案并成一行，拷贝文本按「问题 — 回答」分块、且不带没人选的选项。拷贝成功后 1 秒内图标换成对勾，标签与 <code>aria-label</code> 一起改成「已复制」。气泡可点区域是整个 <code>.toggle</code> 按钮，键盘焦点环由 <code>:focus-visible</code> 双层描边给出（按钮 2px 外描边 + 气泡 2px 阴影）。",
+   "keywords": [
+    "回答气泡",
+    "迟到回答",
+    "问答对",
+    "question reply"
+   ]
+  },
+  {
+   "id": "approval-panel",
+   "name": "ApprovalPanel",
+   "exportName": "ApprovalPanel",
+   "zh": "审批面板",
+   "group": "panels",
+   "summary": "输入框位置上的审批接管：一张 <code>max-width: var(--dsh-chat-content-width)</code> 的卡片，1px <code>--dsw-alias-state-warn-secondary</code> 描边、圆角 <code>--dsw-radius-xl</code>、底色 <code>--dsw-specific-input-major</code>、<code>--dsw-shadow-lv2</code> 起浮。顶部 10px 16px 的琥珀状态条（10px <code>StateDot</code> + 13px/18px 的「等待审批」，底色 <code>--dsw-alias-state-warn-tertiary</code>）；主体 15px/24px 的标题行说清请求（工具自带理由，或「工具 {toolName} 请求越权执行」），下面最多一行 13px/20px 等宽字体的命令原文（<code>word-break:break-all</code>），高度上限 <code>--dsh-composer-text-max-height</code> 后自己滚动；页脚右对齐「拒绝」（outline，悬停转 <code>--dsw-alias-interactive-bg-hover-danger</code> + 错误色文字）与「允许一次」（primary）。整个面板不抢输入框：<code>Enter</code> 允许一次、<code>Escape</code> 拒绝，但焦点在输入控件或按钮上时不拦截；提交后两个按钮禁用、状态点转为 14px 进行中环。",
+   "source": "packages/client/ui-approval/src/client/ApprovalPanel.tsx#L12",
+   "css": [
+    "packages/client/ui-primitives/src/Button.module.css",
+    "packages/client/ui-primitives/src/StateDot.module.css",
+    "packages/client/ui-approval/src/client/ApprovalPanel.module.css"
+   ],
+   "tokens": [
+    "--dsw-radius-xl",
+    "--dsw-radius-md",
+    "--dsw-radius-sm",
+    "--dsw-specific-input-major",
+    "--dsw-shadow-lv2",
+    "--dsw-alias-state-warn-primary",
+    "--dsw-alias-state-warn-secondary",
+    "--dsw-alias-state-warn-tertiary",
+    "--dsw-alias-state-error-primary",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-interactive-bg-hover-danger",
+    "--dsw-alias-scrollbar-bg-l2",
+    "--dsw-alias-scrollbar-hover-l2",
+    "--dsw-alias-button-primary-fill",
+    "--dsw-alias-button-primary-hover",
+    "--dsw-alias-label-primary-foreground",
+    "--dsw-alias-border-l3",
+    "--dsh-chat-content-width",
+    "--dsh-composer-side-clearance",
+    "--dsh-composer-text-max-height"
+   ],
+   "specimens": [
+    {
+     "label": "等待审批：请求理由 + 命令 + 两个决定",
+     "note": "命令来自 Tool 自己的 <code>conversation.approval.detail</code> 占位者（ui-chat 从关联的工具调用里取 <code>args.command</code>）；没有关联调用时这一行整个不渲染",
+     "pad": "lg",
+     "css": "/* 静态快照 + 布局补位：真实卡片宽由会话列的 --dsh-chat-content-width 决定（示例里该变量不存在，max-width 失效），这里用固定宽度还原一屏；.root 的左右内边距来自 --dsh-composer-side-clearance。 */\n.root { padding-inline: 16px; }",
+     "html": "<div style=\"width:620px\"><div class=\"root\" data-approval-key=\"approval:call-7f31\" aria-busy=\"false\"><div class=\"card\"><div class=\"strip\"><span class=\"dot\" data-state=\"warning\" style=\"width:10px;height:10px\" aria-hidden=\"true\"></span>等待审批</div><div class=\"body\" data-approval-scroll=\"\" tabindex=\"0\" role=\"group\" aria-label=\"审批详情\"><div class=\"headline\">工具 bash 请求越权执行</div><div class=\"command\">rm -rf /home/lk/deepseek-harness/packages/client/ui-workspace/dist</div></div><div class=\"actionRow\"><button type=\"button\" class=\"button outline md reject\">拒绝</button><button type=\"button\" class=\"button primary md\">允许一次</button></div></div></div></div>"
+    },
+    {
+     "label": "请求方给了理由：拒绝按钮的悬停模拟",
+     "note": "<code>displayReason</code> 存在时标题换成本地化理由（缺该语言退回英文原文）；同时按 <code>.reject:hover:not(:disabled)</code> 的规则静态模拟拒绝键的悬停",
+     "pad": "lg",
+     "css": "/* 静态快照 + 布局补位：真实卡片宽由会话列的 --dsh-chat-content-width 决定（示例里该变量不存在，max-width 失效），这里用固定宽度还原一屏。 */\n.root { padding-inline: 16px; }\n/* 悬停模拟：:hover 无法静态触发，下面这条按 ApprovalPanel.module.css 的同名规则原样搬运。 */\n.reject.forceHover:not(:disabled) { background: var(--dsw-alias-interactive-bg-hover-danger); color: var(--dsw-alias-state-error-primary); border-color: transparent; }",
+     "html": "<div style=\"width:620px\"><div class=\"root\" data-approval-key=\"approval:call-7f32\" aria-busy=\"false\"><div class=\"card\"><div class=\"strip\"><span class=\"dot\" data-state=\"warning\" style=\"width:10px;height:10px\" aria-hidden=\"true\"></span>等待审批</div><div class=\"body\" data-approval-scroll=\"\" tabindex=\"0\" role=\"group\" aria-label=\"审批详情\"><div class=\"headline\">这条命令要在工作区之外写入构建缓存，需要你确认一次</div><div class=\"command\">pnpm run build &amp;&amp; cp -r dist /var/tmp/dsh-uiux-dist</div></div><div class=\"actionRow\"><button type=\"button\" class=\"button outline md reject forceHover\">拒绝</button><button type=\"button\" class=\"button primary md\">允许一次</button></div></div></div></div>"
+    },
+    {
+     "label": "已提交：按钮禁用，状态点转进行中",
+     "note": "<code>answered</code> 置位后整块 <code>aria-busy=\"true\"</code>、两个按钮 <code>disabled</code>（<code>opacity:.4</code>），状态点换成 14px 的呼吸环，等待 Host 的最终结果",
+     "pad": "lg",
+     "css": "/* 静态快照 + 布局补位：真实卡片宽由会话列的 --dsh-chat-content-width 决定（示例里该变量不存在，max-width 失效），这里用固定宽度还原一屏。 */\n.root { padding-inline: 16px; }",
+     "html": "<div style=\"width:620px\"><div class=\"root\" data-approval-key=\"approval:call-7f31\" aria-busy=\"true\"><div class=\"card\"><div class=\"strip\"><svg class=\"spinner\" data-state=\"ongoing\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><g class=\"spinnerMotion\"><circle class=\"spinnerTrack\" cx=\"12\" cy=\"12\" r=\"9.5\"/><circle class=\"spinnerArc\" cx=\"12\" cy=\"12\" r=\"9.5\"/></g></svg>等待审批</div><div class=\"body\" data-approval-scroll=\"\" tabindex=\"0\" role=\"group\" aria-label=\"审批详情\"><div class=\"headline\">工具 bash 请求越权执行</div><div class=\"command\">rm -rf /home/lk/deepseek-harness/packages/client/ui-workspace/dist</div></div><div class=\"actionRow\"><button type=\"button\" class=\"button outline md reject\" disabled>拒绝</button><button type=\"button\" class=\"button primary md\" disabled>允许一次</button></div></div></div></div>"
+    },
+    {
+     "label": "无关联工具调用：只有标题行",
+     "note": "<code>callId</code> 缺失时 <code>renderSlot</code> 根本不调用，<code>.command</code> 不渲染，卡片只剩状态条、标题与两个决定",
+     "pad": "lg",
+     "css": "/* 静态快照 + 布局补位：真实卡片宽由会话列的 --dsh-chat-content-width 决定（示例里该变量不存在，max-width 失效），这里用固定宽度还原一屏。 */\n.root { padding-inline: 16px; }",
+     "html": "<div style=\"width:620px\"><div class=\"root\" data-approval-key=\"approval:call-7f33\" aria-busy=\"false\"><div class=\"card\"><div class=\"strip\"><span class=\"dot\" data-state=\"warning\" style=\"width:10px;height:10px\" aria-hidden=\"true\"></span>等待审批</div><div class=\"body\" data-approval-scroll=\"\" tabindex=\"0\" role=\"group\" aria-label=\"审批详情\"><div class=\"headline\">工具 write 请求越权执行</div></div><div class=\"actionRow\"><button type=\"button\" class=\"button outline md reject\">拒绝</button><button type=\"button\" class=\"button primary md\">允许一次</button></div></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "matched",
+     "type": "PendingApproval",
+     "default": "—",
+     "desc": "选择器命中的待批请求：<code>key</code>、<code>toolName</code>、<code>callId</code>、<code>reason</code> / <code>displayReason</code>、<code>answerable</code> 与 <code>answer('allowed-once' | 'rejected')</code>。"
+    },
+    {
+     "name": "renderSlot",
+     "type": "PropsRenderSlots<'conversation.approval.detail'>",
+     "default": "—",
+     "desc": "按 <code>callId</code> 渲染 Tool 自己的详情占用者（ui-chat 的实现给命令原文）；没有 <code>callId</code> 时传 null、不渲染这一行。"
+    },
+    {
+     "name": "resolveReason",
+     "type": "(displayReason: { en, [locale] }) => string",
+     "default": "—",
+     "desc": "把请求方给的多语言理由解析成当前语言的文案；只有审计用的 <code>reason</code> 时直接用它。"
+    },
+    {
+     "name": "t",
+     "type": "PropsLocale<'approval'>",
+     "default": "—",
+     "desc": "approval 词典：<code>waiting</code>「等待审批」、<code>escalation</code>「工具 {toolName} 请求越权执行」、<code>reject</code> 与 <code>allowOnce</code>。"
+    }
+   ],
+   "notes": "键盘走 <code>keydown</code> 委托：焦点在 <code>input / textarea / select / contenteditable</code> 内一律放行，在按钮或链接上也不抢 <code>Enter</code>（让按钮自己响应），只有焦点落在卡片本体时才由面板结算——<code>Enter</code> 允许一次、<code>Escape</code> 拒绝，带任何修饰键或正在输入法合成（含 keyCode 229）都不结算。提交失败时 <code>answerable</code> 仍为真才回滚禁用态；<code>answered</code> 只是本地的「已提交」标记，最终结果由 Host 的瀑布流决定，届时整个接管会随请求消失。",
+   "keywords": [
+    "审批",
+    "越权执行",
+    "允许一次",
+    "批准面板",
+    "approval"
+   ]
+  }
+ ]
+}

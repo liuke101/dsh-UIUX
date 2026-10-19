@@ -99,15 +99,34 @@ const isPrimitivePackage = (entry) => String(entry.source ?? '').startsWith('pac
 const primitives = curated.filter(isPrimitivePackage)
 const product = curated.filter((entry) => !isPrimitivePackage(entry))
 
+/**
+ * Which product page each section is rendered on. Kept here rather than beside
+ * `PRODUCT_PAGES` because `curatedIndex` below already has to point at the
+ * right file, and the index page is assembled from that map.
+ *
+ * Every specimen inlines its component's stylesheet verbatim, so the product
+ * surface outgrew a single page; the split follows the sections a reader
+ * already navigates by (see the rail), not an arbitrary card count.
+ */
+const PRODUCT_PAGE_OF_GROUP = {
+  conversation: 'product.html',
+  shell: 'product-shell.html',
+  preview: 'product-shell.html',
+  dock: 'product-dock.html',
+  tools: 'product-dock.html',
+  panels: 'product-panels.html',
+  overlays: 'product-panels.html',
+  settings: 'product-settings.html',
+  agent: 'product-settings.html',
+}
+
 /** `package::Component` → the gallery page and anchor documenting it. */
 const curatedIndex = new Map()
 for (const entry of curated) {
   const pkg = String(entry.source ?? '').split('/src/')[0]
   if (!pkg || !entry.name) continue
-  curatedIndex.set(`${pkg}::${entry.name}`, {
-    href: `${isPrimitivePackage(entry) ? 'primitives' : 'product'}.html#${entry.id}`,
-    zh: entry.zh ?? '',
-  })
+  const page = isPrimitivePackage(entry) ? 'primitives.html' : (PRODUCT_PAGE_OF_GROUP[entry.group] ?? 'product.html')
+  curatedIndex.set(`${pkg}::${entry.name}`, { href: `${page}#${entry.id}`, zh: entry.zh ?? '' })
 }
 
 /** Escapes text for HTML text nodes and quoted attributes. */
@@ -221,9 +240,18 @@ function explicitOwner(plan, token) {
   return classNamesOf(plan.files[index]).has(match[2]) ? index : -1
 }
 
-/** Rewrites the class attributes of a specimen to the prefixed names. */
+/**
+ * Rewrites the class attributes of a specimen to the prefixed names.
+ *
+ * Both quote styles are rewritten: an entry that lists two or more stylesheets
+ * has every one of its classes prefixed in the CSS, so a `class='…'` attribute
+ * left alone would point at selectors that no longer exist and the specimen
+ * would render unstyled. The original quoting is preserved.
+ */
 function prefixHtml(html, plan) {
-  return String(html ?? '').replace(/class="([^"]*)"/g, (_match, value) => {
+  return String(html ?? '').replace(/\bclass=(?:"([^"]*)"|'([^']*)')/g, (_match, doubleQuoted, singleQuoted) => {
+    const value = doubleQuoted ?? singleQuoted ?? ''
+    const quote = doubleQuoted === undefined ? "'" : '"'
     const mapped = value
       .split(/\s+/)
       .filter(Boolean)
@@ -236,7 +264,7 @@ function prefixHtml(html, plan) {
         if (owners.length === 0) return [name]
         return owners.map((owner) => `c${owner}-${name}`)
       })
-    return `class="${mapped.join(' ')}"`
+    return `class=${quote}${mapped.join(' ')}${quote}`
   })
 }
 
@@ -801,7 +829,7 @@ function indexPage() {
     ${stat(product.length, '已重绘 —— 产品组件')}
   </div>
   <div class="callout"><b>外观示例的生成方式。</b>每个示例把组件自己的 <code>*.module.css</code> 原文放进一个声明式 Shadow DOM（<code>&lt;template shadowrootmode&gt;</code>），并直接使用真实的 <code>--dsw-*</code> 变量。因此示例不是仿制图：点右上角的主题按钮即可让所有示例跟随浅色 / 深色变量一起变化，选择记在 <code>localStorage</code> 里，翻到别的页面也保持。条目列出多张样式表时，构建脚本按文件把类名改写成 <code>c&lt;下标&gt;-&lt;原名&gt;</code>，还原 CSS Module 在真实构建里的哈希隔离，避免 <code>.root</code> 这类同名类互相串味——细节见目录自带的 <code>README.md</code>。需要 JavaScript 才能产生的状态（悬停、菜单展开、弹窗、portal 定位）以静态快照配合状态附加样式呈现，并在示例标题旁标注。</div>
-  <div class="callout"><b>覆盖范围。</b>清单页收录全部 ${inventory.totals.components} 个组件的元数据（名称、变量名、来源、设计变量、CSS 类名）。重绘页覆盖共 ${primitives.length + product.length} 个具代表性的组件：基础组件库的全部导出，加上产品层最常出现在用户视野里的组件。其余组件可在清单页按包与关键词定位到源码。</div>
+  <div class="callout"><b>覆盖范围。</b>清单页收录全部 ${inventory.totals.components} 个组件的元数据（名称、变量名、来源、设计变量、CSS 类名）。重绘页给出 ${primitives.length + product.length} 个条目：产品层（<code>product</code> / <code>experimental</code> / <code>extension</code>）的每个导出都有一条，基础组件库的可视导出各有一条，图标与美术按族合并成条（在清单页仍逐个列出字形）。每个条目的示例都内联了组件自己的样式表源码，产品组件因此按区域拆成五页。</div>
 </section>
 
 <section class="section" id="layers">
@@ -833,7 +861,7 @@ function indexPage() {
 
 <section class="section" id="reading">
   <h2>怎么读</h2>
-  <p class="lead">四张子页分别对应四种查阅路径。</p>
+  <p class="lead">五条查阅路径：基础组件库、按区域拆成五页的产品组件、设计变量与全量清单。</p>
   <div class="cards">
     <article class="card"><header class="card-head"><div class="card-title"><h3>基础组件库</h3><code class="var">ui-primitives</code></div><a class="src" href="${esc(sourceHref('packages/client/ui-primitives/README.md'))}" target="_blank" rel="noreferrer">packages/client/ui-primitives/README.md</a></header>
     <p class="summary">共享原子：按钮、开关、标签、菜单、弹窗、工具调用结果卡片、Markdown 渲染器、设置表单。写新组件前的第一站——已存在的控件不允许复制第二份。</p></article>
@@ -1077,7 +1105,10 @@ const PRIMITIVE_GROUPS = [
 
 const PRODUCT_GROUPS = [
   { key: 'conversation', label: '会话流 Conversation', description: '消息气泡、思考块、工具行、回合操作等对话主体。' },
-  { key: 'shell', label: '外壳与布局 Shell', description: '应用框架、侧边栏、右侧面板与停靠区。' },
+  { key: 'shell', label: '外壳与布局 Shell', description: '应用框架、侧边栏、文件动作与外壳级提示。' },
+  { key: 'preview', label: '预览与附件 Preview', description: '文本、代码、Office、图片与网页预览，以及附件条。' },
+  { key: 'dock', label: '停靠与终端 Dock & terminal', description: '停靠面板、标签页、终端与右侧栏视图。' },
+  { key: 'tools', label: '工具调用与渲染 Tools', description: '工具调用卡片、渲染绑定与文件/目录引用。' },
   { key: 'settings', label: '设置页 Settings', description: '设置页骨架、分组与各行控件。' },
   { key: 'panels', label: '功能面板 Panels', description: '任务计划、目标、交付物、插件市场、工作区等功能页。' },
   { key: 'overlays', label: '浮层与对话 Overlays', description: '对话框、确认框、选择菜单与消息反馈。' },
@@ -1085,14 +1116,65 @@ const PRODUCT_GROUPS = [
 ]
 
 /**
+ * Product galleries, one page per region. Each entry declares which section
+ * keys it renders; the page order here is the rail order.
+ */
+const PRODUCT_PAGES = [
+  {
+    file: 'product.html',
+    label: '会话流',
+    title: '产品组件 · 会话流',
+    groups: ['conversation'],
+    lead: '消息、思考、工具行与回合操作——用户 95% 的注意力落在这里。',
+  },
+  {
+    file: 'product-shell.html',
+    label: '外壳与预览',
+    title: '产品组件 · 外壳与预览',
+    groups: ['shell', 'preview'],
+    lead: '应用框架、侧边栏、文件动作，以及文本、Office、图片与网页预览。',
+  },
+  {
+    file: 'product-dock.html',
+    label: '停靠与工具',
+    title: '产品组件 · 停靠与工具',
+    groups: ['dock', 'tools'],
+    lead: '停靠面板与标签页、终端与右侧栏，以及工具调用卡片与渲染绑定。',
+  },
+  {
+    file: 'product-panels.html',
+    label: '面板与浮层',
+    title: '产品组件 · 面板与浮层',
+    groups: ['panels', 'overlays'],
+    lead: '任务计划、目标、交付物、插件市场等功能页，与对话框、菜单、提示。',
+  },
+  {
+    file: 'product-settings.html',
+    label: '设置与运行视图',
+    title: '产品组件 · 设置与运行视图',
+    groups: ['settings', 'agent'],
+    lead: '设置页骨架与各行控件，以及轨迹、子代理、工作流等运行时视图。',
+  },
+]
+
+/**
  * The outline every page's rail renders: one node per page, its in-page
  * sections underneath. Built before the pages so the tree a reader navigates
- * by is the same on all five of them.
+ * by is the same on all of them.
  */
 const SITE = [
   { href: 'index.html', label: '总览', count: '', sections: INDEX_SECTIONS },
   { href: 'primitives.html', label: '基础组件库', count: String(primitives.length), sections: gallerySections(PRIMITIVE_GROUPS, primitives) },
-  { href: 'product.html', label: '产品组件', count: String(product.length), sections: gallerySections(PRODUCT_GROUPS, product) },
+  ...PRODUCT_PAGES.map((definition) => {
+    const groups = PRODUCT_GROUPS.filter((group) => definition.groups.includes(group.key))
+    const entries = product.filter((entry) => definition.groups.includes(entry.group))
+    return {
+      href: definition.file,
+      label: `产品组件 · ${definition.label}`,
+      count: String(entries.length),
+      sections: gallerySections(groups, entries),
+    }
+  }),
   { href: 'tokens.html', label: '设计变量', count: tokens ? String(tokens.totals.tokens) : '', sections: tokens ? tokenSections() : [] },
   { href: 'inventory.html', label: '全量清单', count: inventory ? String(inventory.totals.components) : '', sections: [] },
 ]
@@ -1110,17 +1192,22 @@ const pages = [
       active: 'primitives.html',
     }),
   ],
-  [
-    'product.html',
-    galleryPage({
-      entries: product,
-      title: '产品组件 · 功能包',
-      description: `由 <code>packages/client/ui-*</code> 各功能包拥有、通过插槽组装成页面的组件，共 ${inventory.components.filter((c) => ['product', 'experimental', 'extension'].includes(c.kind)).length} 个。下面 ${product.length} 个条目是用户视野中最常出现的部分。`,
-      file: 'data/parts/*.json',
-      groups: PRODUCT_GROUPS,
-      active: 'product.html',
-    }),
-  ],
+  ...PRODUCT_PAGES.map((definition) => {
+    const groups = PRODUCT_GROUPS.filter((group) => definition.groups.includes(group.key))
+    const entries = product.filter((entry) => definition.groups.includes(entry.group))
+    const others = PRODUCT_PAGES.length - 1
+    return [
+      definition.file,
+      galleryPage({
+        entries,
+        title: definition.title,
+        description: `由 <code>packages/client/ui-*</code> 各功能包拥有、通过插槽组装成页面的组件，共 ${inventory.components.filter((c) => ['product', 'experimental', 'extension'].includes(c.kind)).length} 个导出、${product.length} 个条目。示例逐条内联组件真实的样式表源码，产品组件因此拆成 ${PRODUCT_PAGES.length} 页：本页是${definition.lead}其余 ${others} 页在左侧目录的「产品组件」分支下。`,
+        file: 'data/parts/*.json',
+        groups,
+        active: definition.file,
+      }),
+    ]
+  }),
   ['tokens.html', tokensPage()],
   ['inventory.html', inventoryPage()],
 ]

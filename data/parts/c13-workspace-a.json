@@ -1,0 +1,822 @@
+{
+ "schemaVersion": 1,
+ "note": "会话操作 A：键控行动画容器、四个会话行菜单项、两个行悬停图标按钮，以及 shell.overlay 上的归档确认与重命名两个对话框。css 数组列出各条目真实渲染路径上的样式表（含 Menu / MenuSurface / ShortcutKeys / Tooltip / Modal / Button 等被渲染子组件的表），构建时逐字内联进该条目的 shadow root。",
+ "entries": [
+  {
+   "id": "animated-rows",
+   "name": "AnimatedRows",
+   "exportName": "AnimatedRows",
+   "zh": "行动画容器",
+   "group": "panels",
+   "summary": "侧栏键控行列表的动画容器：渲染一个 <code>role=\"tree\"</code> 的列表 div（类名由父级传入，生产里是 <code>.list</code> 或 <code>.list.flatList</code>）和一个 <code>aria-hidden</code> 的 <code>.exits</code> 覆盖层（<code>position:absolute; inset:0; contain:strict; overflow:clip; pointer-events:none</code>）。只有 <code>rowKeys</code> 的成员或顺序变化时才动：新行 100ms 淡入，位移行 200ms 从上一帧位置滑到新位置，被移除的行克隆进 <code>.exits</code> 后 100ms 淡出。首次指针或键盘输入之前完全不动画，<code>ready</code> 为假、<code>resetKey</code> 变化或 <code>prefers-reduced-motion</code> 时直接清空所有动画，不做补间。",
+   "source": "packages/client/ui-workspace/src/client/rows/AnimatedRows.tsx#L45",
+   "css": [
+    "packages/client/ui-workspace/src/client/rows/AnimatedRows.module.css",
+    "packages/client/ui-workspace/src/client/rows/Rows.module.css",
+    "packages/client/ui-workspace/src/client/rows/WorkspaceBrowser.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-radius-md"
+   ],
+   "specimens": [
+    {
+     "label": "扁平列表：rowKeys 与 data-row-key 顺序一致",
+     "note": "空置的 .exits 覆盖层始终挨着列表；行间 2px 来自 .flatList",
+     "html": "<div style=\"width:240px;height:150px\"><div class=\"treeBody\"><div class=\"list flatList\" role=\"tree\" aria-label=\"会话\"><div class=\"sessionRow selected\" role=\"treeitem\" aria-selected=\"true\" data-row-key=\"session:重构会话存储层\"><span class=\"slot\"></span><span class=\"title\">重构会话存储层</span><span class=\"time\">5分钟</span></div><div class=\"sessionRow\" role=\"treeitem\" aria-selected=\"false\" data-row-key=\"session:统一按钮圆角\"><span class=\"slot\"></span><span class=\"title\">统一按钮圆角</span><span class=\"time\">1小时</span></div><div class=\"sessionRow\" role=\"treeitem\" aria-selected=\"false\" data-row-key=\"session:补全 ui-workspace README\"><span class=\"slot\"></span><span class=\"title\">补全 ui-workspace README</span><span class=\"time\">2天</span></div></div><div class=\"exits\" aria-hidden=\"true\"></div></div></div>"
+    },
+    {
+     "label": "位移中间帧：一行正从上一帧位置滑向新位置（200ms ease-out）",
+     "note": "位移中间帧模拟",
+     "css": "/* 状态模拟：位移是 element.animate() 的 200ms ease-out 中间帧，静态快照播不了，这里把中间帧的 translate 搬到带标记的类上。 */\n.sessionRow.glideFrame { transform: translateY(22px); }\n",
+     "html": "<div style=\"width:240px;height:150px\"><div class=\"treeBody\"><div class=\"list flatList\" role=\"tree\" aria-label=\"会话\"><div class=\"sessionRow\" role=\"treeitem\" aria-selected=\"false\" data-row-key=\"session:统一按钮圆角\"><span class=\"slot\"></span><span class=\"title\">统一按钮圆角</span><span class=\"time\">1小时</span></div><div class=\"sessionRow glideFrame\" role=\"treeitem\" aria-selected=\"false\" data-row-key=\"session:重构会话存储层\"><span class=\"slot\"></span><span class=\"title\">重构会话存储层</span><span class=\"time\">5分钟</span></div><div class=\"sessionRow\" role=\"treeitem\" aria-selected=\"false\" data-row-key=\"session:补全 ui-workspace README\"><span class=\"slot\"></span><span class=\"title\">补全 ui-workspace README</span><span class=\"time\">2天</span></div></div><div class=\"exits\" aria-hidden=\"true\"></div></div></div>"
+    },
+    {
+     "label": "退出层：被移除的行在 .exits 里 100ms 淡出",
+     "note": "淡出中间帧模拟；克隆保留原行坐标，因此仍盖在它原来的槽位上",
+     "css": "/* 状态模拟：退出是 100ms ease-out 且 fill: forwards 的 opacity 动画，这里给中间帧一个透明度。克隆的几何值是组件原样写进 clone.style 的（position/margin/left/top/width/height），示例里照抄成内联布局样式。 */\n.exits .sessionRow.exitFading { opacity: 0.45; }\n",
+     "html": "<div style=\"width:240px;height:150px\"><div class=\"treeBody\"><div class=\"list flatList\" role=\"tree\" aria-label=\"会话\"><div class=\"sessionRow\" role=\"treeitem\" aria-selected=\"false\" data-row-key=\"session:统一按钮圆角\"><span class=\"slot\"></span><span class=\"title\">统一按钮圆角</span><span class=\"time\">1小时</span></div><div class=\"sessionRow\" role=\"treeitem\" aria-selected=\"false\" data-row-key=\"session:重构会话存储层\"><span class=\"slot\"></span><span class=\"title\">重构会话存储层</span><span class=\"time\">5分钟</span></div></div><div class=\"exits\" aria-hidden=\"true\"><div class=\"sessionRow exitFading\" inert style=\"position:absolute;margin:0;transform:none;box-sizing:border-box;left:0;top:68px;width:100%;height:32px\"><span class=\"slot\"></span><span class=\"title\">修复 Windows 标题栏留白</span><span class=\"time\">刚刚</span></div></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "children",
+     "type": "ReactNode",
+     "default": "—",
+     "desc": "行的 React 子树；每个顶层行的 key 必须与 <code>rowKeys</code> 对齐，DOM 上体现为 <code>data-row-key</code>。"
+    },
+    {
+     "name": "className",
+     "type": "string",
+     "default": "—",
+     "desc": "列表容器的类，由父级传入（分组视图 <code>.list</code>、单列表 <code>.list.flatList</code>）；组件自己不提供列表样式。"
+    },
+    {
+     "name": "label",
+     "type": "string",
+     "default": "—",
+     "desc": "列表的 <code>aria-label</code>（<code>role=\"tree\"</code>），例如「会话」。"
+    },
+    {
+     "name": "rowKeys",
+     "type": "readonly string[]",
+     "default": "—",
+     "desc": "与 <code>data-row-key</code> 一一对应的顺序键；只有成员或顺序变化才触发动效，行内容变化不触发。"
+    },
+    {
+     "name": "ready",
+     "type": "boolean",
+     "default": "—",
+     "desc": "列表数据是否就绪；为假或翻转时只清动画不做补间（加载、原生化拖拽中都走这条）。"
+    },
+    {
+     "name": "resetKey",
+     "type": "string",
+     "default": "—",
+     "desc": "视图替换、展开隐藏行等一次性重置的标识；变化即清空所有进行中的动画。"
+    }
+   ],
+   "notes": "行必须带 <code>data-row-key</code>，顺序与 <code>rowKeys</code> 一一对应——组件靠它读上一帧位置并判断成员与顺序变化。退出克隆会被去掉 <code>data-row-key</code>、置 <code>inert</code>，并复制行上的 <code>--dsh-workspace-indent</code>，所以 100ms 淡出期间它既不可聚焦也不可点。父级必须是定位容器（生产里是 <code>.treeBody</code> 的 <code>position:relative</code>），否则 <code>.exits</code> 会以初始包含块为参照铺满视口。行本身的样式来自 <code>Rows.module.css</code> 与 <code>WorkspaceBrowser.module.css</code>，这里一并内联以还原它挂载后看到的列表。",
+   "keywords": [
+    "行动画",
+    "行淡入淡出",
+    "列表重排",
+    "sidebar rows",
+    "FLIP",
+    "motion"
+   ]
+  },
+  {
+   "id": "archive-session-menu-item",
+   "name": "ArchiveSessionMenuItem",
+   "exportName": "ArchiveSessionMenuItem",
+   "zh": "归档菜单项",
+   "group": "panels",
+   "summary": "会话行「⋯」菜单里 order=400 的一行，由 <code>MenuItemButton</code> 渲染成 34px 菜单行（6×8 内边距、14px 图标槽、13/20 单行省略标签）。未归档时标签「归档会话」、图标是 14px 的 <code>IconArchiveOutlineRegular</code>、右端带 <code>session.archive</code> 的 ⇧⌘A 键帽；已归档时换成「取消归档」+ <code>IconUnarchiveOutlineRegular</code> 并去掉键帽。选中时先 <code>setMenuOpen(false)</code> 关掉菜单，再调用 <code>archiveSession</code> / <code>unarchiveSession</code>；运行中的工作由 Host 拒绝后转 <code>SessionArchiveConfirmDialog</code> 确认。",
+   "source": "packages/client/ui-workspace/src/client/session-actions/ArchiveSession.tsx#L31",
+   "css": [
+    "packages/client/ui-primitives/src/Menu.module.css",
+    "packages/client/ui-primitives/src/MenuSurface.module.css",
+    "packages/client/ui-primitives/src/ShortcutKeys.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-border-l1",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-caption",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-menu-icon",
+    "--dsw-elevation-prominent",
+    "--dsw-menu-backdrop-filter",
+    "--dsw-menu-surface-fill",
+    "--dsw-radius-lg",
+    "--dsw-radius-md"
+   ],
+   "specimens": [
+    {
+     "label": "未归档：归档会话 + ⇧⌘A（悬停模拟）",
+     "note": "卡片来自父级 Menu；本条目只渲染这一行",
+     "css": "/* 静态快照：菜单卡片真实由 createPortal 挂在 body 上，.list 是 position: absolute 的浮层；snapshotStatic 让它回到文档流参与排布，宽度是示例补位。这里用 relative 而不是 static：MenuSurface 的 .material 是 inset: 0 的绝对定位子层，父级必须留住包含块。 */\n.list.snapshotStatic { position: relative; inset: auto; width: 240px; }\n/* 悬停模拟：:hover 无法静态触发，这条按 Menu.module.css 的 `.item:hover:not(:disabled)` 原样搬运。 */\n.item.forceHover:not(:disabled) { background: var(--dsw-alias-interactive-bg-hover); }\n",
+     "html": "<div style=\"width:260px\"><div class=\"surface list snapshotStatic\" data-menu-material=\"translucent\" role=\"menu\" style=\"--dsh-menu-anchor:--dsh-menu-demo\"><div class=\"material\" aria-hidden=\"true\"></div><div class=\"viewport\" role=\"presentation\"><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item forceHover\" aria-keyshortcuts=\"Shift+Meta+A\"><span class=\"itemIcon\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M13.5 2.5H2.5C1.94772 2.5 1.5 2.94772 1.5 3.5V4.5C1.5 5.05228 1.94772 5.5 2.5 5.5H13.5C14.0523 5.5 14.5 5.05228 14.5 4.5V3.5C14.5 2.94772 14.0523 2.5 13.5 2.5Z\" stroke=\"currentColor\"/><path d=\"M2.5 5.5V13.5C2.5 13.7652 2.60536 14.0196 2.79289 14.2071C2.98043 14.3946 3.23478 14.5 3.5 14.5H12.5C12.7652 14.5 13.0196 14.3946 13.2071 14.2071C13.3946 14.0196 13.5 13.7652 13.5 13.5V5.5\" stroke=\"currentColor\"/><path d=\"M6.5 9.5H9.5\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">归档会话</span><span aria-hidden=\"true\" class=\"shortcut\"><span class=\"keys shortcutKeys\"><kbd class=\"key\">⇧</kbd><kbd class=\"key\">⌘</kbd><kbd class=\"key\">A</kbd></span></span></button></div></div></div></div>"
+    },
+    {
+     "label": "已归档：取消归档，键帽位置空出",
+     "note": "归档行不给快捷键",
+     "css": "/* 静态快照：菜单卡片真实由 createPortal 挂在 body 上，.list 是 position: absolute 的浮层；snapshotStatic 让它回到文档流参与排布，宽度是示例补位。这里用 relative 而不是 static：MenuSurface 的 .material 是 inset: 0 的绝对定位子层，父级必须留住包含块。 */\n.list.snapshotStatic { position: relative; inset: auto; width: 240px; }\n",
+     "html": "<div style=\"width:260px\"><div class=\"surface list snapshotStatic\" data-menu-material=\"translucent\" role=\"menu\" style=\"--dsh-menu-anchor:--dsh-menu-demo\"><div class=\"material\" aria-hidden=\"true\"></div><div class=\"viewport\" role=\"presentation\"><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item\"><span class=\"itemIcon\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 20 20\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M15.8659 2.05975C17.2603 2.05995 18.3913 3.19096 18.3914 4.58527V5.4874C18.3914 6.02747 18.2192 6.52672 17.9303 6.93735C17.9336 6.96524 17.9388 6.99318 17.9388 7.02195V12.8884C17.9388 13.6345 17.9395 14.2379 17.8996 14.7254C17.8642 15.1593 17.7936 15.5499 17.6373 15.9141L17.5654 16.0685C17.278 16.6328 16.8405 17.1046 16.3038 17.434L16.0679 17.5661C15.66 17.7739 15.2196 17.8598 14.7237 17.9003C14.2362 17.9401 13.6327 17.9405 12.8867 17.9405H7.11122C6.36511 17.9405 5.76171 17.9401 5.27418 17.9003C4.84051 17.8649 4.44949 17.7952 4.08545 17.6391L3.93104 17.5661C3.36673 17.2785 2.89392 16.8414 2.56465 16.3044L2.43245 16.0685C2.22473 15.6608 2.13878 15.2211 2.09825 14.7254C2.05841 14.2379 2.05912 13.6345 2.05912 12.8884V7.02195C2.05912 6.99284 2.06422 6.96449 2.06758 6.93629C1.77931 6.52592 1.60858 6.02687 1.60858 5.4874V4.58527C1.60876 3.19084 2.73962 2.05975 4.1341 2.05975H15.8659ZM16.4984 7.92936C16.296 7.98169 16.0847 8.01288 15.8659 8.01291H4.1341C3.91478 8.01291 3.70246 7.98194 3.49955 7.92936V12.8884C3.49955 13.6582 3.50053 14.1927 3.53445 14.608C3.56769 15.0146 3.62923 15.244 3.71635 15.415L3.7925 15.5514C3.98339 15.8627 4.25749 16.1165 4.58464 16.2833L4.72529 16.3435C4.88095 16.3993 5.08638 16.4402 5.39158 16.4651C5.80685 16.4991 6.34138 16.5001 7.11122 16.5001H12.8867C13.6564 16.5001 14.1911 16.499 14.6063 16.4651C15.0128 16.432 15.2423 16.3703 15.4133 16.2833L15.5508 16.2061C15.8618 16.0152 16.116 15.7419 16.2827 15.415L16.3429 15.2732C16.3985 15.1177 16.4396 14.9128 16.4645 14.608C16.4985 14.1927 16.4984 13.6583 16.4984 12.8884V7.92936ZM4.1341 3.50019C3.53511 3.50019 3.0492 3.98631 3.04902 4.58527V5.4874C3.04902 6.08649 3.535 6.57248 4.1341 6.57248H15.8659C16.4648 6.57228 16.951 6.08638 16.951 5.4874V4.58527C16.9509 3.98644 16.4647 3.50038 15.8659 3.50019H4.1341Z\" fill=\"currentColor\"/><path d=\"M10 14.1V10.1M7.85 12.05L10 9.9L12.15 12.05\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span><span class=\"itemLabel\">取消归档</span></button></div></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "sessionId",
+     "type": "SessionId",
+     "default": "—",
+     "desc": "这一行作用于哪个会话；归档集合按它查。"
+    },
+    {
+     "name": "displayTitle",
+     "type": "string",
+     "default": "—",
+     "desc": "owner share 里的行标题；本条目用不到（确认框那条才用）。"
+    },
+    {
+     "name": "useArchived",
+     "type": "(select: (set: ReadonlySet<SessionId>) => boolean) => boolean",
+     "default": "—",
+     "desc": "归档集合的 selector hook：一次 <code>Set</code> 查询同时决定标签、图标与是否渲染键帽。"
+    },
+    {
+     "name": "useMenuOpenState",
+     "type": "() => readonly [boolean, (open: boolean) => void]",
+     "default": "—",
+     "desc": "菜单开合状态对；选中时先关菜单再发动作。"
+    },
+    {
+     "name": "useShortcuts",
+     "type": "(select) => ShortcutCatalogEntry | undefined",
+     "default": "—",
+     "desc": "只读命令目录，按 <code>session.archive</code> 取生效键位（<code>keys</code> 渲染键帽、<code>aria</code> 写 <code>aria-keyshortcuts</code>）。"
+    },
+    {
+     "name": "archiveSession",
+     "type": "(sessionId: SessionId) => void",
+     "default": "—",
+     "desc": "归档一个会话；Host 以「有工作正在跑」拒绝时改开停止并归档确认框。"
+    },
+    {
+     "name": "unarchiveSession",
+     "type": "(sessionId: SessionId) => void",
+     "default": "—",
+     "desc": "把会话移出归档集合，行回到常规列表。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'workspace'>",
+     "default": "—",
+     "desc": "<code>menu.archiveSession</code> / <code>menu.unarchiveSession</code> 两个标签。"
+    }
+   ],
+   "notes": "行本身不持有状态：一次归档集合查询 + 一次快捷键查询就够，菜单关不关由自己的 <code>setMenuOpen(false)</code> 决定。选中路径与数据行同源（同一个 <code>.item</code>），方向键遍历、Tab 结算与选中后焦点归还都由父级 <code>Menu</code> 统一处理，所以这一行不需要任何键盘代码。归档集合是 registry-global 的，行不做单会话订阅。",
+   "keywords": [
+    "归档",
+    "取消归档",
+    "菜单行",
+    "archive session",
+    "menu item"
+   ]
+  },
+  {
+   "id": "archive-session-row-button",
+   "name": "ArchiveSessionRowButton",
+   "exportName": "ArchiveSessionRowButton",
+   "zh": "归档行按钮",
+   "group": "panels",
+   "summary": "会话行悬停时冒出来的 16×16 图标按钮（<code>Rows.module.css</code> 的 <code>.iconButton</code>：无边框、<code>--dsw-radius-xs</code>、透明底、<code>--dsw-alias-label-tertiary</code>，悬停转 <code>--dsw-alias-label-primary</code>），order=100，紧跟在「⋯」菜单触发器之后。图标是 14px 的 <code>IconArchiveOutlineRegular</code>；会话已归档时换成 <code>IconUnarchiveOutlineRegular</code>、<code>aria-label</code> 换成「取消归档」。按钮包在 <code>Tooltip</code> 里（<code>side=\"bottom\" align=\"end\" delayMs={500} portal</code>，文案取 <code>actions.archive</code> / <code>actions.unarchive</code>），点它只发动作、不会连带打开会话。",
+   "source": "packages/client/ui-workspace/src/client/session-actions/ArchiveSession.tsx#L56",
+   "css": [
+    "packages/client/ui-workspace/src/client/rows/Rows.module.css",
+    "packages/client/ui-primitives/src/Tooltip.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-caption",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-tooltip-bg",
+    "--dsw-radius-md",
+    "--dsw-radius-sm",
+    "--dsw-radius-xs",
+    "--dsw-static-neutral-bluish-00"
+   ],
+   "specimens": [
+    {
+     "label": "行悬停：动作条里出现「⋯ / 归档」",
+     "note": "悬停模拟",
+     "css": "/* 状态模拟：:hover / .menuOpen 无法静态触发，下面几条按 Rows.module.css 的 `.sessionRow:hover` / `.sessionRow.menuOpen` 规则原样搬运。 */\n.sessionRow.hoverRow { background: var(--dsw-alias-interactive-bg-hover); }\n.sessionRow.hoverRow .rowActions { display: inline-flex; }\n.sessionRow.hoverRow .time,\n.sessionRow.hoverRow .pinIndicator { display: none; }\n",
+     "html": "<div style=\"width:240px\"><div class=\"sessionRow hoverRow\" role=\"treeitem\" aria-selected=\"false\" data-row-key=\"session:重构会话存储层\"><span class=\"slot\"></span><span class=\"title\">重构会话存储层</span><span class=\"time\">5分钟</span><span class=\"rowActions\"><button type=\"button\" class=\"iconButton\" aria-label=\"会话“重构会话存储层”的操作\" aria-haspopup=\"menu\" aria-expanded=\"false\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z\" fill=\"currentColor\"/><path d=\"M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z\" fill=\"currentColor\"/><path d=\"M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z\" fill=\"currentColor\"/></svg></button><button type=\"button\" class=\"iconButton\" aria-label=\"归档会话\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M13.5 2.5H2.5C1.94772 2.5 1.5 2.94772 1.5 3.5V4.5C1.5 5.05228 1.94772 5.5 2.5 5.5H13.5C14.0523 5.5 14.5 5.05228 14.5 4.5V3.5C14.5 2.94772 14.0523 2.5 13.5 2.5Z\" stroke=\"currentColor\"/><path d=\"M2.5 5.5V13.5C2.5 13.7652 2.60536 14.0196 2.79289 14.2071C2.98043 14.3946 3.23478 14.5 3.5 14.5H12.5C12.7652 14.5 13.0196 14.3946 13.2071 14.2071C13.3946 14.0196 13.5 13.7652 13.5 13.5V5.5\" stroke=\"currentColor\"/><path d=\"M6.5 9.5H9.5\" stroke=\"currentColor\"/></svg></button></span></div></div>"
+    },
+    {
+     "label": "已归档行：同一颗按钮换成「取消归档」",
+     "note": "悬停模拟；整行标题降为 caption 灰",
+     "css": "/* 状态模拟：:hover / .menuOpen 无法静态触发，下面几条按 Rows.module.css 的 `.sessionRow:hover` / `.sessionRow.menuOpen` 规则原样搬运。 */\n.sessionRow.hoverRow { background: var(--dsw-alias-interactive-bg-hover); }\n.sessionRow.hoverRow .rowActions { display: inline-flex; }\n.sessionRow.hoverRow .time,\n.sessionRow.hoverRow .pinIndicator { display: none; }\n",
+     "html": "<div style=\"width:240px\"><div class=\"sessionRow hoverRow archived\" role=\"treeitem\" aria-selected=\"false\" aria-description=\"已归档对话暂时无法查看，请取消归档后查看\" data-row-key=\"session:整理会话导出脚本\"><span class=\"slot\"></span><span class=\"title\">整理会话导出脚本</span><span class=\"time\">2天</span><span class=\"rowActions\"><button type=\"button\" class=\"iconButton\" aria-label=\"会话“整理会话导出脚本”的操作\" aria-haspopup=\"menu\" aria-expanded=\"false\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z\" fill=\"currentColor\"/><path d=\"M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z\" fill=\"currentColor\"/><path d=\"M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z\" fill=\"currentColor\"/></svg></button><button type=\"button\" class=\"iconButton\" aria-label=\"取消归档\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 20 20\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M15.8659 2.05975C17.2603 2.05995 18.3913 3.19096 18.3914 4.58527V5.4874C18.3914 6.02747 18.2192 6.52672 17.9303 6.93735C17.9336 6.96524 17.9388 6.99318 17.9388 7.02195V12.8884C17.9388 13.6345 17.9395 14.2379 17.8996 14.7254C17.8642 15.1593 17.7936 15.5499 17.6373 15.9141L17.5654 16.0685C17.278 16.6328 16.8405 17.1046 16.3038 17.434L16.0679 17.5661C15.66 17.7739 15.2196 17.8598 14.7237 17.9003C14.2362 17.9401 13.6327 17.9405 12.8867 17.9405H7.11122C6.36511 17.9405 5.76171 17.9401 5.27418 17.9003C4.84051 17.8649 4.44949 17.7952 4.08545 17.6391L3.93104 17.5661C3.36673 17.2785 2.89392 16.8414 2.56465 16.3044L2.43245 16.0685C2.22473 15.6608 2.13878 15.2211 2.09825 14.7254C2.05841 14.2379 2.05912 13.6345 2.05912 12.8884V7.02195C2.05912 6.99284 2.06422 6.96449 2.06758 6.93629C1.77931 6.52592 1.60858 6.02687 1.60858 5.4874V4.58527C1.60876 3.19084 2.73962 2.05975 4.1341 2.05975H15.8659ZM16.4984 7.92936C16.296 7.98169 16.0847 8.01288 15.8659 8.01291H4.1341C3.91478 8.01291 3.70246 7.98194 3.49955 7.92936V12.8884C3.49955 13.6582 3.50053 14.1927 3.53445 14.608C3.56769 15.0146 3.62923 15.244 3.71635 15.415L3.7925 15.5514C3.98339 15.8627 4.25749 16.1165 4.58464 16.2833L4.72529 16.3435C4.88095 16.3993 5.08638 16.4402 5.39158 16.4651C5.80685 16.4991 6.34138 16.5001 7.11122 16.5001H12.8867C13.6564 16.5001 14.1911 16.499 14.6063 16.4651C15.0128 16.432 15.2423 16.3703 15.4133 16.2833L15.5508 16.2061C15.8618 16.0152 16.116 15.7419 16.2827 15.415L16.3429 15.2732C16.3985 15.1177 16.4396 14.9128 16.4645 14.608C16.4985 14.1927 16.4984 13.6583 16.4984 12.8884V7.92936ZM4.1341 3.50019C3.53511 3.50019 3.0492 3.98631 3.04902 4.58527V5.4874C3.04902 6.08649 3.535 6.57248 4.1341 6.57248H15.8659C16.4648 6.57228 16.951 6.08638 16.951 5.4874V4.58527C16.9509 3.98644 16.4647 3.50038 15.8659 3.50019H4.1341Z\" fill=\"currentColor\"/><path d=\"M10 14.1V10.1M7.85 12.05L10 9.9L12.15 12.05\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></button></span></div></div>"
+    },
+    {
+     "label": "提示气泡：归档会话（bottom / end / 500ms，portal）",
+     "note": "静态快照：气泡回到文档流",
+     "css": "/* 静态快照：气泡真实是 JS 写入 left/top 的 position: fixed 门户节点，出现前还带内联 visibility: hidden；这里拉回文档流，并抵消 bottom/end 对齐那条规则里的 translate —— 选择器重复 data-side / data-align 才压得住它（组件那条是「一个类 + 两个属性」的特异性），配色、内边距与折行仍走真实样式。 */\n.bubble.snapshotStatic[data-side][data-align] { position: relative; inset: auto; transform: none; }\n",
+     "html": "<div style=\"display:flex;flex-direction:column;align-items:flex-start;gap:8px;width:200px\"><button type=\"button\" class=\"iconButton\" aria-label=\"归档会话\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M13.5 2.5H2.5C1.94772 2.5 1.5 2.94772 1.5 3.5V4.5C1.5 5.05228 1.94772 5.5 2.5 5.5H13.5C14.0523 5.5 14.5 5.05228 14.5 4.5V3.5C14.5 2.94772 14.0523 2.5 13.5 2.5Z\" stroke=\"currentColor\"/><path d=\"M2.5 5.5V13.5C2.5 13.7652 2.60536 14.0196 2.79289 14.2071C2.98043 14.3946 3.23478 14.5 3.5 14.5H12.5C12.7652 14.5 13.0196 14.3946 13.2071 14.2071C13.3946 14.0196 13.5 13.7652 13.5 13.5V5.5\" stroke=\"currentColor\"/><path d=\"M6.5 9.5H9.5\" stroke=\"currentColor\"/></svg></button><span class=\"bubble snapshotStatic\" role=\"tooltip\" data-side=\"bottom\" data-align=\"end\" data-portal><span class=\"label\">归档会话</span></span></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "sessionId",
+     "type": "SessionId",
+     "default": "—",
+     "desc": "按钮作用于哪个会话；归档集合按它查。"
+    },
+    {
+     "name": "displayTitle",
+     "type": "string",
+     "default": "—",
+     "desc": "owner share 里的行标题；本条目用不到，工具提示用的是固定文案。"
+    },
+    {
+     "name": "useArchived",
+     "type": "(select: (set: ReadonlySet<SessionId>) => boolean) => boolean",
+     "default": "—",
+     "desc": "归档集合的 selector hook：一次查询决定图标是归档还是取消归档。"
+    },
+    {
+     "name": "archiveSession",
+     "type": "(sessionId: SessionId) => void",
+     "default": "—",
+     "desc": "归档动作；Host 拒绝的后续（确认框、提示）都在注入回调里。"
+    },
+    {
+     "name": "unarchiveSession",
+     "type": "(sessionId: SessionId) => void",
+     "default": "—",
+     "desc": "取消归档动作。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'workspace'>",
+     "default": "—",
+     "desc": "工具提示取 <code>actions.archive</code> / <code>actions.unarchive</code>，<code>aria-label</code> 取 <code>menu.archiveSession</code> / <code>menu.unarchiveSession</code>。"
+    }
+   ],
+   "notes": "按钮只有 16×16，字形 14px，靠 <code>.rowActions</code>（<code>display:none</code>，行悬停或菜单打开才 <code>inline-flex</code>，间距 15px）出现；动作条的点击被行自己 <code>stopPropagation</code> 拦住，所以条目里没有任何传播处理。工具提示是 <code>bottom + end</code> 且 <code>portal</code>，右缘对齐锚点、挂在 body 上不受列表裁剪，500ms 悬停延迟避免扫过动作条时连续弹泡。",
+   "keywords": [
+    "归档按钮",
+    "行悬停动作",
+    "icon button",
+    "archive",
+    "hover action"
+   ]
+  },
+  {
+   "id": "session-archive-confirm-dialog",
+   "name": "SessionArchiveConfirmDialog",
+   "exportName": "SessionArchiveConfirmDialog",
+   "zh": "归档确认框",
+   "group": "panels",
+   "summary": "<code>shell.overlay</code> 条目：没有待确认请求时返回 <code>null</code>，有请求时按会话 key 渲染一张 portal 到 body 的 380px 确认卡片（<code>--dsw-radius-panel</code>、<code>--dsw-alias-bg-layer-2</code>、<code>--dsw-elevation-prominent</code>）。标题「停止并归档此会话？」，描述里点名会话标题，正文是一列 13/20 的 <code>.archiveActivity</code>（进行中的回合，以及按家族聚合的子智能体 / 后台任务 / 定时提醒），页脚是「取消」和错误色的「停止并归档」（<code>.deleteAction</code>）。归档请求在飞行中时两个按钮禁用、正文追加 <code>.deleteStatus</code>「正在停止并归档…」；Host 拒绝时同一位置换成 <code>.renameError</code> 的 <code>role=\"alert\"</code> 原文。",
+   "source": "packages/client/ui-workspace/src/client/session-actions/ArchiveSession.tsx#L82",
+   "css": [
+    "packages/client/ui-primitives/src/Button.module.css",
+    "packages/client/ui-primitives/src/Modal.module.css",
+    "packages/client/ui-workspace/src/client/rows/WorkspaceBrowser.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-layer-2",
+    "--dsw-alias-bg-mask-1",
+    "--dsw-alias-border-l3",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-state-error-primary",
+    "--dsw-elevation-prominent",
+    "--dsw-mask-blur",
+    "--dsw-radius-md",
+    "--dsw-radius-panel",
+    "--dsw-radius-sm"
+   ],
+   "specimens": [
+    {
+     "label": "待确认：进行中的回合 + 2 个运行中的子智能体",
+     "note": "静态快照：卡片回到文档流",
+     "css": "/* 静态快照：Modal 的 .root 真实是 body 上的全视口 position: fixed 层；这里放回示例容器内的 absolute，既留住 .mask（inset: 0 的子层）的包含块，又让它随容器定尺寸。.root 同时被 Modal.module.css 与 WorkspaceBrowser.module.css 声明，因此用显式所有者前缀 c1- 把它钉在 Modal 那张表上。 */\n.c1-root.snapshotStatic { position: absolute; }\n",
+     "html": "<div style=\"position:relative;width:460px;height:440px;overflow:hidden\"><div class=\"c1-root snapshotStatic\" role=\"presentation\"><div class=\"mask\" aria-hidden=\"true\"></div><div class=\"dialog\" role=\"dialog\" aria-modal=\"true\" aria-label=\"停止并归档此会话？\" tabindex=\"-1\"><div class=\"content\"><div class=\"header\"><h2 class=\"title\">停止并归档此会话？</h2><button type=\"button\" class=\"close\" aria-label=\"关闭\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></div><p class=\"description\">“重构会话存储层”仍有正在进行的工作。归档会先停止这些工作；之后可在侧栏筛选“全部对话（显示已归档）”中恢复会话，被停止的工作不会自动继续。</p><div class=\"body\"><ul class=\"archiveActivity\" aria-label=\"将被停止的工作\"><li>进行中的回合</li><li>2 个运行中的子智能体：重构会话存储层、补全 ui-workspace README</li></ul></div></div><div class=\"footer\"><button class=\"button outline md\" type=\"button\">取消</button><button class=\"button outline md deleteAction\" type=\"button\">停止并归档</button></div></div></div></div>"
+    },
+    {
+     "label": "归档中：两个按钮禁用 + 状态行",
+     "note": "禁用态是 Button 的 opacity .4；此时 .deleteAction:not(:disabled) 失效，确认键回落常规墨色",
+     "css": "/* 静态快照：Modal 的 .root 真实是 body 上的全视口 position: fixed 层；这里放回示例容器内的 absolute，既留住 .mask（inset: 0 的子层）的包含块，又让它随容器定尺寸。.root 同时被 Modal.module.css 与 WorkspaceBrowser.module.css 声明，因此用显式所有者前缀 c1- 把它钉在 Modal 那张表上。 */\n.c1-root.snapshotStatic { position: absolute; }\n",
+     "html": "<div style=\"position:relative;width:460px;height:440px;overflow:hidden\"><div class=\"c1-root snapshotStatic\" role=\"presentation\"><div class=\"mask\" aria-hidden=\"true\"></div><div class=\"dialog\" role=\"dialog\" aria-modal=\"true\" aria-label=\"停止并归档此会话？\" tabindex=\"-1\"><div class=\"content\"><div class=\"header\"><h2 class=\"title\">停止并归档此会话？</h2><button type=\"button\" class=\"close\" aria-label=\"关闭\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></div><p class=\"description\">“重构会话存储层”仍有正在进行的工作。归档会先停止这些工作；之后可在侧栏筛选“全部对话（显示已归档）”中恢复会话，被停止的工作不会自动继续。</p><div class=\"body\"><ul class=\"archiveActivity\" aria-label=\"将被停止的工作\"><li>进行中的回合</li></ul><div class=\"deleteStatus\" role=\"status\">正在停止并归档…</div></div></div><div class=\"footer\"><button class=\"button outline md\" type=\"button\" disabled>取消</button><button class=\"button outline md deleteAction\" type=\"button\" disabled>停止并归档</button></div></div></div></div>"
+    },
+    {
+     "label": "失败：Host 拒绝后正文换成 role=alert 的错误行",
+     "note": "12/18 的错误色文本；wire 错误串不翻译",
+     "css": "/* 静态快照：Modal 的 .root 真实是 body 上的全视口 position: fixed 层；这里放回示例容器内的 absolute，既留住 .mask（inset: 0 的子层）的包含块，又让它随容器定尺寸。.root 同时被 Modal.module.css 与 WorkspaceBrowser.module.css 声明，因此用显式所有者前缀 c1- 把它钉在 Modal 那张表上。 */\n.c1-root.snapshotStatic { position: absolute; }\n",
+     "html": "<div style=\"position:relative;width:460px;height:400px;overflow:hidden\"><div class=\"c1-root snapshotStatic\" role=\"presentation\"><div class=\"mask\" aria-hidden=\"true\"></div><div class=\"dialog\" role=\"dialog\" aria-modal=\"true\" aria-label=\"停止并归档此会话？\" tabindex=\"-1\"><div class=\"content\"><div class=\"header\"><h2 class=\"title\">停止并归档此会话？</h2><button type=\"button\" class=\"close\" aria-label=\"关闭\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></div><p class=\"description\">“重构会话存储层”仍有正在进行的工作。归档会先停止这些工作；之后可在侧栏筛选“全部对话（显示已归档）”中恢复会话，被停止的工作不会自动继续。</p><div class=\"body\"><ul class=\"archiveActivity\" aria-label=\"将被停止的工作\"><li>进行中的回合</li></ul><div class=\"renameError\" role=\"alert\">session/archive-unavailable: the session is retained by another window</div></div></div><div class=\"footer\"><button class=\"button outline md\" type=\"button\">取消</button><button class=\"button outline md deleteAction\" type=\"button\">停止并归档</button></div></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "useArchiveRequest",
+     "type": "(select) => SessionArchiveConfirmRequest | null",
+     "default": "—",
+     "desc": "注入 hook 座：取当前待确认请求（<code>sessionId</code> / <code>displayTitle</code> / <code>activity</code>）；为 <code>null</code> 时条目直接返回 <code>null</code>。"
+    },
+    {
+     "name": "settleSessionArchive",
+     "type": "() => void",
+     "default": "—",
+     "desc": "消费或取消这条请求；取消、Esc、点遮罩与归档成功都走它。"
+    },
+    {
+     "name": "stopAndArchiveSession",
+     "type": "(sessionId: SessionId) => Promise<void>",
+     "default": "—",
+     "desc": "请 Host 先停掉列出的工作再归档；resolve 表示归档集合已落地（停止在后台结算），reject 的 <code>message</code> 进错误行。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'workspace'>",
+     "default": "—",
+     "desc": "<code>archive.confirm.*</code> 的标题、描述、家族行与按钮文案；取消与关闭取 common 字典。"
+    }
+   ],
+   "notes": "卡片用请求里的 <code>sessionId</code> 做 key，所以换一个会话就是一份全新状态，飞行中与错误态都随它卸载，不会串到下一张卡。归档中 <code>close()</code> 直接短路，Esc 与遮罩点击都关不掉，避免请求在途时被丢弃。<code>activity</code> 按家族聚合成行、行内条目名用「、」连接；字典不认识的家族退化成「{n} 项其他工作（kind）」。活动清单的 <code>aria-label</code> 是「将被停止的工作」。",
+   "keywords": [
+    "归档确认",
+    "停止并归档",
+    "shell.overlay",
+    "confirm dialog",
+    "模态框"
+   ]
+  },
+  {
+   "id": "fork-session-menu-item",
+   "name": "ForkSessionMenuItem",
+   "exportName": "ForkSessionMenuItem",
+   "zh": "分叉菜单项",
+   "group": "panels",
+   "summary": "会话行「⋯」菜单里 order=300 的一行：34px 菜单行 + 「分叉会话」标签 + <code>IconBranchOutlineRegular</code>（<code>.itemIcon svg</code> 把传入的 16px 字形压到 14×14），右端是 <code>session.fork</code> 的 ⌥⌘F 键帽。选中时先关菜单再 <code>forkSession(sessionId)</code>，在最后一个已完成的回合处分叉，子会话由 Host 列表送回原会话旁边。访问快照里没有 <code>session/fork</code> 权限时整行返回 <code>null</code>——菜单里不会留一个点不动的空位，连快捷键也不会亮。",
+   "source": "packages/client/ui-workspace/src/client/session-actions/ForkSession.tsx#L12",
+   "css": [
+    "packages/client/ui-primitives/src/Menu.module.css",
+    "packages/client/ui-primitives/src/MenuSurface.module.css",
+    "packages/client/ui-primitives/src/ShortcutKeys.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-border-l1",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-caption",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-menu-icon",
+    "--dsw-elevation-prominent",
+    "--dsw-menu-backdrop-filter",
+    "--dsw-menu-surface-fill",
+    "--dsw-radius-lg",
+    "--dsw-radius-md"
+   ],
+   "specimens": [
+    {
+     "label": "分叉会话 + ⌥⌘F（悬停模拟）",
+     "note": "卡片来自父级 Menu；本条目只渲染这一行",
+     "css": "/* 静态快照：菜单卡片真实由 createPortal 挂在 body 上，.list 是 position: absolute 的浮层；snapshotStatic 让它回到文档流参与排布，宽度是示例补位。这里用 relative 而不是 static：MenuSurface 的 .material 是 inset: 0 的绝对定位子层，父级必须留住包含块。 */\n.list.snapshotStatic { position: relative; inset: auto; width: 240px; }\n/* 悬停模拟：:hover 无法静态触发，这条按 Menu.module.css 的 `.item:hover:not(:disabled)` 原样搬运。 */\n.item.forceHover:not(:disabled) { background: var(--dsw-alias-interactive-bg-hover); }\n",
+     "html": "<div style=\"width:260px\"><div class=\"surface list snapshotStatic\" data-menu-material=\"translucent\" role=\"menu\" style=\"--dsh-menu-anchor:--dsh-menu-demo\"><div class=\"material\" aria-hidden=\"true\"></div><div class=\"viewport\" role=\"presentation\"><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item forceHover\" aria-keyshortcuts=\"Alt+Meta+F\"><span class=\"itemIcon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M1.01503 8.0001L5.6964 8.0001C6.41913 8.0001 6.78049 8.0001 7.12115 7.91951C7.4232 7.84804 7.71233 7.73014 7.97821 7.57C8.27809 7.38939 8.5364 7.13669 9.05303 6.63129L11.3281 4.40564\" stroke=\"currentColor\"/><path d=\"M1.01221 7.9999L5.6964 7.9999C6.41913 7.9999 6.78049 7.9999 7.12115 8.08049C7.4232 8.15196 7.71233 8.26986 7.97821 8.43C8.27809 8.61061 8.5364 8.86331 9.05303 9.36871L11.3281 11.5944\" stroke=\"currentColor\"/><circle cx=\"12.4502\" cy=\"3.3079\" r=\"1.56962\" stroke=\"currentColor\"/><circle cx=\"12.4502\" cy=\"12.6921\" r=\"1.56962\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">分叉会话</span><span aria-hidden=\"true\" class=\"shortcut\"><span class=\"keys shortcutKeys\"><kbd class=\"key\">⌥</kbd><kbd class=\"key\">⌘</kbd><kbd class=\"key\">F</kbd></span></span></button></div></div></div></div>"
+    },
+    {
+     "label": "同一张卡片里的四行：order 100 / 200 / 300 / 400",
+     "note": "本条目是第三行；行序由各条目的 order 决定，卡片本身不带分隔线",
+     "css": "/* 静态快照：菜单卡片真实由 createPortal 挂在 body 上，.list 是 position: absolute 的浮层；snapshotStatic 让它回到文档流参与排布，宽度是示例补位。这里用 relative 而不是 static：MenuSurface 的 .material 是 inset: 0 的绝对定位子层，父级必须留住包含块。 */\n.list.snapshotStatic { position: relative; inset: auto; width: 240px; }\n",
+     "html": "<div style=\"width:260px\"><div class=\"surface list snapshotStatic\" data-menu-material=\"translucent\" role=\"menu\" style=\"--dsh-menu-anchor:--dsh-menu-demo\"><div class=\"material\" aria-hidden=\"true\"></div><div class=\"viewport\" role=\"presentation\"><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item\"><span class=\"itemIcon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M9.96976 1.70572L13.1554 3.93629L10.9019 8.12317L11.5158 11.605L10.7192 12.7427L2.52767 7.00693L3.3243 5.86922L6.80612 5.25528L9.96976 1.70572Z\" stroke=\"currentColor\" stroke-linejoin=\"round\"/><path d=\"M6.05285 9.47511C6.27284 9.16094 6.70586 9.08458 7.02003 9.30457C7.3342 9.52455 7.41055 9.95757 7.19057 10.2717L3.98587 14.4708L3.21223 13.9291L6.05285 9.47511Z\" fill=\"currentColor\"/></svg></span><span class=\"itemLabel\">置顶会话</span></button></div><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item\" aria-keyshortcuts=\"Alt+Meta+G\"><span class=\"itemIcon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8.85596 2.69971H4.19971C3.37141 2.69971 2.69992 3.37146 2.69971 4.19971V11.8003C2.69992 12.6285 3.37141 13.3003 4.19971 13.3003H11.8003C12.6283 13.2999 13.3001 12.6283 13.3003 11.8003V7.89893H14.3003V11.8003C14.3001 13.1806 13.1806 14.2999 11.8003 14.3003H4.19971C2.81913 14.3003 1.69992 13.1808 1.69971 11.8003V4.19971C1.69992 2.81918 2.81913 1.69971 4.19971 1.69971H8.85596V2.69971Z\" fill=\"currentColor\"/><path d=\"M7.7849 8.23878L13.888 2.13574\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">重命名</span><span aria-hidden=\"true\" class=\"shortcut\"><span class=\"keys shortcutKeys\"><kbd class=\"key\">⌥</kbd><kbd class=\"key\">⌘</kbd><kbd class=\"key\">G</kbd></span></span></button></div><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item\" aria-keyshortcuts=\"Alt+Meta+F\"><span class=\"itemIcon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M1.01503 8.0001L5.6964 8.0001C6.41913 8.0001 6.78049 8.0001 7.12115 7.91951C7.4232 7.84804 7.71233 7.73014 7.97821 7.57C8.27809 7.38939 8.5364 7.13669 9.05303 6.63129L11.3281 4.40564\" stroke=\"currentColor\"/><path d=\"M1.01221 7.9999L5.6964 7.9999C6.41913 7.9999 6.78049 7.9999 7.12115 8.08049C7.4232 8.15196 7.71233 8.26986 7.97821 8.43C8.27809 8.61061 8.5364 8.86331 9.05303 9.36871L11.3281 11.5944\" stroke=\"currentColor\"/><circle cx=\"12.4502\" cy=\"3.3079\" r=\"1.56962\" stroke=\"currentColor\"/><circle cx=\"12.4502\" cy=\"12.6921\" r=\"1.56962\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">分叉会话</span><span aria-hidden=\"true\" class=\"shortcut\"><span class=\"keys shortcutKeys\"><kbd class=\"key\">⌥</kbd><kbd class=\"key\">⌘</kbd><kbd class=\"key\">F</kbd></span></span></button></div><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item\" aria-keyshortcuts=\"Shift+Meta+A\"><span class=\"itemIcon\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M13.5 2.5H2.5C1.94772 2.5 1.5 2.94772 1.5 3.5V4.5C1.5 5.05228 1.94772 5.5 2.5 5.5H13.5C14.0523 5.5 14.5 5.05228 14.5 4.5V3.5C14.5 2.94772 14.0523 2.5 13.5 2.5Z\" stroke=\"currentColor\"/><path d=\"M2.5 5.5V13.5C2.5 13.7652 2.60536 14.0196 2.79289 14.2071C2.98043 14.3946 3.23478 14.5 3.5 14.5H12.5C12.7652 14.5 13.0196 14.3946 13.2071 14.2071C13.3946 14.0196 13.5 13.7652 13.5 13.5V5.5\" stroke=\"currentColor\"/><path d=\"M6.5 9.5H9.5\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">归档会话</span><span aria-hidden=\"true\" class=\"shortcut\"><span class=\"keys shortcutKeys\"><kbd class=\"key\">⇧</kbd><kbd class=\"key\">⌘</kbd><kbd class=\"key\">A</kbd></span></span></button></div></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "sessionId",
+     "type": "SessionId",
+     "default": "—",
+     "desc": "要分叉的源会话。"
+    },
+    {
+     "name": "useSessionAccess",
+     "type": "(sessionId: SessionId, capability: string) => boolean",
+     "default": "—",
+     "desc": "访问快照 hook；查 <code>session/fork</code>，为假时整行返回 <code>null</code>。"
+    },
+    {
+     "name": "useMenuOpenState",
+     "type": "() => readonly [boolean, (open: boolean) => void]",
+     "default": "—",
+     "desc": "菜单开合状态对；选中时先关菜单。"
+    },
+    {
+     "name": "useShortcuts",
+     "type": "(select) => ShortcutCatalogEntry | undefined",
+     "default": "—",
+     "desc": "只读命令目录，取 <code>session.fork</code> 的生效键位。"
+    },
+    {
+     "name": "forkSession",
+     "type": "(sessionId: SessionId) => void",
+     "default": "—",
+     "desc": "分叉动作；子会话由 Host 列表送回，失败提示同样在注入回调里。"
+    },
+    {
+     "name": "displayTitle",
+     "type": "string",
+     "default": "—",
+     "desc": "owner share 里的行标题；本条目用不到。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS",
+     "default": "—",
+     "desc": "<code>menu.fork</code> 一个标签。"
+    }
+   ],
+   "notes": "整行是否渲染由 <code>session/fork</code> 能力决定，而不是把行画成禁用态——读不到能力时菜单里连位置都不占。分叉点固定在最后一个已完成的回合，源会话没有已完成回合时命令侧会拦下来（<code>shortcut.noCompletedTurn</code>），行本身不做这个判断。",
+   "keywords": [
+    "分叉会话",
+    "fork",
+    "菜单行",
+    "分支"
+   ]
+  },
+  {
+   "id": "pin-session-menu-item",
+   "name": "PinSessionMenuItem",
+   "exportName": "PinSessionMenuItem",
+   "zh": "置顶菜单项",
+   "group": "panels",
+   "summary": "会话行「⋯」菜单里 order=100 的一行：34px 菜单行 + 14px 图标槽，未置顶时是描边的 <code>IconPinOutlineRegular</code> 配「置顶会话」，已置顶时换成实心 <code>IconPinFillRegular</code> 配「取消置顶」。这一行没有快捷键，所以右端永远不出现键帽。归档行直接返回 <code>null</code>——Host 上置顶与归档互斥，菜单不会给一个必然失败的动作留位。",
+   "source": "packages/client/ui-workspace/src/client/session-actions/PinSession.tsx#L30",
+   "css": [
+    "packages/client/ui-primitives/src/Menu.module.css",
+    "packages/client/ui-primitives/src/MenuSurface.module.css",
+    "packages/client/ui-primitives/src/ShortcutKeys.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-border-l1",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-caption",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-menu-icon",
+    "--dsw-elevation-prominent",
+    "--dsw-menu-backdrop-filter",
+    "--dsw-menu-surface-fill",
+    "--dsw-radius-lg",
+    "--dsw-radius-md"
+   ],
+   "specimens": [
+    {
+     "label": "未置顶：置顶会话（描边图钉）",
+     "note": "卡片来自父级 Menu；本条目只渲染这一行，没有键帽",
+     "css": "/* 静态快照：菜单卡片真实由 createPortal 挂在 body 上，.list 是 position: absolute 的浮层；snapshotStatic 让它回到文档流参与排布，宽度是示例补位。这里用 relative 而不是 static：MenuSurface 的 .material 是 inset: 0 的绝对定位子层，父级必须留住包含块。 */\n.list.snapshotStatic { position: relative; inset: auto; width: 240px; }\n/* 悬停模拟：:hover 无法静态触发，这条按 Menu.module.css 的 `.item:hover:not(:disabled)` 原样搬运。 */\n.item.forceHover:not(:disabled) { background: var(--dsw-alias-interactive-bg-hover); }\n",
+     "html": "<div style=\"width:260px\"><div class=\"surface list snapshotStatic\" data-menu-material=\"translucent\" role=\"menu\" style=\"--dsh-menu-anchor:--dsh-menu-demo\"><div class=\"material\" aria-hidden=\"true\"></div><div class=\"viewport\" role=\"presentation\"><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item forceHover\"><span class=\"itemIcon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M9.96976 1.70572L13.1554 3.93629L10.9019 8.12317L11.5158 11.605L10.7192 12.7427L2.52767 7.00693L3.3243 5.86922L6.80612 5.25528L9.96976 1.70572Z\" stroke=\"currentColor\" stroke-linejoin=\"round\"/><path d=\"M6.05285 9.47511C6.27284 9.16094 6.70586 9.08458 7.02003 9.30457C7.3342 9.52455 7.41055 9.95757 7.19057 10.2717L3.98587 14.4708L3.21223 13.9291L6.05285 9.47511Z\" fill=\"currentColor\"/></svg></span><span class=\"itemLabel\">置顶会话</span></button></div></div></div></div>"
+    },
+    {
+     "label": "已置顶：取消置顶（实心图钉）",
+     "note": "同一行按归档 / 置顶集合切换文案与字形",
+     "css": "/* 静态快照：菜单卡片真实由 createPortal 挂在 body 上，.list 是 position: absolute 的浮层；snapshotStatic 让它回到文档流参与排布，宽度是示例补位。这里用 relative 而不是 static：MenuSurface 的 .material 是 inset: 0 的绝对定位子层，父级必须留住包含块。 */\n.list.snapshotStatic { position: relative; inset: auto; width: 240px; }\n",
+     "html": "<div style=\"width:260px\"><div class=\"surface list snapshotStatic\" data-menu-material=\"translucent\" role=\"menu\" style=\"--dsh-menu-anchor:--dsh-menu-demo\"><div class=\"material\" aria-hidden=\"true\"></div><div class=\"viewport\" role=\"presentation\"><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item\"><span class=\"itemIcon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M9.96976 1.70572L13.1554 3.93629L10.9019 8.12317L11.5158 11.605L10.7192 12.7427L2.52767 7.00693L3.3243 5.86922L6.80612 5.25528L9.96976 1.70572Z\" fill=\"currentColor\" stroke=\"currentColor\" stroke-linejoin=\"round\"/><path d=\"M6.05285 9.47511C6.27284 9.16094 6.70586 9.08458 7.02003 9.30457C7.3342 9.52455 7.41055 9.95757 7.19057 10.2717L3.98587 14.4708L3.21223 13.9291L6.05285 9.47511Z\" fill=\"currentColor\"/></svg></span><span class=\"itemLabel\">取消置顶</span></button></div></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "sessionId",
+     "type": "SessionId",
+     "default": "—",
+     "desc": "这一行作用于哪个会话。"
+    },
+    {
+     "name": "usePinned",
+     "type": "(select: (set: ReadonlySet<SessionId>) => boolean) => boolean",
+     "default": "—",
+     "desc": "置顶集合的 selector hook：决定文案与图钉是描边还是实心。"
+    },
+    {
+     "name": "useArchived",
+     "type": "(select: (set: ReadonlySet<SessionId>) => boolean) => boolean",
+     "default": "—",
+     "desc": "归档集合的 selector hook；为真时整行返回 <code>null</code>。"
+    },
+    {
+     "name": "useMenuOpenState",
+     "type": "() => readonly [boolean, (open: boolean) => void]",
+     "default": "—",
+     "desc": "菜单开合状态对；选中时先关菜单。"
+    },
+    {
+     "name": "pinSession",
+     "type": "(sessionId: SessionId) => void",
+     "default": "—",
+     "desc": "置顶；成功后该会话会排到各账号保存顺序的最前，失败由注入回调发提示。"
+    },
+    {
+     "name": "unpinSession",
+     "type": "(sessionId: SessionId) => void",
+     "default": "—",
+     "desc": "取消置顶；已保存的位置不动。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'workspace'>",
+     "default": "—",
+     "desc": "<code>menu.pinSession</code> / <code>menu.unpinSession</code>。"
+    }
+   ],
+   "notes": "与 <code>PinSessionRowButton</code> 共用同一个注入 share：菜单行与行悬停按钮读同样的 <code>usePinned</code> / <code>useArchived</code>，所以两条入口的文案与字形永远一致。置顶没有注册快捷键，本行右侧因此留空（对比「重命名」「分叉」「归档」三行的键帽）。",
+   "keywords": [
+    "置顶",
+    "取消置顶",
+    "pin",
+    "菜单行"
+   ]
+  },
+  {
+   "id": "pin-session-row-button",
+   "name": "PinSessionRowButton",
+   "exportName": "PinSessionRowButton",
+   "zh": "置顶行按钮",
+   "group": "panels",
+   "summary": "会话行悬停动作条上最靠右的 16×16 图标按钮（order=200，正好落在静止态图钉标记的位置上），用 <code>Rows.module.css</code> 的 <code>.iconButton</code>：无边框、<code>--dsw-radius-xs</code>、<code>--dsw-alias-label-tertiary</code>，悬停转 <code>--dsw-alias-label-primary</code>。未置顶时 14px 描边图钉 + <code>aria-label</code>「置顶会话」，已置顶时换成实心 <code>IconPinFillRegular</code> + 「取消置顶」；归档行的整个按钮返回 <code>null</code>。整颗按钮包在 <code>Tooltip</code> 里（<code>side=\"bottom\" align=\"end\" delayMs={500} portal</code>，文案取 <code>actions.pin</code> / <code>actions.unpin</code>）。",
+   "source": "packages/client/ui-workspace/src/client/session-actions/PinSession.tsx#L53",
+   "css": [
+    "packages/client/ui-workspace/src/client/rows/Rows.module.css",
+    "packages/client/ui-primitives/src/Tooltip.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-caption",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-tooltip-bg",
+    "--dsw-radius-md",
+    "--dsw-radius-sm",
+    "--dsw-radius-xs",
+    "--dsw-static-neutral-bluish-00"
+   ],
+   "specimens": [
+    {
+     "label": "行悬停：⋯ / 归档（100）/ 置顶（200，最右）",
+     "note": "悬停模拟",
+     "css": "/* 状态模拟：:hover / .menuOpen 无法静态触发，下面几条按 Rows.module.css 的 `.sessionRow:hover` / `.sessionRow.menuOpen` 规则原样搬运。 */\n.sessionRow.hoverRow { background: var(--dsw-alias-interactive-bg-hover); }\n.sessionRow.hoverRow .rowActions { display: inline-flex; }\n.sessionRow.hoverRow .time,\n.sessionRow.hoverRow .pinIndicator { display: none; }\n",
+     "html": "<div style=\"width:240px\"><div class=\"sessionRow hoverRow\" role=\"treeitem\" aria-selected=\"false\" data-row-key=\"session:重构会话存储层\"><span class=\"slot\"></span><span class=\"title\">重构会话存储层</span><span class=\"time\">5分钟</span><span class=\"rowActions\"><button type=\"button\" class=\"iconButton\" aria-label=\"会话“重构会话存储层”的操作\" aria-haspopup=\"menu\" aria-expanded=\"false\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z\" fill=\"currentColor\"/><path d=\"M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z\" fill=\"currentColor\"/><path d=\"M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z\" fill=\"currentColor\"/></svg></button><button type=\"button\" class=\"iconButton\" aria-label=\"归档会话\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M13.5 2.5H2.5C1.94772 2.5 1.5 2.94772 1.5 3.5V4.5C1.5 5.05228 1.94772 5.5 2.5 5.5H13.5C14.0523 5.5 14.5 5.05228 14.5 4.5V3.5C14.5 2.94772 14.0523 2.5 13.5 2.5Z\" stroke=\"currentColor\"/><path d=\"M2.5 5.5V13.5C2.5 13.7652 2.60536 14.0196 2.79289 14.2071C2.98043 14.3946 3.23478 14.5 3.5 14.5H12.5C12.7652 14.5 13.0196 14.3946 13.2071 14.2071C13.3946 14.0196 13.5 13.7652 13.5 13.5V5.5\" stroke=\"currentColor\"/><path d=\"M6.5 9.5H9.5\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"iconButton\" aria-label=\"置顶会话\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M9.96976 1.70572L13.1554 3.93629L10.9019 8.12317L11.5158 11.605L10.7192 12.7427L2.52767 7.00693L3.3243 5.86922L6.80612 5.25528L9.96976 1.70572Z\" stroke=\"currentColor\" stroke-linejoin=\"round\"/><path d=\"M6.05285 9.47511C6.27284 9.16094 6.70586 9.08458 7.02003 9.30457C7.3342 9.52455 7.41055 9.95757 7.19057 10.2717L3.98587 14.4708L3.21223 13.9291L6.05285 9.47511Z\" fill=\"currentColor\"/></svg></button></span></div></div>"
+    },
+    {
+     "label": "已置顶：静止态的图钉标记 / 悬停后的取消置顶按钮",
+     "note": "悬停模拟；静止态标记是 14px 实心图钉，悬停时让位给同字形的按钮",
+     "css": "/* 状态模拟：:hover / .menuOpen 无法静态触发，下面几条按 Rows.module.css 的 `.sessionRow:hover` / `.sessionRow.menuOpen` 规则原样搬运。 */\n.sessionRow.hoverRow { background: var(--dsw-alias-interactive-bg-hover); }\n.sessionRow.hoverRow .rowActions { display: inline-flex; }\n.sessionRow.hoverRow .time,\n.sessionRow.hoverRow .pinIndicator { display: none; }\n",
+     "html": "<div style=\"width:240px\"><div class=\"sessionRow\" role=\"treeitem\" aria-selected=\"false\" data-row-key=\"session:统一按钮圆角\"><span class=\"slot\"></span><span class=\"title\">统一按钮圆角</span><span class=\"time\">1小时</span><span class=\"pinIndicator\" role=\"img\" aria-label=\"已置顶\" title=\"已置顶\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M9.96976 1.70572L13.1554 3.93629L10.9019 8.12317L11.5158 11.605L10.7192 12.7427L2.52767 7.00693L3.3243 5.86922L6.80612 5.25528L9.96976 1.70572Z\" fill=\"currentColor\" stroke=\"currentColor\" stroke-linejoin=\"round\"/><path d=\"M6.05285 9.47511C6.27284 9.16094 6.70586 9.08458 7.02003 9.30457C7.3342 9.52455 7.41055 9.95757 7.19057 10.2717L3.98587 14.4708L3.21223 13.9291L6.05285 9.47511Z\" fill=\"currentColor\"/></svg></span></div><div class=\"sessionRow hoverRow\" role=\"treeitem\" aria-selected=\"false\" data-row-key=\"session:重构会话存储层\"><span class=\"slot\"></span><span class=\"title\">重构会话存储层</span><span class=\"time\">5分钟</span><span class=\"rowActions\"><button type=\"button\" class=\"iconButton\" aria-label=\"会话“重构会话存储层”的操作\" aria-haspopup=\"menu\" aria-expanded=\"false\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z\" fill=\"currentColor\"/><path d=\"M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z\" fill=\"currentColor\"/><path d=\"M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z\" fill=\"currentColor\"/></svg></button><button type=\"button\" class=\"iconButton\" aria-label=\"归档会话\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M13.5 2.5H2.5C1.94772 2.5 1.5 2.94772 1.5 3.5V4.5C1.5 5.05228 1.94772 5.5 2.5 5.5H13.5C14.0523 5.5 14.5 5.05228 14.5 4.5V3.5C14.5 2.94772 14.0523 2.5 13.5 2.5Z\" stroke=\"currentColor\"/><path d=\"M2.5 5.5V13.5C2.5 13.7652 2.60536 14.0196 2.79289 14.2071C2.98043 14.3946 3.23478 14.5 3.5 14.5H12.5C12.7652 14.5 13.0196 14.3946 13.2071 14.2071C13.3946 14.0196 13.5 13.7652 13.5 13.5V5.5\" stroke=\"currentColor\"/><path d=\"M6.5 9.5H9.5\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"iconButton\" aria-label=\"取消置顶\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M9.96976 1.70572L13.1554 3.93629L10.9019 8.12317L11.5158 11.605L10.7192 12.7427L2.52767 7.00693L3.3243 5.86922L6.80612 5.25528L9.96976 1.70572Z\" fill=\"currentColor\" stroke=\"currentColor\" stroke-linejoin=\"round\"/><path d=\"M6.05285 9.47511C6.27284 9.16094 6.70586 9.08458 7.02003 9.30457C7.3342 9.52455 7.41055 9.95757 7.19057 10.2717L3.98587 14.4708L3.21223 13.9291L6.05285 9.47511Z\" fill=\"currentColor\"/></svg></button></span></div></div>"
+    },
+    {
+     "label": "提示气泡：置顶会话（bottom / end / 500ms，portal）",
+     "note": "静态快照：气泡回到文档流",
+     "css": "/* 静态快照：气泡真实是 JS 写入 left/top 的 position: fixed 门户节点，出现前还带内联 visibility: hidden；这里拉回文档流，并抵消 bottom/end 对齐那条规则里的 translate —— 选择器重复 data-side / data-align 才压得住它（组件那条是「一个类 + 两个属性」的特异性），配色、内边距与折行仍走真实样式。 */\n.bubble.snapshotStatic[data-side][data-align] { position: relative; inset: auto; transform: none; }\n",
+     "html": "<div style=\"display:flex;flex-direction:column;align-items:flex-start;gap:8px;width:200px\"><button type=\"button\" class=\"iconButton\" aria-label=\"置顶会话\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M9.96976 1.70572L13.1554 3.93629L10.9019 8.12317L11.5158 11.605L10.7192 12.7427L2.52767 7.00693L3.3243 5.86922L6.80612 5.25528L9.96976 1.70572Z\" stroke=\"currentColor\" stroke-linejoin=\"round\"/><path d=\"M6.05285 9.47511C6.27284 9.16094 6.70586 9.08458 7.02003 9.30457C7.3342 9.52455 7.41055 9.95757 7.19057 10.2717L3.98587 14.4708L3.21223 13.9291L6.05285 9.47511Z\" fill=\"currentColor\"/></svg></button><span class=\"bubble snapshotStatic\" role=\"tooltip\" data-side=\"bottom\" data-align=\"end\" data-portal><span class=\"label\">置顶会话</span></span></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "sessionId",
+     "type": "SessionId",
+     "default": "—",
+     "desc": "按钮作用于哪个会话。"
+    },
+    {
+     "name": "usePinned",
+     "type": "(select: (set: ReadonlySet<SessionId>) => boolean) => boolean",
+     "default": "—",
+     "desc": "置顶集合的 selector hook：决定描边 / 实心图钉与工具提示文案。"
+    },
+    {
+     "name": "useArchived",
+     "type": "(select: (set: ReadonlySet<SessionId>) => boolean) => boolean",
+     "default": "—",
+     "desc": "归档集合的 selector hook；归档行返回 <code>null</code>，动作条上不留位。"
+    },
+    {
+     "name": "pinSession",
+     "type": "(sessionId: SessionId) => void",
+     "default": "—",
+     "desc": "置顶动作。"
+    },
+    {
+     "name": "unpinSession",
+     "type": "(sessionId: SessionId) => void",
+     "default": "—",
+     "desc": "取消置顶动作。"
+    },
+    {
+     "name": "displayTitle",
+     "type": "string",
+     "default": "—",
+     "desc": "owner share 里的行标题；本条目用不到。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'workspace'>",
+     "default": "—",
+     "desc": "工具提示 <code>actions.pin</code> / <code>actions.unpin</code>，<code>aria-label</code> 取 <code>menu.pinSession</code> / <code>menu.unpinSession</code>。"
+    }
+   ],
+   "notes": "按钮落在动作条最右侧，与静止态 <code>.pinIndicator</code> 占同一个右缘单元格：悬停时行把 <code>.time</code> 与图钉标记一起 <code>display:none</code>，换成整条动作条，因此鼠标停在图钉上不会看到字形跳动。宽度只有 16×16、字形 14px，工具提示 500ms 延迟弹出。",
+   "keywords": [
+    "置顶按钮",
+    "图钉",
+    "行悬停动作",
+    "pin",
+    "hover action"
+   ]
+  },
+  {
+   "id": "rename-session-menu-item",
+   "name": "RenameSessionMenuItem",
+   "exportName": "RenameSessionMenuItem",
+   "zh": "重命名菜单项",
+   "group": "panels",
+   "summary": "会话行「⋯」菜单里 order=200 的一行：34px 菜单行 + 「重命名」标签 + <code>IconEditOutlineRegular</code>（<code>.itemIcon svg</code> 把它压到 14×14），右端是 <code>session.rename</code> 的 ⌥⌘G 键帽。选中时先关菜单，再把 <code>sessionId</code> 与当前 <code>displayTitle</code> 交给 <code>requestSessionRename</code>，由 <code>SessionRenameDialog</code> 用这个名字做草稿初始值。行本身不打开输入框——菜单会随行一起卸载，对话框必须活在行菜单之外。",
+   "source": "packages/client/ui-workspace/src/client/session-actions/RenameSession.tsx#L19",
+   "css": [
+    "packages/client/ui-primitives/src/Menu.module.css",
+    "packages/client/ui-primitives/src/MenuSurface.module.css",
+    "packages/client/ui-primitives/src/ShortcutKeys.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-border-l1",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-caption",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-menu-icon",
+    "--dsw-elevation-prominent",
+    "--dsw-menu-backdrop-filter",
+    "--dsw-menu-surface-fill",
+    "--dsw-radius-lg",
+    "--dsw-radius-md"
+   ],
+   "specimens": [
+    {
+     "label": "重命名 + ⌥⌘G",
+     "note": "卡片来自父级 Menu；本条目只渲染这一行",
+     "css": "/* 静态快照：菜单卡片真实由 createPortal 挂在 body 上，.list 是 position: absolute 的浮层；snapshotStatic 让它回到文档流参与排布，宽度是示例补位。这里用 relative 而不是 static：MenuSurface 的 .material 是 inset: 0 的绝对定位子层，父级必须留住包含块。 */\n.list.snapshotStatic { position: relative; inset: auto; width: 240px; }\n",
+     "html": "<div style=\"width:260px\"><div class=\"surface list snapshotStatic\" data-menu-material=\"translucent\" role=\"menu\" style=\"--dsh-menu-anchor:--dsh-menu-demo\"><div class=\"material\" aria-hidden=\"true\"></div><div class=\"viewport\" role=\"presentation\"><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item\" aria-keyshortcuts=\"Alt+Meta+G\"><span class=\"itemIcon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8.85596 2.69971H4.19971C3.37141 2.69971 2.69992 3.37146 2.69971 4.19971V11.8003C2.69992 12.6285 3.37141 13.3003 4.19971 13.3003H11.8003C12.6283 13.2999 13.3001 12.6283 13.3003 11.8003V7.89893H14.3003V11.8003C14.3001 13.1806 13.1806 14.2999 11.8003 14.3003H4.19971C2.81913 14.3003 1.69992 13.1808 1.69971 11.8003V4.19971C1.69992 2.81918 2.81913 1.69971 4.19971 1.69971H8.85596V2.69971Z\" fill=\"currentColor\"/><path d=\"M7.7849 8.23878L13.888 2.13574\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">重命名</span><span aria-hidden=\"true\" class=\"shortcut\"><span class=\"keys shortcutKeys\"><kbd class=\"key\">⌥</kbd><kbd class=\"key\">⌘</kbd><kbd class=\"key\">G</kbd></span></span></button></div></div></div></div>"
+    },
+    {
+     "label": "悬停 / 键盘焦点：行拿到 hover 填充（悬停模拟）",
+     "note": ":focus-visible 用的是同一条填充规则，所以方向键走到这行也是同一副样子",
+     "css": "/* 静态快照：菜单卡片真实由 createPortal 挂在 body 上，.list 是 position: absolute 的浮层；snapshotStatic 让它回到文档流参与排布，宽度是示例补位。这里用 relative 而不是 static：MenuSurface 的 .material 是 inset: 0 的绝对定位子层，父级必须留住包含块。 */\n.list.snapshotStatic { position: relative; inset: auto; width: 240px; }\n/* 悬停模拟：:hover 无法静态触发，这条按 Menu.module.css 的 `.item:hover:not(:disabled)` 原样搬运。 */\n.item.forceHover:not(:disabled) { background: var(--dsw-alias-interactive-bg-hover); }\n",
+     "html": "<div style=\"width:260px\"><div class=\"surface list snapshotStatic\" data-menu-material=\"translucent\" role=\"menu\" style=\"--dsh-menu-anchor:--dsh-menu-demo\"><div class=\"material\" aria-hidden=\"true\"></div><div class=\"viewport\" role=\"presentation\"><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item forceHover\" aria-keyshortcuts=\"Alt+Meta+G\"><span class=\"itemIcon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8.85596 2.69971H4.19971C3.37141 2.69971 2.69992 3.37146 2.69971 4.19971V11.8003C2.69992 12.6285 3.37141 13.3003 4.19971 13.3003H11.8003C12.6283 13.2999 13.3001 12.6283 13.3003 11.8003V7.89893H14.3003V11.8003C14.3001 13.1806 13.1806 14.2999 11.8003 14.3003H4.19971C2.81913 14.3003 1.69992 13.1808 1.69971 11.8003V4.19971C1.69992 2.81918 2.81913 1.69971 4.19971 1.69971H8.85596V2.69971Z\" fill=\"currentColor\"/><path d=\"M7.7849 8.23878L13.888 2.13574\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">重命名</span><span aria-hidden=\"true\" class=\"shortcut\"><span class=\"keys shortcutKeys\"><kbd class=\"key\">⌥</kbd><kbd class=\"key\">⌘</kbd><kbd class=\"key\">G</kbd></span></span></button></div></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "sessionId",
+     "type": "SessionId",
+     "default": "—",
+     "desc": "要重命名的会话。"
+    },
+    {
+     "name": "displayTitle",
+     "type": "string",
+     "default": "—",
+     "desc": "当前标题，随请求一起交给对话框做草稿种子。"
+    },
+    {
+     "name": "useMenuOpenState",
+     "type": "() => readonly [boolean, (open: boolean) => void]",
+     "default": "—",
+     "desc": "菜单开合状态对；选中时先关菜单再发请求。"
+    },
+    {
+     "name": "useShortcuts",
+     "type": "(select) => ShortcutCatalogEntry | undefined",
+     "default": "—",
+     "desc": "只读命令目录，取 <code>session.rename</code> 的生效键位。"
+    },
+    {
+     "name": "requestSessionRename",
+     "type": "(sessionId: SessionId, currentTitle: string) => void",
+     "default": "—",
+     "desc": "只负责举手：把请求交给 <code>shell.overlay</code> 的对话框条目，本条目不持有输入状态。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'workspace'>",
+     "default": "—",
+     "desc": "<code>rename</code> 一个标签（与对话框标题 <code>rename.session.title</code> 分开）。"
+    }
+   ],
+   "notes": "标题双击也能发起同一个请求（<code>Rows.tsx</code> 的标题 <code>onDoubleClick</code>），两条入口共用这一个注入回调，所以会话行的菜单行只是其中一条。行没有禁用态：空白新会话行整体不渲染动作条，菜单入口自然不存在。",
+   "keywords": [
+    "重命名",
+    "rename",
+    "菜单行",
+    "标题"
+   ]
+  },
+  {
+   "id": "session-rename-dialog",
+   "name": "SessionRenameDialog",
+   "exportName": "SessionRenameDialog",
+   "zh": "重命名会话框",
+   "group": "panels",
+   "summary": "<code>shell.overlay</code> 条目：没有待处理请求时返回 <code>null</code>，有请求时按会话 key 渲染一张 portal 到 body 的 380px 对话框（标题 16/24/500「重命名会话」，右上 28×28 关闭键）。正文是一个 44px 高的 <code>.renameInput</code>（<code>0.5px --dsw-alias-border-l4</code> 描边、<code>--dsw-radius-lg</code> 圆角、14/22），草稿初始值就是行标题并标记 <code>data-modal-autofocus</code> 让 Modal 把初始焦点交给它；页脚是「取消」与主按钮「重命名」。标题裁剪后为空、或提交在飞行中时确认键禁用；没有客户端重名规则、标题未改动也允许提交；提交失败时对话框不关，错误以 <code>.renameError</code> 的 <code>role=\"alert\"</code> 显示在输入框下方。",
+   "source": "packages/client/ui-workspace/src/client/session-actions/RenameSession.tsx#L47",
+   "css": [
+    "packages/client/ui-primitives/src/Button.module.css",
+    "packages/client/ui-primitives/src/Modal.module.css",
+    "packages/client/ui-workspace/src/client/rows/WorkspaceBrowser.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-layer-2",
+    "--dsw-alias-bg-mask-1",
+    "--dsw-alias-border-l3",
+    "--dsw-alias-border-l4",
+    "--dsw-alias-button-primary-fill",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-dimmed",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-primary-foreground",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-state-error-primary",
+    "--dsw-elevation-prominent",
+    "--dsw-mask-blur",
+    "--dsw-radius-lg",
+    "--dsw-radius-md",
+    "--dsw-radius-panel",
+    "--dsw-radius-sm"
+   ],
+   "specimens": [
+    {
+     "label": "默认：草稿就是行的当前标题",
+     "note": "静态快照：卡片回到文档流；输入框带 data-modal-autofocus，由 Modal 分配初始焦点",
+     "css": "/* 静态快照：Modal 的 .root 真实是 body 上的全视口 position: fixed 层；这里放回示例容器内的 absolute，既留住 .mask（inset: 0 的子层）的包含块，又让它随容器定尺寸。.root 同时被 Modal.module.css 与 WorkspaceBrowser.module.css 声明，因此用显式所有者前缀 c1- 把它钉在 Modal 那张表上。 */\n.c1-root.snapshotStatic { position: absolute; }\n",
+     "html": "<div style=\"position:relative;width:420px;height:300px;overflow:hidden\"><div class=\"c1-root snapshotStatic\" role=\"presentation\"><div class=\"mask\" aria-hidden=\"true\"></div><div class=\"dialog\" role=\"dialog\" aria-modal=\"true\" aria-label=\"重命名会话\" tabindex=\"-1\"><div class=\"content\"><div class=\"header\"><h2 class=\"title\">重命名会话</h2><button type=\"button\" class=\"close\" aria-label=\"关闭\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"body\"><input class=\"renameInput\" value=\"重构会话存储层\" aria-label=\"会话名称\" data-modal-autofocus></div></div><div class=\"footer\"><button class=\"button outline md\" type=\"button\">取消</button><button class=\"button primary md\" type=\"button\">重命名</button></div></div></div></div>"
+    },
+    {
+     "label": "空标题：确认键禁用，取消仍可用",
+     "note": "裁剪后为空即拦下；未命名的会话从这里起要求一个名字",
+     "css": "/* 静态快照：Modal 的 .root 真实是 body 上的全视口 position: fixed 层；这里放回示例容器内的 absolute，既留住 .mask（inset: 0 的子层）的包含块，又让它随容器定尺寸。.root 同时被 Modal.module.css 与 WorkspaceBrowser.module.css 声明，因此用显式所有者前缀 c1- 把它钉在 Modal 那张表上。 */\n.c1-root.snapshotStatic { position: absolute; }\n",
+     "html": "<div style=\"position:relative;width:420px;height:300px;overflow:hidden\"><div class=\"c1-root snapshotStatic\" role=\"presentation\"><div class=\"mask\" aria-hidden=\"true\"></div><div class=\"dialog\" role=\"dialog\" aria-modal=\"true\" aria-label=\"重命名会话\" tabindex=\"-1\"><div class=\"content\"><div class=\"header\"><h2 class=\"title\">重命名会话</h2><button type=\"button\" class=\"close\" aria-label=\"关闭\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"body\"><input class=\"renameInput\" value=\"\" aria-label=\"会话名称\" data-modal-autofocus></div></div><div class=\"footer\"><button class=\"button outline md\" type=\"button\">取消</button><button class=\"button primary md\" type=\"button\" disabled>重命名</button></div></div></div></div>"
+    },
+    {
+     "label": "重命名中：输入框与两个按钮一起禁用",
+     "note": "输入框文字降为 --dsw-alias-label-dimmed；在途时 Esc 与遮罩点击都关不掉",
+     "css": "/* 静态快照：Modal 的 .root 真实是 body 上的全视口 position: fixed 层；这里放回示例容器内的 absolute，既留住 .mask（inset: 0 的子层）的包含块，又让它随容器定尺寸。.root 同时被 Modal.module.css 与 WorkspaceBrowser.module.css 声明，因此用显式所有者前缀 c1- 把它钉在 Modal 那张表上。 */\n.c1-root.snapshotStatic { position: absolute; }\n",
+     "html": "<div style=\"position:relative;width:420px;height:300px;overflow:hidden\"><div class=\"c1-root snapshotStatic\" role=\"presentation\"><div class=\"mask\" aria-hidden=\"true\"></div><div class=\"dialog\" role=\"dialog\" aria-modal=\"true\" aria-label=\"重命名会话\" tabindex=\"-1\"><div class=\"content\"><div class=\"header\"><h2 class=\"title\">重命名会话</h2><button type=\"button\" class=\"close\" aria-label=\"关闭\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"body\"><input class=\"renameInput\" value=\"重构会话存储层（按 turn 分片）\" aria-label=\"会话名称\" data-modal-autofocus disabled></div></div><div class=\"footer\"><button class=\"button outline md\" type=\"button\" disabled>取消</button><button class=\"button primary md\" type=\"button\" disabled>重命名</button></div></div></div></div>"
+    },
+    {
+     "label": "失败：输入框下方 role=alert 的错误行",
+     "note": "对话框不关、草稿保留；错误文本是宿主/传输层的原文",
+     "css": "/* 静态快照：Modal 的 .root 真实是 body 上的全视口 position: fixed 层；这里放回示例容器内的 absolute，既留住 .mask（inset: 0 的子层）的包含块，又让它随容器定尺寸。.root 同时被 Modal.module.css 与 WorkspaceBrowser.module.css 声明，因此用显式所有者前缀 c1- 把它钉在 Modal 那张表上。 */\n.c1-root.snapshotStatic { position: absolute; }\n",
+     "html": "<div style=\"position:relative;width:420px;height:320px;overflow:hidden\"><div class=\"c1-root snapshotStatic\" role=\"presentation\"><div class=\"mask\" aria-hidden=\"true\"></div><div class=\"dialog\" role=\"dialog\" aria-modal=\"true\" aria-label=\"重命名会话\" tabindex=\"-1\"><div class=\"content\"><div class=\"header\"><h2 class=\"title\">重命名会话</h2><button type=\"button\" class=\"close\" aria-label=\"关闭\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"body\"><input class=\"renameInput\" value=\"重构会话存储层（按 turn 分片）\" aria-label=\"会话名称\" data-modal-autofocus><div class=\"renameError\" role=\"alert\">rename rejected: title exceeds 200 characters</div></div></div><div class=\"footer\"><button class=\"button outline md\" type=\"button\">取消</button><button class=\"button primary md\" type=\"button\">重命名</button></div></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "useRenameRequest",
+     "type": "(select) => SessionRenameTarget | null",
+     "default": "—",
+     "desc": "注入 hook 座：取当前待处理请求（<code>sessionId</code> + <code>currentTitle</code>）；为 <code>null</code> 时条目返回 <code>null</code>。"
+    },
+    {
+     "name": "settleSessionRename",
+     "type": "() => void",
+     "default": "—",
+     "desc": "消费或取消请求；取消、Esc、点遮罩与改名成功都走它。"
+    },
+    {
+     "name": "renameSession",
+     "type": "(sessionId: SessionId, title: string) => Promise<void>",
+     "default": "—",
+     "desc": "用裁剪后的标题改名；resolve 表示宿主已接受，reject 的 <code>message</code> 进错误行。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'workspace'>",
+     "default": "—",
+     "desc": "<code>rename.session.title</code>、<code>field.sessionName</code>、<code>rename</code>；取消与关闭取 common 字典。"
+    }
+   ],
+   "notes": "请求用 <code>sessionId</code> 做 key，新请求就是一份新草稿（<code>currentTitle</code> 只在挂载时读一次），在途与错误态也随卡卸载。与工作区重命名有两条明确差异：没有客户端重名检查（宿主负责规范化），标题没改也允许提交——唯一的拦截是裁剪后为空或在途。输入框内部用 composition 标记区分输入法回车，正在拼字时的 Enter 不会提交。",
+   "keywords": [
+    "重命名会话",
+    "rename session",
+    "shell.overlay",
+    "对话框",
+    "输入框"
+   ]
+  }
+ ]
+}

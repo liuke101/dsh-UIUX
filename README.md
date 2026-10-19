@@ -12,12 +12,16 @@
 |---|---|
 | [index.html](index.html) | 总览：调研方法、覆盖统计、组件分层、包分布、复现命令。 |
 | [primitives.html](primitives.html) | 基础组件库 `ui-primitives` 的图鉴：共享原子的实时重绘、Props 表与设计变量。 |
-| [product.html](product.html) | 产品组件图鉴：会话流、外壳、设置页、功能面板、浮层与运行时视图。 |
+| [product.html](product.html) | 产品组件图鉴 · 会话流：消息、思考块、工具行、输入编辑器与回合操作。 |
+| [product-shell.html](product-shell.html) | 产品组件图鉴 · 外壳与预览：应用框架、侧边栏、文件动作，以及文本 / Office / 图片 / 网页预览与附件。 |
+| [product-dock.html](product-dock.html) | 产品组件图鉴 · 停靠与工具：停靠面板与标签页、终端与右侧栏，以及工具调用卡片与渲染绑定。 |
+| [product-panels.html](product-panels.html) | 产品组件图鉴 · 面板与浮层：任务计划、目标、交付物、插件市场、日程、工作区，以及对话框与菜单。 |
+| [product-settings.html](product-settings.html) | 产品组件图鉴 · 设置与运行视图：设置页骨架与各行控件、账户与引导，以及轨迹、子代理、工作流。 |
 | [tokens.html](tokens.html) | 设计变量参考：`--dsw-*` 静态色板、语义别名、圆角、字体排印、浮层描边与投影，含浅色/深色取值与引用计数。 |
 | [inventory.html](inventory.html) | 全量清单：扫描到的每个组件的导出变量名、源码位置、Props 类型、CSS 类名与设计变量，可过滤。 |
 | [data/components.json](data/components.json) | 组件清单的机器可读版本（抽取脚本的产物）。 |
 | [data/tokens.json](data/tokens.json) | 设计变量的机器可读版本（含每个变量的声明位置与组件引用）。 |
-| [data/parts/](data/parts/) | 组件条目（外观示例的 HTML 与元数据），按批次分文件，共 117 条 / 297 个示例。 |
+| [data/parts/](data/parts/) | 组件条目（外观示例的 HTML 与元数据），按批次分文件，共 388 条 / 967 个示例。 |
 | [data/ENTRY-SCHEMA.md](data/ENTRY-SCHEMA.md) | 条目写入规范：字段含义与硬性规则。 |
 | [assets/](assets/) | 嵌入用的中文子集字体（`cjk-400.woff2` / `cjk-500.woff2`，OFL 授权的 Noto Sans SC 子集）。 |
 | [tools/](tools/) | 生成与校验脚本：`extract.mjs`、`extract-tokens.mjs`、`build.mjs`、`font.mjs`、`validate.mjs`、`check.mjs`。 |
@@ -35,11 +39,15 @@
 
 ## 覆盖范围
 
-清单页收录 `packages/client/`、`packages/experimental/`、`packages/extensions/` 下全部 `.tsx` 里的每个 React 组件导出，共 601 个。图鉴页收录其中具代表性的组件：基础组件库的全部可视导出，加上产品层最常出现在用户视野里的组件；其余组件在清单页给出源码位置与所属包，可据此直接阅读实现。
+清单页收录 `packages/client/`、`packages/experimental/`、`packages/extensions/` 下全部 `.tsx` 里的每个 React 组件导出，共 601 个；其中 388 个有图鉴条目、967 个实时重绘示例：
 
-图标与美术按族合并成条目（例如 8 个权限图标一条、5 个插件美术一条），字形数量在条目内逐个列出。
+- **产品层全覆盖**：313 个 `product` 组件、18 个实验包组件、5 个扩展包组件，每个导出都有独立条目（含 `experimental/` 的语音输入、会话检查器，`extensions/ui-cordis` 的插件面板）。
+- **基础组件库**：`ui-primitives` 的可视导出全部有条目，另有 tokens 页逐个列出它消费的 `--dsw-*` 变量。
+- **图标与美术按族合并**：199 个图标与 10 个品牌美术合并成若干族条目（例如 8 个权限图标一条、5 个插件美术一条），字形在一个示例里并排渲染、逐个标注。
 
-判定规则：`primitive` 为 `ui-primitives` 的共享原子；`icon`、`artwork` 为字形与品牌美术；`product` 为功能包组件；`experimental`、`extension` 为实验包与扩展包。`packages/client/AGENTS.md` 规定功能包之间不能互相导入组件，`ui-primitives` 是唯一可以跨包复用的组件来源——图鉴页因此按这条边界分成两页。
+产品组件因为示例逐条内联样式表源码，单页会到十几兆，所以按区域拆成五页（会话流 / 外壳与预览 / 停靠与工具 / 面板与浮层 / 设置与运行视图）；左侧目录的「产品组件」分支下就是这五页。
+
+判定规则：`primitive` 为 `ui-primitives` 的共享原子；`icon`、`artwork` 为字形与品牌美术；`product` 为功能包组件；`experimental`、`extension` 为实验包与扩展包。`packages/client/AGENTS.md` 规定功能包之间不能互相导入组件，`ui-primitives` 是唯一可以跨包复用的组件来源——图鉴因此把基础组件库与产品组件分开成两组页面。
 
 ## 重新生成
 
@@ -47,7 +55,7 @@
 cd <本目录>
 node tools/extract.mjs         # 扫描 .tsx → data/components.json
 node tools/extract-tokens.mjs  # 解析 ui-theme 样式表 → data/tokens.json
-node tools/build.mjs           # 组装五张页面
+node tools/build.mjs           # 组装九张页面
 node tools/check.mjs           # 条目校验 + 仓库引用规则 + 页面产物体积
 ```
 
@@ -60,7 +68,7 @@ node tools/check.mjs --root ~/deepseek-harness
 
 源码链接默认指向上游仓库（`https://github.com/deepseek-ai/deepseek-harness/blob/master/<路径>#L<行号>`），这样发布出去的副本点得开；加 `--source-base local` 则改回相对路径，供在检出内离线查阅。`check.mjs` 会核对这些链接目标是否都属于当前检出的已跟踪文件——发布副本因此不会带着失效链接出门。
 
-`check.mjs` 会做三件事：校验每个条目的必填字段、类名归属、设计变量与源码行号；按 `scripts/verify-repository-references.ts` 的规则确认目录内没有提交号或组织 URL；统计五张页面的体积与预览数量。
+`check.mjs` 会做三件事：校验每个条目的必填字段、类名归属、设计变量与源码行号；按 `scripts/verify-repository-references.ts` 的规则确认目录内没有提交号或组织 URL；统计九张页面的体积与预览数量。
 
 页面是中文的，而生成机器上不一定装了中文字体。构建脚本会统计页面用到的全部汉字写入 `data/cjk-charset.txt`，并在缺少覆盖时提示；此时先跑字体子集再重新构建：
 
@@ -83,7 +91,7 @@ node <本目录>/tools/build.mjs
 
 目录同时发布在 <https://github.com/liuke101/dsh-UIUX>，并开启 GitHub Pages 在线浏览：<https://liuke101.github.io/dsh-UIUX/>。仓库根目录的 `.nojekyll` 关闭 Jekyll 处理，页面按字节原样提供。每张页面右上角有两个入口：GitHub 小猫图标指向本仓库，太阳 / 月亮图标切换浅色与深色。
 
-左侧目录是一棵站点树：五个页面各带自己的页内小节，当前页的分支高亮，读到哪一节就在树里标出哪一节（滚动时用 `scrollIntoView({ block: 'nearest' })` 把它带进侧栏自己的滚动区）。这棵树由 `build.mjs` 的 `SITE` 一次算出、原样写进五张页面，所以翻页时侧栏不会变形状，只有高亮的分支在移动。页内小节在所属页面里是纯锚点链接，在别的页面里带上文件名跨页跳转——原来单独一栏「页面内」因此取消。
+左侧目录是一棵站点树：九张页面各带自己的页内小节，当前页的分支高亮，读到哪一节就在树里标出哪一节（滚动时用 `scrollIntoView({ block: 'nearest' })` 把它带进侧栏自己的滚动区）。这棵树由 `build.mjs` 的 `SITE` 一次算出、原样写进九张页面，所以翻页时侧栏不会变形状，只有高亮的分支在移动。页内小节在所属页面里是纯锚点链接，在别的页面里带上文件名跨页跳转——原来单独一栏「页面内」因此取消。
 
 ## 数据字段
 
@@ -93,6 +101,6 @@ node <本目录>/tools/build.mjs
 
 ## 说明
 
-页面在 `<head>` 内嵌了中文字体子集，因此单个 HTML 文件可以独立分发；代价是每页约 610 KiB 的字体数据（base64），五张页面合计约 7.4 MiB。清单页与变量页的数据规模较大，用浏览器搜索或页面自带的过滤框定位比滚动更快。
+页面在 `<head>` 内嵌了中文字体子集，因此单个 HTML 文件可以独立分发；代价是每页约 760 KiB 的字体数据（base64），九张页面合计约 22 MiB。清单页与变量页的数据规模较大，用浏览器搜索或页面自带的过滤框定位比滚动更快。
 
 目录数据取自工作区源码快照，页面顶部记录了快照日期；重新生成即可与当前源码对齐。

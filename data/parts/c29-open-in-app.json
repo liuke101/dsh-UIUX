@@ -1,0 +1,660 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "id": "file-route-action",
+      "name": "FileRouteAction",
+      "exportName": "FileRouteAction",
+      "zh": "交付文件打开",
+      "group": "shell",
+      "summary": "交付物卡片与变更审阅里的文件打开动作（非可视适配层）：自身不产生 DOM，校验带会话事件坐标的授权路由后，把文件关联交给共享的 24px 分体按钮——左半是 13px 应用图标，右半是 10px 下拉箭头。路由查询失败时降级为「显示文件位置」并保留下拉，菜单里追加一条禁用的「无法获取应用列表」；<code>available</code> 为 false（非桌面环境）时整条动作返回 <code>null</code>。打开失败由该控件自己发出一条顶部居中的警告 Toast，按钮在 <code>pending</code> 期间禁用。",
+      "source": "packages/client/ui-open-in-app/src/client/FileRouteAction.tsx#L26",
+      "css": [
+        "packages/client/ui-open-in-app/src/client/OpenTargetButton.module.css",
+        "packages/client/ui-primitives/src/Menu.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l4",
+        "--dsw-radius-sm",
+        "--dsw-font-family",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-radius-md",
+        "--dsw-alias-border-l2",
+        "--dsw-radius-xs"
+      ],
+      "specimens": [
+        {
+          "label": "交付项文件动作：默认应用（24px）",
+          "note": "非可视适配层：这里展示它渲染的共享分体按钮，菜单未展开；应用图标用源码里的回退字形（Host 图标缺失时的右上箭头）",
+          "html": "<span class=\"root menuAnchor\"><div class=\"split\" data-open-target=\"file\" data-size=\"compact\" data-open-path=\"\" data-state=\"idle\"><button type=\"button\" class=\"main\" aria-label=\"用 Cursor 打开\" data-open-path-open=\"\"><svg width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M11.7256 2.77441C12.5538 2.77469 13.2256 3.44616 13.2256 4.27441V10.1416H12.2256V4.27441C12.2256 3.99844 12.0015 3.77469 11.7256 3.77441H5.7207V2.77441H11.7256Z\" fill=\"currentColor\"/><path d=\"M2.77441 13.2255L12.3756 3.62427\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"chevron\" aria-haspopup=\"menu\" aria-expanded=\"false\" aria-label=\"更多打开方式\" data-open-path-more=\"\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></button></div></span>"
+        },
+        {
+          "label": "路由查询失败：只剩「显示文件位置」",
+          "note": "apps 为空时文件回退到显示位置（文件夹图标），下拉仍在；菜单里会多一条禁用的「无法获取应用列表」",
+          "html": "<span class=\"root menuAnchor\"><div class=\"split\" data-open-target=\"file\" data-size=\"compact\" data-open-path=\"\" data-state=\"idle\"><button type=\"button\" class=\"main\" aria-label=\"显示文件位置\" data-open-path-open=\"\"><svg width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.55912 7.93683C2.67584 7.49906 3.0723 7.19446 3.52536 7.19446H13.6491C14.3061 7.19446 14.7846 7.81725 14.6153 8.45209L13.4411 12.856C13.3244 13.2938 12.9279 13.5984 12.4748 13.5984H2.35113C1.69411 13.5984 1.21562 12.9756 1.38489 12.3407L2.55912 7.93683Z\" fill=\"currentColor\" opacity=\"0.16\"/><path d=\"M13.6491 6.69446C14.6346 6.69453 15.3522 7.62895 15.0983 8.58118L13.9245 12.9845C13.7494 13.6412 13.1539 14.0988 12.4743 14.0988H2.35126C1.36574 14.0988 0.648153 13.1643 0.902044 12.212L2.07587 7.80774C2.25102 7.15128 2.84567 6.69455 3.52509 6.69446H13.6491ZM3.52509 7.69446C3.29865 7.69455 3.10004 7.84674 3.04169 8.06555L1.86786 12.4698C1.78345 12.7872 2.02285 13.0988 2.35126 13.0988H12.4743C12.7007 13.0988 12.8992 12.9463 12.9577 12.7277L14.1325 8.32336C14.2171 8.00598 13.9776 7.69453 13.6491 7.69446H3.52509Z\" fill=\"currentColor\"/><path d=\"M4.7666 1.90137C5.13227 1.90144 5.48571 2.03525 5.75977 2.27734L7.27246 3.61328C7.36379 3.69382 7.48174 3.73828 7.60352 3.73828H12.3994C13.2276 3.73841 13.8993 4.41005 13.8994 5.23828V6.7168C13.8183 6.70327 13.735 6.69436 13.6494 6.69434H12.8994V5.23828C12.8993 4.96233 12.6754 4.73841 12.3994 4.73828H7.60352C7.23781 4.73828 6.88446 4.60438 6.61035 4.3623L5.09766 3.02637C5.00636 2.94576 4.88838 2.90144 4.7666 2.90137H2.0498C1.77366 2.90137 1.5498 3.12523 1.5498 3.40137V9.78223L0.902344 12.2119C0.648452 13.1642 1.36604 14.0986 2.35156 14.0986H2.0498C1.2214 14.0986 0.549838 13.427 0.549805 12.5986V3.40137C0.549805 2.57294 1.22138 1.90137 2.0498 1.90137H4.7666Z\" fill=\"currentColor\"/></svg></button><button type=\"button\" class=\"chevron\" aria-haspopup=\"menu\" aria-expanded=\"false\" aria-label=\"更多打开方式\" data-open-path-more=\"\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></button></div></span>"
+        }
+      ],
+      "props": [
+        {
+          "name": "actionUrl",
+          "type": "string",
+          "default": "—",
+          "desc": "带 Session 事件坐标的授权动作路由；URL 变化时控件按 key 重挂，重新查询文件关联。"
+        },
+        {
+          "name": "available",
+          "type": "boolean",
+          "default": "—",
+          "desc": "当前环境是否提供桌面打开能力；false 时组件直接返回 null，不渲染任何 DOM。"
+        },
+        {
+          "name": "pending",
+          "type": "boolean",
+          "default": "—",
+          "desc": "交付物一侧的打开请求进行中，映射为控件的 busy，两个按钮都禁用。"
+        },
+        {
+          "name": "onAction",
+          "type": "(action: PresentedAction, application?: string) => Promise<PresentedOpenFailure>",
+          "default": "—",
+          "desc": "执行原生打开或显示位置；返回的失败码由该控件转成顶部居中的警告 Toast。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'open-in-app'>",
+          "default": "—",
+          "desc": "open-in-app 命名空间文案（「用 {app} 打开」「更多打开方式」「显示文件位置」等）。"
+        }
+      ],
+      "notes": "非可视组件：分体按钮与下拉菜单都由共享控件提供，自身没有独立外观。只有原生桌面渲染；路由请求失败只影响菜单内容，主按钮仍保留「显示文件位置」作为兜底。",
+      "keywords": [
+        "打开方式",
+        "文件打开",
+        "交付文件",
+        "reveal",
+        "open in app"
+      ]
+    },
+    {
+      "id": "open-in-app-action",
+      "name": "OpenInAppAction",
+      "exportName": "OpenInAppAction",
+      "zh": "工作区打开",
+      "group": "shell",
+      "summary": "工作区目录的「在本地打开」动作（非可视适配层）：把已安装应用目录（<code>openInAppApps</code>）与用户选择（<code>openInAppChoice</code>）映射成共享分体按钮，24px 紧凑态只有 13px 应用图标与 10px 箭头，主按钮 tooltip 是「用 Cursor 打开」。没有可启动应用时返回 <code>null</code>；<code>launch</code> 期间（<code>phase === 'busy'</code>）两个按钮禁用，<code>data-state</code> 变为 busy。目录变体不提供「显示文件位置」，菜单里只有应用行。",
+      "source": "packages/client/ui-open-in-app/src/client/OpenInAppAction.tsx#L33",
+      "css": [
+        "packages/client/ui-open-in-app/src/client/OpenTargetButton.module.css",
+        "packages/client/ui-primitives/src/Menu.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l4",
+        "--dsw-radius-sm",
+        "--dsw-font-family",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-radius-md",
+        "--dsw-alias-border-l2",
+        "--dsw-radius-xs"
+      ],
+      "specimens": [
+        {
+          "label": "工作区标题：在 Cursor 中打开（24px）",
+          "note": "目录变体没有「显示文件位置」页脚；两个及以上应用（或查询失败）才有下拉箭头",
+          "html": "<span class=\"root menuAnchor\"><div class=\"split\" data-open-target=\"directory\" data-size=\"compact\" data-state=\"idle\"><button type=\"button\" class=\"main\" aria-label=\"用 Cursor 打开\"><svg width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M11.7256 2.77441C12.5538 2.77469 13.2256 3.44616 13.2256 4.27441V10.1416H12.2256V4.27441C12.2256 3.99844 12.0015 3.77469 11.7256 3.77441H5.7207V2.77441H11.7256Z\" fill=\"currentColor\"/><path d=\"M2.77441 13.2255L12.3756 3.62427\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"chevron\" aria-haspopup=\"menu\" aria-expanded=\"false\" aria-label=\"更多打开方式\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></button></div></span>"
+        },
+        {
+          "label": "打开进行中：两半都禁用",
+          "note": "打开进行中（busy）：源码只把光标改成 default，没有加载圈；静态快照把 disabled 状态照原样保留",
+          "html": "<span class=\"root menuAnchor\"><div class=\"split\" data-open-target=\"directory\" data-size=\"compact\" data-state=\"busy\"><button type=\"button\" class=\"main\" aria-label=\"用 Cursor 打开\" disabled><svg width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M11.7256 2.77441C12.5538 2.77469 13.2256 3.44616 13.2256 4.27441V10.1416H12.2256V4.27441C12.2256 3.99844 12.0015 3.77469 11.7256 3.77441H5.7207V2.77441H11.7256Z\" fill=\"currentColor\"/><path d=\"M2.77441 13.2255L12.3756 3.62427\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"chevron\" aria-haspopup=\"menu\" aria-expanded=\"false\" aria-label=\"更多打开方式\" disabled><svg width=\"10\" height=\"10\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></button></div></span>"
+        }
+      ],
+      "props": [
+        {
+          "name": "absolutePath",
+          "type": "string",
+          "default": "—",
+          "desc": "要交给本地应用打开的目录绝对路径；变化时控件按 key 重挂。"
+        },
+        {
+          "name": "useOpenInAppApps",
+          "type": "ObservableSnapshot<readonly string[] | null>",
+          "default": "—",
+          "desc": "注入 hooks 的 openInAppApps 快照，渲染器绑定为同名 selector hook：已安装应用 id 列表，null 表示尚未取得目录。"
+        },
+        {
+          "name": "useOpenInAppChoice",
+          "type": "ObservableSnapshot<string>",
+          "default": "—",
+          "desc": "openInAppChoice 的 selector hook：用户上次选择的应用 id，决定主按钮默认打开哪个应用。"
+        },
+        {
+          "name": "useOpenInAppLaunch",
+          "type": "ObservableSnapshot<OpenInAppLaunchState>",
+          "default": "—",
+          "desc": "openInAppLaunch 的 selector hook：启动阶段（idle/busy）决定按钮是否禁用。"
+        },
+        {
+          "name": "useShortcuts",
+          "type": "ObservableSnapshot<readonly ShortcutCatalogEntry[]>",
+          "default": "—",
+          "desc": "快捷键目录的 selector hook；取 id 为 workspace.openLocal 的一行作为主按钮 tooltip 的键位。"
+        },
+        {
+          "name": "launch",
+          "type": "(appId: string, path: string) => Promise<void>",
+          "default": "—",
+          "desc": "用指定应用打开目录；抛错时控件把失败码转成「打开失败，请重试」Toast。"
+        },
+        {
+          "name": "choose",
+          "type": "(appId: string) => void",
+          "default": "—",
+          "desc": "记住用户从菜单里选中的应用，下次作为默认。"
+        },
+        {
+          "name": "iconUrl",
+          "type": "(appId: string) => string",
+          "default": "—",
+          "desc": "应用图标的 URL 解析函数；图片加载失败时控件回退到右上箭头字形。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'open-in-app'>",
+          "default": "—",
+          "desc": "open-in-app 命名空间文案（应用显示名来自 app.* 键）。"
+        }
+      ],
+      "notes": "非可视适配层：自身没有样式与 DOM。没有可启动应用时整条动作返回 null，因此卡片上可能「不出现」；菜单只有应用行，文件才有的「显示文件位置」页脚在这里不存在。",
+      "keywords": [
+        "工作区",
+        "在本地打开",
+        "编辑器",
+        "open in app",
+        "directory"
+      ]
+    },
+    {
+      "id": "file-open-target",
+      "name": "FileOpenTarget",
+      "exportName": "FileOpenTarget",
+      "zh": "文件打开目标",
+      "group": "shell",
+      "summary": "文档预览的打开目标解析层（非可视）：查询桌面能力与文件关联后渲染共享的 24px 分体按钮；桌面能力不是 <code>true</code>（浏览器或查询未完成）时返回 <code>null</code>，因此用户只会在原生桌面里看到它。关联查询中且还没有首选应用时（<code>loading</code>）主按钮换成 13px 骨架块，两个按钮禁用；<code>empty</code> 为 true 时改用 36px 带字的大号变体。",
+      "source": "packages/client/ui-open-in-app/src/client/OpenPathAction.tsx#L39",
+      "css": [
+        "packages/client/ui-open-in-app/src/client/OpenTargetButton.module.css",
+        "packages/client/ui-primitives/src/Menu.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l4",
+        "--dsw-radius-sm",
+        "--dsw-font-family",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-radius-md",
+        "--dsw-alias-border-l2",
+        "--dsw-radius-xs"
+      ],
+      "specimens": [
+        {
+          "label": "文档头：默认应用（24px 紧凑）",
+          "note": "非可视解析层：这里展示它渲染的共享分体按钮，菜单未展开",
+          "html": "<span class=\"root menuAnchor\"><div class=\"split\" data-open-target=\"file\" data-size=\"compact\" data-open-path=\"\" data-state=\"idle\"><button type=\"button\" class=\"main\" aria-label=\"用 Cursor 打开\" data-open-path-open=\"\"><svg width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M11.7256 2.77441C12.5538 2.77469 13.2256 3.44616 13.2256 4.27441V10.1416H12.2256V4.27441C12.2256 3.99844 12.0015 3.77469 11.7256 3.77441H5.7207V2.77441H11.7256Z\" fill=\"currentColor\"/><path d=\"M2.77441 13.2255L12.3756 3.62427\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"chevron\" aria-haspopup=\"menu\" aria-expanded=\"false\" aria-label=\"更多打开方式\" data-open-path-more=\"\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></button></div></span>"
+        },
+        {
+          "label": "关联查询中：13px 骨架块 + 箭头",
+          "note": "loading 且还没有首选应用时用骨架占位；两半同时禁用，data-state 变为 busy",
+          "html": "<span class=\"root menuAnchor\"><div class=\"split\" data-open-target=\"file\" data-size=\"compact\" data-open-path=\"\" data-state=\"busy\"><button type=\"button\" class=\"main\" aria-label=\"显示文件位置\" data-open-path-open=\"\" disabled><span class=\"skeleton\" data-open-target-skeleton aria-hidden=\"true\" style=\"width:13px;height:13px\"></span></button><button type=\"button\" class=\"chevron\" aria-haspopup=\"menu\" aria-expanded=\"false\" aria-label=\"更多打开方式\" data-open-path-more=\"\" disabled><svg width=\"10\" height=\"10\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></button></div></span>"
+        }
+      ],
+      "props": [
+        {
+          "name": "absolutePath",
+          "type": "string",
+          "default": "—",
+          "desc": "已核实属于当前执行环境的文件绝对路径；用作关联查询的键与重挂的 key。"
+        },
+        {
+          "name": "empty",
+          "type": "boolean",
+          "default": "—",
+          "desc": "以空态呈现：prominent=true，渲染 36px 带文字（「打开」/「显示文件位置」）的大号按钮。"
+        },
+        {
+          "name": "useOpenInAppDesktop",
+          "type": "ObservableSnapshot<boolean | null>",
+          "default": "—",
+          "desc": "桌面能力查询结果；null 触发一次 loadDesktop，非 true 时整个控件不渲染。"
+        },
+        {
+          "name": "loadDesktop",
+          "type": "() => Promise<void>",
+          "default": "—",
+          "desc": "首次挂载且桌面能力未知时调用，向 Host 查询是否支持原生打开。"
+        },
+        {
+          "name": "openPath",
+          "type": "(path: string, action: OpenInAppPathAction, application?: string) => Promise<OpenInAppPathFailure | null>",
+          "default": "—",
+          "desc": "执行打开或显示位置并返回失败码；该控件据此发出顶部居中的警告 Toast（「打开失败，请重试」/「无法显示文件位置，请重试」）。"
+        },
+        {
+          "name": "applications",
+          "type": "(path: string, signal: AbortSignal) => Promise<readonly SessionWorkspacePathApplication[] | null>",
+          "default": "—",
+          "desc": "按路径查询文件关联；路由不可用或响应畸形时返回 null，控件回退到显示位置。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'open-in-app'>",
+          "default": "—",
+          "desc": "open-in-app 命名空间文案。"
+        }
+      ],
+      "notes": "非可视解析层：没有自己的 DOM；<code>desktop === null</code> 时挂载即查询，并在这段时间不渲染。它同时服务文档头（紧凑）与不可预览空态（<code>empty</code> → 36px 大号变体）。",
+      "keywords": [
+        "文件关联",
+        "默认应用",
+        "open path",
+        "reveal",
+        "desktop"
+      ]
+    },
+    {
+      "id": "open-path-action",
+      "name": "OpenPathAction",
+      "exportName": "OpenPathAction",
+      "zh": "文档头打开",
+      "group": "shell",
+      "summary": "文档头工具条里的文件打开入口（非可视适配层）：自身只把 <code>absolutePath</code> 与注入的桌面/原生操作原样转交给 <code>FileOpenTarget</code>，所以外观就是共享的 24px 分体按钮——13px 应用图标加 10px 下拉箭头，菜单末尾固定「显示文件位置」。它出现在预览工具栏的路径标签右侧，与刷新等圆形图标按钮同一行；非桌面环境不渲染。",
+      "source": "packages/client/ui-open-in-app/src/client/OpenPathAction.tsx#L64",
+      "css": [
+        "packages/client/ui-open-in-app/src/client/OpenTargetButton.module.css",
+        "packages/client/ui-primitives/src/Menu.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l4",
+        "--dsw-radius-sm",
+        "--dsw-font-family",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-radius-md",
+        "--dsw-alias-border-l2",
+        "--dsw-radius-xs"
+      ],
+      "specimens": [
+        {
+          "label": "文档头入口：用 Cursor 打开（24px）",
+          "note": "非可视组件；外观完全来自 FileOpenTarget 渲染的共享分体按钮，这里只展示这一个态",
+          "html": "<span class=\"root menuAnchor\"><div class=\"split\" data-open-target=\"file\" data-size=\"compact\" data-open-path=\"\" data-state=\"idle\"><button type=\"button\" class=\"main\" aria-label=\"用 Cursor 打开\" data-open-path-open=\"\"><svg width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M11.7256 2.77441C12.5538 2.77469 13.2256 3.44616 13.2256 4.27441V10.1416H12.2256V4.27441C12.2256 3.99844 12.0015 3.77469 11.7256 3.77441H5.7207V2.77441H11.7256Z\" fill=\"currentColor\"/><path d=\"M2.77441 13.2255L12.3756 3.62427\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"chevron\" aria-haspopup=\"menu\" aria-expanded=\"false\" aria-label=\"更多打开方式\" data-open-path-more=\"\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></button></div></span>"
+        }
+      ],
+      "props": [
+        {
+          "name": "absolutePath",
+          "type": "string",
+          "default": "—",
+          "desc": "文档的绝对路径（由 sidebar.right.tab.document.actions 的 owner 提供）。"
+        },
+        {
+          "name": "useOpenInAppDesktop",
+          "type": "ObservableSnapshot<boolean | null>",
+          "default": "—",
+          "desc": "桌面能力查询结果；null 触发 loadDesktop，非 true 时不渲染。"
+        },
+        {
+          "name": "loadDesktop",
+          "type": "() => Promise<void>",
+          "default": "—",
+          "desc": "向 Host 查询当前环境是否支持原生打开。"
+        },
+        {
+          "name": "openPath",
+          "type": "(path: string, action: OpenInAppPathAction, application?: string) => Promise<OpenInAppPathFailure | null>",
+          "default": "—",
+          "desc": "执行打开或显示位置并返回失败码。"
+        },
+        {
+          "name": "applications",
+          "type": "(path: string, signal: AbortSignal) => Promise<readonly SessionWorkspacePathApplication[] | null>",
+          "default": "—",
+          "desc": "按路径查询文件关联；失败时控件回退到「显示文件位置」。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'open-in-app'>",
+          "default": "—",
+          "desc": "open-in-app 命名空间文案。"
+        }
+      ],
+      "notes": "非可视组件：没有自己的样式和 DOM，等价于 <code>&lt;FileOpenTarget {...props} /&gt;</code>。注册在 <code>sidebar.right.tab.document.actions</code>，桌面能力未确认为 true 时整段不出现。",
+      "keywords": [
+        "文档头",
+        "打开方式",
+        "文件",
+        "document actions",
+        "open path"
+      ]
+    },
+    {
+      "id": "open-path-empty-action",
+      "name": "OpenPathEmptyAction",
+      "exportName": "OpenPathEmptyAction",
+      "zh": "空态打开",
+      "group": "shell",
+      "summary": "不可预览文件的空态里的大号打开动作（非可视适配层）：用 <code>prominent</code> 渲染共享分体按钮的 36px 变体，主按钮带文字（有应用时是「打开」，无应用时退化成「显示文件位置」），有应用时右侧还有 14px 箭头，菜单列出各应用并在末尾给「显示文件位置」；没有注册应用时只剩主按钮一个动作。",
+      "source": "packages/client/ui-open-in-app/src/client/OpenPathEmptyAction.tsx#L19",
+      "css": [
+        "packages/client/ui-open-in-app/src/client/OpenTargetButton.module.css",
+        "packages/client/ui-primitives/src/Menu.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l4",
+        "--dsw-radius-sm",
+        "--dsw-font-family",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-radius-md",
+        "--dsw-alias-border-l2",
+        "--dsw-radius-xs"
+      ],
+      "specimens": [
+        {
+          "label": "不可预览空态：36px 带字按钮 + 下拉",
+          "note": "非可视组件；prominent 变体高 36px、圆角换 md、主按钮文字是「打开」",
+          "html": "<span class=\"root menuAnchor\"><div class=\"split\" data-open-target=\"file\" data-size=\"large\" data-state=\"idle\"><button type=\"button\" class=\"main\" data-open-path-unpreviewable=\"\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M11.7256 2.77441C12.5538 2.77469 13.2256 3.44616 13.2256 4.27441V10.1416H12.2256V4.27441C12.2256 3.99844 12.0015 3.77469 11.7256 3.77441H5.7207V2.77441H11.7256Z\" fill=\"currentColor\"/><path d=\"M2.77441 13.2255L12.3756 3.62427\" stroke=\"currentColor\"/></svg>打开</button><button type=\"button\" class=\"chevron\" aria-haspopup=\"menu\" aria-expanded=\"false\" aria-label=\"更多打开方式\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></button></div></span>"
+        },
+        {
+          "label": "没有注册应用：主按钮退化为「显示文件位置」",
+          "note": "无应用时没有下拉，空态只剩这一个动作；文件夹图标 18px",
+          "html": "<span class=\"root menuAnchor\"><div class=\"split\" data-open-target=\"file\" data-size=\"large\" data-state=\"idle\"><button type=\"button\" class=\"main\" data-open-path-unpreviewable=\"\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.55912 7.93683C2.67584 7.49906 3.0723 7.19446 3.52536 7.19446H13.6491C14.3061 7.19446 14.7846 7.81725 14.6153 8.45209L13.4411 12.856C13.3244 13.2938 12.9279 13.5984 12.4748 13.5984H2.35113C1.69411 13.5984 1.21562 12.9756 1.38489 12.3407L2.55912 7.93683Z\" fill=\"currentColor\" opacity=\"0.16\"/><path d=\"M13.6491 6.69446C14.6346 6.69453 15.3522 7.62895 15.0983 8.58118L13.9245 12.9845C13.7494 13.6412 13.1539 14.0988 12.4743 14.0988H2.35126C1.36574 14.0988 0.648153 13.1643 0.902044 12.212L2.07587 7.80774C2.25102 7.15128 2.84567 6.69455 3.52509 6.69446H13.6491ZM3.52509 7.69446C3.29865 7.69455 3.10004 7.84674 3.04169 8.06555L1.86786 12.4698C1.78345 12.7872 2.02285 13.0988 2.35126 13.0988H12.4743C12.7007 13.0988 12.8992 12.9463 12.9577 12.7277L14.1325 8.32336C14.2171 8.00598 13.9776 7.69453 13.6491 7.69446H3.52509Z\" fill=\"currentColor\"/><path d=\"M4.7666 1.90137C5.13227 1.90144 5.48571 2.03525 5.75977 2.27734L7.27246 3.61328C7.36379 3.69382 7.48174 3.73828 7.60352 3.73828H12.3994C13.2276 3.73841 13.8993 4.41005 13.8994 5.23828V6.7168C13.8183 6.70327 13.735 6.69436 13.6494 6.69434H12.8994V5.23828C12.8993 4.96233 12.6754 4.73841 12.3994 4.73828H7.60352C7.23781 4.73828 6.88446 4.60438 6.61035 4.3623L5.09766 3.02637C5.00636 2.94576 4.88838 2.90144 4.7666 2.90137H2.0498C1.77366 2.90137 1.5498 3.12523 1.5498 3.40137V9.78223L0.902344 12.2119C0.648452 13.1642 1.36604 14.0986 2.35156 14.0986H2.0498C1.2214 14.0986 0.549838 13.427 0.549805 12.5986V3.40137C0.549805 2.57294 1.22138 1.90137 2.0498 1.90137H4.7666Z\" fill=\"currentColor\"/></svg>显示文件位置</button></div></span>"
+        }
+      ],
+      "props": [
+        {
+          "name": "absolutePath",
+          "type": "string",
+          "default": "—",
+          "desc": "不可预览文件的绝对路径（由 sidebar.right.tab.document.unpreviewable 的 owner 提供）。"
+        },
+        {
+          "name": "useOpenInAppDesktop",
+          "type": "ObservableSnapshot<boolean | null>",
+          "default": "—",
+          "desc": "桌面能力查询结果；null 触发 loadDesktop，非 true 时不渲染。"
+        },
+        {
+          "name": "loadDesktop",
+          "type": "() => Promise<void>",
+          "default": "—",
+          "desc": "向 Host 查询当前环境是否支持原生打开。"
+        },
+        {
+          "name": "openPath",
+          "type": "(path: string, action: OpenInAppPathAction, application?: string) => Promise<OpenInAppPathFailure | null>",
+          "default": "—",
+          "desc": "执行打开或显示位置并返回失败码。"
+        },
+        {
+          "name": "applications",
+          "type": "(path: string, signal: AbortSignal) => Promise<readonly SessionWorkspacePathApplication[] | null>",
+          "default": "—",
+          "desc": "按路径查询文件关联；失败时主按钮回退到「显示文件位置」。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'open-in-app'>",
+          "default": "—",
+          "desc": "open-in-app 命名空间文案。"
+        }
+      ],
+      "notes": "非可视组件：等价于 <code>&lt;FileOpenTarget {...props} empty /&gt;</code>，注册在 <code>sidebar.right.tab.document.unpreviewable</code>。它替代的是空态里原本「重试」的位置，所以用带文字的大号按钮而不是文档头的图标按钮。",
+      "keywords": [
+        "空态",
+        "不可预览",
+        "打开方式",
+        "unpreviewable",
+        "open path"
+      ]
+    },
+    {
+      "id": "open-target-button",
+      "name": "OpenTargetButton",
+      "exportName": "OpenTargetButton",
+      "zh": "打开方式按钮",
+      "group": "shell",
+      "summary": "文件与目录共用的分体打开按钮：0.5px 发丝描边、<code>--dsw-radius-sm</code> 的 24px 紧凑态只有 13px 应用图标与 10px 箭头；<code>data-size=\"large\"</code> 时高 36px、圆角换 <code>--dsw-radius-md</code>、描边加深到 l2，主按钮是 18px 图标加 14px 文字（「打开」）。悬停或键盘聚焦时两半都填 <code>--dsw-alias-interactive-bg-hover</code>；文件没有可用应用时主按钮退化为 13px 文件夹图标「显示文件位置」且不再有下拉。菜单经 <code>Menu</code> portal 到 body（dense、右对齐），文件菜单末尾固定「显示文件位置」，目录菜单只有应用行；操作中两半禁用，关联查询中用 13/18px 骨架块占位。",
+      "source": "packages/client/ui-open-in-app/src/client/OpenTargetButton.tsx#L81",
+      "css": [
+        "packages/client/ui-open-in-app/src/client/OpenTargetButton.module.css",
+        "packages/client/ui-primitives/src/Menu.module.css",
+        "packages/client/ui-primitives/src/MenuSurface.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l4",
+        "--dsw-radius-sm",
+        "--dsw-font-family",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-radius-md",
+        "--dsw-alias-border-l2",
+        "--dsw-radius-xs",
+        "--dsw-alias-border-l1",
+        "--dsw-elevation-prominent",
+        "--dsw-alias-scrollbar-bg-l2",
+        "--dsw-alias-scrollbar-hover-l2",
+        "--dsw-alias-menu-icon",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-state-error-primary",
+        "--dsw-alias-interactive-bg-hover-danger",
+        "--dsw-alias-label-tertiary",
+        "--dsw-radius-lg",
+        "--dsw-menu-surface-fill",
+        "--dsw-menu-backdrop-filter",
+        "--dsw-alias-bg-base"
+      ],
+      "specimens": [
+        {
+          "label": "默认态：文件 + 默认应用（24px）",
+          "note": "紧凑态主按钮只有图标，语义靠 aria-label「用 Cursor 打开」；应用图标是 Host 图标缺失时的回退字形",
+          "html": "<span class=\"root menuAnchor\"><div class=\"split\" data-open-target=\"file\" data-size=\"compact\" data-open-path=\"\" data-state=\"idle\"><button type=\"button\" class=\"main\" aria-label=\"用 Cursor 打开\" data-open-path-open=\"\"><svg width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M11.7256 2.77441C12.5538 2.77469 13.2256 3.44616 13.2256 4.27441V10.1416H12.2256V4.27441C12.2256 3.99844 12.0015 3.77469 11.7256 3.77441H5.7207V2.77441H11.7256Z\" fill=\"currentColor\"/><path d=\"M2.77441 13.2255L12.3756 3.62427\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"chevron\" aria-haspopup=\"menu\" aria-expanded=\"false\" aria-label=\"更多打开方式\" data-open-path-more=\"\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></button></div></span>"
+        },
+        {
+          "label": "展开态：应用菜单 + 「显示文件位置」页脚",
+          "note": "静态近似：菜单本来经 portal 固定到 body，这里拉回文档流放在按钮下方，右缘对齐；页脚是文件类型独有的「显示文件位置」",
+          "pad": "lg",
+          "html": "<div style=\"display:flex;flex-direction:column;align-items:flex-end;gap:6px\"><span class=\"root menuAnchor\"><div class=\"split\" data-open-target=\"file\" data-size=\"compact\" data-open-path=\"\" data-state=\"idle\"><button type=\"button\" class=\"main\" aria-label=\"用 Cursor 打开\" data-open-path-open=\"\"><svg width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M11.7256 2.77441C12.5538 2.77469 13.2256 3.44616 13.2256 4.27441V10.1416H12.2256V4.27441C12.2256 3.99844 12.0015 3.77469 11.7256 3.77441H5.7207V2.77441H11.7256Z\" fill=\"currentColor\"/><path d=\"M2.77441 13.2255L12.3756 3.62427\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"chevron\" aria-haspopup=\"menu\" aria-expanded=\"true\" aria-label=\"更多打开方式\" data-open-path-more=\"\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></button></div></span><div class=\"surface list denseList scrollable portal snapshotMenu\" data-menu-material=\"translucent\" role=\"menu\" style=\"--dsh-menu-anchor:--dsh-menu-demo\"><div class=\"material\" aria-hidden=\"true\"></div><div class=\"viewport\" role=\"presentation\"><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item\"><span class=\"itemIcon\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M11.7256 2.77441C12.5538 2.77469 13.2256 3.44616 13.2256 4.27441V10.1416H12.2256V4.27441C12.2256 3.99844 12.0015 3.77469 11.7256 3.77441H5.7207V2.77441H11.7256Z\" fill=\"currentColor\"/><path d=\"M2.77441 13.2255L12.3756 3.62427\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">Cursor（默认）</span></button></div><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item\"><span class=\"itemIcon\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M11.7256 2.77441C12.5538 2.77469 13.2256 3.44616 13.2256 4.27441V10.1416H12.2256V4.27441C12.2256 3.99844 12.0015 3.77469 11.7256 3.77441H5.7207V2.77441H11.7256Z\" fill=\"currentColor\"/><path d=\"M2.77441 13.2255L12.3756 3.62427\" stroke=\"currentColor\"/></svg></span><span class=\"itemLabel\">VS Code</span></button></div></div><div class=\"footer\" role=\"presentation\"><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item\"><span class=\"itemIcon\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.55912 7.93683C2.67584 7.49906 3.0723 7.19446 3.52536 7.19446H13.6491C14.3061 7.19446 14.7846 7.81725 14.6153 8.45209L13.4411 12.856C13.3244 13.2938 12.9279 13.5984 12.4748 13.5984H2.35113C1.69411 13.5984 1.21562 12.9756 1.38489 12.3407L2.55912 7.93683Z\" fill=\"currentColor\" opacity=\"0.16\"/><path d=\"M13.6491 6.69446C14.6346 6.69453 15.3522 7.62895 15.0983 8.58118L13.9245 12.9845C13.7494 13.6412 13.1539 14.0988 12.4743 14.0988H2.35126C1.36574 14.0988 0.648153 13.1643 0.902044 12.212L2.07587 7.80774C2.25102 7.15128 2.84567 6.69455 3.52509 6.69446H13.6491ZM3.52509 7.69446C3.29865 7.69455 3.10004 7.84674 3.04169 8.06555L1.86786 12.4698C1.78345 12.7872 2.02285 13.0988 2.35126 13.0988H12.4743C12.7007 13.0988 12.8992 12.9463 12.9577 12.7277L14.1325 8.32336C14.2171 8.00598 13.9776 7.69453 13.6491 7.69446H3.52509Z\" fill=\"currentColor\"/><path d=\"M4.7666 1.90137C5.13227 1.90144 5.48571 2.03525 5.75977 2.27734L7.27246 3.61328C7.36379 3.69382 7.48174 3.73828 7.60352 3.73828H12.3994C13.2276 3.73841 13.8993 4.41005 13.8994 5.23828V6.7168C13.8183 6.70327 13.735 6.69436 13.6494 6.69434H12.8994V5.23828C12.8993 4.96233 12.6754 4.73841 12.3994 4.73828H7.60352C7.23781 4.73828 6.88446 4.60438 6.61035 4.3623L5.09766 3.02637C5.00636 2.94576 4.88838 2.90144 4.7666 2.90137H2.0498C1.77366 2.90137 1.5498 3.12523 1.5498 3.40137V9.78223L0.902344 12.2119C0.648452 13.1642 1.36604 14.0986 2.35156 14.0986H2.0498C1.2214 14.0986 0.549838 13.427 0.549805 12.5986V3.40137C0.549805 2.57294 1.22138 1.90137 2.0498 1.90137H4.7666Z\" fill=\"currentColor\"/></svg></span><span class=\"itemLabel\">显示文件位置</span></button></div></div></div></div>",
+          "css": "/* 静态快照：真实菜单由 createPortal 挂到 body（.list 为 position: fixed 的浮层）。\n   snapshotMenu 把它拉回文档流；用 relative 而不是 static，保留 MenuSurface 的\n   .material（inset: 0）所需的包含块。对齐由外层容器的 align-items:flex-end 补位。 */\n.list.snapshotMenu { position: relative; inset: auto; }"
+        },
+        {
+          "label": "悬停模拟：主按钮填充",
+          "note": "悬停模拟：:hover 无法静态触发，按源码规则原样搬运",
+          "html": "<span class=\"root menuAnchor\"><div class=\"split\" data-open-target=\"file\" data-size=\"compact\" data-open-path=\"\" data-state=\"idle\"><button type=\"button\" class=\"main forceHover\" aria-label=\"用 Cursor 打开\" data-open-path-open=\"\"><svg width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M11.7256 2.77441C12.5538 2.77469 13.2256 3.44616 13.2256 4.27441V10.1416H12.2256V4.27441C12.2256 3.99844 12.0015 3.77469 11.7256 3.77441H5.7207V2.77441H11.7256Z\" fill=\"currentColor\"/><path d=\"M2.77441 13.2255L12.3756 3.62427\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"chevron\" aria-haspopup=\"menu\" aria-expanded=\"false\" aria-label=\"更多打开方式\" data-open-path-more=\"\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></button></div></span>",
+          "css": "/* 悬停模拟：:hover 无法静态触发，这条按 OpenTargetButton.module.css 的\n   `.main:hover:not(:disabled)` 原样搬运。 */\n.main.forceHover:not(:disabled) { background: var(--dsw-alias-interactive-bg-hover); }"
+        },
+        {
+          "label": "无注册应用：只保留「显示文件位置」",
+          "note": "文件没有注册应用时主按钮用文件夹图标，没有下拉；菜单里的「显示文件位置」此时就是默认动作",
+          "html": "<span class=\"root menuAnchor\"><div class=\"split\" data-open-target=\"file\" data-size=\"compact\" data-open-path=\"\" data-state=\"idle\"><button type=\"button\" class=\"main\" aria-label=\"显示文件位置\" data-open-path-open=\"\"><svg width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.55912 7.93683C2.67584 7.49906 3.0723 7.19446 3.52536 7.19446H13.6491C14.3061 7.19446 14.7846 7.81725 14.6153 8.45209L13.4411 12.856C13.3244 13.2938 12.9279 13.5984 12.4748 13.5984H2.35113C1.69411 13.5984 1.21562 12.9756 1.38489 12.3407L2.55912 7.93683Z\" fill=\"currentColor\" opacity=\"0.16\"/><path d=\"M13.6491 6.69446C14.6346 6.69453 15.3522 7.62895 15.0983 8.58118L13.9245 12.9845C13.7494 13.6412 13.1539 14.0988 12.4743 14.0988H2.35126C1.36574 14.0988 0.648153 13.1643 0.902044 12.212L2.07587 7.80774C2.25102 7.15128 2.84567 6.69455 3.52509 6.69446H13.6491ZM3.52509 7.69446C3.29865 7.69455 3.10004 7.84674 3.04169 8.06555L1.86786 12.4698C1.78345 12.7872 2.02285 13.0988 2.35126 13.0988H12.4743C12.7007 13.0988 12.8992 12.9463 12.9577 12.7277L14.1325 8.32336C14.2171 8.00598 13.9776 7.69453 13.6491 7.69446H3.52509Z\" fill=\"currentColor\"/><path d=\"M4.7666 1.90137C5.13227 1.90144 5.48571 2.03525 5.75977 2.27734L7.27246 3.61328C7.36379 3.69382 7.48174 3.73828 7.60352 3.73828H12.3994C13.2276 3.73841 13.8993 4.41005 13.8994 5.23828V6.7168C13.8183 6.70327 13.735 6.69436 13.6494 6.69434H12.8994V5.23828C12.8993 4.96233 12.6754 4.73841 12.3994 4.73828H7.60352C7.23781 4.73828 6.88446 4.60438 6.61035 4.3623L5.09766 3.02637C5.00636 2.94576 4.88838 2.90144 4.7666 2.90137H2.0498C1.77366 2.90137 1.5498 3.12523 1.5498 3.40137V9.78223L0.902344 12.2119C0.648452 13.1642 1.36604 14.0986 2.35156 14.0986H2.0498C1.2214 14.0986 0.549838 13.427 0.549805 12.5986V3.40137C0.549805 2.57294 1.22138 1.90137 2.0498 1.90137H4.7666Z\" fill=\"currentColor\"/></svg></button></div></span>"
+        }
+      ],
+      "props": [
+        {
+          "name": "shortcut",
+          "type": "Pick<ShortcutCatalogEntry, 'keys' | 'aria'>",
+          "default": "—",
+          "desc": "主按钮 Tooltip 上显示的快捷键（延迟 500ms 出现），同时写到 aria-keyshortcuts。"
+        },
+        {
+          "name": "kind",
+          "type": "'file' | 'directory'",
+          "default": "—",
+          "desc": "决定默认动作与菜单内容：file 的「显示文件位置」固定在页脚，directory 只有应用行。"
+        },
+        {
+          "name": "applications",
+          "type": "readonly OpenTargetApplication[]",
+          "default": "—",
+          "desc": "可用应用（id、name、icon URL）；icon 为 null 或加载失败时回退到右上箭头字形。"
+        },
+        {
+          "name": "defaultId",
+          "type": "string | undefined",
+          "default": "undefined",
+          "desc": "Host 标记的默认应用 id；文件命中不到时取列表第一个应用，目录则由适配层先算好。"
+        },
+        {
+          "name": "failed",
+          "type": "boolean",
+          "default": "—",
+          "desc": "关联或路由查询失败；菜单里追加一条禁用的「无法获取应用列表」。"
+        },
+        {
+          "name": "busy",
+          "type": "boolean",
+          "default": "—",
+          "desc": "外部操作进行中，两个按钮都禁用，data-state 变为 busy。"
+        },
+        {
+          "name": "loading",
+          "type": "boolean",
+          "default": "—",
+          "desc": "关联查询中：没有首选应用时用 13px（大号 18px）骨架块代替图标，两个按钮禁用。"
+        },
+        {
+          "name": "prominent",
+          "type": "boolean",
+          "default": "—",
+          "desc": "36px 带文字的大号变体（「打开」/「显示文件位置」），供空态使用；默认是 24px 纯图标。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'open-in-app'>",
+          "default": "—",
+          "desc": "open-in-app 命名空间文案。"
+        },
+        {
+          "name": "execute",
+          "type": "(operation: OpenTargetOperation) => Promise<OpenInAppPathFailure | null>",
+          "default": "—",
+          "desc": "执行默认打开、指定应用或显示位置；返回失败码时由该控件发出顶部居中的警告 Toast。"
+        },
+        {
+          "name": "refresh",
+          "type": "() => void",
+          "default": "—",
+          "desc": "首次展开菜单前刷新关联列表，避免沿用挂载时的过期结果。"
+        }
+      ],
+      "notes": "紧凑态主按钮只有图标，因此 <code>aria-label</code> 承载「用 Cursor 打开 / 显示文件位置」，并挂 <code>Tooltip</code>；36px 变体把文案写进按钮，去掉 <code>aria-label</code>。文件类型始终有「显示文件位置」页脚，且它是唯一没有可用应用时的默认动作；<code>defaultId</code> 命中不到时文件回退到关联列表第一个应用。打开失败时控件在按钮旁渲染 Toast；静态快照里 Tooltip 与 toast 都不出现。",
+      "keywords": [
+        "分体按钮",
+        "打开方式",
+        "应用菜单",
+        "split button",
+        "reveal"
+      ]
+    },
+    {
+      "id": "message-feedback-actions",
+      "name": "MessageFeedbackActions",
+      "exportName": "MessageFeedbackActions",
+      "zh": "消息反馈",
+      "group": "shell",
+      "summary": "助手消息操作行里的点赞/点踩对（位于复制与分支之间）：两个 28px 方形按钮（随 <code>--dsh-content-font-delta</code> 一起长）、15px 描边字形，默认 <code>--dsw-alias-label-tertiary</code>，悬停填充 <code>--dsw-alias-interactive-bg-hover</code> 并转 <code>--dsw-alias-label-secondary</code>。已记录的评分改用填充字形并带 <code>data-active</code>，指针离开这行后仍能看出结论；点击已记录的评分是撤销，未记录的点击会打开反馈弹窗。保存中两个按钮禁用（0.4 透明），失败时右侧追加 13px 的 <code>role=\"status\"</code> 提示。",
+      "source": "packages/client/ui-message-feedback/src/client/MessageFeedbackActions.tsx#L25",
+      "css": [
+        "packages/client/ui-message-feedback/src/client/MessageFeedbackActions.module.css"
+      ],
+      "tokens": [
+        "--dsw-radius-sm",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-secondary"
+      ],
+      "specimens": [
+        {
+          "label": "默认态：两个描边图标按钮",
+          "note": "28px 方按钮；两个按钮的 aria-label 分别是「好的回答」「有问题的回答」",
+          "html": "<div style=\"display:flex;align-items:center\"><button type=\"button\" class=\"action\" aria-label=\"好的回答\" aria-pressed=\"false\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M13.537 8.12098L12.3983 12.8455C12.1818 13.7438 11.378 14.3769 10.454 14.3769L9.35595 14.3769H7.43799H5.16577C3.50892 14.3769 2.16577 13.0337 2.16577 11.3769V7.88668C2.16577 7.33439 2.61349 6.88668 3.16577 6.88668H4.02665C5.84943 6.88668 7.38083 3.28711 7.67689 2.54578C7.71259 2.45639 7.73501 2.36373 7.77922 2.27824C7.86506 2.11221 8.08228 1.87578 8.59039 2.07775C10.3291 2.76886 9.23144 6.04071 8.96955 6.75058C8.94502 6.81707 8.99495 6.88668 9.06581 6.88668H12.5648C13.2119 6.88668 13.6886 7.49192 13.537 8.12098Z\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"action\" aria-label=\"有问题的回答\" aria-pressed=\"false\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.46302 8.06749L3.60171 3.34299C3.81822 2.44467 4.62196 1.81162 5.546 1.8116L6.64406 1.81158L8.56202 1.81158L10.8342 1.81158C12.4911 1.81158 13.8342 3.15473 13.8342 4.81158L13.8342 8.3018C13.8342 8.85408 13.3865 9.3018 12.8342 9.3018L11.9734 9.3018C10.1506 9.3018 8.61918 12.9014 8.32311 13.6427C8.28741 13.7321 8.26499 13.8247 8.22078 13.9102C8.13494 14.0763 7.91772 14.3127 7.40961 14.1107C5.67089 13.4196 6.76856 10.1478 7.03045 9.43789C7.05498 9.37141 7.00505 9.3018 6.93419 9.3018L3.43519 9.3018C2.78811 9.3018 2.31141 8.69656 2.46302 8.06749Z\" stroke=\"currentColor\"/></svg></button></div>"
+        },
+        {
+          "label": "已记录正面：填充点赞 + 描边点踩",
+          "note": "已记录的评分用填充字形与 data-active；aria-label 变成「取消标记」，再点一次是撤销",
+          "html": "<div style=\"display:flex;align-items:center\"><button type=\"button\" class=\"action\" aria-label=\"取消标记\" aria-pressed=\"true\" data-active=\"true\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M13.537 8.12098L12.3983 12.8455C12.1818 13.7438 11.378 14.3769 10.454 14.3769L9.35595 14.3769H7.43799H5.16577C3.50892 14.3769 2.16577 13.0337 2.16577 11.3769V7.88668C2.16577 7.33439 2.61349 6.88668 3.16577 6.88668H4.02665C5.84943 6.88668 7.38083 3.28711 7.67689 2.54578C7.71259 2.45639 7.73501 2.36373 7.77922 2.27824C7.86506 2.11221 8.08228 1.87578 8.59039 2.07775C10.3291 2.76886 9.23144 6.04071 8.96955 6.75058C8.94502 6.81707 8.99495 6.88668 9.06581 6.88668H12.5648C13.2119 6.88668 13.6886 7.49192 13.537 8.12098Z\" fill=\"currentColor\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"action\" aria-label=\"有问题的回答\" aria-pressed=\"false\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.46302 8.06749L3.60171 3.34299C3.81822 2.44467 4.62196 1.81162 5.546 1.8116L6.64406 1.81158L8.56202 1.81158L10.8342 1.81158C12.4911 1.81158 13.8342 3.15473 13.8342 4.81158L13.8342 8.3018C13.8342 8.85408 13.3865 9.3018 12.8342 9.3018L11.9734 9.3018C10.1506 9.3018 8.61918 12.9014 8.32311 13.6427C8.28741 13.7321 8.26499 13.8247 8.22078 13.9102C8.13494 14.0763 7.91772 14.3127 7.40961 14.1107C5.67089 13.4196 6.76856 10.1478 7.03045 9.43789C7.05498 9.37141 7.00505 9.3018 6.93419 9.3018L3.43519 9.3018C2.78811 9.3018 2.31141 8.69656 2.46302 8.06749Z\" stroke=\"currentColor\"/></svg></button></div>"
+        },
+        {
+          "label": "评分中：两个按钮 0.4 透明禁用",
+          "note": "pending 期间不可再点；源码没有把 aria-pressed 清掉，所以记录态仍保留",
+          "html": "<div style=\"display:flex;align-items:center\"><button type=\"button\" class=\"action\" aria-label=\"好的回答\" aria-pressed=\"false\" disabled><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M13.537 8.12098L12.3983 12.8455C12.1818 13.7438 11.378 14.3769 10.454 14.3769L9.35595 14.3769H7.43799H5.16577C3.50892 14.3769 2.16577 13.0337 2.16577 11.3769V7.88668C2.16577 7.33439 2.61349 6.88668 3.16577 6.88668H4.02665C5.84943 6.88668 7.38083 3.28711 7.67689 2.54578C7.71259 2.45639 7.73501 2.36373 7.77922 2.27824C7.86506 2.11221 8.08228 1.87578 8.59039 2.07775C10.3291 2.76886 9.23144 6.04071 8.96955 6.75058C8.94502 6.81707 8.99495 6.88668 9.06581 6.88668H12.5648C13.2119 6.88668 13.6886 7.49192 13.537 8.12098Z\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"action\" aria-label=\"有问题的回答\" aria-pressed=\"false\" disabled><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.46302 8.06749L3.60171 3.34299C3.81822 2.44467 4.62196 1.81162 5.546 1.8116L6.64406 1.81158L8.56202 1.81158L10.8342 1.81158C12.4911 1.81158 13.8342 3.15473 13.8342 4.81158L13.8342 8.3018C13.8342 8.85408 13.3865 9.3018 12.8342 9.3018L11.9734 9.3018C10.1506 9.3018 8.61918 12.9014 8.32311 13.6427C8.28741 13.7321 8.26499 13.8247 8.22078 13.9102C8.13494 14.0763 7.91772 14.3127 7.40961 14.1107C5.67089 13.4196 6.76856 10.1478 7.03045 9.43789C7.05498 9.37141 7.00505 9.3018 6.93419 9.3018L3.43519 9.3018C2.78811 9.3018 2.31141 8.69656 2.46302 8.06749Z\" stroke=\"currentColor\"/></svg></button></div>"
+        },
+        {
+          "label": "加载失败：按钮行右侧的 13px 提示",
+          "note": "提示是 role=\"status\" 的 .failure，不占按钮位置；加载失败与撤销失败共用这一行",
+          "html": "<div style=\"display:flex;align-items:center\"><button type=\"button\" class=\"action\" aria-label=\"好的回答\" aria-pressed=\"false\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M13.537 8.12098L12.3983 12.8455C12.1818 13.7438 11.378 14.3769 10.454 14.3769L9.35595 14.3769H7.43799H5.16577C3.50892 14.3769 2.16577 13.0337 2.16577 11.3769V7.88668C2.16577 7.33439 2.61349 6.88668 3.16577 6.88668H4.02665C5.84943 6.88668 7.38083 3.28711 7.67689 2.54578C7.71259 2.45639 7.73501 2.36373 7.77922 2.27824C7.86506 2.11221 8.08228 1.87578 8.59039 2.07775C10.3291 2.76886 9.23144 6.04071 8.96955 6.75058C8.94502 6.81707 8.99495 6.88668 9.06581 6.88668H12.5648C13.2119 6.88668 13.6886 7.49192 13.537 8.12098Z\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"action\" aria-label=\"有问题的回答\" aria-pressed=\"false\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.46302 8.06749L3.60171 3.34299C3.81822 2.44467 4.62196 1.81162 5.546 1.8116L6.64406 1.81158L8.56202 1.81158L10.8342 1.81158C12.4911 1.81158 13.8342 3.15473 13.8342 4.81158L13.8342 8.3018C13.8342 8.85408 13.3865 9.3018 12.8342 9.3018L11.9734 9.3018C10.1506 9.3018 8.61918 12.9014 8.32311 13.6427C8.28741 13.7321 8.26499 13.8247 8.22078 13.9102C8.13494 14.0763 7.91772 14.3127 7.40961 14.1107C5.67089 13.4196 6.76856 10.1478 7.03045 9.43789C7.05498 9.37141 7.00505 9.3018 6.93419 9.3018L3.43519 9.3018C2.78811 9.3018 2.31141 8.69656 2.46302 8.06749Z\" stroke=\"currentColor\"/></svg></button><span class=\"failure\" role=\"status\">反馈状态加载失败</span></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "messageId",
+          "type": "MessageId",
+          "default": "—",
+          "desc": "所属助手消息的 id（conversation.chat.assistant-actions 的 owner 提供）。"
+        },
+        {
+          "name": "useFeedback",
+          "type": "HostObservable<MessageFeedbackView>",
+          "default": "—",
+          "desc": "注入 hooks 的 feedback 快照，渲染器绑定为 useFeedback：按消息取评分与加载状态。"
+        },
+        {
+          "name": "ensure",
+          "type": "() => Promise<MessageFeedbackActionResult>",
+          "default": "—",
+          "desc": "首次 hover/focus 时加载一次会话级反馈；结果决定点击是撤销还是打开弹窗。"
+        },
+        {
+          "name": "current",
+          "type": "(messageId: MessageId) => MessageFeedbackItem | undefined",
+          "default": "—",
+          "desc": "读取控制器最后一次观察到的消息反馈，用于判断点击对应的是记录还是撤销。"
+        },
+        {
+          "name": "retract",
+          "type": "(messageId: MessageId, rating: MessageFeedbackRating) => Promise<MessageFeedbackActionResult>",
+          "default": "—",
+          "desc": "撤销已记录的评分；并发改动时按最新状态做空操作，失败返回错误码。"
+        },
+        {
+          "name": "openDialog",
+          "type": "(messageId: MessageId, rating: MessageFeedbackRating) => void",
+          "default": "—",
+          "desc": "为这条消息和这个判断打开反馈弹窗，提交后才真正记录评分。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'feedback'>",
+          "default": "—",
+          "desc": "feedback 命名空间文案（tooltip 与失败提示）。"
+        }
+      ],
+      "notes": "两个按钮的 <code>aria-label</code> 在已记录时变成「取消标记」，<code>aria-pressed</code> 与 <code>data-active</code> 同步；首次 hover/focus 才拉取会话级反馈，避免逐条消息挂载时请求。加载失败与撤销失败都复用同一行 <code>role=\"status\"</code> 文案（13px），悬停填充与字号缩放分别走 <code>--dsw-alias-interactive-bg-hover</code> 与 <code>--dsh-content-font-delta</code>。",
+      "keywords": [
+        "反馈",
+        "点赞",
+        "点踩",
+        "like",
+        "dislike",
+        "rating"
+      ]
+    }
+  ]
+}

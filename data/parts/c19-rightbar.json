@@ -1,0 +1,589 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "id": "expand-button",
+      "name": "ExpandButton",
+      "exportName": "ExpandButton",
+      "zh": "展开按钮",
+      "group": "dock",
+      "summary": "会话标题栏右角的展开控件：只在右侧栏收起时渲染，展开后返回 <code>null</code>，角落座位随之收起——因此收起态不占会话宽度，transcript 的滚动条仍贴在列边缘。它落在共享 <code>Button</code>（ghost / sm，28px 高、8px 圆角）上，再叠自己的 <code>.button</code> 把宽度收到 28px、padding 归零、墨色降到 <code>--dsw-alias-label-secondary</code>；<code>.icon</code> 把左栏的面板图标 <code>scaleX(-1)</code> 镜像到右边缘，<code>.button svg</code> 固定 15×15。文案取 <code>chrome.expand</code> / <code>chrome.expandAria</code>（打开侧边栏 / 打开右侧边栏），并按 <code>sidebar.right.toggle</code> 的生效绑定写 <code>aria-keyshortcuts</code>。",
+      "source": "packages/client/ui-sidebar-right/src/client/shell/ExpandButton.tsx#L33",
+      "css": [
+        "packages/client/ui-primitives/src/Button.module.css",
+        "packages/client/ui-sidebar-right/src/client/shell/ExpandButton.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-radius-sm",
+        "--dsw-radius-md"
+      ],
+      "specimens": [
+        {
+          "label": "收起态：会话标题栏右角的 28px 按钮",
+          "note": "角落座位在 utilities 行的外侧；Tooltip 是门户，快照里不画。按钮自带 <code>data-sidebar-right-expand</code> 钩子。",
+          "html": "<div style=\"display:flex;align-items:center;gap:12px;width:520px\"><span>当前会话：修复会话列表的滚动位置</span><span style=\"flex:1 1 auto\"></span><button type='button' class=\"button ghost sm\" aria-label=\"打开右侧边栏\" aria-keyshortcuts=\"Meta+Alt+B\" data-sidebar-right-expand><svg class=\"c1-icon\" width=\"15\" height=\"15\" viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z' stroke='currentColor'/><path d='M5.5 1.5V14.5' stroke='currentColor'/></svg></button></div>"
+        },
+        {
+          "label": "悬停态（静态模拟）",
+          "note": "悬停模拟：ghost 变体的 hover 底色照搬自 Button.module.css。",
+          "css": "/* 状态模拟：静态快照没有指针，把 Button.module.css 里 .ghost:hover:not(:disabled) 的背景照搬到一个强制类上。 */\n.button.forceHover { background: var(--dsw-alias-interactive-bg-hover); }",
+          "html": "<div style=\"display:flex;align-items:center;gap:12px;width:520px\"><span>当前会话：修复会话列表的滚动位置</span><span style=\"flex:1 1 auto\"></span><button type='button' class=\"button ghost sm forceHover\" aria-label=\"打开右侧边栏\" data-sidebar-right-expand><svg class=\"c1-icon\" width=\"15\" height=\"15\" viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z' stroke='currentColor'/><path d='M5.5 1.5V14.5' stroke='currentColor'/></svg></button></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "sessionId",
+          "type": "SessionId",
+          "default": "—",
+          "desc": "当前会话标识，同时是每会话 store 的键：展开状态按会话分别记录。"
+        },
+        {
+          "name": "useStore",
+          "type": "PropsStore<ReturnType<typeof createSidebarRightStore>>",
+          "default": "—",
+          "desc": "读 bySession[sessionId].layout.expanded；为 true（面板在屏）时组件直接返回 null。"
+        },
+        {
+          "name": "actions",
+          "type": "ReturnType<typeof createSidebarRightStore>['actions']",
+          "default": "—",
+          "desc": "只调用 setExpanded(sessionId, true)；组件本身不持有本地状态。"
+        },
+        {
+          "name": "t",
+          "type": "PropsLocale<'sidebarRight'>",
+          "default": "—",
+          "desc": "取 chrome.expand 作 Tooltip 文案、chrome.expandAria 作无障碍名。"
+        },
+        {
+          "name": "useShortcuts",
+          "type": "HostObservable<readonly ShortcutCatalogEntry[]>",
+          "default": "—",
+          "desc": "找 id 为 sidebar.right.toggle 的条目，把生效 keys 交给 Tooltip，aria 写进按钮的 aria-keyshortcuts。"
+        }
+      ],
+      "notes": "两张样式表按 <code>[Button, ExpandButton]</code> 列出，元素上裸写 <code>button ghost sm</code> 时构建脚本会同时挂上两个模块的 <code>button</code>，本包那张排在后面因此覆盖共享按钮的 padding 与墨色——与源码把 <code>css.button</code> 当 <code>className</code> 传给 <code>Button</code> 的意图一致。<code>.icon</code> 在两表中同名，快照里用 <code>c1-icon</code> 钉死到本包那张。易混：面板自己的收起按钮（SidebarRight 的 <code>.iconButton</code>）在标签轨末端，尺寸相同但类名与座位都不同。",
+      "keywords": [
+        "展开侧边栏",
+        "右侧栏",
+        "sidebar.right.toggle",
+        "角标",
+        "expand"
+      ]
+    },
+    {
+      "id": "rightbar-root",
+      "name": "RightbarRoot",
+      "exportName": "RightbarRoot",
+      "zh": "右栏根",
+      "group": "dock",
+      "summary": "右侧栏的 root 作用域装配层，自身不画 UI：它为每个被保留的会话渲染一个 <code>&lt;div class=\"session\"&gt;</code> 包装层（<code>display:contents</code>，不产生盒子；未选中时加 <code>hidden</code> 变成 <code>display:none</code>），在 <code>SessionProvider</code> 里把 <code>rightbar.session</code> 槽渲染进去。选中会话（<code>usePanelInfo</code> 的 <code>activePanelId === null</code> 且 <code>view.selected</code>）那棵树 <code>active=true</code>，其余会话仍挂载只是整棵隐藏——切会话是显隐切换而不是卸载，后台会话的 tab 与滚动位置都留着。<code>mountView(view.reference)</code> 在 <code>useLayoutEffect</code> 里提交挂载生命周期，<code>width</code> / <code>viewportWidth</code> / <code>canShow</code> 原样透传给面板坐席。",
+      "source": "packages/client/ui-sidebar-right/src/client/shell/RightbarRoot.tsx#L34",
+      "css": [
+        "packages/client/ui-sidebar-right/src/client/shell/SidebarRight.module.css",
+        "packages/client/ui-dockkit/src/components/dockkit.module.css",
+        "packages/client/ui-sidebar-right/src/client/tabs/guide/GuideBody.module.css",
+        "packages/client/ui-primitives/src/ShortcutKeys.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-markdown-tag",
+        "--dsw-alias-bg-layer-1",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-border-l4",
+        "--dsw-alias-scrollbar-bg-l2",
+        "--dsw-alias-scrollbar-hover-l2",
+        "--dsw-radius-sm",
+        "--dsw-radius-xl",
+        "--dsw-static-neutral-200",
+        "--dsw-static-neutral-700"
+      ],
+      "specimens": [
+        {
+          "label": "在屏会话：它挂载后渲染出的整条右栏（面板 + 停靠标签轨 + 指南正文）",
+          "note": "该组件本身无独立外观（<code>.session</code> 是 <code>display:contents</code>），这里展示 <code>rightbar.session</code> 槽渲染的内容；左侧会话列只是截面示意，不是产品 DOM。面板在真实外壳里 <code>absolute</code> 贴右边缘，快照里拉回文档流。本包只兜底画入口胶囊，终端入口由 ui-sidebar-terminal 自己渲染，故此处只有两个入口。",
+          "bg": "platform",
+          "pad": "lg",
+          "css": "/* 静态快照：.panel 在真实外壳里 position:absolute; top/right/bottom:0 贴住框架右缘。这里拉回文档流并交出尺寸，避免以视口为参照铺满。 */\n.panel { position: relative; inset: auto; }",
+          "html": "<div style=\"display:flex;width:760px;height:430px\"><div style=\"flex:1 1 auto;display:flex;align-items:center;justify-content:center;padding:16px\"><span style=\"font-size:11px\">会话列：transcript（本组件不涉及）</span></div><div class=\"panel\" data-sidebar-right-open data-sidebar-right-panel='push' data-sidebar-right-session='s-1' style=\"width:380px;height:430px\"><div class=\"panelBody\"><div class=\"surface\" data-dockkit-surface data-dockkit-drop-zones='horizontal'><div class=\"tabLayout\" data-dockkit-split='split-root' style=\"grid-template-columns:minmax(0, 1fr)\"><div class=\"tabCell\" data-dockkit-host='dock' data-dockkit-column='0' style=\"grid-column:1;grid-row:1\"><section class=\"tabHost pane\" tabindex='-1' data-dockkit-content='tab-guide' data-dockkit-pane='pane-main' data-dockkit-pane-active data-dockkit-column='0'><div class=\"tabHostHeader\"><div class=\"tabStrip\" role='tablist' data-dockkit-strip='pane-main' data-window-drag><div class=\"stripTabs\" role='presentation' data-dockkit-strip-tabs='pane-main'><div role='tab' aria-selected='true' tabindex='0' class=\"tab tabActive tabQuiet\" data-dockkit-tab='tab-guide' data-dockkit-tab-quiet><span class=\"c1-tabTitle\" data-dockkit-tab-title><span class=\"c0-tabTitle\" data-sidebar-right-tab='tab-guide' data-sidebar-right-occurrence='9f1c2a54-6d3e-4b18-9c07-2f5ab8d41e63'><svg class=\"titleIcon\" width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z' stroke='currentColor'/><path d='M10.6101 5.39014L8.99014 8.99014L5.39014 10.6101L7.01014 7.01014L10.6101 5.39014Z' fill='currentColor'/></svg>开始</span></span></div></div><div class=\"stripFill\" data-dockkit-strip-fill></div><button type='button' class=\"c1-iconButton\" aria-label=\"分栏\" data-dockkit-split-button='pane-main'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z' stroke='currentColor'/><path d='M8 1.5V14.5' stroke='currentColor'/></svg></button><div class=\"stripChrome\" data-dockkit-strip-chrome><button type='button' class=\"c0-iconButton\" aria-label=\"全屏\" aria-keyshortcuts='Meta+Alt+Enter' data-sidebar-right-mode='fullscreen'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M2.33203 10.4054V13.1681C2.33229 13.444 2.55605 13.6681 2.83203 13.6681H5.49512V14.6681H2.83203C2.00376 14.6681 1.33229 13.9963 1.33203 13.1681V10.4054H2.33203ZM14.6689 13.1681C14.6687 13.996 13.9968 14.6676 13.1689 14.6681H10.4951V13.6681H13.1689C13.4445 13.6676 13.6687 13.4437 13.6689 13.1681V10.4054H14.6689V13.1681ZM13.1689 1.33118C13.9969 1.33163 14.6688 2.00315 14.6689 2.83118V5.4054H13.6689V2.83118C13.6688 2.55544 13.4446 2.33162 13.1689 2.33118H10.4951V1.33118H13.1689ZM5.49512 2.33118H2.83203C2.55598 2.33118 2.33218 2.55516 2.33203 2.83118V5.4054H1.33203V2.83118C1.33218 2.00288 2.00369 1.33118 2.83203 1.33118H5.49512V2.33118Z' fill='currentColor'/></svg></button><button type='button' class=\"c0-iconButton\" aria-label=\"收起右侧边栏\" data-sidebar-right-toggle><svg class=\"c0-collapseGlyph\" width='15' height='15' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z' stroke='currentColor'/><path d='M5.5 1.5V14.5' stroke='currentColor'/></svg></button></div></div></div><div class=\"tabHostBody paneBody\"><div class=\"tabBody\" data-sidebar-right-tab='tab-guide' data-sidebar-right-occurrence='9f1c2a54-6d3e-4b18-9c07-2f5ab8d41e63'><div class=\"guide\" data-sidebar-right-guide><span class=\"hero\" aria-hidden='true'><svg width='56' height='56' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z' stroke='currentColor'/><path d='M10.6101 5.39014L8.99014 8.99014L5.39014 10.6101L7.01014 7.01014L10.6101 5.39014Z' fill='currentColor'/></svg></span><div class=\"entryCell\"><button type='button' class=\"entry\" data-sidebar-right-guide-entry='files' aria-keyshortcuts='Meta+P'><span class=\"entryIcon\"><svg width='26' height='26' viewBox='0 0 36 36' fill='none' aria-hidden='true'><path d='M10.7603 27.922H24.6817C26.3441 27.922 27.1753 27.922 27.8102 27.5984C28.3687 27.3139 28.8228 26.8598 29.1074 26.3012C29.4309 25.6663 29.4309 24.8351 29.4309 23.1727V15.4936' stroke='#FFCD78' stroke-width='1.97886'/><path d='M13.1597 8.07812C13.4182 8.07818 13.6727 8.14336 13.8989 8.26855L16.7554 9.84961C16.9817 9.97485 17.2369 10.041 17.4956 10.041H26.106C26.9492 10.0412 27.6323 10.7251 27.6323 11.5684V24.5371C27.6323 25.3805 26.9483 26.0645 26.105 26.0645H8.09619C7.25281 26.0645 6.56884 25.3805 6.56885 24.5371V9.60449C6.56909 8.76133 7.25297 8.07812 8.09619 8.07812H13.1597ZM9.81592 14.5508V16.5293H24.3999V14.5508H9.81592Z' fill='#FFBC4D'/></svg></span><span class=\"entryText\"><span class=\"entryTitle\">工作区文件</span><span class=\"entryDescription\">浏览会话工作区的文件</span></span><span class=\"keys\"><kbd class=\"key\">⌘</kbd><kbd class=\"key\">P</kbd></span></button></div><div class=\"entryCell\"><button type='button' class=\"entry\" data-sidebar-right-guide-entry='browser' aria-keyshortcuts='Meta+T'><span class=\"entryIcon\"><svg width='26' height='26' viewBox='0 0 36 36' fill='none' aria-hidden='true'><path d='M17.9995 28.1465C23.6034 28.1465 28.1461 23.6038 28.1461 18C28.1461 12.3963 23.6034 7.85352 17.9995 7.85352C12.3958 7.85352 7.85303 12.3963 7.85303 18C7.85303 23.6038 12.3958 28.1465 17.9995 28.1465Z' stroke='#539CFA' stroke-width='2'/><path d='M8.57764 18H27.4211' stroke='#539CFA' stroke-width='2' stroke-linecap='square'/><path d='M17.999 28.1467C20.0576 28.1467 21.6228 23.6039 21.6228 18C21.6228 12.3963 20.0576 7.85352 17.999 7.85352' stroke='#539CFA' stroke-width='2'/><path d='M17.9992 28.1467C15.9407 28.1467 14.3755 23.6039 14.3755 18C14.3755 12.3963 15.9407 7.85352 17.9992 7.85352' stroke='#539CFA' stroke-width='2'/></svg></span><span class=\"entryText\"><span class=\"entryTitle\">浏览器</span><span class=\"entryDescription\">浏览网页</span></span><span class=\"keys\"><kbd class=\"key\">⌘</kbd><kbd class=\"key\">T</kbd></span></button></div></div></div></div></section></div></div></div></div></div></div>"
+        },
+        {
+          "label": "多会话保留：在屏会话绘制，后台会话的 .session[hidden] 仍挂载",
+          "note": "同一个 root 为每个保留的会话各渲染一层 <code>.session</code>：<code>display:contents</code> 不产生盒子，未选中时 <code>hidden</code> 使整棵子树 <code>display:none</code>。右侧说明文字是座位标注，不是产品文案。",
+          "bg": "platform",
+          "pad": "lg",
+          "css": "/* 静态快照：.panel 真实为 absolute 贴右缘，这里拉回文档流。 */\n.panel { position: relative; inset: auto; }",
+          "html": "<div style=\"display:flex;align-items:flex-start;gap:16px;width:720px\"><div class=\"session\" data-sidebar-right-session='s-1'><div class=\"panel\" data-sidebar-right-open data-sidebar-right-session='s-1' style=\"width:240px;height:130px\"><div class=\"panelBody\"><div style=\"padding:12px\"><span style=\"font-size:11px\">s-1：selected=true，active=true，面板绘制</span></div></div></div></div><div class=\"session\" hidden data-sidebar-right-session='s-2'><div class=\"panel\" data-sidebar-right-open data-sidebar-right-session='s-2' style=\"width:240px;height:130px\"><div class=\"panelBody\"><div style=\"padding:12px\"><span style=\"font-size:11px\">s-2</span></div></div></div></div><span style=\"font-size:11px;width:210px\">s-2 的 <code>.session[hidden]</code>：display:none，子树仍挂载，切回时不必重建</span></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "usePanelInfo",
+          "type": "PropsRuntime<'rightbar'> 的选择器钩子",
+          "default": "—",
+          "desc": "读 info.activePanelId：为 null（没有全局面板占位）时当前会话的右侧栏可见。"
+        },
+        {
+          "name": "useViews",
+          "type": "HostObservable<readonly SidebarSessionViewSnapshot[]>",
+          "default": "—",
+          "desc": "被保留的会话视图快照（sessionId / reference / selected / retainTab），每个渲染一层 .session。"
+        },
+        {
+          "name": "renderSlot",
+          "type": "PropsRenderSlots<'rightbar.session'>",
+          "default": "—",
+          "desc": "把每一层 .session 的内容交给 rightbar.session 槽，并传 width / viewportWidth / canShow / active / retainTab。"
+        },
+        {
+          "name": "mountView",
+          "type": "(reference: SessionReference) => () => void",
+          "default": "—",
+          "desc": "在 useLayoutEffect 里提交这棵子树的挂载生命周期，返回的清理函数在卸载时释放。"
+        },
+        {
+          "name": "SessionProvider",
+          "type": "ComponentType<{ session: SessionReference }>",
+          "default": "—",
+          "desc": "为每棵子树提供会话上下文；同一会话的多个视图因此各自独立。"
+        },
+        {
+          "name": "width / viewportWidth / canShow",
+          "type": "number / number / boolean",
+          "default": "—",
+          "desc": "框架几何与可见性：面板宽度、视口宽度（<768px 自动全屏）以及当前是否允许显示。"
+        }
+      ],
+      "notes": "条目按渲染内容的真实样式表列出 4 张：<code>.session</code>/<code>.panel</code> 来自 SidebarRight.module.css，标签轨来自 dockkit.module.css，指南正文来自 GuideBody.module.css，入口胶囊的键帽来自 ShortcutKeys.module.css。<code>.iconButton</code>（SidebarRight 与 dockkit 同名）与 <code>.tabTitle</code>（同上）在快照里用 <code>c0-</code> / <code>c1-</code> 前缀钉死归属。面板的滑动规则（<code>.panel[data-sidebar-right-open]</code> 让 <code>[data-dockkit-host='dock']</code> 归位）依赖真实钩子属性，快照里保留了 <code>data-sidebar-right-open</code> 与 <code>data-dockkit-host='dock'</code>。",
+      "keywords": [
+        "右栏根",
+        "会话保留",
+        "rightbar",
+        "display:contents",
+        "多会话",
+        "持久挂载"
+      ]
+    },
+    {
+      "id": "guide-body",
+      "name": "GuideBody",
+      "exportName": "GuideBody",
+      "zh": "指南页",
+      "group": "dock",
+      "summary": "指南 tab 的正文：一条替换链加本包兜底的指南页。链 <code>sidebar.right.tab.guide</code> 上有注册者时整块交给它，否则渲染兜底——居中的 56px 罗盘水印加每个注册类型贡献的入口胶囊，没有标题，像浏览器起始页那样只摆门。胶囊是 380px 宽、最小 56px 高的填充药丸（<code>--dsw-radius-xl</code> 圆角、0.5px <code>--dsw-alias-border-l3</code> 描边、14px 标题 + 11px 描述、字形固定 26px 盒子）；入口不超过 4 条时描述照画，超过就全部收成标题单行。点一个胶囊调 <code>tab.actions.openTab(kind, { replaceTab: true })</code>，指南页被目标页原地替换。",
+      "source": "packages/client/ui-sidebar-right/src/client/tabs/guide/GuideBody.tsx#L88",
+      "css": [
+        "packages/client/ui-sidebar-right/src/client/tabs/guide/GuideBody.module.css",
+        "packages/client/ui-primitives/src/ShortcutKeys.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-bg-layer-1",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-radius-xl",
+        "--dsw-static-neutral-200",
+        "--dsw-static-neutral-700"
+      ],
+      "specimens": [
+        {
+          "label": "两条带描述的入口胶囊（≤4 条：标题 + 一行描述 + 键帽）",
+          "note": "两条都是本包兜底的 Provider 入口（工作区文件 / 浏览器），字形与文案取自各自注册表；键帽按 macOS 桌面绑定 <code>⌘P</code> / <code>⌘T</code>。",
+          "bg": "platform",
+          "pad": "lg",
+          "html": "<div style=\"width:460px;height:360px\"><div class=\"guide\" data-sidebar-right-guide><span class=\"hero\" aria-hidden='true'><svg width='56' height='56' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z' stroke='currentColor'/><path d='M10.6101 5.39014L8.99014 8.99014L5.39014 10.6101L7.01014 7.01014L10.6101 5.39014Z' fill='currentColor'/></svg></span><div class=\"entryCell\"><button type='button' class=\"entry\" data-sidebar-right-guide-entry='files' aria-keyshortcuts='Meta+P'><span class=\"entryIcon\"><svg width='26' height='26' viewBox='0 0 36 36' fill='none' aria-hidden='true'><path d='M10.7603 27.922H24.6817C26.3441 27.922 27.1753 27.922 27.8102 27.5984C28.3687 27.3139 28.8228 26.8598 29.1074 26.3012C29.4309 25.6663 29.4309 24.8351 29.4309 23.1727V15.4936' stroke='#FFCD78' stroke-width='1.97886'/><path d='M13.1597 8.07812C13.4182 8.07818 13.6727 8.14336 13.8989 8.26855L16.7554 9.84961C16.9817 9.97485 17.2369 10.041 17.4956 10.041H26.106C26.9492 10.0412 27.6323 10.7251 27.6323 11.5684V24.5371C27.6323 25.3805 26.9483 26.0645 26.105 26.0645H8.09619C7.25281 26.0645 6.56884 25.3805 6.56885 24.5371V9.60449C6.56909 8.76133 7.25297 8.07812 8.09619 8.07812H13.1597ZM9.81592 14.5508V16.5293H24.3999V14.5508H9.81592Z' fill='#FFBC4D'/></svg></span><span class=\"entryText\"><span class=\"entryTitle\">工作区文件</span><span class=\"entryDescription\">浏览会话工作区的文件</span></span><span class=\"keys\"><kbd class=\"key\">⌘</kbd><kbd class=\"key\">P</kbd></span></button></div><div class=\"entryCell\"><button type='button' class=\"entry\" data-sidebar-right-guide-entry='browser' aria-keyshortcuts='Meta+T'><span class=\"entryIcon\"><svg width='26' height='26' viewBox='0 0 36 36' fill='none' aria-hidden='true'><path d='M17.9995 28.1465C23.6034 28.1465 28.1461 23.6038 28.1461 18C28.1461 12.3963 23.6034 7.85352 17.9995 7.85352C12.3958 7.85352 7.85303 12.3963 7.85303 18C7.85303 23.6038 12.3958 28.1465 17.9995 28.1465Z' stroke='#539CFA' stroke-width='2'/><path d='M8.57764 18H27.4211' stroke='#539CFA' stroke-width='2' stroke-linecap='square'/><path d='M17.999 28.1467C20.0576 28.1467 21.6228 23.6039 21.6228 18C21.6228 12.3963 20.0576 7.85352 17.999 7.85352' stroke='#539CFA' stroke-width='2'/><path d='M17.9992 28.1467C15.9407 28.1467 14.3755 23.6039 14.3755 18C14.3755 12.3963 15.9407 7.85352 17.9992 7.85352' stroke='#539CFA' stroke-width='2'/></svg></span><span class=\"entryText\"><span class=\"entryTitle\">浏览器</span><span class=\"entryDescription\">浏览网页</span></span><span class=\"keys\"><kbd class=\"key\">⌘</kbd><kbd class=\"key\">T</kbd></span></button></div></div></div>"
+        },
+        {
+          "label": "五条以上：描述全部省略，无字形的 provider 收到 22px 立方兜底",
+          "note": "源码 <code>MAX_DESCRIBED_ENTRIES = 4</code>，<code>described = entries.length <= 4</code> 是整批判断（GuideBody.tsx:96）：到了 5 条，每一条的 <code>described</code> 都是 false，描述全部不画，标题单行、字形从 26 收到 22。后两条用真实的标签类型名补足，展示 provider 没注册字形时 <code>.placeholderInk</code> 把立方降到三级墨；终端入口在真实产品里由 ui-sidebar-terminal 自己渲染，这里统一按本包兜底标记画。",
+          "bg": "platform",
+          "pad": "lg",
+          "html": "<div style=\"width:460px;height:430px\"><div class=\"guide\" data-sidebar-right-guide><span class=\"hero\" aria-hidden='true'><svg width='56' height='56' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z' stroke='currentColor'/><path d='M10.6101 5.39014L8.99014 8.99014L5.39014 10.6101L7.01014 7.01014L10.6101 5.39014Z' fill='currentColor'/></svg></span><div class=\"entryCell\"><button type='button' class=\"entry\" data-sidebar-right-guide-entry='files' aria-keyshortcuts='Meta+P'><span class=\"entryIcon\"><svg width='22' height='22' viewBox='0 0 36 36' fill='none' aria-hidden='true'><path d='M10.7603 27.922H24.6817C26.3441 27.922 27.1753 27.922 27.8102 27.5984C28.3687 27.3139 28.8228 26.8598 29.1074 26.3012C29.4309 25.6663 29.4309 24.8351 29.4309 23.1727V15.4936' stroke='#FFCD78' stroke-width='1.97886'/><path d='M13.1597 8.07812C13.4182 8.07818 13.6727 8.14336 13.8989 8.26855L16.7554 9.84961C16.9817 9.97485 17.2369 10.041 17.4956 10.041H26.106C26.9492 10.0412 27.6323 10.7251 27.6323 11.5684V24.5371C27.6323 25.3805 26.9483 26.0645 26.105 26.0645H8.09619C7.25281 26.0645 6.56884 25.3805 6.56885 24.5371V9.60449C6.56909 8.76133 7.25297 8.07812 8.09619 8.07812H13.1597ZM9.81592 14.5508V16.5293H24.3999V14.5508H9.81592Z' fill='#FFBC4D'/></svg></span><span class=\"entryText\"><span class=\"entryTitle\">工作区文件</span></span><span class=\"keys\"><kbd class=\"key\">⌘</kbd><kbd class=\"key\">P</kbd></span></button></div><div class=\"entryCell\"><button type='button' class=\"entry\" data-sidebar-right-guide-entry='terminal' aria-keyshortcuts='Control+`'><span class=\"entryIcon\"><svg width='22' height='22' viewBox='0 0 36 36' fill='none' aria-hidden='true'><path d='M10 11L16.606 17.606C16.6841 17.6841 16.6841 17.8107 16.606 17.8888L10 24.4948' stroke='#679EFE' stroke-width='3.5'/><path d='M20.1211 24.4946H26.8685' stroke='#679EFE' stroke-width='3.5'/></svg></span><span class=\"entryText\"><span class=\"entryTitle\">新建终端</span></span><span class=\"keys\"><kbd class=\"key\">⌃</kbd><kbd class=\"key\">`</kbd></span></button></div><div class=\"entryCell\"><button type='button' class=\"entry\" data-sidebar-right-guide-entry='browser' aria-keyshortcuts='Meta+T'><span class=\"entryIcon\"><svg width='22' height='22' viewBox='0 0 36 36' fill='none' aria-hidden='true'><path d='M17.9995 28.1465C23.6034 28.1465 28.1461 23.6038 28.1461 18C28.1461 12.3963 23.6034 7.85352 17.9995 7.85352C12.3958 7.85352 7.85303 12.3963 7.85303 18C7.85303 23.6038 12.3958 28.1465 17.9995 28.1465Z' stroke='#539CFA' stroke-width='2'/><path d='M8.57764 18H27.4211' stroke='#539CFA' stroke-width='2' stroke-linecap='square'/><path d='M17.999 28.1467C20.0576 28.1467 21.6228 23.6039 21.6228 18C21.6228 12.3963 20.0576 7.85352 17.999 7.85352' stroke='#539CFA' stroke-width='2'/><path d='M17.9992 28.1467C15.9407 28.1467 14.3755 23.6039 14.3755 18C14.3755 12.3963 15.9407 7.85352 17.9992 7.85352' stroke='#539CFA' stroke-width='2'/></svg></span><span class=\"entryText\"><span class=\"entryTitle\">浏览器</span></span><span class=\"keys\"><kbd class=\"key\">⌘</kbd><kbd class=\"key\">T</kbd></span></button></div><div class=\"entryCell\"><button type='button' class=\"entry\" data-sidebar-right-guide-entry='changes-review'><span class=\"entryIcon\"><svg class=\"placeholderInk\" width='22' height='22' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M7.99998 2.5L12.9 5.2V10.8L7.99998 13.5L3.09998 10.8V5.2L7.99998 2.5Z' stroke='currentColor' stroke-linejoin='round'/><path d='M3.09998 5.19995L7.99998 7.89995M7.99998 7.89995L12.9 5.19995M7.99998 7.89995V13.5' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round'/></svg></span><span class=\"entryText\"><span class=\"entryTitle\">第 3 轮改动</span></span></button></div><div class=\"entryCell\"><button type='button' class=\"entry\" data-sidebar-right-guide-entry='scheduleTask'><span class=\"entryIcon\"><svg class=\"placeholderInk\" width='22' height='22' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M7.99998 2.5L12.9 5.2V10.8L7.99998 13.5L3.09998 10.8V5.2L7.99998 2.5Z' stroke='currentColor' stroke-linejoin='round'/><path d='M3.09998 5.19995L7.99998 7.89995M7.99998 7.89995L12.9 5.19995M7.99998 7.89995V13.5' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round'/></svg></span><span class=\"entryText\"><span class=\"entryTitle\">任务详情</span></span></button></div></div></div>"
+        },
+        {
+          "label": "零注册条目：只剩罗盘水印，整列仍居中",
+          "note": "没有类型注册 guide 入口（或被链上注册者全部拒绝）时的兜底：<code>.guide</code> 的 <code>min-height:100%</code> 加 <code>::after</code> 的 10% 抬升让水印停在身体中部上方。",
+          "bg": "platform",
+          "pad": "lg",
+          "html": "<div style=\"width:460px;height:240px\"><div class=\"guide\" data-sidebar-right-guide><span class=\"hero\" aria-hidden='true'><svg width='56' height='56' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z' stroke='currentColor'/><path d='M10.6101 5.39014L8.99014 8.99014L5.39014 10.6101L7.01014 7.01014L10.6101 5.39014Z' fill='currentColor'/></svg></span></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "useTabInfo",
+          "type": "PropsRuntime<'sidebar.right.pane.tab'>",
+          "default": "—",
+          "desc": "本 tab 的信息与动作；点胶囊走 tab.actions.openTab(kind, { replaceTab: true })，指南页被原地替换。"
+        },
+        {
+          "name": "useGuideEntries",
+          "type": "ObservableSnapshot<readonly SidebarRightGuideBox[]>",
+          "default": "—",
+          "desc": "注册表里所有 guide 入口，按 order 排；可观察，后注册的类型会立刻出现在列表里。"
+        },
+        {
+          "name": "renderSlot",
+          "type": "PropsRenderSlots<'sidebar.right.tab.guide.entry'>",
+          "default": "—",
+          "desc": "把每个胶囊交给入口座位（entryKey = providerId）；provider 没注册渲染器时用本包的 EntryBox 兜底。"
+        },
+        {
+          "name": "renderSlotChain",
+          "type": "PropsRenderSlots<'sidebar.right.tab.guide'>",
+          "default": "—",
+          "desc": "整块正文的替换链：链上有注册者就整块交给它，全部拒绝（或无人注册）时渲染 ShippedGuide。"
+        },
+        {
+          "name": "useShortcuts",
+          "type": "ObservableSnapshot<readonly ShortcutCatalogEntry[]>",
+          "default": "—",
+          "desc": "按 entry.commandId 找生效快捷键，画 ShortcutKeys 并把 aria-keyshortcuts 写到胶囊按钮上。"
+        }
+      ],
+      "notes": "胶囊圆角走本地自定义属性 <code>--dsl-guide-entry-radius</code>（在 <code>.guide</code> 上定义为 <code>--dsw-radius-xl</code>），provider 自己渲染的胶囊（如 ui-sidebar-terminal 的 TerminalGuide）会继承它。<code>.hero</code> 的墨色在深色主题下由 <code>:global(body[data-ds-dark-theme])</code> 换成 <code>--dsw-static-neutral-700</code>。字形大小不同的入口靠固定 26px 的 <code>.entryIcon</code> 对齐左缘；<code>.entry:hover</code> 换成 <code>--dsw-alias-interactive-bg-hover</code>。",
+      "keywords": [
+        "指南页",
+        "入口胶囊",
+        "guide",
+        "起始页",
+        "替换链",
+        "MAX_DESCRIBED_ENTRIES"
+      ]
+    },
+    {
+      "id": "compass-glyph",
+      "name": "CompassGlyph",
+      "exportName": "CompassGlyph",
+      "zh": "罗盘字形",
+      "group": "dock",
+      "summary": "指南页的罗盘：16×16 视窗里一个描边圆环加实心菱形指针（指向东北），描边与填充都走 <code>currentColor</code>，所以墨色由宿主决定——标签 chip 里是 <code>.titleIcon</code> 的三级墨 16px，指南正文 hero 里是 56px 的 <code>--dsw-static-neutral-200</code> 水印（深色主题换 <code>--dsw-static-neutral-700</code>）。默认 <code>size=16</code>，自身没有样式表，<code>className</code> 只透传给 svg；它是装饰图形，始终带 <code>aria-hidden</code>。",
+      "source": "packages/client/ui-sidebar-right/src/client/tabs/guide/GuideTitle.tsx#L18",
+      "css": [
+        "packages/client/ui-sidebar-right/src/client/tabs/guide/GuideBody.module.css"
+      ],
+      "tokens": [
+        "--dsw-static-neutral-200",
+        "--dsw-static-neutral-700",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-label-secondary"
+      ],
+      "specimens": [
+        {
+          "label": "两处真实用法：chip 里 16px 三级墨 / hero 里 56px 水印",
+          "note": "字形与宿主盒子都按源码：chip 用 <code>.titleIcon</code>，hero 用 <code>.hero</code>（56px 只在 guide 正文出现）。",
+          "bg": "layer1",
+          "pad": "lg",
+          "html": "<div style=\"display:flex;flex-direction:column;gap:18px;width:420px\"><div style=\"display:flex;align-items:center;gap:5px\"><svg class=\"titleIcon\" width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z' stroke='currentColor'/><path d='M10.6101 5.39014L8.99014 8.99014L5.39014 10.6101L7.01014 7.01014L10.6101 5.39014Z' fill='currentColor'/></svg><span>开始</span><span style=\"font-size:11px\">标签 chip：GuideTitle 的 .titleIcon</span></div><div style=\"display:flex;align-items:center;gap:14px\"><span class=\"hero\" aria-hidden='true'><svg width='56' height='56' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z' stroke='currentColor'/><path d='M10.6101 5.39014L8.99014 8.99014L5.39014 10.6101L7.01014 7.01014L10.6101 5.39014Z' fill='currentColor'/></svg></span><span style=\"font-size:11px\">指南正文 hero：GuideBody 的 .hero，56px 水印</span></div></div>"
+        },
+        {
+          "label": "墨色跟随 currentColor：三处宿主盒子的分档",
+          "note": "同一段 svg 只换宿主类：<code>.titleIcon</code> 三级墨、<code>.entryIcon</code> 二级墨、<code>.hero</code> 水印。",
+          "bg": "layer1",
+          "pad": "lg",
+          "html": "<div style=\"display:flex;align-items:center;gap:26px\"><div style=\"display:flex;flex-direction:column;align-items:center;gap:6px\"><span class=\"titleIcon\"><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z' stroke='currentColor'/><path d='M10.6101 5.39014L8.99014 8.99014L5.39014 10.6101L7.01014 7.01014L10.6101 5.39014Z' fill='currentColor'/></svg></span><span style=\"font-size:11px\">.titleIcon</span></div><div style=\"display:flex;flex-direction:column;align-items:center;gap:6px\"><span class=\"entryIcon\"><svg width='26' height='26' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z' stroke='currentColor'/><path d='M10.6101 5.39014L8.99014 8.99014L5.39014 10.6101L7.01014 7.01014L10.6101 5.39014Z' fill='currentColor'/></svg></span><span style=\"font-size:11px\">.entryIcon</span></div><div style=\"display:flex;flex-direction:column;align-items:center;gap:6px\"><span class=\"hero\"><svg width='56' height='56' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z' stroke='currentColor'/><path d='M10.6101 5.39014L8.99014 8.99014L5.39014 10.6101L7.01014 7.01014L10.6101 5.39014Z' fill='currentColor'/></svg></span><span style=\"font-size:11px\">.hero</span></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "size",
+          "type": "number",
+          "default": "16",
+          "desc": "svg 的宽高（同一数值），也是 viewBox 的等比缩放；chip 用 16，正文 hero 用 56。"
+        },
+        {
+          "name": "className",
+          "type": "string | undefined",
+          "default": "undefined",
+          "desc": "透传到 svg 的分类名；GuideTitle 传 .titleIcon，GuideBody 的 hero 不传（墨色由 .hero 给）。"
+        }
+      ],
+      "notes": "它没有样式表：宽高与 viewBox 都写在 JSX 里，描边与填充只认 <code>currentColor</code>，所以示例列出的 GuideBody.module.css 是它唯一的宿主样式表。易混：指南胶囊没有字形时兜底的是 <code>CubeGlyph</code>，两者同文件导出但观感完全不同。",
+      "keywords": [
+        "罗盘",
+        "指南图标",
+        "compass",
+        "glyph",
+        "currentColor"
+      ]
+    },
+    {
+      "id": "cube-glyph",
+      "name": "CubeGlyph",
+      "exportName": "CubeGlyph",
+      "zh": "立方字形",
+      "group": "dock",
+      "summary": "指南胶囊的兜底字形：16×16 视窗里一个等轴立方——六边形轮廓、顶面两条棱、正面接缝，直线描边且 <code>stroke-linejoin: round</code>，整体走 <code>currentColor</code>。它只以两档尺寸出现：胶囊只有标题时 22px、带描述时 26px，位置在固定 26px 的 <code>.entryIcon</code> 盒子里；provider 没注册 icon 时叠 <code>.placeholderInk</code>，墨色比注册字形低一级（<code>--dsw-alias-label-tertiary</code>）。默认 <code>size=16</code>，自身没有样式表。",
+      "source": "packages/client/ui-sidebar-right/src/client/tabs/guide/GuideTitle.tsx#L35",
+      "css": [
+        "packages/client/ui-sidebar-right/src/client/tabs/guide/GuideBody.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-bg-layer-1",
+        "--dsw-alias-border-l3",
+        "--dsw-radius-xl"
+      ],
+      "specimens": [
+        {
+          "label": "胶囊里的两种尺寸：26（带描述）/ 22（只有标题）",
+          "note": "两枚字形都放进 26px 的 <code>.entryIcon</code> 盒子，所以标题左缘对齐；两枚都叠 <code>.placeholderInk</code>。两条文案都是真实产品串（deliverables 的 <code>review.title</code> / <code>changes.openReview</code>，schedule 的 <code>detail.label</code>），只是这两个类型今天没注册 guide 入口，展示的是兜底路径。",
+          "bg": "platform",
+          "pad": "lg",
+          "html": "<div style=\"display:flex;flex-direction:column;gap:14px;width:420px\"><div class=\"entryCell\"><button type='button' class=\"entry\" data-sidebar-right-guide-entry='changes-review'><span class=\"entryIcon\"><svg class=\"placeholderInk\" width='26' height='26' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M7.99998 2.5L12.9 5.2V10.8L7.99998 13.5L3.09998 10.8V5.2L7.99998 2.5Z' stroke='currentColor' stroke-linejoin='round'/><path d='M3.09998 5.19995L7.99998 7.89995M7.99998 7.89995L12.9 5.19995M7.99998 7.89995V13.5' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round'/></svg></span><span class=\"entryText\"><span class=\"entryTitle\">第 3 轮改动</span><span class=\"entryDescription\">在侧边栏查看本轮改动</span></span></button></div><div class=\"entryCell\"><button type='button' class=\"entry\" data-sidebar-right-guide-entry='scheduleTask'><span class=\"entryIcon\"><svg class=\"placeholderInk\" width='22' height='22' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M7.99998 2.5L12.9 5.2V10.8L7.99998 13.5L3.09998 10.8V5.2L7.99998 2.5Z' stroke='currentColor' stroke-linejoin='round'/><path d='M3.09998 5.19995L7.99998 7.89995M7.99998 7.89995L12.9 5.19995M7.99998 7.89995V13.5' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round'/></svg></span><span class=\"entryText\"><span class=\"entryTitle\">任务详情</span></span></button></div></div>"
+        },
+        {
+          "label": "字形本体：16 / 22 / 26 三档，同一条 16 视窗",
+          "note": "默认 16 是组件默认值；指南里只用 22 与 26 两档。三枚都放在 26px 的 <code>.entryIcon</code> 里（二级墨），第三枚另叠 <code>.placeholderInk</code>；标注文字不加 class。",
+          "bg": "layer1",
+          "pad": "lg",
+          "html": "<div style=\"display:flex;align-items:flex-end;gap:26px\"><div style=\"display:flex;flex-direction:column;align-items:center;gap:6px\"><span class=\"entryIcon\"><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M7.99998 2.5L12.9 5.2V10.8L7.99998 13.5L3.09998 10.8V5.2L7.99998 2.5Z' stroke='currentColor' stroke-linejoin='round'/><path d='M3.09998 5.19995L7.99998 7.89995M7.99998 7.89995L12.9 5.19995M7.99998 7.89995V13.5' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round'/></svg></span><span style=\"font-size:11px\">size=16（默认）</span></div><div style=\"display:flex;flex-direction:column;align-items:center;gap:6px\"><span class=\"entryIcon\"><svg width='22' height='22' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M7.99998 2.5L12.9 5.2V10.8L7.99998 13.5L3.09998 10.8V5.2L7.99998 2.5Z' stroke='currentColor' stroke-linejoin='round'/><path d='M3.09998 5.19995L7.99998 7.89995M7.99998 7.89995L12.9 5.19995M7.99998 7.89995V13.5' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round'/></svg></span><span style=\"font-size:11px\">size=22（只有标题）</span></div><div style=\"display:flex;flex-direction:column;align-items:center;gap:6px\"><span class=\"entryIcon\"><svg class=\"placeholderInk\" width='26' height='26' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M7.99998 2.5L12.9 5.2V10.8L7.99998 13.5L3.09998 10.8V5.2L7.99998 2.5Z' stroke='currentColor' stroke-linejoin='round'/><path d='M3.09998 5.19995L7.99998 7.89995M7.99998 7.89995L12.9 5.19995M7.99998 7.89995V13.5' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round'/></svg></span><span style=\"font-size:11px\">size=26 + placeholderInk</span></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "size",
+          "type": "number",
+          "default": "16",
+          "desc": "svg 的宽高；GuideBody 的胶囊按有没有描述传 22 或 26。"
+        },
+        {
+          "name": "className",
+          "type": "string | undefined",
+          "default": "undefined",
+          "desc": "透传到 svg 的分类名；provider 没注册字形时 GuideBody 传 .placeholderInk。"
+        }
+      ],
+      "notes": "同一文件里 <code>CompassGlyph</code> 是指南自己的门面字形，<code>CubeGlyph</code> 是入口没有字形时的占位——两者共用 <code>IconProps</code>（<code>size</code> / <code>className</code>）。字形本身不带颜色，墨色全部来自宿主盒子（<code>.entryIcon</code> 二级、<code>.placeholderInk</code> 三级），所以两例都没有内联颜色。",
+      "keywords": [
+        "立方",
+        "占位字形",
+        "cube",
+        "placeholderInk",
+        "兜底图标"
+      ]
+    },
+    {
+      "id": "guide-title",
+      "name": "GuideTitle",
+      "exportName": "GuideTitle",
+      "zh": "指南标题",
+      "group": "dock",
+      "summary": "指南 tab 的标题槽：16px 罗盘（<code>.titleIcon</code>，三级墨、<code>flex:none</code>）后面跟 <code>tab.title</code>（「开始」），注册在 <code>sidebar.right.pane.tab.title</code>，没有它时 chip 只显示裸标签。它自己只有这一小段 fragment，没有样式表；行高、间距与超长截断都由 dockkit 的 <code>.tabTitle</code> 提供，所以同一段内容在停靠 chip 与浮出面板标题行里长得一样。",
+      "source": "packages/client/ui-sidebar-right/src/client/tabs/guide/GuideTitle.tsx#L49",
+      "css": [
+        "packages/client/ui-sidebar-right/src/client/tabs/guide/GuideBody.module.css",
+        "packages/client/ui-dockkit/src/components/dockkit.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-markdown-tag",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-radius-sm"
+      ],
+      "specimens": [
+        {
+          "label": "停靠标签轨：活动 chip 里的罗盘 + 开始",
+          "note": "刚打开右栏时指南是窗格里唯一的 tab 且不可关，所以是 quiet chip（无关闭控件、无悬停底色）；座位在标题外还套一层 <code>display:contents</code> 的 span，不影响观感。",
+          "bg": "platform",
+          "pad": "lg",
+          "html": "<div style=\"width:420px\"><div class=\"tabStrip\" role='tablist' data-dockkit-strip='pane-main' data-window-drag><div class=\"stripTabs\" role='presentation' data-dockkit-strip-tabs='pane-main'><div role='tab' aria-selected='true' tabindex='0' class=\"tab tabActive tabQuiet\" data-dockkit-tab='tab-guide' data-dockkit-tab-quiet><span class=\"tabTitle\" data-dockkit-tab-title><svg class=\"titleIcon\" width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z' stroke='currentColor'/><path d='M10.6101 5.39014L8.99014 8.99014L5.39014 10.6101L7.01014 7.01014L10.6101 5.39014Z' fill='currentColor'/></svg>开始</span></div></div><div class=\"stripFill\" data-dockkit-strip-fill></div></div></div>"
+        },
+        {
+          "label": "浮出面板的标题行：同一段标题内容",
+          "note": "浮窗标题行是 <code>.tabStrip.floatHeader</code>；这里只画标题行，浮窗本体 <code>.float</code> 是 <code>position:fixed</code>，静态快照不还原。",
+          "bg": "layer2",
+          "pad": "lg",
+          "html": "<div style=\"width:420px\"><header class=\"tabStrip floatHeader\" data-dockkit-float-grip='pane-1'><div class=\"tab floatTitle\" data-dockkit-float-title><span class=\"tabTitle\" data-dockkit-tab-title><svg class=\"titleIcon\" width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z' stroke='currentColor'/><path d='M10.6101 5.39014L8.99014 8.99014L5.39014 10.6101L7.01014 7.01014L10.6101 5.39014Z' fill='currentColor'/></svg>开始</span></div><div class=\"stripFill\"></div><button type='button' class=\"iconButton\" aria-label=\"停靠\" data-dockkit-float-dock='pane-1'><svg class=\"dockGlyph\" width='15' height='15' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z' stroke='currentColor'/><path d='M5.5 1.5V14.5' stroke='currentColor'/></svg></button><button type='button' class=\"iconButton\" aria-label=\"关闭标签页\" data-dockkit-float-close='pane-1'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M2.5 2.5L13.5 13.5' stroke='currentColor'/><path d='M13.5 2.5L2.5 13.5' stroke='currentColor'/></svg></button></header></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "useTabInfo",
+          "type": "PropsRuntime<'sidebar.right.pane.tab.title'>",
+          "default": "—",
+          "desc": "标签信息钩子：读 <code>tab.title</code> 作为标签文字，罗盘固定画在它前面；不读 tab 的动作。"
+        }
+      ],
+      "notes": "它被 <code>SidebarRight</code> 的 TabSlot 包在一层 <code>display:contents</code> 的 <code>.tabTitle</code> span 里（带 <code>data-sidebar-right-tab</code> 钩子），那层不产生盒子，因此快照省掉了它。若某类型没注册标题槽，chip 直接显示打开时捕获的 <code>tab.title</code>（例如「浏览器」）。",
+      "keywords": [
+        "指南标题",
+        "标签标题",
+        "chip",
+        "浮窗标题",
+        "tab.title"
+      ]
+    },
+    {
+      "id": "browser-body",
+      "name": "BrowserBody",
+      "exportName": "BrowserBody",
+      "zh": "浏览器页",
+      "group": "dock",
+      "summary": "侧边栏浏览器的整页 chrome：顶部 38px 工具条（5px 6px 内边距、28px 方形按钮、4px 间距）依次是后退 / 前进 / 刷新 / 地址栏 / 系统浏览器打开 / 沙箱开关，下面是内容区（<code>.viewport</code> 由载体把 iframe 塞进来）。地址栏是 28px 高、0.5px <code>--dsw-alias-border-l2</code> 描边的输入框；「前往」按钮绝对定位在右端，只在 <code>.addressBox:focus-within</code> 时显示。载体读不到新 URL 时地址框转 <code>.addressUnknown</code> 并浮出「URL 已变化」；沙箱关闭画橙底 <code>.sandboxWarning</code>，加载失败画 <code>.failure</code> 行，还有恢复上次地址的 <code>.restore</code> 覆盖层。",
+      "source": "packages/client/ui-sidebar-browser/src/client/view/BrowserBody.tsx#L47",
+      "css": [
+        "packages/client/ui-sidebar-browser/src/client/view/Browser.module.css",
+        "packages/client/ui-primitives/src/Button.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-label-quaternary",
+        "--dsw-alias-bg-base",
+        "--dsw-alias-bg-layer-1",
+        "--dsw-alias-bg-layer-2",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-state-error-primary",
+        "--dsw-alias-state-business-primary",
+        "--dsw-alias-state-warn-tertiary",
+        "--dsw-alias-button-primary-fill",
+        "--dsw-alias-button-primary-hover",
+        "--dsw-alias-label-primary-foreground",
+        "--dsw-font-xxs-12",
+        "--dsw-font-xxxs-11",
+        "--dsw-font-xs-13",
+        "--dsw-radius-sm",
+        "--dsw-radius-md"
+      ],
+      "specimens": [
+        {
+          "label": "起始态：工具条禁用 + 空地址栏 + 起始提示",
+          "note": "没有 target 时后退 / 前进 / 刷新 / 系统浏览器打开全部 <code>disabled</code>（四级墨），内容区画 <code>.placeholder &gt; .start</code>；「前往」按钮此时不可见（<code>.addressGo</code> 默认 hidden）。",
+          "bg": "platform",
+          "pad": "lg",
+          "html": "<div style=\"width:560px;height:300px\"><div class=\"root\"><form class=\"c0-toolbar\"><button type='button' class=\"tool\" aria-label=\"后退\" title=\"后退\" disabled><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M10 4L6.70711 7.29289C6.31658 7.68342 6.31658 8.31658 6.70711 8.70711L10 12' stroke='currentColor'/></svg></button><button type='button' class=\"tool\" aria-label=\"前进\" title=\"前进\" disabled><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4' stroke='currentColor'/></svg></button><button type='button' class=\"tool\" aria-label=\"刷新\" title=\"刷新\" disabled><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M14.5001 8C14.5 9.28552 14.1188 10.5422 13.4045 11.611C12.6903 12.6799 11.6752 13.5129 10.4875 14.0049C9.29982 14.4968 7.99295 14.6255 6.73212 14.3747C5.4713 14.124 4.31314 13.505 3.4041 12.596C2.49514 11.687 1.87614 10.5288 1.62537 9.26798C1.37459 8.00716 1.50331 6.70028 1.99525 5.51261C2.48719 4.32494 3.32025 3.30981 4.3891 2.59557C5.45795 1.88134 6.71458 1.50008 8.0001 1.5C9.9001 1.5 11.7001 2.3 13.0001 3.6L14.5001 5.1' stroke='currentColor'/><path d='M14.4999 1.5V5.1H10.8999' stroke='currentColor'/></svg></button><div class=\"addressBox\"><input class=\"address\" value='' placeholder=\"输入 HTTP(S) 地址\" aria-label=\"输入 HTTP(S) 地址\" spellcheck='false'/><button type='submit' class=\"tool addressGo\" aria-label=\"前往\" title=\"前往\"><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M9.40051 6.59959C9.17233 6.3667 8.89997 6.18169 8.59939 6.05538C8.2988 5.92907 7.97603 5.86401 7.64999 5.86401C7.32395 5.86401 7.00118 5.92907 6.70059 6.05538C6.40001 6.18169 6.12765 6.3667 5.89946 6.59959L3.09863 9.40043C2.63436 9.8647 2.37354 10.4944 2.37354 11.151C2.37354 11.8075 2.63436 12.4372 3.09863 12.9015C3.56289 13.3657 4.19258 13.6266 4.84915 13.6266C5.50572 13.6266 6.13541 13.3657 6.59967 12.9015L6.94978 12.5514' stroke='currentColor'/></svg></button></div><button type='button' class=\"tool\" aria-label=\"在系统浏览器中打开\" title=\"在系统浏览器中打开\" disabled><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M11.7256 2.77441C12.5538 2.77469 13.2256 3.44616 13.2256 4.27441V10.1416H12.2256V4.27441C12.2256 3.99844 12.0015 3.77469 11.7256 3.77441H5.7207V2.77441H11.7256Z' fill='currentColor'/><path d='M2.77441 13.2255L12.3756 3.62427' stroke='currentColor'/></svg></button><button type='button' class=\"tool\" aria-label=\"关闭沙箱限制\" title=\"关闭沙箱限制\" aria-pressed='false'><svg width='15' height='15' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M6.80132 2.14853C7.70663 1.80917 8.70422 1.80919 9.60952 2.14859L14.1296 3.84317V7.11961C14.1296 11.6089 10.7615 13.5975 8.20543 14.5779C5.64931 13.5975 2.28052 11.6089 2.28052 7.11961V3.84317L6.80132 2.14853Z' stroke='currentColor' stroke-width='1' stroke-linejoin='round'/><path d='M12.1654 5.7552L8.9447 9.41475C8.73044 9.65816 8.53628 9.8804 8.35774 10.0423C8.1713 10.2114 7.94235 10.3717 7.64016 10.4254C7.48207 10.4535 7.32 10.4552 7.16151 10.4294C6.85843 10.3801 6.62728 10.2223 6.43836 10.0559C6.25752 9.89653 6.06037 9.67732 5.84264 9.43705L4.72925 8.20897L5.63557 7.38707L6.74897 8.61594C6.98603 8.87755 7.12974 9.03533 7.24673 9.13839C7.31033 9.19443 7.34485 9.21476 7.35823 9.22122C7.38068 9.22484 7.40352 9.22515 7.42593 9.22122C7.40522 9.22502 7.42893 9.23294 7.53583 9.136C7.65132 9.03126 7.79316 8.87139 8.02643 8.60638L11.2479 4.94763L12.1654 5.7552Z' fill='currentColor' transform='translate(1.2 0.8)'/></svg></button></form><div class=\"content\" aria-busy='false'><div class=\"viewport\" aria-label=\"浏览器\"></div><div class=\"placeholder\"><div class=\"start\">输入 HTTP(S) 地址开始浏览</div></div></div></div></div>"
+        },
+        {
+          "label": "已打开：地址栏聚焦（前往按钮浮出）+ iframe 载体",
+          "note": "聚焦模拟：把 <code>.addressBox:focus-within .addressGo</code> 与 <code>.address:focus</code> 两条规则原样搬过来。<code>.frame</code> 是 Web 载体真实插入的 iframe（src 指向目标地址），页面内容跨域，快照留空。",
+          "bg": "platform",
+          "pad": "lg",
+          "css": "/* 状态模拟：:focus-within 无法静态触发，下面两条是 Browser.module.css 同名规则的原样副本。 */\n.addressBox.forceFocus .addressGo { visibility: visible; opacity: 1; }\n.address.forceFocus { outline: 1px solid var(--dsw-alias-state-business-primary); outline-offset: -1px; }",
+          "html": "<div style=\"width:560px;height:300px\"><div class=\"root\"><form class=\"c0-toolbar\"><button type='button' class=\"tool\" aria-label=\"后退\" title=\"后退\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M10 4L6.70711 7.29289C6.31658 7.68342 6.31658 8.31658 6.70711 8.70711L10 12' stroke='currentColor'/></svg></button><button type='button' class=\"tool\" aria-label=\"前进\" title=\"前进\" disabled><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4' stroke='currentColor'/></svg></button><button type='button' class=\"tool\" aria-label=\"刷新\" title=\"刷新\" aria-keyshortcuts='Meta+Alt+R'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M14.5001 8C14.5 9.28552 14.1188 10.5422 13.4045 11.611C12.6903 12.6799 11.6752 13.5129 10.4875 14.0049C9.29982 14.4968 7.99295 14.6255 6.73212 14.3747C5.4713 14.124 4.31314 13.505 3.4041 12.596C2.49514 11.687 1.87614 10.5288 1.62537 9.26798C1.37459 8.00716 1.50331 6.70028 1.99525 5.51261C2.48719 4.32494 3.32025 3.30981 4.3891 2.59557C5.45795 1.88134 6.71458 1.50008 8.0001 1.5C9.9001 1.5 11.7001 2.3 13.0001 3.6L14.5001 5.1' stroke='currentColor'/><path d='M14.4999 1.5V5.1H10.8999' stroke='currentColor'/></svg></button><div class=\"addressBox forceFocus\"><input class=\"address forceFocus\" value='https://developer.mozilla.org/zh-CN/docs/Web/CSS' aria-label=\"输入 HTTP(S) 地址\" spellcheck='false'/><button type='submit' class=\"tool addressGo\" aria-label=\"前往\" title=\"前往\"><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M9.40051 6.59959C9.17233 6.3667 8.89997 6.18169 8.59939 6.05538C8.2988 5.92907 7.97603 5.86401 7.64999 5.86401C7.32395 5.86401 7.00118 5.92907 6.70059 6.05538C6.40001 6.18169 6.12765 6.3667 5.89946 6.59959L3.09863 9.40043C2.63436 9.8647 2.37354 10.4944 2.37354 11.151C2.37354 11.8075 2.63436 12.4372 3.09863 12.9015C3.56289 13.3657 4.19258 13.6266 4.84915 13.6266C5.50572 13.6266 6.13541 13.3657 6.59967 12.9015L6.94978 12.5514' stroke='currentColor'/></svg></button></div><button type='button' class=\"tool\" aria-label=\"在系统浏览器中打开\" title=\"在系统浏览器中打开\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M11.7256 2.77441C12.5538 2.77469 13.2256 3.44616 13.2256 4.27441V10.1416H12.2256V4.27441C12.2256 3.99844 12.0015 3.77469 11.7256 3.77441H5.7207V2.77441H11.7256Z' fill='currentColor'/><path d='M2.77441 13.2255L12.3756 3.62427' stroke='currentColor'/></svg></button><button type='button' class=\"tool\" aria-label=\"关闭沙箱限制\" title=\"关闭沙箱限制\" aria-pressed='false'><svg width='15' height='15' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M6.80132 2.14853C7.70663 1.80917 8.70422 1.80919 9.60952 2.14859L14.1296 3.84317V7.11961C14.1296 11.6089 10.7615 13.5975 8.20543 14.5779C5.64931 13.5975 2.28052 11.6089 2.28052 7.11961V3.84317L6.80132 2.14853Z' stroke='currentColor' stroke-width='1' stroke-linejoin='round'/><path d='M12.1654 5.7552L8.9447 9.41475C8.73044 9.65816 8.53628 9.8804 8.35774 10.0423C8.1713 10.2114 7.94235 10.3717 7.64016 10.4254C7.48207 10.4535 7.32 10.4552 7.16151 10.4294C6.85843 10.3801 6.62728 10.2223 6.43836 10.0559C6.25752 9.89653 6.06037 9.67732 5.84264 9.43705L4.72925 8.20897L5.63557 7.38707L6.74897 8.61594C6.98603 8.87755 7.12974 9.03533 7.24673 9.13839C7.31033 9.19443 7.34485 9.21476 7.35823 9.22122C7.38068 9.22484 7.40352 9.22515 7.42593 9.22122C7.40522 9.22502 7.42893 9.23294 7.53583 9.136C7.65132 9.03126 7.79316 8.87139 8.02643 8.60638L11.2479 4.94763L12.1654 5.7552Z' fill='currentColor' transform='translate(1.2 0.8)'/></svg></button></form><div class=\"content\" aria-busy='false'><div class=\"viewport\" aria-label=\"浏览器\"><iframe class=\"frame\" title='developer.mozilla.org' src='about:blank'></iframe></div></div></div></div>"
+        },
+        {
+          "label": "异常叠加：沙箱关闭警告 + 应用自身地址被拒 + 载体读不到新 URL",
+          "note": "三段文案都是 locale 原文：<code>sandbox.warning</code> / <code>error.application-origin</code> / <code>address.unknown</code>；沙箱按钮转成 <code>.sandboxOff</code>（错误色底 + <code>aria-pressed=true</code>）。",
+          "bg": "platform",
+          "pad": "lg",
+          "html": "<div style=\"width:560px;height:300px\"><div class=\"root\"><form class=\"c0-toolbar\"><button type='button' class=\"tool\" aria-label=\"后退\" title=\"后退\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M10 4L6.70711 7.29289C6.31658 7.68342 6.31658 8.31658 6.70711 8.70711L10 12' stroke='currentColor'/></svg></button><button type='button' class=\"tool\" aria-label=\"前进\" title=\"前进\" disabled><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4' stroke='currentColor'/></svg></button><button type='button' class=\"tool\" aria-label=\"刷新\" title=\"刷新\" disabled><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M14.5001 8C14.5 9.28552 14.1188 10.5422 13.4045 11.611C12.6903 12.6799 11.6752 13.5129 10.4875 14.0049C9.29982 14.4968 7.99295 14.6255 6.73212 14.3747C5.4713 14.124 4.31314 13.505 3.4041 12.596C2.49514 11.687 1.87614 10.5288 1.62537 9.26798C1.37459 8.00716 1.50331 6.70028 1.99525 5.51261C2.48719 4.32494 3.32025 3.30981 4.3891 2.59557C5.45795 1.88134 6.71458 1.50008 8.0001 1.5C9.9001 1.5 11.7001 2.3 13.0001 3.6L14.5001 5.1' stroke='currentColor'/><path d='M14.4999 1.5V5.1H10.8999' stroke='currentColor'/></svg></button><div class=\"addressBox\"><input class=\"address addressUnknown\" value='http://127.0.0.1:3080/' aria-label=\"输入 HTTP(S) 地址\" spellcheck='false'/><span class=\"addressChanged\">URL 已变化</span><button type='submit' class=\"tool addressGo\" aria-label=\"前往\" title=\"前往\"><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M9.40051 6.59959C9.17233 6.3667 8.89997 6.18169 8.59939 6.05538C8.2988 5.92907 7.97603 5.86401 7.64999 5.86401C7.32395 5.86401 7.00118 5.92907 6.70059 6.05538C6.40001 6.18169 6.12765 6.3667 5.89946 6.59959L3.09863 9.40043C2.63436 9.8647 2.37354 10.4944 2.37354 11.151C2.37354 11.8075 2.63436 12.4372 3.09863 12.9015C3.56289 13.3657 4.19258 13.6266 4.84915 13.6266C5.50572 13.6266 6.13541 13.3657 6.59967 12.9015L6.94978 12.5514' stroke='currentColor'/></svg></button></div><button type='button' class=\"tool\" aria-label=\"在系统浏览器中打开\" title=\"在系统浏览器中打开\" disabled><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M11.7256 2.77441C12.5538 2.77469 13.2256 3.44616 13.2256 4.27441V10.1416H12.2256V4.27441C12.2256 3.99844 12.0015 3.77469 11.7256 3.77441H5.7207V2.77441H11.7256Z' fill='currentColor'/><path d='M2.77441 13.2255L12.3756 3.62427' stroke='currentColor'/></svg></button><button type='button' class=\"tool sandboxOff\" aria-label=\"恢复沙箱限制\" title=\"恢复沙箱限制\" aria-pressed='true'><svg width='15' height='15' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M6.80132 2.14853C7.70663 1.80917 8.70422 1.80919 9.60952 2.14859L14.1296 3.84317V7.11961C14.1296 11.6089 10.7615 13.5975 8.20543 14.5779C5.64931 13.5975 2.28052 11.6089 2.28052 7.11961V3.84317L6.80132 2.14853Z' stroke='currentColor' stroke-width='1' stroke-linejoin='round'/><path d='M10.6074 4.40278L8.00975 6.99973L10.6074 9.59739L9.59736 10.6074L6.9997 8.00978L4.40274 10.6074L3.3927 9.59739L5.98966 6.99973L3.3927 4.40278L4.40274 3.39273L6.9997 5.98969L9.59736 3.39273L10.6074 4.40278Z' fill='currentColor' transform='translate(1.2 0.8)'/></svg></button></form><div class=\"sandboxWarning\" role='status'>沙箱限制已关闭；页面可以导航顶层应用，并使用下载、模态对话框与输入锁定。</div><div class=\"failure\" role='alert'>不能在嵌入浏览器中打开 DSH 应用自身。</div><div class=\"content\" aria-busy='false'><div class=\"viewport\" aria-label=\"浏览器\"></div></div><p class=\"limit\">页面已跳转；当前载体无法读取新的 URL。</p></div></div>"
+        },
+        {
+          "label": "恢复上次页面：.restore 覆盖层 + 共享 Button 主动作",
+          "note": "载体重挂后 <code>restoreTarget</code> 有值而当前没有 target 时显示；按钮是共享 <code>Button</code>（primary / sm），<code>Button.module.css</code> 仅为它内联。",
+          "bg": "platform",
+          "pad": "lg",
+          "html": "<div style=\"width:560px;height:320px\"><div class=\"root\"><form class=\"c0-toolbar\"><button type='button' class=\"tool\" aria-label=\"后退\" title=\"后退\" disabled><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M10 4L6.70711 7.29289C6.31658 7.68342 6.31658 8.31658 6.70711 8.70711L10 12' stroke='currentColor'/></svg></button><button type='button' class=\"tool\" aria-label=\"前进\" title=\"前进\" disabled><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4' stroke='currentColor'/></svg></button><button type='button' class=\"tool\" aria-label=\"刷新\" title=\"刷新\" disabled><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M14.5001 8C14.5 9.28552 14.1188 10.5422 13.4045 11.611C12.6903 12.6799 11.6752 13.5129 10.4875 14.0049C9.29982 14.4968 7.99295 14.6255 6.73212 14.3747C5.4713 14.124 4.31314 13.505 3.4041 12.596C2.49514 11.687 1.87614 10.5288 1.62537 9.26798C1.37459 8.00716 1.50331 6.70028 1.99525 5.51261C2.48719 4.32494 3.32025 3.30981 4.3891 2.59557C5.45795 1.88134 6.71458 1.50008 8.0001 1.5C9.9001 1.5 11.7001 2.3 13.0001 3.6L14.5001 5.1' stroke='currentColor'/><path d='M14.4999 1.5V5.1H10.8999' stroke='currentColor'/></svg></button><div class=\"addressBox\"><input class=\"address\" value='' placeholder=\"输入 HTTP(S) 地址\" aria-label=\"输入 HTTP(S) 地址\" spellcheck='false'/><button type='submit' class=\"tool addressGo\" aria-label=\"前往\" title=\"前往\"><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M9.40051 6.59959C9.17233 6.3667 8.89997 6.18169 8.59939 6.05538C8.2988 5.92907 7.97603 5.86401 7.64999 5.86401C7.32395 5.86401 7.00118 5.92907 6.70059 6.05538C6.40001 6.18169 6.12765 6.3667 5.89946 6.59959L3.09863 9.40043C2.63436 9.8647 2.37354 10.4944 2.37354 11.151C2.37354 11.8075 2.63436 12.4372 3.09863 12.9015C3.56289 13.3657 4.19258 13.6266 4.84915 13.6266C5.50572 13.6266 6.13541 13.3657 6.59967 12.9015L6.94978 12.5514' stroke='currentColor'/></svg></button></div><button type='button' class=\"tool\" aria-label=\"在系统浏览器中打开\" title=\"在系统浏览器中打开\" disabled><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M11.7256 2.77441C12.5538 2.77469 13.2256 3.44616 13.2256 4.27441V10.1416H12.2256V4.27441C12.2256 3.99844 12.0015 3.77469 11.7256 3.77441H5.7207V2.77441H11.7256Z' fill='currentColor'/><path d='M2.77441 13.2255L12.3756 3.62427' stroke='currentColor'/></svg></button><button type='button' class=\"tool\" aria-label=\"关闭沙箱限制\" title=\"关闭沙箱限制\" aria-pressed='false'><svg width='15' height='15' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M6.80132 2.14853C7.70663 1.80917 8.70422 1.80919 9.60952 2.14859L14.1296 3.84317V7.11961C14.1296 11.6089 10.7615 13.5975 8.20543 14.5779C5.64931 13.5975 2.28052 11.6089 2.28052 7.11961V3.84317L6.80132 2.14853Z' stroke='currentColor' stroke-width='1' stroke-linejoin='round'/><path d='M12.1654 5.7552L8.9447 9.41475C8.73044 9.65816 8.53628 9.8804 8.35774 10.0423C8.1713 10.2114 7.94235 10.3717 7.64016 10.4254C7.48207 10.4535 7.32 10.4552 7.16151 10.4294C6.85843 10.3801 6.62728 10.2223 6.43836 10.0559C6.25752 9.89653 6.06037 9.67732 5.84264 9.43705L4.72925 8.20897L5.63557 7.38707L6.74897 8.61594C6.98603 8.87755 7.12974 9.03533 7.24673 9.13839C7.31033 9.19443 7.34485 9.21476 7.35823 9.22122C7.38068 9.22484 7.40352 9.22515 7.42593 9.22122C7.40522 9.22502 7.42893 9.23294 7.53583 9.136C7.65132 9.03126 7.79316 8.87139 8.02643 8.60638L11.2479 4.94763L12.1654 5.7552Z' fill='currentColor' transform='translate(1.2 0.8)'/></svg></button></form><div class=\"content\" aria-busy='false'><div class=\"viewport\" aria-label=\"浏览器\"></div><section class=\"restore\" aria-label=\"上次打开\"><p class=\"restoreLabel\">上次打开</p><p class=\"restoreTitle\">developer.mozilla.org</p><p class=\"restoreUrl\">https://developer.mozilla.org/zh-CN/docs/Web/CSS</p><button type='button' class=\"button primary sm\">恢复页面</button></section></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "mount / loadUrl / restore / goBack / goForward / reload / setSandbox",
+          "type": "BrowserInjected 的动作面",
+          "default": "—",
+          "desc": "导航与载体：mount 在 useLayoutEffect 里挂上 iframe/webview 并返回卸载函数；其余每个按钮只调一个动作，成功与否由 store 回读。"
+        },
+        {
+          "name": "useBrowserState",
+          "type": "(tabId: TabId) => BrowserControllerState | undefined",
+          "default": "—",
+          "desc": "本 tab 的 frame（地址 / 能否后退前进 / loading / sandboxEnabled / error）、restoreTarget 与 addressRevision。"
+        },
+        {
+          "name": "useTabInfo",
+          "type": "PropsRuntime<'sidebar.right.pane.tab'>",
+          "default": "—",
+          "desc": "tab 的 id / signal / navigation.params.url / refreshShortcut，以及 bindCommands({ refresh }) 与 openTab('browser', …)。"
+        },
+        {
+          "name": "useStore",
+          "type": "PropsStore<BrowserStore>",
+          "default": "—",
+          "desc": "读 byTab[tab.id] 作为挂载初值；之后的状态由 useBrowserState 的 keyed hook 提供。"
+        },
+        {
+          "name": "t",
+          "type": "PropsLocale<'sidebarBrowser'>",
+          "default": "—",
+          "desc": "工具条无障碍名、地址占位、沙箱与各类失败文案（<code>error.*</code> / <code>load.failed*</code>）。"
+        }
+      ],
+      "notes": "两张样式表按 <code>[Browser, Button]</code> 列出；<code>toolbar</code> 在两张表里同名（工具条 vs Button 的 toolbar 变体），示例把表单钉成 <code>c0-toolbar</code>。地址栏的 <code>.addressGo</code>、<code>.addressChanged</code> 与 <code>.addressUnknown</code> 都是 <code>:focus-within</code> 驱动的显隐，静态快照用附加类模拟。<code>iframe</code> 是 Web 载体（IframePresentation）真实插入的 <code>.frame</code>；Electron 载体的 <code>.webview</code> 不在快照里。",
+      "keywords": [
+        "浏览器",
+        "地址栏",
+        "沙箱",
+        "iframe",
+        "browser",
+        "恢复页面"
+      ]
+    },
+    {
+      "id": "browser-title",
+      "name": "BrowserTitle",
+      "exportName": "BrowserTitle",
+      "zh": "浏览器标题",
+      "group": "dock",
+      "summary": "浏览器 tab 的标题槽：14px 地球字形（<code>.titleIcon</code>，<code>flex:0 0 auto</code> + <code>margin-right:4px</code>）后面跟当前地址的主机名——<code>currentBrowserTarget</code> 取 <code>state.byTab[tab.id]</code> 当前索引那条，它的 <code>title</code> 就是 <code>url.hostname</code>；没有 target（还没打开过页面）时回落到打开时捕获的 <code>tab.title</code>（「浏览器」）。注册在 <code>sidebar.right.pane.tab.title</code>，自己只有 <code>.titleIcon</code> 一条来自 Browser.module.css 的规则。",
+      "source": "packages/client/ui-sidebar-browser/src/client/view/BrowserTitle.tsx#L13",
+      "css": [
+        "packages/client/ui-sidebar-browser/src/client/view/Browser.module.css",
+        "packages/client/ui-dockkit/src/components/dockkit.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-markdown-tag",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-radius-sm"
+      ],
+      "specimens": [
+        {
+          "label": "标签轨：活动 tab 显示主机名，空 tab 回落「浏览器」",
+          "note": "浏览器类型 <code>multiple: true</code> 所以 chip 可关：活动 chip 的关闭控件常显，未活动那条默认 <code>opacity:0</code>（快照里保持隐藏，符合真实静态外观）。",
+          "bg": "platform",
+          "pad": "lg",
+          "html": "<div style=\"width:420px\"><div class=\"tabStrip\" role='tablist' data-dockkit-strip='pane-main' data-window-drag><div class=\"stripTabs\" role='presentation' data-dockkit-strip-tabs='pane-main'><div role='tab' aria-selected='true' tabindex='0' class=\"tab tabActive\" data-dockkit-tab='tab-mdn'><span class=\"tabTitle\" data-dockkit-tab-title><svg class=\"titleIcon\" width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M7.99986 14.0887C11.3626 14.0887 14.0886 11.3627 14.0886 7.99998C14.0886 4.63727 11.3626 1.91125 7.99986 1.91125C4.63715 1.91125 1.91113 4.63727 1.91113 7.99998C1.91113 11.3627 4.63715 14.0887 7.99986 14.0887Z' stroke='currentColor'/><path d='M2.34619 8H13.6538' stroke='currentColor' stroke-linecap='square'/><path d='M7.99976 14.0889C9.23509 14.0889 10.1743 11.3629 10.1743 8.00006C10.1743 4.63739 9.23509 1.91138 7.99976 1.91138' stroke='currentColor'/><path d='M7.99973 14.0889C6.76445 14.0889 5.8252 11.3629 5.8252 8.00006C5.8252 4.63739 6.76445 1.91138 7.99973 1.91138' stroke='currentColor'/></svg>developer.mozilla.org</span><button type='button' class=\"tabClose\" aria-label=\"关闭标签页\" data-dockkit-tab-close='tab-mdn'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M3.5 3.5L12.5 12.5' stroke='currentColor'/><path d='M12.5 3.5L3.5 12.5' stroke='currentColor'/></svg></button></div><div class=\"slot\"></div><div role='tab' aria-selected='false' tabindex='-1' class=\"tab\" data-dockkit-tab='tab-new'><span class=\"tabTitle\" data-dockkit-tab-title><svg class=\"titleIcon\" width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M7.99986 14.0887C11.3626 14.0887 14.0886 11.3627 14.0886 7.99998C14.0886 4.63727 11.3626 1.91125 7.99986 1.91125C4.63715 1.91125 1.91113 4.63727 1.91113 7.99998C1.91113 11.3627 4.63715 14.0887 7.99986 14.0887Z' stroke='currentColor'/><path d='M2.34619 8H13.6538' stroke='currentColor' stroke-linecap='square'/><path d='M7.99976 14.0889C9.23509 14.0889 10.1743 11.3629 10.1743 8.00006C10.1743 4.63739 9.23509 1.91138 7.99976 1.91138' stroke='currentColor'/><path d='M7.99973 14.0889C6.76445 14.0889 5.8252 11.3629 5.8252 8.00006C5.8252 4.63739 6.76445 1.91138 7.99973 1.91138' stroke='currentColor'/></svg>浏览器</span><button type='button' class=\"tabClose\" aria-label=\"关闭标签页\" data-dockkit-tab-close='tab-new'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M3.5 3.5L12.5 12.5' stroke='currentColor'/><path d='M12.5 3.5L3.5 12.5' stroke='currentColor'/></svg></button></div></div><div class=\"stripFill\" data-dockkit-strip-fill></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "useTabInfo",
+          "type": "PropsRuntime<'sidebar.right.pane.tab.title'>",
+          "default": "—",
+          "desc": "读 tab.id 用来取这个 tab 的浏览器状态，读 tab.title 作为没有页面时的回落文字。"
+        },
+        {
+          "name": "useStore",
+          "type": "PropsStore<BrowserStore>",
+          "default": "—",
+          "desc": "订阅 byTab[tab.id]，用 currentBrowserTarget 取当前索引的 target，显示它的 title（主机名）。"
+        }
+      ],
+      "notes": "浏览器 tab 打开时 <code>browserDefinition.title</code> 先给出「浏览器」（<code>type.label</code>），一旦页面地址就位就换成 <code>url.hostname</code>——所以同一枚 chip 从类型名变成主机名，长度变化由 dockkit 的 <code>.tabTitle</code> 截断/淡出处理。易混：页面加载失败等正文状态在 <code>BrowserBody</code>，标题槽只画图标与文字。",
+      "keywords": [
+        "浏览器标题",
+        "主机名",
+        "地球图标",
+        "tab title",
+        "hostname"
+      ]
+    }
+  ]
+}

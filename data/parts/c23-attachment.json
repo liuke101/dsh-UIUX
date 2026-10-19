@@ -1,0 +1,558 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "id": "attachment-rail",
+      "name": "AttachmentRail",
+      "exportName": "AttachmentRail",
+      "zh": "附件轨",
+      "group": "preview",
+      "summary": "composer 上方的横向草稿附件轨：轨道 <code>display:flex</code>、<code>gap:10px</code>、滚动条隐藏（<code>scrollbar-width:none</code> + <code>::-webkit-scrollbar{display:none}</code>），每个条目固定 64px 高。溢出不用滚动条提示，而是由两颗 24px 圆形箭头翻页（一次 <code>max(clientWidth-64,200)</code> 像素），箭头只在对应方向仍有隐藏溢出时渲染，<code>ResizeObserver</code> 让侧栏/面板改宽也能重算。竖直滚轮被非被动监听器独占并换算成横向平移，新增附件后自动滚到末端，而挂在既有草稿上的首次挂载保持起点。组件只输出轨道与箭头，条目 DOM 由 <code>renderItem</code> 提供，本包的 owner <code>ComposerAttachments</code> 用 64×64 缩略图渲染图片条目。",
+      "source": "packages/client/ui-attachment/src/AttachmentRail.tsx#L56",
+      "css": [
+        "packages/client/ui-attachment/src/AttachmentRail.module.css",
+        "packages/client/ui-attachment/src/client/ComposerAttachments.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l2-darkmode-thin",
+        "--dsw-alias-button-contrast-fill",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-interactive-bg-hover-solid",
+        "--dsw-alias-label-primary-inverted",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-scrollbar-bg-l2",
+        "--dsw-alias-scrollbar-hover-l2",
+        "--dsw-elevation-panel",
+        "--dsw-radius-xl",
+        "--dsw-specific-input-major"
+      ],
+      "specimens": [
+        {
+          "label": "默认态：三个 64px 条目排在轨道里",
+          "note": "移除键平时 opacity:0，静态快照不显示",
+          "html": "<div style='width:320px'><div class=\"c0-root\"><div class=\"c0-rail\" role='group' aria-label='待发送附件'><div class=\"c0-item\"><div class=\"c1-imageItem\"><button type='button' class=\"c1-thumbnail\" title='查看原图'><img src=\"data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23e9eef6'/%3E%3Crect x='28' y='28' width='196' height='16' rx='8' fill='%23b7c5d9'/%3E%3Crect x='28' y='60' width='424' height='10' rx='5' fill='%23ccd7e5'/%3E%3Crect x='28' y='82' width='330' height='10' rx='5' fill='%23ccd7e5'/%3E%3Crect x='28' y='122' width='424' height='166' rx='14' fill='%23d6e2f1'/%3E%3C/svg%3E\" alt='截图 2026-10-19 14.22.08.png'></button><button type='button' class=\"c1-remove\" aria-label='移除图片 截图 2026-10-19 14.22.08.png'><svg width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M3.5 3.5L12.5 12.5' stroke='currentColor'/><path d='M12.5 3.5L3.5 12.5' stroke='currentColor'/></svg></button></div></div><div class=\"c0-item\"><div class=\"c1-imageItem\"><button type='button' class=\"c1-thumbnail\" title='查看原图'><img src=\"data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='480'%3E%3Crect width='320' height='480' fill='%23eef3ec'/%3E%3Crect x='40' y='300' width='48' height='120' rx='8' fill='%239fc79a'/%3E%3Crect x='112' y='232' width='48' height='188' rx='8' fill='%237fb37a'/%3E%3Crect x='184' y='268' width='48' height='152' rx='8' fill='%239fc79a'/%3E%3Crect x='256' y='180' width='48' height='240' rx='8' fill='%237fb37a'/%3E%3C/svg%3E\" alt='资源用量.png'></button><button type='button' class=\"c1-remove\" aria-label='移除图片 资源用量.png'><svg width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M3.5 3.5L12.5 12.5' stroke='currentColor'/><path d='M12.5 3.5L3.5 12.5' stroke='currentColor'/></svg></button></div></div><div class=\"c0-item\"><div class=\"c1-imageItem\"><button type='button' class=\"c1-thumbnail\" title='查看原图'><img src=\"data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23e9eef6'/%3E%3Crect x='28' y='28' width='196' height='16' rx='8' fill='%23b7c5d9'/%3E%3Crect x='28' y='60' width='424' height='10' rx='5' fill='%23ccd7e5'/%3E%3Crect x='28' y='122' width='424' height='166' rx='14' fill='%23d6e2f1'/%3E%3C/svg%3E\" alt='会话列表.png'></button><button type='button' class=\"c1-remove\" aria-label='移除图片 会话列表.png'><svg width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M3.5 3.5L12.5 12.5' stroke='currentColor'/><path d='M12.5 3.5L3.5 12.5' stroke='currentColor'/></svg></button></div></div></div></div></div>"
+        },
+        {
+          "label": "溢出翻页 + 悬停模拟：两端箭头与出现的移除键",
+          "note": "悬停模拟；左箭头静态近似（真实产品里滚动到起点时它不渲染）",
+          "html": "<div style='width:220px'><div class=\"c0-root\"><button type='button' class=\"c0-arrow c0-arrowLeft\" aria-label='向左滚动附件'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M10 4L6.70711 7.29289C6.31658 7.68342 6.31658 8.31658 6.70711 8.70711L10 12' stroke='currentColor'/></svg></button><div class=\"c0-rail\" role='group' aria-label='待发送附件'><div class=\"c0-item\"><div class=\"c1-imageItem forceHover\"><button type='button' class=\"c1-thumbnail\" title='查看原图'><img src=\"data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23e9eef6'/%3E%3Crect x='28' y='122' width='424' height='166' rx='14' fill='%23d6e2f1'/%3E%3C/svg%3E\" alt='截图 2026-10-19 14.22.08.png'></button><button type='button' class=\"c1-remove\" aria-label='移除图片 截图 2026-10-19 14.22.08.png'><svg width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M3.5 3.5L12.5 12.5' stroke='currentColor'/><path d='M12.5 3.5L3.5 12.5' stroke='currentColor'/></svg></button></div></div><div class=\"c0-item\"><div class=\"c1-imageItem\"><button type='button' class=\"c1-thumbnail\" title='查看原图'><img src=\"data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='480'%3E%3Crect width='320' height='480' fill='%23eef3ec'/%3E%3Crect x='112' y='232' width='48' height='188' rx='8' fill='%237fb37a'/%3E%3C/svg%3E\" alt='资源用量.png'></button><button type='button' class=\"c1-remove\" aria-label='移除图片 资源用量.png'><svg width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M3.5 3.5L12.5 12.5' stroke='currentColor'/><path d='M12.5 3.5L3.5 12.5' stroke='currentColor'/></svg></button></div></div><div class=\"c0-item\"><div class=\"c1-imageItem\"><button type='button' class=\"c1-thumbnail\" title='查看原图'><img src=\"data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23e9eef6'/%3E%3Crect x='28' y='28' width='196' height='16' rx='8' fill='%23b7c5d9'/%3E%3C/svg%3E\" alt='会话列表.png'></button><button type='button' class=\"c1-remove\" aria-label='移除图片 会话列表.png'><svg width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M3.5 3.5L12.5 12.5' stroke='currentColor'/><path d='M12.5 3.5L3.5 12.5' stroke='currentColor'/></svg></button></div></div><div class=\"c0-item\"><div class=\"c1-imageItem\"><button type='button' class=\"c1-thumbnail\" title='查看原图'><img src=\"data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23f3eef6'/%3E%3Crect x='28' y='122' width='424' height='166' rx='14' fill='%23ddd0ea'/%3E%3C/svg%3E\" alt='设置面板.png'></button><button type='button' class=\"c1-remove\" aria-label='移除图片 设置面板.png'><svg width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M3.5 3.5L12.5 12.5' stroke='currentColor'/><path d='M12.5 3.5L3.5 12.5' stroke='currentColor'/></svg></button></div></div></div><button type='button' class=\"c0-arrow c0-arrowRight\" aria-label='向右滚动附件'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4' stroke='currentColor'/></svg></button></div></div>",
+          "css": "/* 状态模拟：真实规则是 .imageItem:hover .remove / .remove:focus-visible（见 ComposerAttachments.module.css），\n   触屏设备上由 @media (pointer: coarse) 常显。 */\n.c1-imageItem.forceHover .c1-remove { opacity: 1; }"
+        }
+      ],
+      "props": [
+        {
+          "name": "items",
+          "type": "readonly T[]",
+          "default": "—",
+          "desc": "草稿附件，按用户挑选顺序排列；T 只要带一个稳定的 id（React key），轨道的生长检测也按 items.length 走。"
+        },
+        {
+          "name": "labels",
+          "type": "AttachmentRailLabels",
+          "default": "—",
+          "desc": "轨道级文案：group 是 role=\"group\" 的无障碍名（「待发送附件」），scrollLeft / scrollRight 是两颗箭头的按钮名。"
+        },
+        {
+          "name": "renderItem",
+          "type": "(item: T) => ReactNode",
+          "default": "—",
+          "desc": "渲染一个条目，轨道把它包进固定 64px 高的 .item 里；挂载与否由 owner 决定，没有附件时 owner 不渲染轨道。"
+        }
+      ],
+      "notes": "轨道样式表里另有一份 <code>.thumbnail</code> / <code>.remove</code> 条目规则，本仓库没有 owner 使用它——<code>ComposerAttachments</code> 用自己的同名副本渲染图片条目，示例按后者的真实 DOM 走。移除键 <code>opacity:0</code>，只有条目 <code>:hover</code> 或按钮 <code>:focus-visible</code> 才出现，<code>@media (pointer: coarse)</code> 下常显；<code>prefers-reduced-motion</code> 下翻页改成不做平滑。滚轮平移是非被动监听器，因为 React 的根 wheel 监听是 passive 的。",
+      "keywords": ["附件轨", "附件轨道", "草稿附件", "attachment rail", "翻页箭头", "横向溢出"]
+    },
+    {
+      "id": "composer-attachments",
+      "name": "ComposerAttachments",
+      "exportName": "ComposerAttachments",
+      "zh": "草稿附件",
+      "group": "preview",
+      "summary": "<code>conversation.input.attachments</code> 座位的实现，把三件事拼在一起：草稿附件轨、全屏拖放蒙层、原图预览。有附件时先渲染一层 <code>.rail</code>（<code>padding:2px 10px 0</code>、<code>margin-bottom:-6px</code>，让它比别的行更贴近草稿文本），里面是 64px 高的 <code>AttachmentRail</code>：图片是 64×64 缩略图加悬停才出现的 18px 移除键，点开原图；文件交给 240×64 的 <code>FileCard</code>，由 <code>uploads</code> 映射成上传中/就绪/失败。整页拖入文件时 portal 出 <code>DropOverlay</code>，文档级监听器（<code>installDocumentDropEvents</code>）用 enter/leave 深度计数并在 drop 时调 <code>onAddFiles</code>，<code>canAcceptDrop</code> 为假时蒙层换禁用插图并去掉限制行。",
+      "source": "packages/client/ui-attachment/src/client/ComposerAttachments.tsx#L21",
+      "css": [
+        "packages/client/ui-attachment/src/client/ComposerAttachments.module.css",
+        "packages/client/ui-attachment/src/AttachmentRail.module.css",
+        "packages/client/ui-attachment/src/FileCard.module.css",
+        "packages/client/ui-primitives/src/FileTypeIcon.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l2-darkmode-thin",
+        "--dsw-alias-brand-primary",
+        "--dsw-alias-button-contrast-fill",
+        "--dsw-alias-fill-tertiary",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-interactive-bg-hover-solid",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-primary-inverted",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-scrollbar-bg-l2",
+        "--dsw-alias-scrollbar-hover-l2",
+        "--dsw-alias-state-error-primary",
+        "--dsw-elevation-panel",
+        "--dsw-radius-lg",
+        "--dsw-radius-xl",
+        "--dsw-specific-input-major",
+        "--dsw-static-amber-400",
+        "--dsw-static-amber-500",
+        "--dsw-static-deepseek-450",
+        "--dsw-static-deepseek-500",
+        "--dsw-static-green-500",
+        "--dsw-static-neutral-bluish-300",
+        "--dsw-static-red-600"
+      ],
+      "specimens": [
+        {
+          "label": "草稿轨：两张图片 + 一个上传中的 Markdown 文件卡",
+          "note": "进度条按 uploads 汇报的 45% 定宽",
+          "html": "<div style='width:560px'><div class=\"c0-rail\"><div class=\"c1-root\"><div class=\"c1-rail\" role='group' aria-label='待发送附件'><div class=\"c1-item\"><div class=\"c0-imageItem\"><button type='button' class=\"c0-thumbnail\" title='查看原图'><img src=\"data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23e9eef6'/%3E%3Crect x='28' y='28' width='196' height='16' rx='8' fill='%23b7c5d9'/%3E%3Crect x='28' y='60' width='424' height='10' rx='5' fill='%23ccd7e5'/%3E%3Crect x='28' y='122' width='424' height='166' rx='14' fill='%23d6e2f1'/%3E%3C/svg%3E\" alt='截图 2026-10-19 14.22.08.png'></button><button type='button' class=\"c0-remove\" aria-label='移除图片 截图 2026-10-19 14.22.08.png'><svg width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M3.5 3.5L12.5 12.5' stroke='currentColor'/><path d='M12.5 3.5L3.5 12.5' stroke='currentColor'/></svg></button></div></div><div class=\"c1-item\"><div class=\"c0-imageItem\"><button type='button' class=\"c0-thumbnail\" title='查看原图'><img src=\"data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='480'%3E%3Crect width='320' height='480' fill='%23eef3ec'/%3E%3Crect x='40' y='300' width='48' height='120' rx='8' fill='%239fc79a'/%3E%3Crect x='112' y='232' width='48' height='188' rx='8' fill='%237fb37a'/%3E%3C/svg%3E\" alt='资源用量.png'></button><button type='button' class=\"c0-remove\" aria-label='移除图片 资源用量.png'><svg width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M3.5 3.5L12.5 12.5' stroke='currentColor'/><path d='M12.5 3.5L3.5 12.5' stroke='currentColor'/></svg></button></div></div><div class=\"c1-item\"><div class=\"c2-card\" title='附件上传说明.md'><span class=\"c2-icon\" aria-hidden='true'><span class=\"c2-spinner\"></span></span><span class=\"c2-body\" aria-label='待发送文件'><span class=\"c2-name\">附件上传说明.md</span><span class=\"c2-meta\">上传中…</span></span><button type='button' class=\"c2-remove\" aria-label='移除文件 附件上传说明.md'><svg width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M3.5 3.5L12.5 12.5' stroke='currentColor'/><path d='M12.5 3.5L3.5 12.5' stroke='currentColor'/></svg></button><span class=\"c2-progressTrack\" aria-hidden='true'><span class=\"c2-progressBar\" style='width:45%'></span></span></div></div></div></div></div></div>"
+        },
+        {
+          "label": "悬停模拟：图片移除键与已就绪文件卡的移除键同时出现",
+          "note": "悬停模拟（真实产品里要指针停在条目上）",
+          "html": "<div style='width:400px'><div class=\"c0-rail\"><div class=\"c1-root\"><div class=\"c1-rail\" role='group' aria-label='待发送附件'><div class=\"c1-item\"><div class=\"c0-imageItem forceHover\"><button type='button' class=\"c0-thumbnail\" title='查看原图'><img src=\"data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23e9eef6'/%3E%3Crect x='28' y='122' width='424' height='166' rx='14' fill='%23d6e2f1'/%3E%3C/svg%3E\" alt='报错截图.png'></button><button type='button' class=\"c0-remove\" aria-label='移除图片 报错截图.png'><svg width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M3.5 3.5L12.5 12.5' stroke='currentColor'/><path d='M12.5 3.5L3.5 12.5' stroke='currentColor'/></svg></button></div></div><div class=\"c1-item\"><div class=\"c2-card forceHover\" title='ui-attachment 说明.md'><span class=\"c2-icon\" aria-hidden='true'><svg width='28' height='28' class=\"c3-icon c3-markdown\" viewBox='0 0 28 28' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'><path d='M8.48924 28H19.5108C21.6479 28 22.7165 28 23.5594 27.6509C24.6833 27.1853 25.5762 26.2924 26.0417 25.1685C26.3909 24.3256 26.3909 23.257 26.3909 21.1199V8.79443C26.3909 8.32877 26.3909 8.09593 26.3471 7.87507C26.2887 7.58058 26.173 7.30042 26.0067 7.05048C25.882 6.86303 25.7177 6.69799 25.3893 6.36792L20.0611 1.01354C19.7304 0.681235 19.5651 0.515081 19.3769 0.38885C19.126 0.220541 18.8443 0.103463 18.5481 0.0443412C18.3259 0 18.0915 0 17.6226 0H8.48924C6.35209 0 5.28351 0 4.4406 0.349145C3.31672 0.814671 2.4238 1.70759 1.95828 2.83147C1.60913 3.67438 1.60913 4.74296 1.60913 6.88011V21.1199C1.60913 23.257 1.60913 24.3256 1.95828 25.1685C2.4238 26.2924 3.31672 27.1853 4.4406 27.6509C5.28351 28 6.35209 28 8.48924 28Z' fill='currentColor'/><path d='M26.3909 7.37445L19.0525 0V3.77445C19.0525 4.89271 19.0525 5.45184 19.2352 5.89289C19.4788 6.48096 19.946 6.94818 20.5341 7.19176C20.9751 7.37445 21.5342 7.37445 22.6525 7.37445H26.3909Z' fill='var(--dsw-static-neutral-00)' fill-opacity='.7'/><g color='var(--dsw-static-neutral-00)' data-file-type-mark='true' transform='translate(14 16) scale(1.22) translate(-14 -16)'><path d='M8.7588 19.5V14.6H9.8998L11.9298 17.932H11.3278L13.3018 14.6H14.4428L14.4568 19.5H13.1828L13.1688 16.539H13.3858L11.9088 19.017H11.2928L9.7738 16.539H10.0398V19.5H8.7588ZM15.4375 19.5V14.6H17.7545C18.2958 14.6 18.7718 14.7003 19.1825 14.901C19.5932 15.1017 19.9128 15.384 20.1415 15.748C20.3748 16.112 20.4915 16.546 20.4915 17.05C20.4915 17.5493 20.3748 17.9833 20.1415 18.352C19.9128 18.716 19.5932 18.9983 19.1825 19.199C18.7718 19.3997 18.2958 19.5 17.7545 19.5H15.4375ZM16.8235 18.394H17.6985C17.9785 18.394 18.2212 18.3427 18.4265 18.24C18.6365 18.1327 18.7998 17.9787 18.9165 17.778C19.0332 17.5727 19.0915 17.33 19.0915 17.05C19.0915 16.7653 19.0332 16.5227 18.9165 16.322C18.7998 16.1213 18.6365 15.9697 18.4265 15.867C18.2212 15.7597 17.9785 15.706 17.6985 15.706H16.8235V18.394Z' fill='currentColor'/></g></svg></span><span class=\"c2-body\" aria-label='待发送文件'><span class=\"c2-name\">ui-attachment 说明.md</span><span class=\"c2-meta\">MD 4.2KB</span></span><button type='button' class=\"c2-remove\" aria-label='移除文件 ui-attachment 说明.md'><svg width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M3.5 3.5L12.5 12.5' stroke='currentColor'/><path d='M12.5 3.5L3.5 12.5' stroke='currentColor'/></svg></button></div></div></div></div></div></div>",
+          "css": "/* 状态模拟：真实规则是 .imageItem:hover .remove / .remove:focus-visible，\n   以及 .card:hover .remove 与 .card:hover .name { padding-right: 18px }。 */\n.c0-imageItem.forceHover .c0-remove { opacity: 1; }\n.c2-card.forceHover .c2-remove { opacity: 1; }\n.c2-card.forceHover .c2-name { padding-right: 18px; }"
+        }
+      ],
+      "props": [
+        {
+          "name": "attachments",
+          "type": "readonly ComposerAttachment[]",
+          "default": "—",
+          "desc": "浏览器持有的草稿附件，按输入顺序；kind 为 image 的带 previewUrl（图片以 base64 随消息发出），file 的只带 File。"
+        },
+        {
+          "name": "canAcceptDrop",
+          "type": "boolean",
+          "default": "—",
+          "desc": "此刻是否允许通过拖放添加附件：决定蒙层是提示还是「当前无法添加」，也决定 dragover 的 dropEffect 是 copy 还是 none。"
+        },
+        {
+          "name": "onAddFiles",
+          "type": "(files: readonly File[], directories?: ReadonlySet<File>) => void",
+          "default": "—",
+          "desc": "把一批拖入/粘贴/挑选的文件交给 composer 的校验路径；directories 标出其中被识别为文件夹的成员。"
+        },
+        {
+          "name": "onRemoveAttachment",
+          "type": "(id: DraftAttachmentId) => void",
+          "default": "—",
+          "desc": "经 Conversation 服务移除一个草稿附件（图片移除键与文件卡移除键都走它）。"
+        },
+        {
+          "name": "uploads",
+          "type": "DraftFileUploads",
+          "default": "—",
+          "desc": "按草稿 id 记录的文件上传态：uploading（带 loaded/total）、ready（带回执）或 error（带原因），文件卡据此选字形/spinner/重试。"
+        },
+        {
+          "name": "onRetryFile",
+          "type": "(id: DraftAttachmentId) => void",
+          "default": "—",
+          "desc": "重试一个失败的文件上传，失败态文件卡的整块正文就是这颗按钮。"
+        },
+        {
+          "name": "dropLimits",
+          "type": "{ readonly count: number; readonly size: string } | undefined",
+          "default": "undefined",
+          "desc": "拖放蒙层限制行的显示值（图片张数与单张上限），由模型的 imageLimits 投影格式化而来；缺省则只显示标题。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'conversation'>",
+          "default": "—",
+          "desc": "conversation 命名空间的翻译座位，用来解析附件轨、文件卡、拖放蒙层与原图预览的全部文案。"
+        }
+      ],
+      "notes": "预览态 portal 出 primitives 的 <code>ImageLightbox</code>（见 <code>image-lightbox</code> 条目），拖放态 portal 出 <code>DropOverlay</code>（见 <code>drop-overlay</code> 条目），两者的样式表不在本条目内。附件从 <code>attachments</code> 里被移除时，正开着的预览会自动关闭。文档级拖放监听器在组件挂载期间安装，用 enter/leave 深度计数抵消子元素的抖动，并在指针离开视口时重置。",
+      "keywords": ["草稿附件", "附件轨", "拖放", "drop", "composer attachments", "上传中"]
+    },
+    {
+      "id": "message-images-content",
+      "name": "MessageImagesContent",
+      "exportName": "MessageImagesContent",
+      "zh": "图片内容",
+      "group": "preview",
+      "summary": "<code>conversation.images.content</code> Factory 的官方实现，自身不产生 DOM：把 owner 的 <code>images</code>、<code>loadImage</code>、<code>align</code> 与 <code>compact</code> / <code>thumbnail</code> 布局开关原样透传给 <code>ImageGallery</code>，文案优先用 owner 给的 <code>labels</code>，否则回落到 <code>messageImageLabels(t)</code>（「查看原图」「图片加载中…」「原图预览」等）。它不需要 Session 绑定，注册为 root scope 的 Factory；Chat 消息、用户消息、轨迹与工具结果里的图片位置都经它渲染，低优先级的条目可以只替换自己那一处。",
+      "source": "packages/client/ui-attachment/src/client/MessageImages.tsx#L15",
+      "css": [
+        "packages/client/ui-attachment/src/MessageImage.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l2-darkmode-thin",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-interactive-bg-hover-danger",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-state-business-primary",
+        "--dsw-focus-ring-color",
+        "--dsw-focus-ring-width",
+        "--dsw-radius-lg",
+        "--dsw-radius-md",
+        "--dsw-radius-xl"
+      ],
+      "specimens": [
+        {
+          "label": "单图消息（align=end）：长边 240px",
+          "note": "该组件本身无独立外观，这里展示它渲染出来的图片组",
+          "html": "<div style='display:flex;flex-direction:column;width:420px'><div class=\"gallery\" data-align='end'><button type='button' class=\"frame\" data-variant='single' style='width:240px;height:160px' title='查看原图' aria-label='截图 2026-10-19 14.22.08.png，点击查看原图'><img src=\"data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23e9eef6'/%3E%3Crect x='28' y='28' width='196' height='16' rx='8' fill='%23b7c5d9'/%3E%3Crect x='28' y='60' width='424' height='10' rx='5' fill='%23ccd7e5'/%3E%3Crect x='28' y='122' width='424' height='166' rx='14' fill='%23d6e2f1'/%3E%3C/svg%3E\" alt='截图 2026-10-19 14.22.08.png' style='object-position:center'></button></div></div>"
+        },
+        {
+          "label": "多图消息（align=start）：64px 方格，其中一张加载失败",
+          "note": "失败方格保持 64×64 不撑大，点它重新加载",
+          "html": "<div style='display:flex;flex-direction:column;width:420px'><div class=\"gallery\" data-align='start'><button type='button' class=\"frame\" data-variant='tile' title='查看原图' aria-label='截图 2026-10-19 14.22.08.png，点击查看原图'><img src=\"data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23e9eef6'/%3E%3Crect x='28' y='122' width='424' height='166' rx='14' fill='%23d6e2f1'/%3E%3C/svg%3E\" alt='截图 2026-10-19 14.22.08.png'></button><button type='button' class=\"frame\" data-variant='tile' title='查看原图' aria-label='资源用量.png，点击查看原图'><img src=\"data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='480'%3E%3Crect width='320' height='480' fill='%23eef3ec'/%3E%3Crect x='112' y='232' width='48' height='188' rx='8' fill='%237fb37a'/%3E%3C/svg%3E\" alt='资源用量.png'></button><button type='button' class=\"error\" data-variant='tile'>图片加载失败，点击重试</button></div></div>"
+        },
+        {
+          "label": "轨迹缩略图（thumbnail）：48px 不裁剪，加载中 / 已加载 / 失败",
+          "note": "缩略图变体的加载态是旋转图标而非文字",
+          "html": "<div style='display:flex;flex-direction:column;width:420px'><div class=\"gallery\" data-align='start'><button type='button' class=\"frame\" data-variant='thumbnail' title='图片加载中…' aria-label='图片加载中…' aria-busy='true'><span class=\"loading\" aria-hidden='true'><svg class=\"spinner\" width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M12.596 12.596C11.687 13.5049 10.5288 14.1239 9.26798 14.3747C8.00716 14.6255 6.70028 14.4968 5.51261 14.0048C4.32494 13.5129 3.30981 12.6798 2.59557 11.611C1.88134 10.5421 1.50008 9.2855 1.5 7.99998C1.50008 6.71446 1.88134 5.45783 2.59557 4.38898C3.30981 3.32013 4.32494 2.48707 5.51261 1.99513C6.70028 1.50319 8.00716 1.37447 9.26798 1.62524C10.5288 1.87602 11.687 2.49502 12.596 3.40398' stroke='currentColor'/></svg></span></button><button type='button' class=\"frame\" data-variant='thumbnail' title='查看原图' aria-label='工具输出截图.png，点击查看原图'><img src=\"data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23e9eef6'/%3E%3Crect x='28' y='122' width='424' height='166' rx='14' fill='%23d6e2f1'/%3E%3C/svg%3E\" alt='工具输出截图.png'></button><button type='button' class=\"error\" data-variant='thumbnail' title='图片加载失败，点击重试' aria-label='图片加载失败，点击重试'><span aria-hidden='true'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M14.5001 8C14.5 9.28552 14.1188 10.5422 13.4045 11.611C12.6903 12.6799 11.6752 13.5129 10.4875 14.0049C9.29982 14.4968 7.99295 14.6255 6.73212 14.3747C5.4713 14.124 4.31314 13.505 3.4041 12.596C2.49514 11.687 1.87614 10.5288 1.62537 9.26798C1.37459 8.00716 1.50331 6.70028 1.99525 5.51261C2.48719 4.32494 3.32025 3.30981 4.3891 2.59557C5.45795 1.88134 6.71458 1.50008 8.0001 1.5C9.9001 1.5 11.7001 2.3 13.0001 3.6L14.5001 5.1' stroke='currentColor'/><path d='M14.4999 1.5V5.1H10.8999' stroke='currentColor'/></svg></span></button></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "images",
+          "type": "readonly MessageImageSource[]",
+          "default": "—",
+          "desc": "按源顺序排列的图片：durable 的 ImageAttachmentRef（可带仅供展示的 label），或提交回声的本地 preview（url 加可选 width/height）。"
+        },
+        {
+          "name": "loadImage",
+          "type": "MessageImageLoader",
+          "default": "—",
+          "desc": "会话授权的图片 URL 加载器，可带 peek 同步读缓存；durable 分支每次挂载与重试都走它。"
+        },
+        {
+          "name": "align",
+          "type": "'start' | 'end'",
+          "default": "—",
+          "desc": "图片组在所属记录里的横向贴边：user 消息靠右（end），助手与工具结果靠左（start）。"
+        },
+        {
+          "name": "compact",
+          "type": "boolean",
+          "default": "false",
+          "desc": "强制所有图片用 64px 消息附件方格，即使只有一张也不放大。"
+        },
+        {
+          "name": "thumbnail",
+          "type": "boolean",
+          "default": "false",
+          "desc": "换成 48×48 的列表缩略图：不裁剪（object-fit: contain），带加载/失败状态图标。"
+        },
+        {
+          "name": "labels",
+          "type": "MessageImageLabels | undefined",
+          "default": "undefined",
+          "desc": "调用方自备的完整文案（缩略图提示、加载中、重试、灯箱）；缺省时用 conversation 命名空间的默认字典。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'conversation'>",
+          "default": "—",
+          "desc": "Factory 的 locale 座位，只在没有 labels 时用来解析默认文案。"
+        }
+      ],
+      "notes": "该组件是 Factory 适配层，本身不渲染任何元素，实例由 <code>ctx.slots.registerFactory({ name: 'conversation.images.content', scope: 'root' })</code> 提供；它不绑 Session、不做读取授权，授权由 owner 传进来的 <code>loadImage</code> 负责。同包另有 <code>MessageImages</code> 适配器，把它注入 <code>conversation.chat.user.images</code>、<code>conversation.chat.message.images</code>、<code>conversation.trajectory.images</code>、<code>tool.call.images</code> 四个位置（priority 100）。",
+      "keywords": ["图片内容", "图片画廊工厂", "message images", "slot factory", "轨迹缩略图"]
+    },
+    {
+      "id": "drop-overlay",
+      "name": "DropOverlay",
+      "exportName": "DropOverlay",
+      "zh": "拖放蒙层",
+      "group": "preview",
+      "summary": "页面级的文件拖入提示（DeepSeek Chat 的 DragMask）：<code>position:fixed; inset:0; z-index:1000</code> 的蒙层，底色 <code>--dsw-alias-bg-mask-drop</code> 再叠 <code>backdrop-filter:blur(10px)</code>，内容居中略偏上（<code>margin-top:-3%</code>）：115×84 的斜放卡片插图、<code>--dsw-font-l-20</code> 的标题，再下面是 <code>--dsw-font-s-14</code> 的三级色限制行。它只是装饰——<code>pointer-events:none</code> 让拖拽事件继续落到下面的页面，接受与否由 owner 的文档级监听器决定；<code>disabled</code> 时换成灰色禁用插图并整行去掉限制说明。蒙层经 body portal 渲染，避免被带 transform 的祖先改变定位基准。",
+      "source": "packages/client/ui-attachment/src/DropOverlay.tsx#L24",
+      "css": [
+        "packages/client/ui-attachment/src/DropOverlay.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-mask-drop",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-font-l-20",
+        "--dsw-font-s-14"
+      ],
+      "specimens": [
+        {
+          "label": "接受态：插图 + 标题 + 图片限制行",
+          "note": "静态快照：fixed 全屏层拉回文档流",
+          "pad": "sm",
+          "html": "<div class=\"mask snapshotStatic\" role='status'><div class=\"wrap\"><div class=\"illustration\" aria-hidden='true'><svg width='115' height='84' viewBox='0 0 115 84' fill='none' xmlns=\"http://www.w3.org/2000/svg\"><g clip-path=\"url(#dshDropOverlayClip)\"><rect y=\"17.0742\" width=\"44.1832\" height=\"43.6431\" rx=\"12\" transform=\"rotate(-22.7338 0 17.0742)\" fill=\"#9CE5ED\"/><rect x=\"73.4043\" y=\"8.54297\" width=\"43.7267\" height=\"50.5284\" rx=\"8\" transform=\"rotate(17.403 73.4043 8.54297)\" fill=\"#679EFE\"/><path d=\"M30.4917 28.1369L40.8865 33.4564L37.2232 34.9524L29.5302 31.0159L26.7919 39.2122L23.1285 40.7082L26.8287 29.6338L16.8967 24.5516L20.5601 23.0556L27.7902 26.7549L30.3639 19.052L34.0273 17.556L30.4917 28.1369Z\" fill=\"white\"/><path d=\"M77.5088 26.3047L101.057 33.7966\" stroke=\"white\" stroke-width=\"3\"/><path d=\"M72.2646 42.7871L86.3938 47.2823\" stroke=\"white\" stroke-width=\"3\"/><path d=\"M74.8867 34.5469L98.4353 42.0388\" stroke=\"white\" stroke-width=\"3\"/><rect x=\"31.583\" y=\"38.6641\" width=\"44.9157\" height=\"44.3666\" rx=\"12\" transform=\"rotate(-0.134233 31.583 38.6641)\" fill=\"#3964FE\"/><path d=\"M38.9521 73.0337C39.6129 71.7086 41.7113 66.0937 43.5113 61.1663C44.1607 59.3885 46.7484 59.3923 47.4591 61.1465C48.9728 64.8828 50.7969 68.6922 51.9988 69.1925C54.2946 70.1482 57.9854 59.3573 68.0064 70.1801\" stroke=\"white\" stroke-width=\"3\"/><circle cx=\"60.6157\" cy=\"52.247\" r=\"4.38794\" transform=\"rotate(22.5996 60.6157 52.247)\" fill=\"white\"/></g><defs><clipPath id=\"dshDropOverlayClip\"><rect width=\"115\" height=\"84\" fill=\"white\"/></clipPath></defs></svg></div><div class=\"title\">文件或图片拖动到此处即可添加</div><div class=\"desc\">图片限制：最多 10 张，每张 5MB</div></div></div>",
+          "css": "/* 静态快照：真实产品里 .mask 是 body 上的 fixed 全屏层（z-index:1000）。\n   这里改成文档流内的相对定位，让 fixed 与 inset:0 失效但保留包含块；\n   min-height 只是替掉视口高度，好让插图和文案仍有居中的空间。 */\n.mask.snapshotStatic { position: relative; inset: auto; min-height: 260px; }"
+        },
+        {
+          "label": "拒绝态（disabled）：灰色插图 + 只有标题",
+          "note": "静态快照；限制行整行不渲染",
+          "pad": "sm",
+          "html": "<div class=\"mask snapshotStatic\" role='status'><div class=\"wrap\"><div class=\"illustration\" aria-hidden='true'><svg width='115' height='84' viewBox='0 0 115 84' fill='none' xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M29.6829 4.63701L11.0677 12.4368C4.95519 14.998 2.07624 22.0294 4.6374 28.1419L12.2285 46.259C14.7896 52.3715 21.8211 55.2505 27.9336 52.6893L46.5488 44.8895C52.6613 42.3283 55.5403 35.2969 52.9791 29.1844L45.388 11.0673C42.8269 4.9548 35.7954 2.07585 29.6829 4.63701Z\" fill=\"#979DA6\"/><path d=\"M30.4915 28.1375L40.8863 33.4569L37.223 34.9529L29.53 31.0165L26.7917 39.2128L23.1283 40.7088L26.8285 29.6344L16.8965 24.5522L20.5599 23.0562L27.79 26.7555L30.3637 19.0526L34.0271 17.5566L30.4915 28.1375Z\" fill=\"white\"/><path d=\"M107.496 19.2285L81.0381 10.9357C76.8221 9.61423 72.333 11.9607 71.0116 16.1768L60.6844 49.1246C59.363 53.3406 61.7095 57.8297 65.9255 59.1511L92.383 67.4439C96.599 68.7654 101.088 66.4189 102.41 62.2029L112.737 29.255C114.058 25.039 111.712 20.55 107.496 19.2285Z\" fill=\"#979DA6\"/><path d=\"M77.5088 26.3047L101.057 33.7967\" stroke=\"white\" stroke-width=\"3\"/><path d=\"M72.2646 42.7871L86.3938 47.2823\" stroke=\"white\" stroke-width=\"3\"/><path d=\"M74.8867 34.5469L98.4353 42.0388\" stroke=\"white\" stroke-width=\"3\"/><path d=\"M66.5798 30.1418L41.481 30.2006C33.5281 30.2193 27.0962 36.6815 27.1148 44.6343L27.172 69.0742C27.1907 77.0271 33.6529 83.459 41.6057 83.4404L66.7045 83.3816C74.6574 83.363 81.0894 76.9008 81.0707 68.9479L81.0135 44.5081C80.9949 36.5552 74.5327 30.1232 66.5798 30.1418Z\" fill=\"#F59E0B\"/><path d=\"M54 70.7969C61.732 70.7969 68 64.5289 68 56.7969C68 49.0649 61.732 42.7969 54 42.7969C46.268 42.7969 40 49.0649 40 56.7969C40 64.5289 46.268 70.7969 54 70.7969Z\" stroke=\"white\" stroke-width=\"3.5\"/><path d=\"M44 46.7969L64 66.7969\" stroke=\"white\" stroke-width=\"3.5\" stroke-linecap=\"round\"/></svg></div><div class=\"title\">当前无法添加文件或图片</div></div></div>",
+          "css": "/* 静态快照：同上一例，.mask 由 fixed 全屏层改成文档流内的相对定位。 */\n.mask.snapshotStatic { position: relative; inset: auto; min-height: 260px; }"
+        }
+      ],
+      "props": [
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "—",
+          "desc": "此刻是否拒绝拖放：为真时换成灰色禁用插图，标题变成「当前无法添加文件或图片」，限制行也不再渲染。"
+        },
+        {
+          "name": "labels",
+          "type": "DropOverlayLabels",
+          "default": "—",
+          "desc": "解析好的文案：title 是提示或拒绝的标题，desc 是可选的限制行（只在接受拖放时显示，可以带换行）。"
+        }
+      ],
+      "notes": "蒙层没有点击目标也没有可聚焦元素（<code>pointer-events:none</code> + 纯装饰 <code>aria-hidden</code> 插图），它只报告状态：<code>role=\"status\"</code>。进入/离开由 owner 的文档级监听器计数（子元素抖动会抵消），指针拖出视口时会强制复位。入场动画是 160ms 的 <code>fade-in</code>，<code>prefers-reduced-motion</code> 下取消。",
+      "keywords": ["拖放蒙层", "拖拽提示", "DragMask", "drop overlay", "全屏提示"]
+    },
+    {
+      "id": "file-card",
+      "name": "FileCard",
+      "exportName": "FileCard",
+      "zh": "文件卡",
+      "group": "preview",
+      "summary": "一个待发送文件的 240×64 卡片：左侧 28×28 座位放 28px 类型字形（上传中换成 20px 旋转环），中间两行是 14px/500 单行省略的文件名与 12px 状态行，右上角 18px 圆形移除键。三态由 <code>state</code> 决定：<code>uploading</code> 的状态行是「上传中…」并在底部画 2px 进度条（没拿到 <code>progress</code> 时是来回扫的 indeterminate 动画，拿到后 <code>[style]</code> 关掉动画、按百分比定宽）；<code>ready</code> 显示「MD 4.2KB」这类扩展名加体积；<code>error</code> 换成 0.5px 红色描边、整块正文变成重试按钮、移除键变红常显。",
+      "source": "packages/client/ui-attachment/src/FileCard.tsx#L22",
+      "css": [
+        "packages/client/ui-attachment/src/FileCard.module.css",
+        "packages/client/ui-primitives/src/FileTypeIcon.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l2",
+        "--dsw-alias-brand-primary",
+        "--dsw-alias-button-contrast-fill",
+        "--dsw-alias-fill-tertiary",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-primary-inverted",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-state-error-primary",
+        "--dsw-radius-lg",
+        "--dsw-specific-input-major",
+        "--dsw-static-amber-400",
+        "--dsw-static-amber-500",
+        "--dsw-static-deepseek-450",
+        "--dsw-static-deepseek-500",
+        "--dsw-static-green-500",
+        "--dsw-static-neutral-bluish-300",
+        "--dsw-static-red-600"
+      ],
+      "specimens": [
+        {
+          "label": "上传中：确定进度与不定进度两种进度条",
+          "note": "左卡拿到 loaded/total，右卡还没有第一份汇报",
+          "html": "<div style='display:flex;flex-direction:column;gap:12px'><div class=\"c0-card\" title='附件上传说明.md'><span class=\"c0-icon\" aria-hidden='true'><span class=\"c0-spinner\"></span></span><span class=\"c0-body\" aria-label='待发送文件'><span class=\"c0-name\">附件上传说明.md</span><span class=\"c0-meta\">上传中…</span></span><button type='button' class=\"c0-remove\" aria-label='移除文件 附件上传说明.md'><svg width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M3.5 3.5L12.5 12.5' stroke='currentColor'/><path d='M12.5 3.5L3.5 12.5' stroke='currentColor'/></svg></button><span class=\"c0-progressTrack\" aria-hidden='true'><span class=\"c0-progressBar\" style='width:45%'></span></span></div><div class=\"c0-card\" title='面试记录.pdf'><span class=\"c0-icon\" aria-hidden='true'><span class=\"c0-spinner\"></span></span><span class=\"c0-body\" aria-label='待发送文件'><span class=\"c0-name\">面试记录.pdf</span><span class=\"c0-meta\">上传中…</span></span><button type='button' class=\"c0-remove\" aria-label='移除文件 面试记录.pdf'><svg width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M3.5 3.5L12.5 12.5' stroke='currentColor'/><path d='M12.5 3.5L3.5 12.5' stroke='currentColor'/></svg></button><span class=\"c0-progressTrack\" aria-hidden='true'><span class=\"c0-progressBar\"></span></span></div></div>"
+        },
+        {
+          "label": "已就绪（悬停模拟）：类型字形 + 扩展名与体积",
+          "note": "悬停模拟：移除键出现，文件名让出 18px",
+          "html": "<div class=\"c0-card forceHover\" title='ui-attachment 说明.md'><span class=\"c0-icon\" aria-hidden='true'><svg width='28' height='28' class=\"c1-icon c1-markdown\" viewBox='0 0 28 28' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'><path d='M8.48924 28H19.5108C21.6479 28 22.7165 28 23.5594 27.6509C24.6833 27.1853 25.5762 26.2924 26.0417 25.1685C26.3909 24.3256 26.3909 23.257 26.3909 21.1199V8.79443C26.3909 8.32877 26.3909 8.09593 26.3471 7.87507C26.2887 7.58058 26.173 7.30042 26.0067 7.05048C25.882 6.86303 25.7177 6.69799 25.3893 6.36792L20.0611 1.01354C19.7304 0.681235 19.5651 0.515081 19.3769 0.38885C19.126 0.220541 18.8443 0.103463 18.5481 0.0443412C18.3259 0 18.0915 0 17.6226 0H8.48924C6.35209 0 5.28351 0 4.4406 0.349145C3.31672 0.814671 2.4238 1.70759 1.95828 2.83147C1.60913 3.67438 1.60913 4.74296 1.60913 6.88011V21.1199C1.60913 23.257 1.60913 24.3256 1.95828 25.1685C2.4238 26.2924 3.31672 27.1853 4.4406 27.6509C5.28351 28 6.35209 28 8.48924 28Z' fill='currentColor'/><path d='M26.3909 7.37445L19.0525 0V3.77445C19.0525 4.89271 19.0525 5.45184 19.2352 5.89289C19.4788 6.48096 19.946 6.94818 20.5341 7.19176C20.9751 7.37445 21.5342 7.37445 22.6525 7.37445H26.3909Z' fill='var(--dsw-static-neutral-00)' fill-opacity='.7'/><g color='var(--dsw-static-neutral-00)' data-file-type-mark='true' transform='translate(14 16) scale(1.22) translate(-14 -16)'><path d='M8.7588 19.5V14.6H9.8998L11.9298 17.932H11.3278L13.3018 14.6H14.4428L14.4568 19.5H13.1828L13.1688 16.539H13.3858L11.9088 19.017H11.2928L9.7738 16.539H10.0398V19.5H8.7588ZM15.4375 19.5V14.6H17.7545C18.2958 14.6 18.7718 14.7003 19.1825 14.901C19.5932 15.1017 19.9128 15.384 20.1415 15.748C20.3748 16.112 20.4915 16.546 20.4915 17.05C20.4915 17.5493 20.3748 17.9833 20.1415 18.352C19.9128 18.716 19.5932 18.9983 19.1825 19.199C18.7718 19.3997 18.2958 19.5 17.7545 19.5H15.4375ZM16.8235 18.394H17.6985C17.9785 18.394 18.2212 18.3427 18.4265 18.24C18.6365 18.1327 18.7998 17.9787 18.9165 17.778C19.0332 17.5727 19.0915 17.33 19.0915 17.05C19.0915 16.7653 19.0332 16.5227 18.9165 16.322C18.7998 16.1213 18.6365 15.9697 18.4265 15.867C18.2212 15.7597 17.9785 15.706 17.6985 15.706H16.8235V18.394Z' fill='currentColor'/></g></svg></span><span class=\"c0-body\" aria-label='待发送文件'><span class=\"c0-name\">ui-attachment 说明.md</span><span class=\"c0-meta\">MD 4.2KB</span></span><button type='button' class=\"c0-remove\" aria-label='移除文件 ui-attachment 说明.md'><svg width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M3.5 3.5L12.5 12.5' stroke='currentColor'/><path d='M12.5 3.5L3.5 12.5' stroke='currentColor'/></svg></button></div>",
+          "css": "/* 状态模拟：真实规则是 .card:hover .remove { opacity: 1 } 与 .card:hover .name { padding-right: 18px }。 */\n.c0-card.forceHover .c0-remove { opacity: 1; }\n.c0-card.forceHover .c0-name { padding-right: 18px; }"
+        },
+        {
+          "label": "上传失败：红色描边 + 整块正文可重试",
+          "note": "移除键在这一态常显并变成错误色",
+          "html": "<div class=\"c0-card c0-failed\" title='面试记录.pdf'><span class=\"c0-icon\" aria-hidden='true'><svg width='28' height='28' class=\"c1-icon c1-pdf\" viewBox='0 0 28 28' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'><path d='M8.48924 28H19.5108C21.6479 28 22.7165 28 23.5594 27.6509C24.6833 27.1853 25.5762 26.2924 26.0417 25.1685C26.3909 24.3256 26.3909 23.257 26.3909 21.1199V8.79443C26.3909 8.32877 26.3909 8.09593 26.3471 7.87507C26.2887 7.58058 26.173 7.30042 26.0067 7.05048C25.882 6.86303 25.7177 6.69799 25.3893 6.36792L20.0611 1.01354C19.7304 0.681235 19.5651 0.515081 19.3769 0.38885C19.126 0.220541 18.8443 0.103463 18.5481 0.0443412C18.3259 0 18.0915 0 17.6226 0H8.48924C6.35209 0 5.28351 0 4.4406 0.349145C3.31672 0.814671 2.4238 1.70759 1.95828 2.83147C1.60913 3.67438 1.60913 4.74296 1.60913 6.88011V21.1199C1.60913 23.257 1.60913 24.3256 1.95828 25.1685C2.4238 26.2924 3.31672 27.1853 4.4406 27.6509C5.28351 28 6.35209 28 8.48924 28Z' fill='currentColor'/><path d='M26.3909 7.37445L19.0525 0V3.77445C19.0525 4.89271 19.0525 5.45184 19.2352 5.89289C19.4788 6.48096 19.946 6.94818 20.5341 7.19176C20.9751 7.37445 21.5342 7.37445 22.6525 7.37445H26.3909Z' fill='var(--dsw-static-neutral-00)' fill-opacity='.7'/><g color='var(--dsw-static-neutral-00)' data-file-type-mark='true' transform='translate(14 16) scale(1.22) translate(-14 -16)'><path d='M6.80616 19.5V14.6H9.04616C9.49416 14.6 9.87916 14.6723 10.2012 14.817C10.5278 14.9617 10.7798 15.1717 10.9572 15.447C11.1345 15.7177 11.2232 16.0397 11.2232 16.413C11.2232 16.7817 11.1345 17.1013 10.9572 17.372C10.7798 17.6427 10.5278 17.8527 10.2012 18.002C9.87916 18.1467 9.49416 18.219 9.04616 18.219H7.57616L8.19216 17.617V19.5H6.80616ZM8.19216 17.764L7.57616 17.127H8.96216C9.2515 17.127 9.46616 17.064 9.60616 16.938C9.75083 16.812 9.82316 16.637 9.82316 16.413C9.82316 16.1843 9.75083 16.007 9.60616 15.881C9.46616 15.755 9.2515 15.692 8.96216 15.692H7.57616L8.19216 15.055V17.764ZM11.8989 19.5V14.6H14.2159C14.7573 14.6 15.2333 14.7003 15.6439 14.901C16.0546 15.1017 16.3743 15.384 16.6029 15.748C16.8363 16.112 16.9529 16.546 16.9529 17.05C16.9529 17.5493 16.8363 17.9833 16.6029 18.352C16.3743 18.716 16.0546 18.9983 15.6439 19.199C15.2333 19.3997 14.7573 19.5 14.2159 19.5H11.8989ZM13.2849 18.394H14.1599C14.4399 18.394 14.6826 18.3427 14.8879 18.24C15.0979 18.1327 15.2613 17.9787 15.3779 17.778C15.4946 17.5727 15.5529 17.33 15.5529 17.05C15.5529 16.7653 15.4946 16.5227 15.3779 16.322C15.2613 16.1213 15.0979 15.9697 14.8879 15.867C14.6826 15.7597 14.4399 15.706 14.1599 15.706H13.2849V18.394ZM17.6821 19.5V14.6H21.5251V15.671H19.0681V19.5H17.6821ZM18.9701 17.82V16.749H21.2311V17.82H18.9701Z' fill='currentColor'/></g></svg></span><button type='button' class=\"c0-body c0-retry\" aria-label='重试上传 面试记录.pdf'><span class=\"c0-name\">面试记录.pdf</span><span class=\"c0-meta c0-metaFailed\">上传失败，点击重试</span></button><button type='button' class=\"c0-remove c0-removeFailed\" aria-label='移除文件 面试记录.pdf'><svg width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M3.5 3.5L12.5 12.5' stroke='currentColor'/><path d='M12.5 3.5L3.5 12.5' stroke='currentColor'/></svg></button></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "name",
+          "type": "string",
+          "default": "—",
+          "desc": "文件名（浏览器 File.name，空时由 owner 回落到「文件」）：既是卡片 title，也决定字形分类与省略号截断。"
+        },
+        {
+          "name": "bytes",
+          "type": "number",
+          "default": "—",
+          "desc": "字节数，仅在 ready 态显示，经 fileSizeText 变成 312B / 4.2KB / 1.5MB 这类紧凑文本。"
+        },
+        {
+          "name": "state",
+          "type": "FileCardState",
+          "default": "—",
+          "desc": "'uploading' | 'ready' | 'error'：决定字形座位是旋转环还是类型字形、状态行文案，以及失败态的红色描边与重试按钮。"
+        },
+        {
+          "name": "progress",
+          "type": "number | undefined",
+          "default": "undefined",
+          "desc": "0–1 的上传进度；给出时进度条按百分比定宽并停掉扫描动画，缺省则是 indeterminate 动画。"
+        },
+        {
+          "name": "labels",
+          "type": "FileCardLabels",
+          "default": "—",
+          "desc": "解析好的文案：label 是正文的无障碍名，remove / retry 带文件名插值，uploading 与 failed 是两行状态文案。"
+        },
+        {
+          "name": "onRemove",
+          "type": "() => void",
+          "default": "—",
+          "desc": "点右上角移除键时调用，移除这张草稿。"
+        },
+        {
+          "name": "onRetry",
+          "type": "() => void",
+          "default": "—",
+          "desc": "失败态下点整块正文（一颗带 aria-label 的按钮）时重新开始上传。"
+        }
+      ],
+      "notes": "字形来自 primitives 的 <code>FileTypeIcon</code>（本条目把它的样式表列为第二张，SVG 用 c1- 前缀钉到该模块）：代码类文件走彩色 <code>CodeFileIcon</code>，其余走 28px 单色图纸，颜色由 <code>--dsh-file-type-default-color</code> 按分类给（markdown/code 深蓝、pdf 红、excel 绿、word 深蓝、ppt 琥珀、image/video 紫、other 灰）。移除键默认 <code>opacity:0</code>，卡片 hover 或按钮 focus-visible 才出现，触屏设备常显；失败态由 <code>.removeFailed</code> 直接置 1。",
+      "keywords": ["文件卡", "附件卡", "上传进度", "file card", "重试上传"]
+    },
+    {
+      "id": "message-image",
+      "name": "MessageImage",
+      "exportName": "MessageImage",
+      "zh": "消息图片",
+      "group": "preview",
+      "summary": "历史消息里的一张图片，按变体决定尺寸：<code>single</code> 取长边 240px、渲染比例夹在 [0.25, 4] 之间（超界由 <code>object-fit:cover</code> 裁掉，锚点偏上或偏左），并且不会放大超过原图；<code>tile</code> 是固定 64×64 方格；<code>thumbnail</code> 是 48×48 不裁剪（<code>object-fit:contain</code>）的列表缩略图。加载完成前框内是「图片加载中…」（thumbnail 变体换成旋转图标并带 <code>aria-busy</code>），失败时整块变成重试控件（thumbnail 变体只留刷新图标）；点击打开 <code>ImageLightbox</code> 原图预览，<code>preview</code> 分支直接用本地 URL，不走 loader 也就没有失败面。",
+      "source": "packages/client/ui-attachment/src/MessageImage.tsx#L71",
+      "css": [
+        "packages/client/ui-attachment/src/MessageImage.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l2-darkmode-thin",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-interactive-bg-hover-danger",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-state-business-primary",
+        "--dsw-focus-ring-color",
+        "--dsw-focus-ring-width",
+        "--dsw-radius-lg",
+        "--dsw-radius-md",
+        "--dsw-radius-xl"
+      ],
+      "specimens": [
+        {
+          "label": "single：长边 240px（240×160，比例未被夹取）",
+          "note": "宽高与 object-position 是组件自己算出来的内联样式",
+          "html": "<div style='display:flex;gap:10px'><button type='button' class=\"frame\" data-variant='single' style='width:240px;height:160px' title='查看原图' aria-label='截图 2026-10-19 14.22.08.png，点击查看原图'><img src=\"data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23e9eef6'/%3E%3Crect x='28' y='28' width='196' height='16' rx='8' fill='%23b7c5d9'/%3E%3Crect x='28' y='60' width='424' height='10' rx='5' fill='%23ccd7e5'/%3E%3Crect x='28' y='122' width='424' height='166' rx='14' fill='%23d6e2f1'/%3E%3C/svg%3E\" alt='截图 2026-10-19 14.22.08.png' style='object-position:center'></button></div>"
+        },
+        {
+          "label": "tile：64px 方格 + 焦点环模拟",
+          "note": "焦点环用静态近似，真实规则是 .frame:focus-visible",
+          "html": "<div style='display:flex;gap:10px'><button type='button' class=\"frame\" data-variant='tile' title='查看原图' aria-label='资源用量.png，点击查看原图'><img src=\"data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='480'%3E%3Crect width='320' height='480' fill='%23eef3ec'/%3E%3Crect x='40' y='300' width='48' height='120' rx='8' fill='%239fc79a'/%3E%3Crect x='112' y='232' width='48' height='188' rx='8' fill='%237fb37a'/%3E%3C/svg%3E\" alt='资源用量.png'></button><button type='button' class=\"frame forceFocus\" data-variant='tile' title='查看原图' aria-label='会话列表.png，点击查看原图'><img src=\"data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23e9eef6'/%3E%3Crect x='28' y='122' width='424' height='166' rx='14' fill='%23d6e2f1'/%3E%3C/svg%3E\" alt='会话列表.png'></button><button type='button' class=\"frame\" data-variant='tile' title='查看原图' aria-label='设置面板.png，点击查看原图'><span class=\"loading\">图片加载中…</span></button></div>",
+          "css": "/* 状态模拟：真实规则是 .frame:focus-visible / .error:focus-visible 的 outline。 */\n.frame.forceFocus { outline: var(--dsw-focus-ring-width) solid var(--dsw-focus-ring-color, var(--dsw-alias-state-business-primary)); outline-offset: 2px; }"
+        },
+        {
+          "label": "thumbnail：48px 不裁剪（加载中 / 已加载 / 失败）",
+          "note": "缩略图变体的加载与失败都只用图标",
+          "html": "<div style='display:flex;gap:10px'><button type='button' class=\"frame\" data-variant='thumbnail' title='图片加载中…' aria-label='图片加载中…' aria-busy='true'><span class=\"loading\" aria-hidden='true'><svg class=\"spinner\" width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M12.596 12.596C11.687 13.5049 10.5288 14.1239 9.26798 14.3747C8.00716 14.6255 6.70028 14.4968 5.51261 14.0048C4.32494 13.5129 3.30981 12.6798 2.59557 11.611C1.88134 10.5421 1.50008 9.2855 1.5 7.99998C1.50008 6.71446 1.88134 5.45783 2.59557 4.38898C3.30981 3.32013 4.32494 2.48707 5.51261 1.99513C6.70028 1.50319 8.00716 1.37447 9.26798 1.62524C10.5288 1.87602 11.687 2.49502 12.596 3.40398' stroke='currentColor'/></svg></span></button><button type='button' class=\"frame\" data-variant='thumbnail' title='查看原图' aria-label='工具输出截图.png，点击查看原图'><img src=\"data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23e9eef6'/%3E%3Crect x='28' y='122' width='424' height='166' rx='14' fill='%23d6e2f1'/%3E%3C/svg%3E\" alt='工具输出截图.png'></button><button type='button' class=\"error\" data-variant='thumbnail' title='图片加载失败，点击重试' aria-label='图片加载失败，点击重试'><span aria-hidden='true'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M14.5001 8C14.5 9.28552 14.1188 10.5422 13.4045 11.611C12.6903 12.6799 11.6752 13.5129 10.4875 14.0049C9.29982 14.4968 7.99295 14.6255 6.73212 14.3747C5.4713 14.124 4.31314 13.505 3.4041 12.596C2.49514 11.687 1.87614 10.5288 1.62537 9.26798C1.37459 8.00716 1.50331 6.70028 1.99525 5.51261C2.48719 4.32494 3.32025 3.30981 4.3891 2.59557C5.45795 1.88134 6.71458 1.50008 8.0001 1.5C9.9001 1.5 11.7001 2.3 13.0001 3.6L14.5001 5.1' stroke='currentColor'/><path d='M14.4999 1.5V5.1H10.8999' stroke='currentColor'/></svg></span></button></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "image",
+          "type": "MessageImageSpec",
+          "default": "—",
+          "desc": "一个图库条目：durable 的 ImageAttachmentRef（可带仅供展示的 label），或提交回声的本地 preview（url 加可选 name/width/height）。"
+        },
+        {
+          "name": "load",
+          "type": "ImageLoader",
+          "default": "—",
+          "desc": "会话授权的加载器，可带 peek 同步读缓存；durable 分支每次挂载与每次重试都重新调用它。"
+        },
+        {
+          "name": "variant",
+          "type": "'single' | 'tile' | 'thumbnail'",
+          "default": "—",
+          "desc": "孤立大图（长边 240px、比例夹取）、裁剪成 64px 方格的图库方块，或 48px 不裁剪的列表缩略图。"
+        },
+        {
+          "name": "labels",
+          "type": "MessageImageLabels",
+          "default": "—",
+          "desc": "解析好的文案：缩略图 tooltip（open）、带名字的无障碍名（openNamed）、加载中、加载失败与灯箱的两条文案。"
+        }
+      ],
+      "notes": "失败面本身是重试按钮（<code>onClick</code> 递增重试计数，重新走同一条加载副作用），不是纯报错文本；<code>thumbnail</code> 失败保持 48px 方格，<code>tile</code> 失败保持 64px 方格。焦点环用 <code>--dsw-focus-ring-width</code> / <code>--dsw-focus-ring-color</code>（回落 <code>--dsw-alias-state-business-primary</code>），<code>outline-offset: 2px</code>。图片 URL 只由 <code>load</code> 提供，组件不碰授权。<code>preview</code> 分支不调 loader、不显示失败态。",
+      "keywords": ["消息图片", "缩略图", "原图预览", "message image", "加载失败重试"]
+    },
+    {
+      "id": "image-gallery",
+      "name": "ImageGallery",
+      "exportName": "ImageGallery",
+      "zh": "图片画廊",
+      "group": "preview",
+      "summary": "用户与助手历史共用的图片组：<code>display:flex; flex-wrap:wrap; gap:10px; max-width:100%</code>，<code>data-align</code> 决定靠左还是靠右（<code>justify-content</code> 加 <code>align-self</code>，让整组贴到所属记录的对应边缘）。变体只选一次再发给每个成员：<code>thumbnail</code> 为真走 48px 不裁剪缩略图，<code>compact</code> 或图片多于一张走 64px 方格，否则单图放大到长边 240px。空数组直接渲染 <code>null</code>，不留空框。",
+      "source": "packages/client/ui-attachment/src/MessageImage.tsx#L155",
+      "css": [
+        "packages/client/ui-attachment/src/MessageImage.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l2-darkmode-thin",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-interactive-bg-hover-danger",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-state-business-primary",
+        "--dsw-focus-ring-color",
+        "--dsw-focus-ring-width",
+        "--dsw-radius-lg",
+        "--dsw-radius-md",
+        "--dsw-radius-xl"
+      ],
+      "specimens": [
+        {
+          "label": "单图：240px 长边，align=end 贴右",
+          "note": "align-self 让整组贴到记录行的右边缘",
+          "html": "<div style='display:flex;flex-direction:column;width:420px'><div class=\"gallery\" data-align='end'><button type='button' class=\"frame\" data-variant='single' style='width:240px;height:160px' title='查看原图' aria-label='截图 2026-10-19 14.22.08.png，点击查看原图'><img src=\"data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23e9eef6'/%3E%3Crect x='28' y='28' width='196' height='16' rx='8' fill='%23b7c5d9'/%3E%3Crect x='28' y='60' width='424' height='10' rx='5' fill='%23ccd7e5'/%3E%3Crect x='28' y='122' width='424' height='166' rx='14' fill='%23d6e2f1'/%3E%3C/svg%3E\" alt='截图 2026-10-19 14.22.08.png' style='object-position:center'></button></div></div>"
+        },
+        {
+          "label": "多图：64px 方格自动换行，align=start",
+          "note": "多于一张时不再有 240px 大图",
+          "html": "<div style='display:flex;flex-direction:column;width:260px'><div class=\"gallery\" data-align='start'><button type='button' class=\"frame\" data-variant='tile' title='查看原图' aria-label='截图 2026-10-19 14.22.08.png，点击查看原图'><img src=\"data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23e9eef6'/%3E%3Crect x='28' y='122' width='424' height='166' rx='14' fill='%23d6e2f1'/%3E%3C/svg%3E\" alt='截图 2026-10-19 14.22.08.png'></button><button type='button' class=\"frame\" data-variant='tile' title='查看原图' aria-label='资源用量.png，点击查看原图'><img src=\"data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='480'%3E%3Crect width='320' height='480' fill='%23eef3ec'/%3E%3Crect x='112' y='232' width='48' height='188' rx='8' fill='%237fb37a'/%3E%3C/svg%3E\" alt='资源用量.png'></button><button type='button' class=\"frame\" data-variant='tile' title='查看原图' aria-label='会话列表.png，点击查看原图'><img src=\"data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23f3eef6'/%3E%3Crect x='28' y='122' width='424' height='166' rx='14' fill='%23ddd0ea'/%3E%3C/svg%3E\" alt='会话列表.png'></button><button type='button' class=\"error\" data-variant='tile'>图片加载失败，点击重试</button><button type='button' class=\"frame\" data-variant='tile' title='查看原图' aria-label='设置面板.png，点击查看原图'><img src=\"data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23eef3ec'/%3E%3Crect x='28' y='122' width='424' height='166' rx='14' fill='%23c9dcc4'/%3E%3C/svg%3E\" alt='设置面板.png'></button></div></div>"
+        },
+        {
+          "label": "compact 与 thumbnail：同一组图的两种收窄",
+          "note": "compact 让单图也走 64px 方格；thumbnail 再降到 48px 且不裁剪",
+          "html": "<div style='display:flex;flex-direction:column;gap:16px;width:260px'><div class=\"gallery\" data-align='start'><button type='button' class=\"frame\" data-variant='tile' title='查看原图' aria-label='截图 2026-10-19 14.22.08.png，点击查看原图'><img src=\"data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23e9eef6'/%3E%3Crect x='28' y='122' width='424' height='166' rx='14' fill='%23d6e2f1'/%3E%3C/svg%3E\" alt='截图 2026-10-19 14.22.08.png'></button></div><div class=\"gallery\" data-align='start'><button type='button' class=\"frame\" data-variant='thumbnail' title='查看原图' aria-label='资源用量.png，点击查看原图'><img src=\"data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='480'%3E%3Crect width='320' height='480' fill='%23eef3ec'/%3E%3Crect x='112' y='232' width='48' height='188' rx='8' fill='%237fb37a'/%3E%3C/svg%3E\" alt='资源用量.png'></button><button type='button' class=\"frame\" data-variant='thumbnail' title='查看原图' aria-label='工具输出截图.png，点击查看原图'><img src=\"data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23e9eef6'/%3E%3Crect x='28' y='122' width='424' height='166' rx='14' fill='%23d6e2f1'/%3E%3C/svg%3E\" alt='工具输出截图.png'></button></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "images",
+          "type": "readonly MessageImageSpec[]",
+          "default": "—",
+          "desc": "按源顺序排列的图库条目；长度决定变体（单图才放大），空数组渲染 null。React key 取 attachmentId 或 preview.url 加下标。"
+        },
+        {
+          "name": "load",
+          "type": "ImageLoader",
+          "default": "—",
+          "desc": "会话授权的图片 URL 加载器，原样交给组里每个 MessageImage。"
+        },
+        {
+          "name": "align",
+          "type": "'start' | 'end'",
+          "default": "—",
+          "desc": "写进 data-align：end 靠右（用户消息），start 靠左（助手、轨迹与工具结果）。"
+        },
+        {
+          "name": "compact",
+          "type": "boolean",
+          "default": "false",
+          "desc": "强制 64px 方格，单图也不放大——消息里已有 240×64 文件卡时用它对齐行高。"
+        },
+        {
+          "name": "thumbnail",
+          "type": "boolean",
+          "default": "false",
+          "desc": "优先级最高：换成 48px 不裁剪缩略图，用于轨迹附件这类列表行。"
+        },
+        {
+          "name": "labels",
+          "type": "MessageImageLabels",
+          "default": "—",
+          "desc": "整组共用的已解析文案，逐个转发给成员（工具提示、无障碍名、加载中、失败与灯箱）。"
+        }
+      ],
+      "notes": "变体是整组一个值，所以同一组图不会出现大图与小方格混排。<code>align</code> 对应来源记录的左右：用户消息右对齐，其余左对齐。<code>ImageGallery</code> 只负责分组与变体选择，单张的加载、失败、灯箱行为都在 <code>MessageImage</code> 里。",
+      "keywords": ["图片画廊", "图片组", "多图", "image gallery", "自动换行"]
+    }
+  ]
+}

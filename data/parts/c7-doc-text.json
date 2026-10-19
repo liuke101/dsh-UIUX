@@ -1,0 +1,682 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "id": "code-body",
+      "name": "CodeBody",
+      "exportName": "CodeBody",
+      "zh": "源码正文",
+      "group": "preview",
+      "summary": "侧边栏文档预览的源码渲染器（<code>sidebar.right.tab.document</code> 里 id 为 code 的实现）。外层是占满高度的 <code>.renderer</code> flex 列，里面只有一只 <code>CodeBlock</code>；它把代码卡的卡片外观改回面板内嵌：圆角归零、底色透明、正文内边距 16px，横幅工具栏常驻在滚动区之上。语言由 <code>languageForPath</code> 从路径后缀推断，未知后缀走纯文本分支。<code>data-wrap</code> 跟随文档工具栏的换行开关——<code>false</code> 时 <code>pre</code> 保持列对齐横向滚动，<code>true</code> 时改成 <code>pre-wrap</code> 加 <code>overflow-wrap:anywhere</code>。",
+      "source": "packages/client/ui-sidebar-documentpreview/src/client/code/CodeBody.tsx#L14",
+      "css": [
+        "packages/client/ui-sidebar-documentpreview/src/client/code/CodeBody.module.css",
+        "packages/client/ui-primitives/src/markdown/CodeBlock.module.css",
+        "packages/client/ui-primitives/src/CodeCard.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-base",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-markdown-code-block",
+        "--dsw-alias-markdown-code-block-banner",
+        "--dsw-alias-state-business-primary",
+        "--dsw-focus-ring-color",
+        "--dsw-font-family",
+        "--dsw-font-markdown-code-block",
+        "--dsw-radius-lg",
+        "--dsw-radius-sm"
+      ],
+      "specimens": [
+        {
+          "label": "不换行：行号 gutter + 代码卡横幅",
+          "note": "静态快照：语法高亮要进入视口才激活，所以这里是 CodeBlock 的 plain 分支；行号由 CSS 计数器画出，复制按钮是工具栏里唯一的动作（换行控件归文档工具栏）",
+          "bg": "layer1",
+          "pad": "lg",
+          "html": "<div style='width:440px;height:280px'><div class=\"c0-renderer\" data-code-preview data-wrap=\"false\"><div class=\"c1-block c1-numbered c1-card c0-code\" data-line-numbers=\"true\" data-code-wrap=\"false\" style='--dsl-code-block-line-number-width:2ch'><div class=\"c1-bannerWrap\"><div class=\"c2-header\" data-code-block-banner><div class=\"c2-heading\"><span class=\"c2-language\">typescript</span></div><div class=\"c2-actions\"><button type=\"button\" class=\"c2-action\" aria-label=\"复制\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><rect x=\"1.52075\" y=\"4.07373\" width=\"10.3932\" height=\"10.3932\" rx=\"2\" stroke=\"currentColor\"/><path d=\"M11.9792 1.53296C13.36 1.53296 14.4792 2.65225 14.4792 4.03296V9.42847C14.4792 10.3756 13.9521 11.1987 13.1755 11.6228V10.3298C13.3652 10.0787 13.4792 9.7674 13.4792 9.42847V4.03296C13.4792 3.20453 12.8077 2.53296 11.9792 2.53296H6.58374C6.27966 2.53301 5.99684 2.6235 5.7605 2.77905H4.42358C4.85652 2.03463 5.66056 1.53304 6.58374 1.53296H11.9792Z\" fill=\"currentColor\"/></svg></button></div></div></div><div class=\"c1-content\" data-code-block-content><pre class=\"c1-plain\"><code><span class=\"c1-line\">/** Keep the pane's tab strip in sync with the registry. */</span>\n<span class=\"c1-line\">export function paneTabs(definitions: readonly TabDefinition[]): readonly TabId[] {</span>\n<span class=\"c1-line\">  const seen = new Set&lt;string&gt;()</span>\n<span class=\"c1-line\">  return definitions</span>\n<span class=\"c1-line\">    .filter(definition => definition.pane === 'right')</span>\n<span class=\"c1-line\">    .map(definition => definition.id)</span>\n<span class=\"c1-line\">    .filter(id => (seen.has(id) ? false : (seen.add(id), true)))</span>\n<span class=\"c1-line\">}</span></code></pre></div></div></div></div>"
+        },
+        {
+          "label": "换行开：长行折行（data-wrap=\"true\"）",
+          "note": "静态快照：同一只 CodeBlock，owner 打开换行后 .renderer[data-wrap='true'] 把 --dsl-code-block-line-white-space 改成 pre-wrap，并给 pre 加 overflow-wrap:anywhere",
+          "bg": "layer1",
+          "pad": "lg",
+          "html": "<div style='width:440px;height:240px'><div class=\"c0-renderer\" data-code-preview data-wrap=\"true\"><div class=\"c1-block c1-numbered c1-card c0-code\" data-line-numbers=\"true\" data-code-wrap=\"true\" style='--dsl-code-block-line-number-width:2ch'><div class=\"c1-bannerWrap\"><div class=\"c2-header\" data-code-block-banner><div class=\"c2-heading\"><span class=\"c2-language\">typescript</span></div><div class=\"c2-actions\"><button type=\"button\" class=\"c2-action\" aria-label=\"复制\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><rect x=\"1.52075\" y=\"4.07373\" width=\"10.3932\" height=\"10.3932\" rx=\"2\" stroke=\"currentColor\"/><path d=\"M11.9792 1.53296C13.36 1.53296 14.4792 2.65225 14.4792 4.03296V9.42847C14.4792 10.3756 13.9521 11.1987 13.1755 11.6228V10.3298C13.3652 10.0787 13.4792 9.7674 13.4792 9.42847V4.03296C13.4792 3.20453 12.8077 2.53296 11.9792 2.53296H6.58374C6.27966 2.53301 5.99684 2.6235 5.7605 2.77905H4.42358C4.85652 2.03463 5.66056 1.53304 6.58374 1.53296H11.9792Z\" fill=\"currentColor\"/></svg></button></div></div></div><div class=\"c1-content\" data-code-block-content><pre class=\"c1-plain\"><code><span class=\"c1-line\">const candidates = matchingDocumentPreviews(definitions, file.path)</span>\n<span class=\"c1-line\">const fallback = definitions.find(definition => definition.id === PLAIN_BODY_ID)</span>\n<span class=\"c1-line\">return fallback === undefined ? matched : [...matched, fallback]</span></code></pre></div></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "content",
+          "type": "DocumentContent",
+          "default": "—",
+          "desc": "文档 owner 累积的内容；不是 {kind:'text'} 时返回 null，字节内容交给别的渲染器。"
+        },
+        {
+          "name": "resourceAddress",
+          "type": "string",
+          "default": "—",
+          "desc": "文件资源地址，解析成路径后交给 languageForPath 决定高亮语法。"
+        },
+        {
+          "name": "wrap",
+          "type": "boolean",
+          "default": "—",
+          "desc": "文档工具栏的换行偏好，原样落到 .renderer 的 data-wrap 与 CodeBlock 的 data-code-wrap 上。"
+        },
+        {
+          "name": "scrollportRef",
+          "type": "RefCallback<HTMLElement>",
+          "default": "—",
+          "desc": "把 CodeBlock 的正文节点登记为预览的滚动容器，行导航按它的 offsetTop 定位。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'sidebarCodePreview'>",
+          "default": "—",
+          "desc": "复制/已复制与代码卡工具栏（语言、换行、取消换行）的本地化文案。"
+        }
+      ],
+      "notes": "非文本内容（<code>bytes</code> / <code>renderer</code>）返回 <code>null</code>，组件本身不产生 DOM，因此没有空态可截。传入确定的 <code>wrap</code> 后 CodeBlock 不再渲染自己的换行按钮，工具栏只剩复制——换行由 TextPreview 头部的 <code>.tool</code> 控制。",
+      "keywords": ["源码预览", "代码正文", "code preview", "code-body"]
+    },
+    {
+      "id": "frontmatter-fields",
+      "name": "FrontmatterFields",
+      "exportName": "FrontmatterFields",
+      "zh": "元数据字段",
+      "group": "preview",
+      "summary": "Markdown 文档开头 YAML frontmatter 的字段表：一只两列网格 <code>&lt;dl&gt;</code>，键列吃 <code>max-content</code>、值列 <code>minmax(0,1fr)</code>，行列间距 <code>4px 16px</code>。键是 secondary 色的等宽字；值是标量时按普通文本排，非标量（集合、别名、多行块）加 <code>.block</code> 换成等宽字并靠父盒的 <code>pre-wrap</code> 保留换行。<code>.field</code> 是 <code>display:contents</code>，所以 dt/dd 直接成为网格项。它由 MarkdownBody 懒加载，chunk 加载中或失败时返回调用方给的原文兜底。",
+      "source": "packages/client/ui-sidebar-documentpreview/src/client/markdown/frontmatter-fields.tsx#L58",
+      "css": [
+        "packages/client/ui-sidebar-documentpreview/src/client/markdown/frontmatter-fields.module.css",
+        "packages/client/ui-sidebar-documentpreview/src/client/markdown/MarkdownBody.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-layer-1",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-font",
+        "--dsw-font-markdown-small",
+        "--dsw-radius-md"
+      ],
+      "specimens": [
+        {
+          "label": "字段网格：标量 + 集合块",
+          "note": "静态快照：外面那层边框盒是 MarkdownBody 的 .frontmatter（字段组件自己只画 dl），本组件真实的挂载位置就在它里面",
+          "pad": "lg",
+          "html": "<div style='width:420px'><div class=\"c1-frontmatter\" data-document-frontmatter><dl class=\"c0-fields\"><div class=\"c0-field\"><dt class=\"c0-key\">title</dt><dd class=\"c0-value\">会话侧边栏文档预览</dd></div><div class=\"c0-field\"><dt class=\"c0-key\">owner</dt><dd class=\"c0-value\">ui-sidebar-documentpreview</dd></div><div class=\"c0-field\"><dt class=\"c0-key\">updated</dt><dd class=\"c0-value\">2026-10-19</dd></div><div class=\"c0-field\"><dt class=\"c0-key\">tags</dt><dd class=\"c0-block\">- preview\n- markdown\n- frontmatter</dd></div></dl></div></div>"
+        },
+        {
+          "label": "非映射 YAML：回退成原样源码",
+          "note": "静态快照：YAML 不是映射（或解析报错）时本组件原样返回 owner 给的 fallback，也就是 MarkdownBody 的 .frontmatterSource 那段 <pre>",
+          "pad": "lg",
+          "html": "<div style='width:420px'><div class=\"c1-frontmatter\" data-document-frontmatter><pre class=\"c1-frontmatterSource\">- preview\n- markdown</pre></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "source",
+          "type": "string",
+          "default": "—",
+          "desc": "两条 --- 之间的 YAML 原文，用 yaml 包解析出顶层映射。"
+        },
+        {
+          "name": "fallback",
+          "type": "ReactNode",
+          "default": "—",
+          "desc": "解析失败或顶层不是映射时原样返回的节点（调用方给的是整段原文的 <pre>）。"
+        }
+      ],
+      "notes": "字符串值显示解析后的值（折叠/多行按散文读），其余节点保留原文，所以 <code>1.0</code> 仍是 <code>1.0</code>、别名不展开。文档没有 frontmatter 内容时返回 <code>null</code>，外层空盒子被 <code>.frontmatter:empty</code> 收起。",
+      "keywords": ["frontmatter", "元数据", "YAML 字段", "文档头"]
+    },
+    {
+      "id": "html-body",
+      "name": "HtmlBody",
+      "exportName": "HtmlBody",
+      "zh": "HTML 正文",
+      "group": "preview",
+      "summary": "HTML 文件的正文渲染器：把文档放进一只 <code>.frame</code> iframe——宽高 100%、<code>min-height:240px</code>、无边框、底色 <code>--dsw-alias-bg-base</code>，脚本不能访问父应用。交互模式（<code>useInteractivePreview</code>）先把相对引用的兄弟文件打包成一个自包含文档，再挂 <code>sandbox=\"allow-scripts\"</code> 的 blob URL；静态模式直接 <code>srcdoc</code> 进 <code>sandbox=\"\"</code>。打包期间整块换成文档级的加载指示，失败时换成 <code>.status</code>（<code>role=alert</code>，10px 内边距、secondary 色）。",
+      "source": "packages/client/ui-sidebar-documentpreview/src/client/html/HtmlBody.tsx#L76",
+      "css": [
+        "packages/client/ui-sidebar-documentpreview/src/client/html/HtmlBody.module.css",
+        "packages/client/ui-sidebar-documentpreview/src/client/LoadingIndicator.module.css",
+        "packages/client/ui-primitives/src/StateDot.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-base",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-font"
+      ],
+      "specimens": [
+        {
+          "label": "静态预览：sandbox 为空的 iframe",
+          "note": "静态快照：交互模式关闭时走 createBasicHtmlDocument，文档由 srcdoc 交给 iframe；快照里 iframe 内容为空，只剩 100% 宽高、min-height:240px 与 --dsw-alias-bg-base 的底",
+          "pad": "lg",
+          "html": "<div style='width:440px;height:260px'><iframe class=\"c0-frame\" name=\"dsh-sidebar-html-report\" title=\"HTML 文档预览\" sandbox=\"\" data-html-preview></iframe></div>"
+        },
+        {
+          "label": "打包中：整块居中的加载指示",
+          "note": "静态快照：Blob 还没建好（frame.url 未定）时顶掉整块正文，LoadingIndicator 撑满 iframe 原来的高度",
+          "pad": "lg",
+          "html": "<div style='width:440px;height:260px'><span class=\"c1-loading\" role=\"status\" aria-label=\"文档渲染中...\" data-document-loading><svg class=\"c2-spinner\" data-state=\"ongoing\" width=\"28\" height=\"28\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><g class=\"c2-spinnerMotion\"><circle class=\"c2-spinnerTrack\" cx=\"12\" cy=\"12\" r=\"9.5\"/><circle class=\"c2-spinnerArc\" cx=\"12\" cy=\"12\" r=\"9.5\"/></g></svg><span>文档渲染中...</span></span></div>"
+        },
+        {
+          "label": "预览失败：.status role=alert",
+          "note": "静态快照：打包抛错、或静态模式遇到非法 UTF-8 时走这一支，交互模式下同一句也会出现在 iframe 位置",
+          "html": "<div style='width:440px'><p class=\"c0-status\" role=\"alert\">无法预览这份 HTML 文档</p></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "content",
+          "type": "DocumentContent",
+          "default": "—",
+          "desc": "文档字节；不是 {kind:'bytes'}（文本交付）时返回 null。"
+        },
+        {
+          "name": "resourceAddress",
+          "type": "string",
+          "default": "—",
+          "desc": "根文件地址，交互模式用它把相对引用解析成兄弟文件；内容变化会换掉整只 iframe。"
+        },
+        {
+          "name": "readRelated",
+          "type": "ReadHtmlRelated",
+          "default": "—",
+          "desc": "注入的兄弟文件读取器：打包时按需读入 <link>/<script>/<img> 指向的相对资源。"
+        },
+        {
+          "name": "useTabInfo",
+          "type": "UseSidebarRightTabInfo",
+          "default": "—",
+          "desc": "标准 tab 读取器：tab.id 组 iframe 的 name，tab.signal 在 tab 结束时中止打包。"
+        },
+        {
+          "name": "useInteractivePreview",
+          "type": "ObservableSnapshot<boolean> 的选择器 hook",
+          "default": "—",
+          "desc": "交互预览开关；关闭时退回 sandbox=\"\" 的静态文档，并清空依赖集合。"
+        },
+        {
+          "name": "addResource",
+          "type": "(address: string) => void",
+          "default": "—",
+          "desc": "登记打包过程中读到的兄弟文件，让它们在文件变化时刷新。"
+        },
+        {
+          "name": "setResources",
+          "type": "(addresses: readonly string[]) => void",
+          "default": "—",
+          "desc": "用一次打包的实际依赖集合替换该渲染器的资源列表。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'documentHtml'>",
+          "default": "—",
+          "desc": "iframe 标题（HTML 文档预览）与加载、失败文案。"
+        }
+      ],
+      "notes": "组件本身没有可见外壳，用户看到的就是那只 iframe。交互模式的 <code>sandbox=\"allow-scripts\"</code> 允许文档跑脚本但拿不到父应用（无 same-origin）；静态模式 <code>sandbox=\"\"</code> 连脚本都禁掉。iframe 用 blob URL 作 key，每次内容替换都换掉整个浏览上下文。",
+      "keywords": ["HTML 预览", "iframe", "沙箱", "html-body"]
+    },
+    {
+      "id": "image-body",
+      "name": "ImageBody",
+      "exportName": "ImageBody",
+      "zh": "图片正文",
+      "group": "preview",
+      "summary": "图片文件的正文渲染器，整块交给共享的 <code>ZoomViewport</code>：外层 <code>.frame</code> 是 12px 内边距的 flex 容器，图片外面套一层 <code>.surface</code> 接住适应宽度与固定倍率两种宽度规则，<code>.image</code> 本体按 <code>--dsw-radius-md</code> 圆角、宽度 100%、高度自适应。后缀限 png/jpg/jpeg/gif/webp/bmp/ico/svg；不是字节交付或后缀不认识时输出 <code>.status</code>（<code>role=alert</code>，13px、secondary 色、垂直居中）。字节解码成 Blob URL 期间显示文档级加载指示。",
+      "source": "packages/client/ui-sidebar-documentpreview/src/client/image/ImageBody.tsx#L56",
+      "css": [
+        "packages/client/ui-sidebar-documentpreview/src/client/image/ImageBody.module.css",
+        "packages/client/ui-sidebar-documentpreview/src/client/zoom/ZoomViewport.module.css",
+        "packages/client/ui-sidebar-documentpreview/src/client/LoadingIndicator.module.css",
+        "packages/client/ui-primitives/src/StateDot.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-font",
+        "--dsw-radius-md"
+      ],
+      "specimens": [
+        {
+          "label": "适应宽度：12px 内边距里的圆角图片",
+          "note": "静态快照：图片本身用一块 320×200 的占位色块代替（真实内容是文件字节做的 Blob URL）；.frame 的 12px 内边距、.image 的圆角与 fit-width 的宽度规则都来自真实样式表",
+          "pad": "lg",
+          "html": "<div style='width:440px;height:280px'><section class=\"c1-frame\" data-document-zoom-frame data-document-zoom-mode=\"fit-width\" style='--document-zoom:1;--document-zoom-reveal-height:72px'><div class=\"c1-scrollport\" data-document-zoom-scrollport><div class=\"c0-frame\" data-image-preview><div class=\"c0-surface c1-surface\" data-document-zoom-surface style='--document-zoom-width:320px'><img class=\"c0-image\" src=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='200'%3E%3Crect width='320' height='200' fill='%23dbe4f0'/%3E%3C/svg%3E\" alt=\"图片预览：architecture.png\" decoding=\"async\" draggable=\"false\" referrerpolicy=\"no-referrer\"></div></div></div><div class=\"c1-revealZone\" data-document-zoom-reveal-zone aria-hidden=\"true\"></div></section></div>"
+        },
+        {
+          "label": "字节未就绪：整块居中的加载指示",
+          "note": "静态快照：对象 URL 建好但 <img> 还没 load 时，.frame:has([data-document-loading]) 把高度撑满，转圈因此落在滚动区正中",
+          "pad": "lg",
+          "html": "<div style='width:440px;height:260px'><section class=\"c1-frame\" data-document-zoom-frame data-document-zoom-mode=\"fit-width\" style='--document-zoom:1;--document-zoom-reveal-height:72px'><div class=\"c1-scrollport\" data-document-zoom-scrollport><div class=\"c0-frame\" data-image-preview><span class=\"c2-loading\" role=\"status\" aria-label=\"文档渲染中...\" data-document-loading><svg class=\"c3-spinner\" data-state=\"ongoing\" width=\"28\" height=\"28\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><g class=\"c3-spinnerMotion\"><circle class=\"c3-spinnerTrack\" cx=\"12\" cy=\"12\" r=\"9.5\"/><circle class=\"c3-spinnerArc\" cx=\"12\" cy=\"12\" r=\"9.5\"/></g></svg><span>文档渲染中...</span></span></div></div><div class=\"c1-revealZone\" data-document-zoom-reveal-zone aria-hidden=\"true\"></div></section></div>"
+        },
+        {
+          "label": "空态：不支持的后缀或解码失败",
+          "note": "静态快照：content 不是字节、或后缀不在支持列表里时是这句话；<img> onError 时同一位置换成「无法显示这张图片」",
+          "html": "<div style='width:440px'><p class=\"c0-status\" role=\"alert\">图片预览需要完整文件内容</p></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "content",
+          "type": "DocumentContent",
+          "default": "—",
+          "desc": "{kind:'bytes'} 的完整图片字节；缺失或后缀不在 IMAGE_MEDIA_TYPES 里时给 .status 空态。"
+        },
+        {
+          "name": "resourceAddress",
+          "type": "string",
+          "default": "—",
+          "desc": "文件资源地址，取文件名做 alt 文案、取后缀决定 Blob 的 media type。"
+        },
+        {
+          "name": "useTabInfo",
+          "type": "UseSidebarRightTabInfo",
+          "default": "—",
+          "desc": "标准 tab 读取器：tab.id 是缩放偏好的分桶键，tab.signal 参与对象 URL 的建立与回收。"
+        },
+        {
+          "name": "useStore",
+          "type": "UseStore<ZoomStore>",
+          "default": "—",
+          "desc": "按 tab 读缩放偏好（适应宽度或固定倍率），缺省用 DEFAULT_ZOOM。"
+        },
+        {
+          "name": "actions",
+          "type": "BoundActions<ZoomStore>",
+          "default": "—",
+          "desc": "写回缩放偏好；组件只调 actions.zoom。"
+        },
+        {
+          "name": "retainTab",
+          "type": "(tabId: TabId, signal: AbortSignal) => void",
+          "default": "—",
+          "desc": "让该 tab 的缩放与浏览状态活到 tab 记录结束。"
+        },
+        {
+          "name": "scrollportRef",
+          "type": "RefCallback<HTMLElement>",
+          "default": "—",
+          "desc": "交给 ZoomViewport 登记成滚动容器，缺少它时回落成预览自己的 .body。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'sidebarImage'>",
+          "default": "—",
+          "desc": "alt 文案、加载/失败/不支持文案，以及缩放控件的无障碍名。"
+        }
+      ],
+      "notes": "缩放由主 bundle 的 <code>ZoomViewport</code> 持有：默认适应宽度（图片宽于滚动区时按比例缩到 100%，更窄时保持固有尺寸），固定档 25%–400%；控件面板只在指针进入底部 72px 的揭示区时浮现，静态快照里没有复现。SVG 也只走 <code>&lt;img&gt;</code> 的 Blob URL，所以是浏览器的静态图片模式。",
+      "keywords": ["图片预览", "image preview", "缩放视图", "image-body"]
+    },
+    {
+      "id": "loading-indicator",
+      "name": "LoadingIndicator",
+      "exportName": "LoadingIndicator",
+      "zh": "文档加载",
+      "group": "preview",
+      "summary": "文档读取与渲染共用的不确定进度提示：一只 <code>StateDot</code> 的 ongoing 转圈 + 可选文案，外层 <code>role=\"status\"</code> 并带 <code>data-document-loading</code> 供父级做 <code>:has()</code> 布局判断。文档级形态（默认）撑满 100% 宽高、24px 内边距、纵向 12px 间距、secondary 色、正文 14px；<code>inline</code> 形态改成横向 8px 间距、14px 转圈、零内边距且不渲染文案，只留 <code>aria-label</code>。",
+      "source": "packages/client/ui-sidebar-documentpreview/src/client/LoadingIndicator.tsx#L11",
+      "css": [
+        "packages/client/ui-sidebar-documentpreview/src/client/LoadingIndicator.module.css",
+        "packages/client/ui-primitives/src/StateDot.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-font"
+      ],
+      "specimens": [
+        {
+          "label": "文档级：28px 转圈 + 状态文案",
+          "note": "静态快照：.loading 撑满父级高度并把内容居中，所以示例补了一层有确定高度的容器",
+          "html": "<div style='width:320px;height:140px'><span class=\"c0-loading\" role=\"status\" aria-label=\"文档渲染中...\" data-document-loading><svg class=\"c1-spinner\" data-state=\"ongoing\" width=\"28\" height=\"28\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><g class=\"c1-spinnerMotion\"><circle class=\"c1-spinnerTrack\" cx=\"12\" cy=\"12\" r=\"9.5\"/><circle class=\"c1-spinnerArc\" cx=\"12\" cy=\"12\" r=\"9.5\"/></g></svg><span>文档渲染中...</span></span></div>"
+        },
+        {
+          "label": "行内：14px 转圈、无可见文案",
+          "note": "静态快照：真实用法是替换「加载更多」按钮里的文字——inline 去掉内边距、改成横向排列，文案只由 aria-label 承载",
+          "html": "<div style='width:320px;display:flex;align-items:center;gap:8px'><span class=\"c0-loading c0-inline\" role=\"status\" aria-label=\"文档渲染中...\" data-document-loading><svg class=\"c1-spinner\" data-state=\"ongoing\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><g class=\"c1-spinnerMotion\"><circle class=\"c1-spinnerTrack\" cx=\"12\" cy=\"12\" r=\"9.5\"/><circle class=\"c1-spinnerArc\" cx=\"12\" cy=\"12\" r=\"9.5\"/></g></svg></span></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "label",
+          "type": "string",
+          "default": "—",
+          "desc": "本地化状态文案：文档级时显示在转圈下方，行内时只作 aria-label。"
+        },
+        {
+          "name": "inline",
+          "type": "boolean",
+          "default": "false",
+          "desc": "行内形态（附加页的「加载更多」里用）：14px 转圈、横向排布、不渲染文案。"
+        }
+      ],
+      "notes": "转圈是 <code>StateDot</code> 的 ongoing 态：1.5s 线性旋转的整组（弧线 + 25% 透明度的轨道）加同周期的虚线呼吸；<code>prefers-reduced-motion</code> 下停转并改成固定弧长。svg 自身 <code>aria-hidden</code>，无障碍名由外层的 <code>role=\"status\"</code> + <code>aria-label</code> 提供。",
+      "keywords": ["加载中", "loading", "spinner", "状态点"]
+    },
+    {
+      "id": "markdown-body",
+      "name": "MarkdownBody",
+      "exportName": "MarkdownBody",
+      "zh": "Markdown 正文",
+      "group": "preview",
+      "summary": "Markdown 文档的正文渲染器：外套 <code>.document</code>（10px 12px 内边距、恢复 <code>white-space:normal</code>），开头的 YAML frontmatter 单独渲染成 <code>.frontmatter</code> 元数据盒——0.5px 边框、<code>--dsw-radius-md</code> 圆角、<code>--dsw-alias-bg-layer-1</code> 底色、下方 16px 间距，空盒子被 <code>:empty</code> 收起；余下正文交给 <code>MarkdownText</code> 的 <code>.markdown</code> 排版。围栏走共享 CodeBlock，表格 ≥4 列才保留自然宽并横向滚动，3 列及以下填满栏宽。非文本交付返回 null。",
+      "source": "packages/client/ui-sidebar-documentpreview/src/client/markdown/MarkdownBody.tsx#L34",
+      "css": [
+        "packages/client/ui-sidebar-documentpreview/src/client/markdown/MarkdownBody.module.css",
+        "packages/client/ui-primitives/src/markdown/MarkdownText.module.css",
+        "packages/client/ui-sidebar-documentpreview/src/client/markdown/frontmatter-fields.module.css",
+        "packages/client/ui-primitives/src/markdown/CodeBlock.module.css",
+        "packages/client/ui-primitives/src/CodeCard.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-base",
+        "--dsw-alias-bg-layer-1",
+        "--dsw-alias-border-l1",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-link",
+        "--dsw-alias-markdown-code-block",
+        "--dsw-alias-markdown-code-block-banner",
+        "--dsw-alias-markdown-inline-code",
+        "--dsw-alias-state-business-primary",
+        "--dsw-focus-ring-color",
+        "--dsw-font",
+        "--dsw-font-family",
+        "--dsw-font-markdown-base",
+        "--dsw-font-markdown-base-strong",
+        "--dsw-font-markdown-code",
+        "--dsw-font-markdown-code-block",
+        "--dsw-font-markdown-h1",
+        "--dsw-font-markdown-h2",
+        "--dsw-font-markdown-h3",
+        "--dsw-font-markdown-h4",
+        "--dsw-font-markdown-small",
+        "--dsw-font-markdown-table",
+        "--dsw-font-markdown-table-head",
+        "--dsw-radius-lg",
+        "--dsw-radius-md",
+        "--dsw-radius-sm",
+        "--dsw-radius-xs"
+      ],
+      "specimens": [
+        {
+          "label": "整篇文档：元数据盒 + 标题 / 列表 / 引用 / 表格 / 围栏",
+          "note": "静态快照：围栏是 CodeBlock 的 plain 分支（高亮要进入视口才激活），表格 3 列所以走 tableFill 填满栏宽",
+          "pad": "lg",
+          "html": "<div style='width:460px'><div class=\"c0-document\" data-document-markdown><div class=\"c0-frontmatter\" data-document-frontmatter><dl class=\"c2-fields\"><div class=\"c2-field\"><dt class=\"c2-key\">title</dt><dd class=\"c2-value\">会话侧边栏文档预览</dd></div><div class=\"c2-field\"><dt class=\"c2-key\">owner</dt><dd class=\"c2-value\">ui-sidebar-documentpreview</dd></div><div class=\"c2-field\"><dt class=\"c2-key\">tags</dt><dd class=\"c2-block\">- preview\n- markdown</dd></div></dl></div><div class=\"c1-markdown\"><h2>文档预览的三种交付</h2><p>渲染器按 <code>DocumentContent</code> 的 <code>kind</code> 分派：文本走累积分页，字节走一次性读取，<code>renderer</code> 交给渲染器自己去读。本地图片由 <code>pathImages</code> 解析成可显示的 URL。</p><ul><li>侧边栏右侧面板的 tab 内容</li><li>浮动预览窗复用同一只 body</li></ul><blockquote><p>frontmatter 不参与 Markdown 解析，单独渲染成上方的元数据盒。</p></blockquote><div class=\"c1-tableScroll c1-tableFill\"><table><thead><tr><th>读取方式</th><th>分页</th><th>失败提示</th></tr></thead><tbody><tr><td>text</td><td>按页累积到 eof</td><td>行内状态行 + 重试</td></tr><tr><td>bytes</td><td>一次读完</td><td>空态 + 重试</td></tr></tbody></table></div><div class=\"c3-block md-code-block c3-card\" data-code-wrap=\"true\"><div class=\"c3-bannerWrap\"><div class=\"c4-header\" data-code-block-banner><div class=\"c4-heading\"><span class=\"c4-language\">ts</span></div><div class=\"c4-actions\"><button type=\"button\" class=\"c4-action\" aria-label=\"复制\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><rect x=\"1.52075\" y=\"4.07373\" width=\"10.3932\" height=\"10.3932\" rx=\"2\" stroke=\"currentColor\"/><path d=\"M11.9792 1.53296C13.36 1.53296 14.4792 2.65225 14.4792 4.03296V9.42847C14.4792 10.3756 13.9521 11.1987 13.1755 11.6228V10.3298C13.3652 10.0787 13.4792 9.7674 13.4792 9.42847V4.03296C13.4792 3.20453 12.8077 2.53296 11.9792 2.53296H6.58374C6.27966 2.53301 5.99684 2.6235 5.7605 2.77905H4.42358C4.85652 2.03463 5.66056 1.53304 6.58374 1.53296H11.9792Z\" fill=\"currentColor\"/></svg></button></div></div></div><div class=\"c3-content\" data-code-block-content><pre class=\"c3-plain\"><code><span class=\"c3-line\">const split = splitFrontmatter(text)</span>\n<span class=\"c3-line\">if (split !== undefined) renderFields(split.source)</span></code></pre></div></div></div></div></div>"
+        },
+        {
+          "label": "frontmatter 非映射：原样源码 + 正文照常",
+          "note": "静态快照：字段表解析失败或顶层不是映射时，盒子里换成整段原文的 .frontmatterSource，正文不受影响",
+          "pad": "lg",
+          "html": "<div style='width:460px'><div class=\"c0-document\" data-document-markdown><div class=\"c0-frontmatter\" data-document-frontmatter><pre class=\"c0-frontmatterSource\">- sidebar\n- documentpreview</pre></div><div class=\"c1-markdown\"><p>YAML 不是映射时元数据盒里换成这段原样源码，正文照常渲染。</p></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "content",
+          "type": "DocumentContent",
+          "default": "—",
+          "desc": "owner 累积的文本（未 eof 时按流式解析）；非 text 交付返回 null。"
+        },
+        {
+          "name": "resourceAddress",
+          "type": "string",
+          "default": "—",
+          "desc": "文件资源地址，用来取绝对路径，把本地图片路径解析成可显示的 URL。"
+        },
+        {
+          "name": "useResource",
+          "type": "UseResource",
+          "default": "—",
+          "desc": "标准资源 hook，读 file 元数据里的 absolutePath；没有它时相对图片只能保持原文。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'documentMarkdown'>",
+          "default": "—",
+          "desc": "围栏的复制/已复制、代码卡工具栏文案与脚注标题。"
+        }
+      ],
+      "notes": "frontmatter 由 <code>splitFrontmatter</code> 切出，字段表是懒加载 chunk（把 yaml 解析器挡在启动包外），chunk 加载中或失败时用同一段原文兜底，所以元数据始终可读。正文走 mdast 直连管线：原始 HTML 与不安全协议被禁用，脚注收在文末，围栏复用共享 <code>CodeBlock</code>；文档没有 frontmatter 时根本不渲染元数据盒。",
+      "keywords": ["Markdown 预览", "文档正文", "frontmatter", "markdown-body"]
+    },
+    {
+      "id": "text-body",
+      "name": "TextBody",
+      "exportName": "TextBody",
+      "zh": "纯文本行",
+      "group": "preview",
+      "summary": "没有更具体渲染器时的兜底正文（注册 id 是 PLAIN_BODY_ID）：<code>.textDocument</code> 给 8px 内边距，每页一只 <code>&lt;pre class=\"page\"&gt;</code>（页与页相接，字体取 <code>--dsw-font-markdown-code-block</code>），页里逐行一只 <code>.line</code>，左右 10px 内缩与文件树的行对齐。导航到的目标行额外带 <code>.lineTarget</code>，用 <code>--dsw-alias-interactive-bg-hover</code> 铺一条浅色底。行号是跨页的全局行索引，超长行的折行由父级 <code>.body.wrap</code> 决定，行自己不带类。",
+      "source": "packages/client/ui-sidebar-documentpreview/src/client/text/TextBody.tsx#L9",
+      "css": [
+        "packages/client/ui-sidebar-documentpreview/src/client/TextPreview.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-scrollbar-bg-l2",
+        "--dsw-alias-scrollbar-hover-l2",
+        "--dsw-font-markdown-code-block",
+        "--dsw-font-mono"
+      ],
+      "specimens": [
+        {
+          "label": "纯文本：等宽行 + 导航目标行高亮",
+          "note": "静态快照：这层 .body 是父级 TextPreview 的滚动容器（本组件自己没有样式表，行与页的样式都来自 TextPreview.module.css）",
+          "pad": "lg",
+          "html": "<div style='width:440px;height:220px;display:flex;flex-direction:column'><div class=\"body\" data-textpreview-body><div class=\"textDocument\" data-textpreview-plain><pre class=\"page\" data-textpreview-page=\"0\"><div class=\"line\" data-textpreview-line=\"1\"># AGENTS.md\n</div><div class=\"line\" data-textpreview-line=\"2\">- 只读源码在 /workspace/deepseek-harness。\n</div><div class=\"line lineTarget\" data-textpreview-line=\"3\" data-textpreview-target=\"3\">- 改 UI 前先读对应 *.module.css。\n</div><div class=\"line\" data-textpreview-line=\"4\">- 提交前跑 pnpm run test:gui。\n</div></pre></div></div></div>"
+        },
+        {
+          "label": "换行开：长行在父级 .body.wrap 下折行",
+          "note": "静态快照：wrap 是父级 .body 的状态（data-textpreview-wrap），行本身不带类",
+          "pad": "lg",
+          "html": "<div style='width:440px;height:200px;display:flex;flex-direction:column'><div class=\"body wrap\" data-textpreview-body data-textpreview-wrap=\"\"><div class=\"textDocument\" data-textpreview-plain><pre class=\"page\" data-textpreview-page=\"0\"><div class=\"line\" data-textpreview-line=\"1\">文档预览的渲染器按 DocumentContent 的 kind 分派：文本走累积分页，字节走一次性读取。\n</div><div class=\"line\" data-textpreview-line=\"2\">兜底的纯文本视图不做任何语法高亮。\n</div></pre></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "content",
+          "type": "DocumentContent",
+          "default": "—",
+          "desc": "{kind:'text'} 的分页文本；其它交付返回 null。"
+        },
+        {
+          "name": "useTabInfo",
+          "type": "UseSidebarRightTabInfo",
+          "default": "—",
+          "desc": "标准 tab 读取器；navigation.params.line 给出要高亮的行号，没有就整篇平铺。"
+        }
+      ],
+      "notes": "行号 = <code>page.offset + index</code>，与导航目标、<code>scrollToLine</code> 查询的 <code>[data-textpreview-line]</code> 同一套数字；目标行同时带 <code>data-textpreview-target</code>。它是注册表里的内置兜底（<code>priority: 'builtin'</code>、<code>loading: 'text-pages'</code>、<code>wrap: true</code>），所以打开方式菜单里总有一个「纯文本」。",
+      "keywords": ["纯文本", "plain text", "源码行", "text-body"]
+    },
+    {
+      "id": "text-preview",
+      "name": "TextPreview",
+      "exportName": "TextPreview",
+      "zh": "文本预览",
+      "group": "preview",
+      "summary": "文件预览面板的本体，注册在 <code>sidebar.right.pane.tab</code> 的 text 类型上：顶部一行 38px 的头（左边 PathLabel 路径 12px，右边 28px 圆形图标按钮——打开方式、换行、重新读取，图标 15px），下面 <code>.body</code> 是等宽 <code>pre</code> 的滚动容器，<code>:has([data-code-preview])</code> 时改成不滚动的 flex 列、<code>:has([data-pdf-preview])</code> 时换成文档预览底色。正文槽位按选中的渲染器渲染；没有内容时给 <code>.empty</code>（36px 灰度类型图纸 + 说明 + 32px 重试胶囊），文件更新时在头部下方压一条 12px 的 <code>.changed</code> 提示与「重新载入」小按钮。",
+      "source": "packages/client/ui-sidebar-documentpreview/src/client/TextPreview.tsx#L56",
+      "css": [
+        "packages/client/ui-sidebar-documentpreview/src/client/TextPreview.module.css",
+        "packages/client/ui-primitives/src/PathLabel.module.css",
+        "packages/client/ui-primitives/src/FileTypeIcon.module.css",
+        "packages/client/ui-sidebar-documentpreview/src/client/LoadingIndicator.module.css",
+        "packages/client/ui-primitives/src/StateDot.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-document-preview",
+        "--dsw-alias-bg-layer-2",
+        "--dsw-alias-bg-layer-3",
+        "--dsw-alias-border-l1",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-scrollbar-bg-l2",
+        "--dsw-alias-scrollbar-hover-l2",
+        "--dsw-static-deepseek-500",
+        "--dsw-static-neutral-00",
+        "--dsw-font",
+        "--dsw-font-family",
+        "--dsw-font-markdown-code-block",
+        "--dsw-font-mono",
+        "--dsw-radius-md",
+        "--dsw-radius-sm"
+      ],
+      "specimens": [
+        {
+          "label": "正文态：路径行 + 工具 + 纯文本视图（含「加载更多」）",
+          "note": "静态快照：打开方式已切到「纯文本」，正文槽位渲染的就是 TextBody；目标行的浅底、10px 行内缩与 28px 工具按钮都来自本组件的样式表",
+          "pad": "lg",
+          "html": "<div style='width:440px;height:300px;display:flex;flex-direction:column'><div class=\"preview\" data-textpreview-state=\"text\" data-textpreview-url=\"file:///workspace/deepseek-harness/AGENTS.md\" data-document-preview=\"@deepseek-ai/dsh-client-ui-sidebar-documentpreview/text\"><div class=\"header\"><span class=\"path\" data-path-label data-textpreview-path title=\"/workspace/deepseek-harness/AGENTS.md\"><span class=\"text\"><span class=\"directory\">/workspace/deepseek-harness/</span><span class=\"name\">AGENTS.md</span></span></span><button type=\"button\" class=\"tool viewerTool\" aria-label=\"打开方式\" title=\"纯文本\" data-document-viewer-menu>纯文本</button><button type=\"button\" class=\"tool\" aria-pressed=\"false\" aria-label=\"自动换行\" data-textpreview-tool=\"wrap\"><svg width=\"15\" height=\"15\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M10.9999 8C10.9999 6.89543 10.1046 6 9 6H4.5V5H9C10.6568 5 11.9999 6.34315 11.9999 8C11.9999 9.65685 10.6568 11 9 11H6.20703L6.85351 11.6465L6.14648 12.3535L4.64652 10.8536C4.45126 10.6583 4.45126 10.3417 4.64652 10.1464L6.14648 8.64648L6.85351 9.35352L6.20703 10H9C10.1046 10 10.9999 9.10457 10.9999 8Z\" fill=\"currentColor\"/><path d=\"M2 15H1V1H2V15Z\" fill=\"currentColor\"/><path d=\"M15 15H14V1H15V15Z\" fill=\"currentColor\"/></svg></button><button type=\"button\" class=\"tool\" aria-label=\"重新读取文件\" data-textpreview-tool=\"reload\"><svg width=\"15\" height=\"15\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M14.5001 8C14.5 9.28552 14.1188 10.5422 13.4045 11.611C12.6903 12.6799 11.6752 13.5129 10.4875 14.0049C9.29982 14.4968 7.99295 14.6255 6.73212 14.3747C5.4713 14.124 4.31314 13.505 3.4041 12.596C2.49514 11.687 1.87614 10.5288 1.62537 9.26798C1.37459 8.00716 1.50331 6.70028 1.99525 5.51261C2.48719 4.32494 3.32025 3.30981 4.3891 2.59557C5.45795 1.88134 6.71458 1.50008 8.0001 1.5C9.9001 1.5 11.7001 2.3 13.0001 3.6L14.5001 5.1\" stroke=\"currentColor\"/><path d=\"M14.4999 1.5V5.1H10.8999\" stroke=\"currentColor\"/></svg></button></div><div class=\"body\" data-textpreview-body><div class=\"textDocument\" data-textpreview-plain><pre class=\"page\" data-textpreview-page=\"0\"><div class=\"line\" data-textpreview-line=\"1\"># AGENTS.md\n</div><div class=\"line\" data-textpreview-line=\"2\">- 只读源码在 /workspace/deepseek-harness。\n</div><div class=\"line lineTarget\" data-textpreview-line=\"3\" data-textpreview-target=\"3\">- 改 UI 前先读对应 *.module.css，类名不要自己发明。\n</div><div class=\"line\" data-textpreview-line=\"4\">- 提交前跑 pnpm run test:gui。\n</div></pre></div><button type=\"button\" class=\"more\" data-textpreview-more>加载更多</button></div></div></div>"
+        },
+        {
+          "label": "文件已更新：提示条 + 重新载入",
+          "note": "静态快照：提示条只做通告、不替换已读内容——读者仍看着旧文本，点小按钮才重读",
+          "pad": "lg",
+          "html": "<div style='width:440px;height:220px;display:flex;flex-direction:column'><div class=\"preview\" data-textpreview-state=\"text\" data-textpreview-url=\"file:///workspace/deepseek-harness/AGENTS.md\" data-document-preview=\"@deepseek-ai/dsh-client-ui-sidebar-documentpreview/text\"><p class=\"changed\" data-textpreview-changed><span>文件已更新，当前显示为旧内容</span><button type=\"button\" class=\"action\" data-textpreview-reload-now>重新载入</button></p><div class=\"header\"><span class=\"path\" data-path-label data-textpreview-path title=\"/workspace/deepseek-harness/AGENTS.md\"><span class=\"text\"><span class=\"directory\">/workspace/deepseek-harness/</span><span class=\"name\">AGENTS.md</span></span></span><button type=\"button\" class=\"tool\" aria-pressed=\"false\" aria-label=\"自动换行\" data-textpreview-tool=\"wrap\"><svg width=\"15\" height=\"15\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M10.9999 8C10.9999 6.89543 10.1046 6 9 6H4.5V5H9C10.6568 5 11.9999 6.34315 11.9999 8C11.9999 9.65685 10.6568 11 9 11H6.20703L6.85351 11.6465L6.14648 12.3535L4.64652 10.8536C4.45126 10.6583 4.45126 10.3417 4.64652 10.1464L6.14648 8.64648L6.85351 9.35352L6.20703 10H9C10.1046 10 10.9999 9.10457 10.9999 8Z\" fill=\"currentColor\"/><path d=\"M2 15H1V1H2V15Z\" fill=\"currentColor\"/><path d=\"M15 15H14V1H15V15Z\" fill=\"currentColor\"/></svg></button><button type=\"button\" class=\"tool\" aria-label=\"重新读取文件\" data-textpreview-tool=\"reload\"><svg width=\"15\" height=\"15\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M14.5001 8C14.5 9.28552 14.1188 10.5422 13.4045 11.611C12.6903 12.6799 11.6752 13.5129 10.4875 14.0049C9.29982 14.4968 7.99295 14.6255 6.73212 14.3747C5.4713 14.124 4.31314 13.505 3.4041 12.596C2.49514 11.687 1.87614 10.5288 1.62537 9.26798C1.37459 8.00716 1.50331 6.70028 1.99525 5.51261C2.48719 4.32494 3.32025 3.30981 4.3891 2.59557C5.45795 1.88134 6.71458 1.50008 8.0001 1.5C9.9001 1.5 11.7001 2.3 13.0001 3.6L14.5001 5.1\" stroke=\"currentColor\"/><path d=\"M14.4999 1.5V5.1H10.8999\" stroke=\"currentColor\"/></svg></button></div><div class=\"body\" data-textpreview-body><div class=\"textDocument\" data-textpreview-plain><pre class=\"page\" data-textpreview-page=\"0\"><div class=\"line\" data-textpreview-line=\"1\"># AGENTS.md\n</div><div class=\"line\" data-textpreview-line=\"2\">- 提交前跑 pnpm run test:gui。\n</div></pre></div></div></div></div>"
+        },
+        {
+          "label": "加载中：整块居中的状态",
+          "note": "静态快照：store 里还没有这个 tab 的记录时占满整块；资源服务不可用时同一位置换成一行 .statusLine",
+          "pad": "lg",
+          "html": "<div style='width:440px;height:200px;display:flex;flex-direction:column'><div class=\"status\" data-textpreview-state=\"loading\"><span class=\"loading\" role=\"status\" aria-label=\"文档渲染中...\" data-document-loading><svg class=\"spinner\" data-state=\"ongoing\" width=\"28\" height=\"28\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><g class=\"spinnerMotion\"><circle class=\"spinnerTrack\" cx=\"12\" cy=\"12\" r=\"9.5\"/><circle class=\"spinnerArc\" cx=\"12\" cy=\"12\" r=\"9.5\"/></g></svg><span>文档渲染中...</span></span></div></div>"
+        },
+        {
+          "label": "空态（文件不存在）：36px 灰度图纸 + 说明，无重试",
+          "note": "静态快照：读取失败且一点内容都没有时的整块空态，这里走 workspace-file/not-found 分支——emptyFailureRecourse 判为 'none'，源码只渲染图纸与说明、不渲染重试胶囊（判为 'retry' 的 carrier/unclassified 失败才补 32px 的 .retry，判为 'open' 的不可预览格式改由 unpreviewable 槽位接手）",
+          "pad": "lg",
+          "html": "<div style='width:440px;height:280px;display:flex;flex-direction:column'><div class=\"preview\" data-textpreview-state=\"text\" data-textpreview-url=\"file:///workspace/deepseek-harness/AGENTS.md\" data-document-preview=\"@deepseek-ai/dsh-client-ui-sidebar-documentpreview/text\"><div class=\"header\"><span class=\"path\" data-path-label data-textpreview-path title=\"/workspace/deepseek-harness/AGENTS.md\"><span class=\"text\"><span class=\"directory\">/workspace/deepseek-harness/</span><span class=\"name\">AGENTS.md</span></span></span><button type=\"button\" class=\"tool\" aria-label=\"重新读取文件\" data-textpreview-tool=\"reload\"><svg width=\"15\" height=\"15\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M14.5001 8C14.5 9.28552 14.1188 10.5422 13.4045 11.611C12.6903 12.6799 11.6752 13.5129 10.4875 14.0049C9.29982 14.4968 7.99295 14.6255 6.73212 14.3747C5.4713 14.124 4.31314 13.505 3.4041 12.596C2.49514 11.687 1.87614 10.5288 1.62537 9.26798C1.37459 8.00716 1.50331 6.70028 1.99525 5.51261C2.48719 4.32494 3.32025 3.30981 4.3891 2.59557C5.45795 1.88134 6.71458 1.50008 8.0001 1.5C9.9001 1.5 11.7001 2.3 13.0001 3.6L14.5001 5.1\" stroke=\"currentColor\"/><path d=\"M14.4999 1.5V5.1H10.8999\" stroke=\"currentColor\"/></svg></button></div><div class=\"body\" data-textpreview-body><div class=\"empty\" data-textpreview-failed=\"workspace-file/not-found\"><svg class=\"icon markdown emptyIcon\" width=\"36\" height=\"36\" viewBox=\"0 0 28 28\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M8.48924 28H19.5108C21.6479 28 22.7165 28 23.5594 27.6509C24.6833 27.1853 25.5762 26.2924 26.0417 25.1685C26.3909 24.3256 26.3909 23.257 26.3909 21.1199V8.79443C26.3909 8.32877 26.3909 8.09593 26.3471 7.87507C26.2887 7.58058 26.173 7.30042 26.0067 7.05048C25.882 6.86303 25.7177 6.69799 25.3893 6.36792L20.0611 1.01354C19.7304 0.681235 19.5651 0.515081 19.3769 0.38885C19.126 0.220541 18.8443 0.103463 18.5481 0.0443412C18.3259 0 18.0915 0 17.6226 0H8.48924C6.35209 0 5.28351 0 4.4406 0.349145C3.31672 0.814671 2.4238 1.70759 1.95828 2.83147C1.60913 3.67438 1.60913 4.74296 1.60913 6.88011V21.1199C1.60913 23.257 1.60913 24.3256 1.95828 25.1685C2.4238 26.2924 3.31672 27.1853 4.4406 27.6509C5.28351 28 6.35209 28 8.48924 28Z\" fill=\"currentColor\"/><path d=\"M26.3909 7.37445L19.0525 0V3.77445C19.0525 4.89271 19.0525 5.45184 19.2352 5.89289C19.4788 6.48096 19.946 6.94818 20.5341 7.19176C20.9751 7.37445 21.5342 7.37445 22.6525 7.37445H26.3909Z\" fill=\"var(--dsw-static-neutral-00)\" fill-opacity=\".7\"/><g color=\"var(--dsw-static-neutral-00)\" data-file-type-mark transform=\"translate(14 16) scale(1.22) translate(-14 -16)\"><path d=\"M8.7588 19.5V14.6H9.8998L11.9298 17.932H11.3278L13.3018 14.6H14.4428L14.4568 19.5H13.1828L13.1688 16.539H13.3858L11.9088 19.017H11.2928L9.7738 16.539H10.0398V19.5H8.7588ZM15.4375 19.5V14.6H17.7545C18.2958 14.6 18.7718 14.7003 19.1825 14.901C19.5932 15.1017 19.9128 15.384 20.1415 15.748C20.3748 16.112 20.4915 16.546 20.4915 17.05C20.4915 17.5493 20.3748 17.9833 20.1415 18.352C19.9128 18.716 19.5932 18.9983 19.1825 19.199C18.7718 19.3997 18.2958 19.5 17.7545 19.5H15.4375ZM16.8235 18.394H17.6985C17.9785 18.394 18.2212 18.3427 18.4265 18.24C18.6365 18.1327 18.7998 17.9787 18.9165 17.778C19.0332 17.5727 19.0915 17.33 19.0915 17.05C19.0915 16.7653 19.0332 16.5227 18.9165 16.322C18.7998 16.1213 18.6365 15.9697 18.4265 15.867C18.2212 15.7597 17.9785 15.706 17.6985 15.706H16.8235V18.394Z\" fill=\"currentColor\"/></g></svg><p class=\"emptyLine\">文件不存在，可能已被移动或删除</p></div></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "useTabInfo",
+          "type": "UseSidebarRightTabInfo",
+          "default": "—",
+          "desc": "标准 tab 读取器：contentId（文件地址）、navigation.params.line（要跳的行）、refreshShortcut 与 actions.bindCommands。"
+        },
+        {
+          "name": "useResource",
+          "type": "UseResource",
+          "default": "—",
+          "desc": "读 file 元数据（版本、绝对路径、失败码），驱动路径显示、自动刷新与「文件已更新」提示。"
+        },
+        {
+          "name": "useStore",
+          "type": "UseStore<TextStore>",
+          "default": "—",
+          "desc": "本类型自己的 store：rendererId、mode、wrap、autoRefresh、scrollTop、资源脏标记。"
+        },
+        {
+          "name": "actions",
+          "type": "BoundActions<TextStore>",
+          "default": "—",
+          "desc": "写回状态：navigated / scrolled / toggledWrap / toggledAutoRefresh / selected / rendererFailed / rendered。"
+        },
+        {
+          "name": "loadPage",
+          "type": "(tabId, file, offset, signal, observedVersion?) => void",
+          "default": "—",
+          "desc": "读一页文本（next = loadedThrough + 1），滚到底自动续读。"
+        },
+        {
+          "name": "reloadPages",
+          "type": "(tabId, file, signal, observedVersion?) => void",
+          "default": "—",
+          "desc": "丢掉已读页重读第一页，视图位置保留。"
+        },
+        {
+          "name": "loadAll",
+          "type": "(tabId, file, signal, observedVersion?) => void",
+          "default": "—",
+          "desc": "整块字节渲染器（图片、HTML、PDF…）的一次性读取入口。"
+        },
+        {
+          "name": "prepareRenderer",
+          "type": "(tabId, signal, rendererId, observedVersion?, force?) => void",
+          "default": "—",
+          "desc": "让渲染器自己发起读取（renderer 模式），force 用于重新载入。"
+        },
+        {
+          "name": "useDocumentPreviews",
+          "type": "选择器 hook（ObservableSnapshot<readonly DocumentPreviewDefinition[]>）",
+          "default": "—",
+          "desc": "渲染器注册表快照，决定候选列表、默认渲染器与打开方式菜单项。"
+        },
+        {
+          "name": "renderSlot",
+          "type": "PropsRenderSlots<'sidebar.right.tab.document' | '…document.action' | '…document.actions' | '…document.unpreviewable'>",
+          "default": "—",
+          "desc": "渲染正文以及头部、不可预览三条贡献槽位，渲染器不可用时用兜底行。"
+        },
+        {
+          "name": "addResource / setResources",
+          "type": "(tabId, address | addresses, signal) => void",
+          "default": "—",
+          "desc": "把渲染器读过的依赖文件登记到 tab 上，文件变化时一起刷新。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'sidebarDocumentPreview'>",
+          "default": "—",
+          "desc": "加载中、文件已更新、重新载入、自动换行、打开方式与各类失败行文案。"
+        }
+      ],
+      "notes": "头部 38px 与上方 tab 条的 38px 拼成 76px，和会话头部的分隔线落在同一条横线上。<code>.body</code> 是滚动容器：等宽字、<code>white-space:pre</code>、滚轮缩略图换成本层自己的 <code>--dsh-scrollbar-*</code> 变量。<code>.tool</code> 是 28px 圆底 15px 图标，换行按钮用 <code>aria-pressed</code> 暴露状态、提示文字只作 tooltip；自动刷新按钮在 <code>&lt;span hidden&gt;</code> 里，界面不可见。",
+      "keywords": ["文本预览", "侧边栏预览", "文件面板", "text-preview", "sidebar preview"]
+    },
+    {
+      "id": "text-title",
+      "name": "TextTitle",
+      "exportName": "TextTitle",
+      "zh": "预览标题",
+      "group": "preview",
+      "summary": "文本类型在 tab chip 与浮动预览窗标题上的那一小段：16px 的文件类型图纸（<code>FileTypeIcon</code>）+ 打开时注册表记下的文件名，图纸用 <code>.titleIcon</code> 的 <code>flex:none</code> 防止被挤扁，间距与行内居中由 chip 自己的标题行负责。没有它时 chip 只显示裸文件名；传统文件类型（md / pdf / png…）的 svg 带 <code>icon</code> + 类型类，代码文件换成整套彩色图纸。",
+      "source": "packages/client/ui-sidebar-documentpreview/src/client/TextTitle.tsx#L16",
+      "css": [
+        "packages/client/ui-sidebar-documentpreview/src/client/TextPreview.module.css",
+        "packages/client/ui-primitives/src/FileTypeIcon.module.css"
+      ],
+      "tokens": [
+        "--dsw-static-deepseek-500",
+        "--dsw-static-neutral-00"
+      ],
+      "specimens": [
+        {
+          "label": "Markdown 文件：16px 图纸 + 文件名",
+          "note": "静态快照：外层补了一层无类的行容器（真实间距来自 sidebar 的 chip 标题行），svg 的两个类来自 FileTypeIcon，titleIcon 来自 TextPreview.module.css",
+          "html": "<div style='display:flex;align-items:center;gap:6px'><svg class=\"icon markdown titleIcon\" width=\"16\" height=\"16\" viewBox=\"0 0 28 28\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M8.48924 28H19.5108C21.6479 28 22.7165 28 23.5594 27.6509C24.6833 27.1853 25.5762 26.2924 26.0417 25.1685C26.3909 24.3256 26.3909 23.257 26.3909 21.1199V8.79443C26.3909 8.32877 26.3909 8.09593 26.3471 7.87507C26.2887 7.58058 26.173 7.30042 26.0067 7.05048C25.882 6.86303 25.7177 6.69799 25.3893 6.36792L20.0611 1.01354C19.7304 0.681235 19.5651 0.515081 19.3769 0.38885C19.126 0.220541 18.8443 0.103463 18.5481 0.0443412C18.3259 0 18.0915 0 17.6226 0H8.48924C6.35209 0 5.28351 0 4.4406 0.349145C3.31672 0.814671 2.4238 1.70759 1.95828 2.83147C1.60913 3.67438 1.60913 4.74296 1.60913 6.88011V21.1199C1.60913 23.257 1.60913 24.3256 1.95828 25.1685C2.4238 26.2924 3.31672 27.1853 4.4406 27.6509C5.28351 28 6.35209 28 8.48924 28Z\" fill=\"currentColor\"/><path d=\"M26.3909 7.37445L19.0525 0V3.77445C19.0525 4.89271 19.0525 5.45184 19.2352 5.89289C19.4788 6.48096 19.946 6.94818 20.5341 7.19176C20.9751 7.37445 21.5342 7.37445 22.6525 7.37445H26.3909Z\" fill=\"var(--dsw-static-neutral-00)\" fill-opacity=\".7\"/><g color=\"var(--dsw-static-neutral-00)\" data-file-type-mark transform=\"translate(14 16) scale(1.22) translate(-14 -16)\"><path d=\"M8.7588 19.5V14.6H9.8998L11.9298 17.932H11.3278L13.3018 14.6H14.4428L14.4568 19.5H13.1828L13.1688 16.539H13.3858L11.9088 19.017H11.2928L9.7738 16.539H10.0398V19.5H8.7588ZM15.4375 19.5V14.6H17.7545C18.2958 14.6 18.7718 14.7003 19.1825 14.901C19.5932 15.1017 19.9128 15.384 20.1415 15.748C20.3748 16.112 20.4915 16.546 20.4915 17.05C20.4915 17.5493 20.3748 17.9833 20.1415 18.352C19.9128 18.716 19.5932 18.9983 19.1825 19.199C18.7718 19.3997 18.2958 19.5 17.7545 19.5H15.4375ZM16.8235 18.394H17.6985C17.9785 18.394 18.2212 18.3427 18.4265 18.24C18.6365 18.1327 18.7998 17.9787 18.9165 17.778C19.0332 17.5727 19.0915 17.33 19.0915 17.05C19.0915 16.7653 19.0332 16.5227 18.9165 16.322C18.7998 16.1213 18.6365 15.9697 18.4265 15.867C18.2212 15.7597 17.9785 15.706 17.6985 15.706H16.8235V18.394Z\" fill=\"currentColor\"/></g></svg><span>AGENTS.md</span></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "useTabInfo",
+          "type": "UseSidebarRightTabInfo",
+          "default": "—",
+          "desc": "标准 tab 读取器；tab.title 既用来 classifyFileType 选图纸，也直接作为可见文案。"
+        }
+      ],
+      "notes": "注册在 <code>sidebar.right.pane.tab.title</code> 上，所以 chip 与浮动面板头部共用同一段标题。代码文件（ts / py / go…）走 <code>CodeFileIcon</code>，那个 svg 只带调用方给的 <code>titleIcon</code>，没有 <code>icon</code> / 类型类——颜色来自内嵌图纸本身的渐变与填充，不跟主题色。",
+      "keywords": ["标题", "tab 标题", "文件类型图标", "text-title"]
+    }
+  ]
+}

@@ -1,0 +1,200 @@
+{
+ "schemaVersion": 1,
+ "note": "渲染绑定与引用：ui-renderer 的四层绑定（宿主上下文 / 根标准源 / 作用域适配器 / 作用域绑定发布）与 ui-reference 的两个行内引用节点。前四条自身不产生 DOM，示例展示它们挂载后由子组件渲染的那一块（AppFrame 的三列外壳），类名与样式表全部取自被渲染组件；后两条的样式来自 ui-primitives 的 user-text.module.css（交互态另有 MarkdownText.module.css 的 .fileMention，失败弹窗另有 Modal / Button）。",
+ "entries": [
+  {
+   "id": "host-context",
+   "name": "HostContext",
+   "exportName": "HostContext",
+   "zh": "宿主上下文",
+   "group": "tools",
+   "summary": "渲染器包内的宿主上下文对象：<code>createContext&lt;SlotRendererHost | null&gt;(null)</code>，本身不产生任何 DOM。装机器具通过 <code>useHost()</code> 读它，把 <code>createSlotRenderer()</code> 收到的 <code>SlotRendererHost</code>（<code>root</code>、<code>scope</code>、<code>scopeRevision</code>、<code>entriesOfSlot</code>、<code>subscribe</code>、<code>locale</code> 等）交给树里的每一个 slot 出口——<code>RootOutlet</code> 与所有 <code>SlotOutlet</code> 都从这里取宿主。取不到时 <code>useHost()</code> 抛 <code>SlotAssemblyError</code>（<code>slot machinery rendered outside the installed renderer tree</code>），且该错误会被 <code>SlotErrorBoundary</code> 原样重抛，不会退化成崩溃面。挂载点在 <code>renderRoot</code>：<code>HostContext.Provider</code> 在最外层，往里依次是根标准源与 <code>session-maybe</code> 作用域两层 Provider。",
+   "source": "packages/client/ui-renderer/src/client/bindings.tsx#L15",
+   "css": ["packages/client/ui-layout/src/client/AppFrame.module.css"],
+   "tokens": ["--dsw-alias-bg-base", "--dsw-specific-sidebar-fill", "--dsw-alias-border-l3"],
+   "specimens": [
+    {
+     "label": "挂载后的 root 槽：三列应用外壳",
+     "note": "该组件本身无独立外观，这里展示它挂载后由 root 槽渲染的内容；方框里的文字是座位说明，不是产品文案。",
+     "html": "<div style='width:920px;height:360px'><div data-slot='root' style='display:contents'><div class=\"frame\" style='grid-template-columns:240px minmax(340px,1fr) 260px'><div class=\"sidebarCol\"><div style='padding:12px'>sidebar 槽：会话与工作区列表</div></div><div class=\"centerCol\"><div style='padding:12px'>main 槽：当前会话或全局面板</div></div><div class=\"rightbarCol\"><div style='padding:12px'>rightbar 槽</div></div><div class=\"bottomRow\"><div style='padding:4px 12px'>shell.bottom 行</div></div><div class=\"overlayLayer\"></div></div></div></div>"
+    }
+   ],
+   "notes": "<code>HostContext</code> 是 <code>createContext</code> 的返回值而不是组件，源码里的导出形态是 <code>const</code>，因此没有 props 表。包外不公开导出（<code>publicExport: false</code>），只有 ui-renderer 自己的 <code>useHost</code> 与出口实现读它；业务插件永远通过标准 props 拿到数据，不直接接触这个对象。缺失宿主是装配错误而不是可降级状态：<code>SlotAssemblyError</code> 会被错误边界重抛，最终顶到渲染根。",
+   "keywords": ["宿主上下文", "renderer host", "useHost", "slot 出口", "装配错误"]
+  },
+  {
+   "id": "root-standard-provider",
+   "name": "RootStandardProvider",
+   "exportName": "RootStandardProvider",
+   "zh": "根标准源",
+   "group": "tools",
+   "summary": "把 <code>host.root</code> 这份原子装配的根标准源花名册订阅成一份 <code>StandardSourceBinding</code> 并放进 <code>RootBindingContext</code>：<code>observableHook(host.root)(value =&gt; value)</code> 挂上订阅，自己只渲染 <code>children</code>，不产生 DOM。<code>useRootBinding()</code> 读不到时抛 <code>SlotAssemblyError</code>（<code>slot rendered outside the root standard-source provider</code>），所以任何 root 作用域条目都必须挂在它下面。各领域包用 <code>ctx.slots.provideRoot({ hooks, keyedHooks, props })</code> 贡献固定名/开放名 observable 源，渲染器在挂载点把这层绑定物化成 <code>useSessions</code>、<code>usePanelInfo</code> 这类 selector hook 与标准 props，root 组件因此不必自己写订阅。",
+   "source": "packages/client/ui-renderer/src/client/bindings.tsx#L181",
+   "css": ["packages/client/ui-layout/src/client/AppFrame.module.css"],
+   "tokens": ["--dsw-alias-bg-base", "--dsw-specific-sidebar-fill", "--dsw-alias-border-l3"],
+   "specimens": [
+    {
+     "label": "root 作用域的座位：会话列表与 main 面板",
+     "note": "该组件本身无独立外观，这里展示它挂载后由 root 槽渲染的内容；方框里的文字是座位说明，不是产品文案。",
+     "html": "<div style='width:920px;height:360px'><div data-slot='root' style='display:contents'><div class=\"frame\" style='grid-template-columns:240px minmax(340px,1fr) 260px'><div class=\"sidebarCol\"><div style='padding:12px'>sidebar 槽（root）：useSessions 的会话与工作区列表</div></div><div class=\"centerCol\"><div style='padding:12px'>main 槽（root）：usePanelInfo 选中的当前会话或全局面板</div></div><div class=\"rightbarCol\"><div style='padding:12px'>rightbar 槽（root）：右侧栏坐席</div></div><div class=\"bottomRow\"><div style='padding:4px 12px'>shell.bottom：根级底栏</div></div><div class=\"overlayLayer\"></div></div></div></div>"
+    }
+   ],
+   "props": [
+    { "name": "children", "type": "ReactNode", "default": "—", "desc": "需要根标准源的子树；根源来自 host.root，Provider 自身不含参数。" }
+   ],
+   "notes": "绑定是订阅出来的，不是每次渲染新建的：<code>observableHook</code> 以 observable 源为键做 <code>WeakMap</code> 缓存，同一个 <code>host.root</code> 反复渲染复用同一个 hook，所以 Provider 重渲染不会让下层组件重新订阅。<code>useRootBinding</code> 的报错与 <code>useHost</code> 同属 <code>SlotAssemblyError</code>，属于装配期契约而不是运行时降级。",
+   "keywords": ["根标准源", "useRootBinding", "provideRoot", "root hooks", "标准源绑定"]
+  },
+  {
+   "id": "scope-provider",
+   "name": "ScopeProvider",
+   "exportName": "ScopeProvider",
+   "zh": "作用域订阅",
+   "group": "tools",
+   "summary": "非 root 作用域的适配器订阅层：先 <code>observableHook(host.scopeRevision)(value =&gt; value)</code> 订阅花名册版本以触发重渲染，再用 <code>host.scope(scope)</code> 取当前 <code>SlotScopeAdapter</code>，把 <code>adapter.current</code> 订阅成 <code>StandardSourceBinding</code> 放进 <code>ScopeBindingContext</code>；自己只渲染 <code>children</code>，不产生 DOM。适配器未安装时直接抛 <code>SlotAssemblyError</code>（<code>scope '&lt;scope&gt;' rendered without an installed adapter</code>）。挂载点固定传 <code>session-maybe</code>，位置在 <code>RootStandardProvider</code> 与根出口之间；<code>useScopeBinding()</code> 让 session 作用域条目读到当前会话绑定，未选会话时 <code>binding.key</code> 为 <code>undefined</code>。",
+   "source": "packages/client/ui-renderer/src/client/bindings.tsx#L188",
+   "css": ["packages/client/ui-layout/src/client/AppFrame.module.css"],
+   "tokens": ["--dsw-alias-bg-base", "--dsw-specific-sidebar-fill", "--dsw-alias-border-l3"],
+   "specimens": [
+    {
+     "label": "已选会话：会话主体拿到 binding",
+     "note": "该组件本身无独立外观，这里展示它挂载后由 root 槽渲染的内容；方框里的文字是座位说明，不是产品文案。",
+     "html": "<div style='width:920px;height:360px'><div data-slot='root' style='display:contents'><div class=\"frame\" style='grid-template-columns:240px minmax(340px,1fr) 260px'><div class=\"sidebarCol\"><div style='padding:12px'>sidebar 槽</div></div><div class=\"centerCol\"><div style='padding:12px'>main 槽：会话主体（session 作用域，binding.key = 当前 SessionId）</div></div><div class=\"rightbarCol\"><div style='padding:12px'>rightbar 槽</div></div><div class=\"overlayLayer\"></div></div></div></div>"
+    },
+    {
+     "label": "未选会话：binding.key 为 undefined",
+     "note": "该组件本身无独立外观，这里展示它挂载后由 root 槽渲染的内容；方框里的文字是座位说明，不是产品文案。",
+     "html": "<div style='width:920px;height:360px'><div data-slot='root' style='display:contents'><div class=\"frame\" style='grid-template-columns:240px minmax(340px,1fr) 260px'><div class=\"sidebarCol\"><div style='padding:12px'>sidebar 槽</div></div><div class=\"centerCol\"><div style='padding:12px'>main 槽：未选会话，binding.key === undefined，会话内容走空分支</div></div><div class=\"rightbarCol\"><div style='padding:12px'>rightbar 槽</div></div><div class=\"overlayLayer\"></div></div></div></div>"
+    }
+   ],
+   "props": [
+    { "name": "scope", "type": "'session' | 'session-maybe'", "default": "—", "desc": "要向 host 取哪个作用域的适配器；产品挂载点固定用 session-maybe。" },
+    { "name": "children", "type": "ReactNode", "default": "—", "desc": "继承这份作用域绑定的子树。" }
+   ],
+   "notes": "两个作用域走同一条代码路径，区别只在取到的适配器：<code>session-maybe</code> 允许没有当前会话（绑定 key 为 undefined），<code>session</code> 则要求一定有。适配器本身由领域包提供（ui-session 的 <code>adapter</code>），<code>ScopeProvider</code> 只做订阅与发布，不解释绑定内容。",
+   "keywords": ["作用域", "会话作用域", "session-maybe", "scope adapter", "useScopeBinding"]
+  },
+  {
+   "id": "scope-binding-provider",
+   "name": "ScopeBindingProvider",
+   "exportName": "ScopeBindingProvider",
+   "zh": "作用域绑定",
+   "group": "tools",
+   "summary": "把一个已经解析好的 <code>StandardSourceBinding</code> 发布给子树，是绑定链里唯一不做订阅、也不解析目标的一层：它不读 host、不取适配器，只写 <code>ScopeBindingContext.Provider</code>，因此自己不产生 DOM。<code>useScopeBinding()</code> 读它，缺失时抛 <code>SlotAssemblyError</code>（<code>scoped slot rendered outside its scope provider</code>）。产品里由 <code>scopeAreaProvider</code> 用它把每个会话区域的绑定钉到具体目标：子树显式传了 <code>session</code> 就用 <code>adapter.bindingSource(session)</code> 解析出的那份，否则沿用 <code>useScopeBinding()</code> 继承的当前会话；ui-sidebar-right 的会话视图与子智能体侧栏聊天都挂在这一层下面。",
+   "source": "packages/client/ui-renderer/src/client/bindings.tsx#L57",
+   "css": ["packages/client/ui-layout/src/client/AppFrame.module.css"],
+   "tokens": ["--dsw-alias-bg-base", "--dsw-specific-sidebar-fill", "--dsw-alias-border-l3"],
+   "specimens": [
+    {
+     "label": "显式目标：右栏会话视图用自己那份 binding",
+     "note": "该组件本身无独立外观，这里展示它挂载后由 root 槽渲染的内容；方框里的文字是座位说明，不是产品文案。",
+     "html": "<div style='width:920px;height:360px'><div data-slot='root' style='display:contents'><div class=\"frame\" style='grid-template-columns:240px minmax(300px,1fr) 320px'><div class=\"sidebarCol\"><div style='padding:12px'>sidebar 槽</div></div><div class=\"centerCol\"><div style='padding:12px'>main 槽：当前会话</div></div><div class=\"rightbarCol\"><div style='padding:12px'>rightbar 槽：会话视图显式传 session，binding 来自 bindingSource(view.reference)</div></div><div class=\"overlayLayer\"></div></div></div></div>"
+    },
+    {
+     "label": "无显式目标：子树沿用父级的当前会话",
+     "note": "该组件本身无独立外观，这里展示它挂载后由 root 槽渲染的内容；方框里的文字是座位说明，不是产品文案。",
+     "html": "<div style='width:920px;height:360px'><div data-slot='root' style='display:contents'><div class=\"frame\" style='grid-template-columns:240px minmax(300px,1fr) 320px'><div class=\"sidebarCol\"><div style='padding:12px'>sidebar 槽</div></div><div class=\"centerCol\"><div style='padding:12px'>main 槽：当前会话（inherited 绑定）</div></div><div class=\"rightbarCol\"><div style='padding:12px'>rightbar 槽：子树不带 session，binding 直接继承 useScopeBinding()</div></div><div class=\"overlayLayer\"></div></div></div></div>"
+    }
+   ],
+   "props": [
+    { "name": "binding", "type": "StandardSourceBinding", "default": "—", "desc": "要发布的那份绑定：<code>key</code>（作用域身份，root 或未选会话时 undefined）、<code>hooks</code> / <code>keyedHooks</code>（observable 源）、<code>props</code>（稳定平坦值）。" },
+    { "name": "children", "type": "ReactNode", "default": "—", "desc": "继承这份绑定的子树。" }
+   ],
+   "notes": "同一棵树上可以并存多份绑定：显式目标与继承值由 <code>scopeAreaProvider</code> 在调用点决定，<code>ScopeBindingProvider</code> 自身不做仲裁也不缓存。因为下层 <code>useScopeBinding</code> 读不到就抛错，任何 session 作用域条目都不允许被渲染到这层之外。",
+   "keywords": ["作用域绑定", "ScopeBindingContext", "会话区域", "SessionProvider", "scope area"]
+  },
+  {
+   "id": "file-reference",
+   "name": "FileReference",
+   "exportName": "FileReference",
+   "zh": "文件引用",
+   "group": "tools",
+   "summary": "已发送用户文本里的 <code>@文件</code> 引用节点：把 JSON 节点渲染成 ui-primitives 的 <code>ReferenceChip appearance=\"file\"</code>——文件字形（源码传 <code>size=16</code>，样式表按 1em 跟随宿主字号、<code>-0.125em</code> 下沉）加文件名，业务蓝 500 字重，芯片 <code>display:inline</code>，与宿主行盒共用基线。传了 <code>interactive</code> 时芯片换成 <code>button</code> 并叠一层 <code>.fileMention</code>（颜色切到 <code>--dsw-alias-link</code>，悬停/聚焦才画虚线下划线），单击调用注入的 <code>openFile(path)</code> 在当前右侧栏打开或定位文件，双击与「存在选区」的点击被守卫掉。同步导航抛错时组件自己记下 <code>failedPath</code>，把 380px 宽的 <code>Modal</code> portal 到 body：标题「无法打开文件」、描述「无法打开“路径”，请重试或关闭此提示」，页脚是「关闭」与主按钮「重试」，而引用芯片原位保留、不消失。",
+   "source": "packages/client/ui-reference/src/client/FileReference.tsx#L26",
+   "css": [
+    "packages/client/ui-primitives/src/user-text.module.css",
+    "packages/client/ui-primitives/src/markdown/MarkdownText.module.css",
+    "packages/client/ui-primitives/src/Modal.module.css",
+    "packages/client/ui-primitives/src/Button.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-link",
+    "--dsw-focus-ring-color",
+    "--dsw-radius-md",
+    "--dsw-alias-button-primary-fill",
+    "--dsw-alias-button-primary-hover",
+    "--dsw-alias-label-primary-foreground",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-border-l3",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-bg-layer-2",
+    "--dsw-alias-bg-mask-1",
+    "--dsw-mask-blur",
+    "--dsw-radius-panel",
+    "--dsw-radius-sm",
+    "--dsw-elevation-prominent"
+   ],
+   "specimens": [
+    {
+     "label": "可交互芯片：button + .fileMention",
+     "note": "发出去的文本里点文件引用就是这条路：芯片是 button，颜色走链接蓝。",
+     "html": "<div style='width:560px'><span class=\"plainRun\">帮我看下 </span><button type='button' class=\"refChip fileMention\" data-ref-chip='file' title='@packages/client/ui-reference/src/client/FileReference.tsx'><svg width='16' height='16' class=\"refIcon\" viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4.9375 5.90295H11.0625' stroke='currentColor'/><path d='M4.9375 9.02991H8.27841' stroke='currentColor'/><path d='M12.5 1.32617C13.3039 1.32617 14 1.95171 14 2.77637V13.2246C13.9996 14.0489 13.3036 14.6738 12.5 14.6738H3.5C2.69637 14.6738 2.00042 14.0489 2 13.2246V2.77637C2 1.95171 2.69613 1.32617 3.5 1.32617H12.5ZM3.5 2.32617C3.1993 2.32617 3 2.55186 3 2.77637V13.2246C3.00044 13.4489 3.19963 13.6738 3.5 13.6738H12.5C12.8004 13.6738 12.9996 13.4489 13 13.2246V2.77637C13 2.55186 12.8007 2.32617 12.5 2.32617H3.5Z' fill='currentColor'/></svg>FileReference.tsx</button><span class=\"plainRun\"> 的失败分支，点开后和右侧栏对照一下。</span></div>"
+    },
+    {
+     "label": "只读芯片：非交互时退回 span",
+     "note": "没有 interactive 的文本（预览、队列行）里引用只作标签，颜色留在业务蓝。",
+     "html": "<div style='width:560px'><span class=\"plainRun\">队列预览里 </span><span class=\"refChip\" data-ref-chip='file' title='@packages/client/ui-reference/src/client/FileReference.tsx'><svg width='16' height='16' class=\"refIcon\" viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4.9375 5.90295H11.0625' stroke='currentColor'/><path d='M4.9375 9.02991H8.27841' stroke='currentColor'/><path d='M12.5 1.32617C13.3039 1.32617 14 1.95171 14 2.77637V13.2246C13.9996 14.0489 13.3036 14.6738 12.5 14.6738H3.5C2.69637 14.6738 2.00042 14.0489 2 13.2246V2.77637C2 1.95171 2.69613 1.32617 3.5 1.32617H12.5ZM3.5 2.32617C3.1993 2.32617 3 2.55186 3 2.77637V13.2246C3.00044 13.4489 3.19963 13.6738 3.5 13.6738H12.5C12.8004 13.6738 12.9996 13.4489 13 13.2246V2.77637C13 2.55186 12.8007 2.32617 12.5 2.32617H3.5Z' fill='currentColor'/></svg>FileReference.tsx</span><span class=\"plainRun\"> 只作为文本展示，点不开。</span></div>"
+    },
+    {
+     "label": "导航失败：Modal 就地弹出，芯片保留",
+     "note": "静态快照：真实产品里弹窗 portal 到 body 并 fixed 全屏，这里拉回文档流；弹窗之外那颗芯片就是失败后仍留在原地的引用。",
+     "css": "/* 状态模拟 / 静态快照：Modal 的 .root 在真实产品里 portal 到 body 且 position: fixed; inset: 0，\n   这里拉回文档流内的相对定位（用 relative 而不是 static，好让 .mask 仍有包含块），\n   于是弹窗能与它上方那颗引用芯片同框呈现。 */\n.root.snapshotStatic { position: relative; inset: auto; }\n.dialog { max-width: 100%; }",
+     "html": "<div style='width:560px'><div style='margin-bottom:12px'><span class=\"plainRun\">刚才点 </span><span class=\"refChip\" data-ref-chip='file' title='@packages/client/ui-reference/src/client/FileReference.tsx'><svg width='16' height='16' class=\"refIcon\" viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4.9375 5.90295H11.0625' stroke='currentColor'/><path d='M4.9375 9.02991H8.27841' stroke='currentColor'/><path d='M12.5 1.32617C13.3039 1.32617 14 1.95171 14 2.77637V13.2246C13.9996 14.0489 13.3036 14.6738 12.5 14.6738H3.5C2.69637 14.6738 2.00042 14.0489 2 13.2246V2.77637C2 1.95171 2.69613 1.32617 3.5 1.32617H12.5ZM3.5 2.32617C3.1993 2.32617 3 2.55186 3 2.77637V13.2246C3.00044 13.4489 3.19963 13.6738 3.5 13.6738H12.5C12.8004 13.6738 12.9996 13.4489 13 13.2246V2.77637C13 2.55186 12.8007 2.32617 12.5 2.32617H3.5Z' fill='currentColor'/></svg>FileReference.tsx</span><span class=\"plainRun\"> 没打开，引用还在，弹窗给了重试。</span></div><div class=\"root snapshotStatic\" role='presentation'><div class=\"mask\" aria-hidden='true'></div><div class=\"dialog\" role='dialog' aria-modal='true' aria-label='无法打开文件'><div class=\"content\"><div class=\"header\"><h2 class=\"title\">无法打开文件</h2><button type='button' class=\"close\" aria-label='关闭'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M2.5 2.5L13.5 13.5' stroke='currentColor'/><path d='M13.5 2.5L2.5 13.5' stroke='currentColor'/></svg></button></div><p class=\"description\">无法打开“packages/client/ui-reference/src/client/FileReference.tsx”，请重试或关闭此提示</p></div><div class=\"footer\"><button type='button' class=\"button outline md\">关闭</button><button type='button' class=\"button primary md\">重试</button></div></div></div></div>"
+    }
+   ],
+   "props": [
+    { "name": "node", "type": "UserTextNode<'file'>", "default": "—", "desc": "解析出的文件节点：<code>start</code> / <code>end</code> 与 <code>data: { path, label }</code>——path 已剥掉 <code>@</code> 与引号，label 是路径最后一段。" },
+    { "name": "raw", "type": "string", "default": "—", "desc": "原文里的完整拼写（含 <code>@</code> 与必要引号），只作为芯片的 title。" },
+    { "name": "interactive", "type": "boolean", "default": "—", "desc": "为 true 时芯片渲染成 button 并接上 open；否则是只读 span。" },
+    { "name": "sessionId", "type": "SessionId", "default": "—", "desc": "节点所属会话（session 作用域标准 props）；注入的 openFile 用它查 cwd 授权。" },
+    { "name": "openFile", "type": "(path: string) => void", "default": "—", "desc": "注入的导航动作：用发起会话的权限在当前右侧栏打开/定位文件；抛错代表同步导航失败。" },
+    { "name": "t", "type": "TranslateNS<'reference'>", "default": "—", "desc": "reference 字典座：fileOpen.title / failed / close / retry。" }
+   ],
+   "notes": "失败态是组件自己的局部状态（<code>failedPath</code>），不上升给文本层：<code>open()</code> 同步 catch 后只记路径，重试走同一个 <code>open</code>，关闭清空。弹窗只在 <code>interactive</code> 为真时可能出现，只读芯片没有失败分支。点击守卫写在 <code>ReferenceChip</code> 里（<code>event.detail &gt; 1</code> 或存在非折叠选区时不激活），所以双击选词不会误跳。",
+   "keywords": ["文件引用", "@ 文件", "file chip", "打开文件失败", "openFile"]
+  },
+  {
+   "id": "folder-reference",
+   "name": "FolderReference",
+   "exportName": "FolderReference",
+   "zh": "目录引用",
+   "group": "tools",
+   "summary": "已发送用户文本里的 <code>@目录/</code> 引用节点：无条件渲染 <code>ReferenceChip appearance=\"folder\"</code> 的只读 <code>span</code>（不传 <code>onActivate</code>），1em 文件夹字形加路径最后一段，颜色走 <code>--dsw-alias-state-business-primary</code>、500 字重，<code>title</code> 保留原文拼写。它的存在就是为了在同一段允许文件导航的文本里保持目录不可点：没有注入面、没有失败态，也不会变成 <code>button</code>。带空格的目录按 <code>@\"docs/release notes/\"</code> 的引号拼写进来，芯片显示的仍是最后一段 <code>release notes</code>。",
+   "source": "packages/client/ui-reference/src/client/FileReference.tsx#L60",
+   "css": ["packages/client/ui-primitives/src/user-text.module.css"],
+   "tokens": ["--dsw-alias-state-business-primary"],
+   "specimens": [
+    {
+     "label": "目录芯片：只读 span + 文件夹字形",
+     "note": "和其他引用芯片同一张表的 .refChip，只是没有 onActivate。",
+     "html": "<div style='width:560px'><span class=\"plainRun\">把 </span><span class=\"refChip\" data-ref-chip='folder' title='@packages/client/ui-reference/'><svg width='16' height='16' class=\"refIcon\" viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M1.50439 3.11059C1.50439 2.55831 1.95211 2.1106 2.50439 2.1106H5.43389C5.67773 2.1106 5.91318 2.19969 6.09593 2.36113L7.71649 3.79265C7.89924 3.95409 8.1347 4.04319 8.3785 4.04319H13.4958C14.0481 4.04319 14.4958 4.4909 14.4958 5.04319V12.8894C14.4958 13.4417 14.0481 13.8894 13.4958 13.8894H2.50439C1.95211 13.8894 1.50439 13.4417 1.50439 12.8894V4.04319V3.11059Z' stroke='currentColor'/><path d='M3.63501 7.66614H12.3647' stroke='currentColor'/></svg>ui-reference</span><span class=\"plainRun\"> 整包过一遍，目录引用只作标签，点它不会跳转。</span></div>"
+    },
+    {
+     "label": "带空格的目录拼写：@\"docs/release notes/\"",
+     "note": "引号只出现在 title 与原文里，芯片显示的是路径最后一段。",
+     "html": "<div style='width:560px'><span class=\"plainRun\">整理 </span><span class=\"refChip\" data-ref-chip='folder' title='@\"docs/release notes/\"'><svg width='16' height='16' class=\"refIcon\" viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M1.50439 3.11059C1.50439 2.55831 1.95211 2.1106 2.50439 2.1106H5.43389C5.67773 2.1106 5.91318 2.19969 6.09593 2.36113L7.71649 3.79265C7.89924 3.95409 8.1347 4.04319 8.3785 4.04319H13.4958C14.0481 4.04319 14.4958 4.4909 14.4958 5.04319V12.8894C14.4958 13.4417 14.0481 13.8894 13.4958 13.8894H2.50439C1.95211 13.8894 1.50439 13.4417 1.50439 12.8894V4.04319V3.11059Z' stroke='currentColor'/><path d='M3.63501 7.66614H12.3647' stroke='currentColor'/></svg>release notes</span><span class=\"plainRun\"> 里的截图，统一压到 200KB 以内。</span></div>"
+    }
+   ],
+   "props": [
+    { "name": "node", "type": "UserTextNode<'folder'>", "default": "—", "desc": "解析出的目录节点，同样带 <code>data: { path, label }</code>；组件只读 <code>label</code>。" },
+    { "name": "raw", "type": "string", "default": "—", "desc": "原文拼写（含 <code>@</code> 与引号），作为芯片 title。" },
+    { "name": "interactive", "type": "boolean", "default": "—", "desc": "类型上有这个字段，组件忽略它：目录节点永远不接激活动作。" },
+    { "name": "sessionId", "type": "SessionId", "default": "—", "desc": "节点所属会话（session 作用域标准 props）；目录渲染不使用它。" }
+   ],
+   "notes": "与 <code>FileReference</code> 是同一注册点的两个 key（<code>conversation.user.text.node</code> 的 <code>file</code> / <code>folder</code>，priority 都是 100），但目录这边没有 inject 面：不注入 openFile、也就不会出现失败弹窗。识别端由 <code>folderReferenceRule</code> 保证只有结尾带 <code>/</code> 的 token 才会成为目录节点，因此两个渲染器不会抢同一个 token。",
+   "keywords": ["目录引用", "@ 目录", "folder chip", "只读引用", "release notes"]
+  }
+ ]
+}

@@ -724,7 +724,7 @@
      "label": "空闲：计划模式未开启，座位不渲染任何节点",
      "note": "有效目标不是计划模式（<code>pending ? !active : active</code> 为假）时这里就是空的——没有「进入计划模式」的按钮",
      "pad": "lg",
-     "html": ""
+     "html": "<span>计划模式未开启时，座位不渲染任何节点</span>"
     }
    ],
    "props": [

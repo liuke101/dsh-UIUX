@@ -1,0 +1,636 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "id": "trigger-content",
+      "name": "TriggerContent",
+      "exportName": "TriggerContent",
+      "zh": "设置触发",
+      "group": "settings",
+      "summary": "侧栏底部「设置」触发按钮里的内容：宽侧栏渲染 16px 齿轮（<code>IconSettingsOutlineMedium</code>）加 14/22 的「设置」文字，文字只有 <code>overflow: hidden; white-space: nowrap</code> 一条规则，用来在侧栏收起交叉淡入时兜住溢出；56px 轨道里图标放大到 18px、文字整块不渲染，于是同一颗图标成了那一格的唯一内容。它自己不是按钮——42px 高、R12、悬停 <code>--dsw-alias-interactive-bg-hover</code> 的触发按钮由 shell（<code>SettingsRoot</code>）绘制，可访问名也由 shell 的 <code>aria-label</code> 给出。",
+      "source": "packages/client/ui-settings-general/src/client/chrome.tsx#L22",
+      "css": [
+        "packages/client/ui-settings-general/src/client/chrome.module.css",
+        "packages/client/ui-settings-general/src/client/SettingsRoot.module.css"
+      ],
+      "tokens": [
+        "--dsw-radius-md",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-primary"
+      ],
+      "specimens": [
+        {
+          "label": "宽侧栏：16px 齿轮 + 「设置」标签",
+          "note": "42px 高的触发按钮与 R12 圆角由 shell 的 SettingsRoot.module.css 绘制，示例一并内联",
+          "bg": "sidebar",
+          "html": "<div style='width:240px;padding:6px 12px'><div class=\"triggerRow\"><button type='button' class=\"trigger\" aria-label='设置' aria-haspopup='dialog' aria-expanded='false'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1.3'><path d='M8 9.75012C8.9665 9.75012 9.75 8.96662 9.75 8.00012C9.75 7.03362 8.9665 6.25012 8 6.25012C7.0335 6.25012 6.25 7.03362 6.25 8.00012C6.25 8.96662 7.0335 9.75012 8 9.75012Z' stroke='currentColor'/><path d='M13.0107 7.79377C12.9505 7.89401 12.9205 7.94413 12.9205 7.99951C12.9205 8.0549 12.9505 8.10502 13.0106 8.20528L13.9849 9.83006C14.045 9.93029 14.0751 9.9804 14.0751 10.0358C14.0751 10.0911 14.045 10.1413 13.9849 10.2415L13.0037 11.8777C12.9468 11.9726 12.9184 12.0201 12.8725 12.0461C12.8267 12.072 12.7713 12.072 12.6607 12.072H10.6704C10.5598 12.072 10.5045 12.072 10.4586 12.098C10.4128 12.1239 10.3843 12.1714 10.3274 12.2662L9.33825 13.9142C9.28133 14.009 9.25287 14.0564 9.20703 14.0823C9.16118 14.1083 9.10588 14.1083 8.99529 14.1083H7.00486C6.89426 14.1083 6.83896 14.1083 6.79312 14.0823C6.74727 14.0564 6.71881 14.009 6.6619 13.9142L5.67273 12.2662C5.61581 12.1714 5.58735 12.1239 5.54151 12.098C5.49566 12.072 5.44036 12.072 5.32977 12.072H3.33945C3.2288 12.072 3.17347 12.072 3.12761 12.0461C3.08176 12.0201 3.0533 11.9726 2.9964 11.8777L2.0152 10.2415C1.9551 10.1413 1.92505 10.0911 1.92505 10.0358C1.92505 9.9804 1.9551 9.93029 2.0152 9.83006L2.98951 8.20528C3.04963 8.10502 3.07969 8.0549 3.07969 7.99951C3.07968 7.94413 3.04961 7.89401 2.98946 7.79377L2.01529 6.17011C1.95514 6.06987 1.92507 6.01975 1.92507 5.96437C1.92506 5.90899 1.95512 5.85886 2.01524 5.7586L2.9964 4.1224C3.0533 4.0275 3.08176 3.98005 3.12761 3.95408C3.17347 3.92811 3.2288 3.92811 3.33945 3.92811H5.32977C5.44036 3.92811 5.49566 3.92811 5.54151 3.90216C5.58735 3.87621 5.61581 3.82879 5.67273 3.73397L6.6619 2.08599C6.71881 1.99116 6.74727 1.94375 6.79312 1.9178C6.83896 1.89185 6.89426 1.89185 7.00486 1.89185H8.99529C9.10588 1.89185 9.16118 1.89185 9.20703 1.9178C9.25287 1.94375 9.28133 1.99116 9.33825 2.08599L10.3274 3.73397C10.3843 3.82879 10.4128 3.87621 10.4586 3.90216C10.5045 3.92811 10.5598 3.92811 10.6704 3.92811H12.6607C12.7713 3.92811 12.8267 3.92811 12.8725 3.95408C12.9184 3.98005 12.9468 4.0275 13.0037 4.1224L13.9849 5.7586C14.045 5.85886 14.0751 5.90899 14.0751 5.96437C14.0751 6.01975 14.045 6.06987 13.9849 6.17011L13.0107 7.79377Z' stroke='currentColor' stroke-miterlimit='10'/></svg><span class=\"triggerLabel\">设置</span></button></div></div>"
+        },
+        {
+          "label": "56px 轨道：18px 齿轮，无标签",
+          "note": "轨道态不渲染标签，36×36 的按钮由 .trigger.rail 收成方格",
+          "bg": "sidebar",
+          "html": "<div style='width:56px;padding:6px 12px'><div class=\"triggerRow railRow\"><button type='button' class=\"trigger rail\" aria-label='设置' aria-haspopup='dialog' aria-expanded='false'><svg width='18' height='18' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1.3'><path d='M8 9.75012C8.9665 9.75012 9.75 8.96662 9.75 8.00012C9.75 7.03362 8.9665 6.25012 8 6.25012C7.0335 6.25012 6.25 7.03362 6.25 8.00012C6.25 8.96662 7.0335 9.75012 8 9.75012Z' stroke='currentColor'/><path d='M13.0107 7.79377C12.9505 7.89401 12.9205 7.94413 12.9205 7.99951C12.9205 8.0549 12.9505 8.10502 13.0106 8.20528L13.9849 9.83006C14.045 9.93029 14.0751 9.9804 14.0751 10.0358C14.0751 10.0911 14.045 10.1413 13.9849 10.2415L13.0037 11.8777C12.9468 11.9726 12.9184 12.0201 12.8725 12.0461C12.8267 12.072 12.7713 12.072 12.6607 12.072H10.6704C10.5598 12.072 10.5045 12.072 10.4586 12.098C10.4128 12.1239 10.3843 12.1714 10.3274 12.2662L9.33825 13.9142C9.28133 14.009 9.25287 14.0564 9.20703 14.0823C9.16118 14.1083 9.10588 14.1083 8.99529 14.1083H7.00486C6.89426 14.1083 6.83896 14.1083 6.79312 14.0823C6.74727 14.0564 6.71881 14.009 6.6619 13.9142L5.67273 12.2662C5.61581 12.1714 5.58735 12.1239 5.54151 12.098C5.49566 12.072 5.44036 12.072 5.32977 12.072H3.33945C3.2288 12.072 3.17347 12.072 3.12761 12.0461C3.08176 12.0201 3.0533 11.9726 2.9964 11.8777L2.0152 10.2415C1.9551 10.1413 1.92505 10.0911 1.92505 10.0358C1.92505 9.9804 1.9551 9.93029 2.0152 9.83006L2.98951 8.20528C3.04963 8.10502 3.07969 8.0549 3.07969 7.99951C3.07968 7.94413 3.04961 7.89401 2.98946 7.79377L2.01529 6.17011C1.95514 6.06987 1.92507 6.01975 1.92507 5.96437C1.92506 5.90899 1.95512 5.85886 2.01524 5.7586L2.9964 4.1224C3.0533 4.0275 3.08176 3.98005 3.12761 3.95408C3.17347 3.92811 3.2288 3.92811 3.33945 3.92811H5.32977C5.44036 3.92811 5.49566 3.92811 5.54151 3.90216C5.58735 3.87621 5.61581 3.82879 5.67273 3.73397L6.6619 2.08599C6.71881 1.99116 6.74727 1.94375 6.79312 1.9178C6.83896 1.89185 6.89426 1.89185 7.00486 1.89185H8.99529C9.10588 1.89185 9.16118 1.89185 9.20703 1.9178C9.25287 1.94375 9.28133 1.99116 9.33825 2.08599L10.3274 3.73397C10.3843 3.82879 10.4128 3.87621 10.4586 3.90216C10.5045 3.92811 10.5598 3.92811 10.6704 3.92811H12.6607C12.7713 3.92811 12.8267 3.92811 12.8725 3.95408C12.9184 3.98005 12.9468 4.0275 13.0037 4.1224L13.9849 5.7586C14.045 5.85886 14.0751 5.90899 14.0751 5.96437C14.0751 6.01975 14.045 6.06987 13.9849 6.17011L13.0107 7.79377Z' stroke='currentColor' stroke-miterlimit='10'/></svg></button></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "wide",
+          "type": "boolean",
+          "default": "—",
+          "desc": "侧栏是否展开：true 时图标 16px 并渲染 <code>t('trigger')</code> 标签，false（56px 轨道）时图标 18px 且标签整块不渲染。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'settings'>",
+          "default": "—",
+          "desc": "settings 词典座位：标签取 <code>trigger</code> 键（zh「设置」/ en「Settings」）。"
+        }
+      ],
+      "notes": "这个 fragment 只输出一颗图标加一个 <code>&lt;span class=\"triggerLabel\"&gt;</code>，自己没有载体：<code>chrome.module.css</code> 的全部内容就是给标签的 <code>overflow: hidden; white-space: nowrap</code>（侧栏收起交叉淡入期间防溢出），42px 高 / R12 / 悬停底色的按钮是 <code>SettingsRoot</code> 画的外壳，所以示例把 <code>SettingsRoot.module.css</code> 一并内联——没有它标签既没有字号也没有颜色、图标也没有继承色。轨道态不是把标签视觉隐藏，而是 <code>wide &amp;&amp; &lt;span&gt;</code> 整块不渲染；座位约定里按钮的可访问名由 shell 的 <code>aria-label</code> 提供，因此没有贡献者时这里会退化成一颗没有名字的图标按钮。",
+      "keywords": [
+        "设置触发",
+        "settings trigger",
+        "侧栏设置入口",
+        "齿轮图标",
+        "triggerLabel"
+      ]
+    },
+    {
+      "id": "header-content",
+      "name": "HeaderContent",
+      "exportName": "HeaderContent",
+      "zh": "面板标题",
+      "group": "settings",
+      "summary": "设置面板导航栏顶部的标题文本（<code>t('title')</code>，zh「设置」/ en「Settings」），渲染进 shell 的 <code>.navTitle</code> 行：16/24/500、<code>--dsw-alias-label-primary</code>，左侧 12px 内边距。组件只输出一个纯文本节点——没有自己的元素、没有类名，也不参与布局；面板的对话框可访问名（<code>aria-labelledby</code>）指向这一行，所以它是设置面板在读屏里报出的名字。",
+      "source": "packages/client/ui-settings-general/src/client/chrome.tsx#L36",
+      "css": [
+        "packages/client/ui-settings-general/src/client/chrome.module.css",
+        "packages/client/ui-settings-general/src/client/SettingsRoot.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-label-primary"
+      ],
+      "specimens": [
+        {
+          "label": "导航栏标题行：188px 导航列顶部",
+          "note": "标题行与图标由 shell 的 .navTitle 绘制（SettingsRoot.module.css）；组件本身只给文字。该组件无独立外观，这里展示它挂载后用户看到的那一块",
+          "bg": "layer2",
+          "html": "<div style='width:188px'><nav class=\"nav\"><div class=\"navTitle\" tabindex='-1'>设置</div></nav></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "t",
+          "type": "TranslateNS<'settings'>",
+          "default": "—",
+          "desc": "settings 词典座位：标题取 <code>title</code> 键；换语言时由框架重新渲染这一行。"
+        }
+      ],
+      "notes": "座位 <code>settings.header</code> 是 single，shell 侧只提供一个空的 owner props（<code>SettingsHeaderOwnerProps</code>），所以组件除了字典座位没有别的入参；没有贡献者时导航栏标题为空，对话框也就没有可访问名。示例里 <code>.navTitle</code> 与 <code>.nav</code> 的尺寸（188px 列、标题 16/24/500）来自 <code>SettingsRoot.module.css</code>，一并列进 <code>css</code>：这两条是它唯一的观感来源，<code>chrome.module.css</code> 对纯文本不产生任何规则。",
+      "keywords": [
+        "面板标题",
+        "设置标题",
+        "settings header",
+        "navTitle",
+        "对话框可访问名"
+      ]
+    },
+    {
+      "id": "close-label",
+      "name": "CloseLabel",
+      "exportName": "CloseLabel",
+      "zh": "关闭标签",
+      "group": "settings",
+      "summary": "设置面板关闭按钮的视觉隐藏文本（<code>t('close')</code>，zh「关闭」/ en「Close」）：纯文本节点，落在 shell 的 <code>.hiddenLabel</code> 里，被裁成 1×1 并从视觉流里移除，因此面板上看不到字，它只贡献按钮的可访问名。按钮外观全部是 shell chrome——28×28、<code>--dsw-radius-sm</code> 圆角、一级色 14px 图标，悬停铺 <code>--dsw-alias-interactive-bg-hover</code>。",
+      "source": "packages/client/ui-settings-general/src/client/chrome.tsx#L48",
+      "css": [
+        "packages/client/ui-settings-general/src/client/chrome.module.css",
+        "packages/client/ui-settings-general/src/client/SettingsRoot.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-label-primary",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-radius-sm"
+      ],
+      "specimens": [
+        {
+          "label": "关闭按钮：14px 图标 + 视觉隐藏的「关闭」",
+          "note": "该组件本身无独立外观，这里展示它挂载后用户看到的那一块（按钮几何与图标由 shell 绘制）",
+          "bg": "layer2",
+          "html": "<div style='width:120px;display:flex;justify-content:flex-end'><button type='button' class=\"close\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M2.5 2.5L13.5 13.5' stroke='currentColor'/><path d='M13.5 2.5L2.5 13.5' stroke='currentColor'/></svg><span class=\"hiddenLabel\">关闭</span></button></div>"
+        },
+        {
+          "label": "悬停模拟：关闭按钮铺悬停底",
+          "note": "悬停模拟：静态快照无法触发 :hover，这里把 .close:hover 那条规则原样搬到同名类上",
+          "bg": "layer2",
+          "css": "/* 状态模拟：真实规则是 SettingsRoot.module.css 的 .close:hover（示例按钮即 shell 的关闭按钮）。 */\n.close.forceHover { background: var(--dsw-alias-interactive-bg-hover); }",
+          "html": "<div style='width:120px;display:flex;justify-content:flex-end'><button type='button' class=\"close forceHover\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M2.5 2.5L13.5 13.5' stroke='currentColor'/><path d='M13.5 2.5L2.5 13.5' stroke='currentColor'/></svg><span class=\"hiddenLabel\">关闭</span></button></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "t",
+          "type": "TranslateNS<'settings'>",
+          "default": "—",
+          "desc": "settings 词典座位：关闭按钮的可访问名取 <code>close</code> 键。"
+        }
+      ],
+      "notes": "<code>.hiddenLabel</code> 是 position: absolute 的 1×1 裁剪盒（<code>clip: rect(0 0 0 0)</code>），所以这段文字既不占位也不可见，只在读屏与自动化里存在；按钮本身的 <code>aria-label</code> 由这个子节点提供（shell 的按钮没有自己的 aria-label）。组件与 <code>chrome.module.css</code> 无任何交互——那张表里只有给触发标签的 <code>.triggerLabel</code>；示例中的按钮几何、一级色与悬停底色都来自 <code>SettingsRoot.module.css</code>，一并列进 <code>css</code>。",
+      "keywords": [
+        "关闭标签",
+        "close label",
+        "视觉隐藏",
+        "hiddenLabel",
+        "无障碍名称"
+      ]
+    },
+    {
+      "id": "desktop-update-indicator",
+      "name": "DesktopUpdateIndicator",
+      "exportName": "DesktopUpdateIndicator",
+      "zh": "更新状态",
+      "group": "settings",
+      "summary": "Desktop 专属的更新状态胶囊，坐在侧栏设置触发行里触发按钮的右侧：28px 高、inline-grid 两列（14px 图标 + 文字、列距 4px），左右各 8px 内边距，圆角 <code>--dsw-radius-sm</code>；描边是品牌蓝 20% 的 <code>color-mix</code>、底色 8%，文字 12/18/500 且不换行。四种可见形态：可用与就绪（14px 下载图标 + 「新版本」/「安装并重启」）、进行中（<code>.spinner</code> 1s 线性旋转 + 「42%」这类进度标签，<code>aria-disabled=\"true\"</code> 把指针改成默认并忽略点击）、失败（6px <code>.errorDot</code> 用 <code>currentColor</code> 画 + 「重试更新」）。<code>wide=false</code>、<code>hidden</code>，或状态是 idle 且未失败时返回 <code>null</code>。",
+      "source": "packages/client/ui-settings-general/src/client/DesktopUpdateIndicator.tsx#L56",
+      "css": [
+        "packages/client/ui-settings-general/src/client/DesktopUpdateIndicator.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-brand-primary-new-colorprimary-new-color",
+        "--dsw-radius-sm"
+      ],
+      "specimens": [
+        {
+          "label": "可用 / 就绪：下载图标 + 品牌蓝胶囊",
+          "note": "两条都用同一个 14px 图标位，差别只有文案（available「新版本」/ ready「安装并重启」）",
+          "html": "<div style='display:flex;flex-wrap:wrap;align-items:center;gap:12px;width:300px'><button type='button' class=\"indicator\" aria-disabled='false' aria-label='新版本'><span class=\"icon\" aria-hidden='true'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M8 1.95317V10.0469' stroke='currentColor'/><path d='M4.25 6.29688L8 10.0469L11.75 6.29688' stroke='currentColor'/><path d='M1.5 10.0469V13.158C1.5 13.3937 1.60536 13.6198 1.79289 13.7865C1.98043 13.9532 2.23478 14.0469 2.5 14.0469H13.5C13.7652 14.0469 14.0196 13.9532 14.2071 13.7865C14.3946 13.6198 14.5 13.3937 14.5 13.158V10.0469' stroke='currentColor'/></svg></span><span>新版本</span></button><button type='button' class=\"indicator\" aria-disabled='false' aria-label='安装并重启'><span class=\"icon\" aria-hidden='true'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M8 1.95317V10.0469' stroke='currentColor'/><path d='M4.25 6.29688L8 10.0469L11.75 6.29688' stroke='currentColor'/><path d='M1.5 10.0469V13.158C1.5 13.3937 1.60536 13.6198 1.79289 13.7865C1.98043 13.9532 2.23478 14.0469 2.5 14.0469H13.5C13.7652 14.0469 14.0196 13.9532 14.2071 13.7865C14.3946 13.6198 14.5 13.3937 14.5 13.158V10.0469' stroke='currentColor'/></svg></span><span>安装并重启</span></button></div>"
+        },
+        {
+          "label": "进行中 / 失败：spinner 与 errorDot",
+          "note": "下载中标 aria-disabled（指针变默认、点击被忽略）；失败态换成 6px 圆点 + 「重试更新」",
+          "html": "<div style='display:flex;flex-wrap:wrap;align-items:center;gap:12px;width:300px'><button type='button' class=\"indicator\" aria-disabled='true' aria-label='42%'><span class=\"icon\" aria-hidden='true'><svg class=\"spinner\" width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M12.596 12.596C11.687 13.5049 10.5288 14.1239 9.26798 14.3747C8.00716 14.6255 6.70028 14.4968 5.51261 14.0048C4.32494 13.5129 3.30981 12.6798 2.59557 11.611C1.88134 10.5421 1.50008 9.2855 1.5 7.99998C1.50008 6.71446 1.88134 5.45783 2.59557 4.38898C3.30981 3.32013 4.32494 2.48707 5.51261 1.99513C6.70028 1.50319 8.00716 1.37447 9.26798 1.62524C10.5288 1.87602 11.687 2.49502 12.596 3.40398' stroke='currentColor'/></svg></span><span>42%</span></button><button type='button' class=\"indicator\" aria-disabled='false' aria-label='重试更新'><span class=\"icon\" aria-hidden='true'><span class=\"errorDot\"></span></span><span>重试更新</span></button></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "wide",
+          "type": "boolean",
+          "default": "—",
+          "desc": "侧栏是否展开；false（56px 轨道）时不渲染，更新状态改由折叠轨道的 DesktopUpdateBadge 承载。"
+        },
+        {
+          "name": "hidden",
+          "type": "boolean",
+          "default": "—",
+          "desc": "同一个座位被连接指示器占用（连接异常且不在安装中）时为 true，本组件让位。"
+        },
+        {
+          "name": "view",
+          "type": "DesktopUpdateView",
+          "default": "—",
+          "desc": "<code>{ presentation, failed, opening }</code>：preload 上报的 phase / version / percent / failure，状态查询或打开动作被拒的 failed，以及一次打开请求在途的 opening。"
+        },
+        {
+          "name": "onOpen",
+          "type": "() => void",
+          "default": "—",
+          "desc": "点击胶囊请求打开更新（shell 转给 DesktopUpdateSource.open）；busy 时这次点击直接被忽略。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'settings'>",
+          "default": "—",
+          "desc": "settings 词典：<code>desktop.update.*</code> 一组文案（含 10 类失败原因）。"
+        }
+      ],
+      "notes": "phase → 文案的映射：idle 空串 / checking「正在检查更新…」/ available「新版本」/ downloading「{percent}%」/ verifying「正在校验更新文件…」/ installing「正在准备重启…」/ ready「安装并重启」/ error「重试更新」；详情（<code>新版本：0.5.0</code>、失败原因）只在 Tooltip 里，气泡由 Tooltip 原语渲染并 portal 到 body，静态 DOM 里不出现，所以这里没有列它的样式表。<code>BUSY_PHASES</code>（checking / downloading / verifying / installing）加上 opening 都算 busy：按钮 <code>aria-disabled=\"true\"</code>、点击被吞，只有指针样式变化（<code>cursor: default</code>）。spinner 在 <code>prefers-reduced-motion: reduce</code> 下停转。浏览器里没有 <code>dshDesktop</code> 载体，presentation 与 failed 都不成立，整块不会出现。",
+      "keywords": [
+        "更新状态",
+        "检查更新",
+        "下载进度",
+        "desktop update",
+        "Electron 更新",
+        "重试更新"
+      ]
+    },
+    {
+      "id": "desktop-update-badge",
+      "name": "DesktopUpdateBadge",
+      "exportName": "DesktopUpdateBadge",
+      "zh": "更新角标",
+      "group": "settings",
+      "summary": "折叠侧栏（56px 轨道）展开按钮上的通知点：6×6、圆角 50%，绝对定位在按钮右上角（<code>inset-inline-end: 2px</code> / <code>top: 2px</code>），填充 <code>--dsw-alias-brand-primary-new-colorprimary-new-color</code>，靠 ui-sidebar 那个 36×36、<code>position: relative</code> 的 <code>.iconButton.toggle</code> 定位。它自己不可交互（<code>role=\"img\"</code> + <code>aria-label</code>），详情走 Tooltip 的 <code>side=\"right\"</code> 气泡；状态 idle、连接 disconnected/connecting（除非正在安装），或未失败又没有 presentation 时返回 <code>null</code>。",
+      "source": "packages/client/ui-settings-general/src/client/DesktopUpdateIndicator.tsx#L89",
+      "css": [
+        "packages/client/ui-settings-general/src/client/DesktopUpdateIndicator.module.css",
+        "packages/client/ui-sidebar/src/client/SidebarRoot.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-brand-primary-new-colorprimary-new-color",
+        "--dsw-radius-md",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-interactive-bg-hover"
+      ],
+      "specimens": [
+        {
+          "label": "轨道折叠态：36×36 展开按钮 + 右上角通知点",
+          "note": "角标是按钮的绝对定位子节点，载体是 ui-sidebar 的折叠轨道（SidebarRoot.module.css 一并内联）",
+          "bg": "sidebar",
+          "html": "<div style='width:56px;display:flex'><div class=\"root collapsed\"><div class=\"logoRow\"><button type='button' class=\"iconButton toggle\" aria-label='打开侧边栏'><span class=\"railMark\" aria-hidden='true'><svg width=\"24\" height=\"17.6580310880829\" viewBox=\"0 0 23.16 17.04\" fill=\"none\" aria-hidden=\"true\"><path d=\"M22.9168 1.43018C22.6713 1.31018 22.5658 1.53918 22.4223 1.65519C22.3733 1.69269 22.3318 1.74169 22.2903 1.78669C21.9317 2.1697 21.5127 2.42121 20.9657 2.39121C20.1657 2.34621 19.4827 2.59771 18.8787 3.20973C18.7502 2.45521 18.3236 2.0047 17.6746 1.71569C17.3351 1.56568 16.9916 1.41518 16.7536 1.08867C16.5876 0.856163 16.5421 0.597155 16.4591 0.341647C16.4061 0.187643 16.3536 0.0301382 16.1761 0.00363739C15.9836 -0.0263635 15.9081 0.135141 15.8326 0.270145C15.5306 0.822162 15.4136 1.43018 15.4251 2.0462C15.4516 3.43174 16.0366 4.53527 17.1991 5.3203C17.3311 5.4103 17.3651 5.5003 17.3236 5.63181C17.2441 5.90231 17.1501 6.16482 17.0671 6.43533C17.0141 6.60784 16.9351 6.64584 16.7501 6.57033C16.1121 6.30383 15.5611 5.90931 15.074 5.4328C14.2475 4.63328 13.5 3.75075 12.568 3.05973C12.349 2.89822 12.13 2.74822 11.9034 2.60522C10.9524 1.68169 12.028 0.923165 12.277 0.833162C12.5375 0.739159 12.3675 0.41615 11.5259 0.42015C10.6844 0.42365 9.91439 0.705658 8.93286 1.08117C8.78935 1.13767 8.63835 1.17867 8.48384 1.21267C7.59332 1.04367 6.66829 1.00617 5.70226 1.11517C3.88321 1.31768 2.43016 2.1777 1.36213 3.64575C0.0790928 5.4103 -0.222916 7.41536 0.146595 9.50642C0.535106 11.7105 1.66014 13.535 3.38869 14.9616C5.18125 16.4406 7.24581 17.1657 9.60138 17.0266C11.0319 16.9441 12.6245 16.7526 14.421 15.2321C14.874 15.4576 15.3496 15.5476 16.1381 15.6151C16.7456 15.6716 17.3306 15.5851 17.7836 15.4911C18.4931 15.3411 18.4441 14.6841 18.1876 14.5636C16.1081 13.595 16.5646 13.9891 16.1496 13.67C17.2061 12.42 18.8202 10.1979 19.3182 7.17235C19.3672 6.83834 19.4297 6.36783 19.4222 6.09732C19.4182 5.93231 19.4562 5.86831 19.6447 5.84931C20.1657 5.78931 20.6712 5.64681 21.1357 5.3913C22.4833 4.65528 23.0268 3.44624 23.1548 1.9972C23.1738 1.77569 23.1508 1.54668 22.9168 1.43018ZM11.1749 14.4736C9.15936 12.889 8.18184 12.3675 7.77832 12.39C7.40081 12.4125 7.46881 12.8445 7.55182 13.126C7.63882 13.404 7.75182 13.5955 7.91033 13.8396C8.01983 14.0011 8.09533 14.2411 7.80083 14.4216C7.15181 14.8231 6.02327 14.2866 5.97027 14.2601C4.65673 13.4865 3.5587 12.4655 2.78467 11.069C2.03715 9.72493 1.60314 8.28289 1.53164 6.74384C1.51264 6.37233 1.62214 6.24082 1.99215 6.17332C2.47916 6.08332 2.98118 6.06432 3.46769 6.13582C5.52476 6.43633 7.27581 7.35586 8.74385 8.8129C9.58188 9.64243 10.2159 10.634 10.8689 11.6025C11.5634 12.631 12.3105 13.611 13.262 14.4146C13.598 14.6961 13.866 14.9101 14.1225 15.0681C13.349 15.1546 12.058 15.1731 11.1749 14.4746L11.1749 14.4736ZM12.141 8.25988C12.141 8.09488 12.273 7.96338 12.439 7.96338C12.4765 7.96338 12.5105 7.97088 12.541 7.98188C12.5825 7.99688 12.6205 8.01938 12.6505 8.05338C12.7035 8.10588 12.7335 8.18088 12.7335 8.25988C12.7335 8.42489 12.6015 8.55639 12.4355 8.55639C12.2695 8.55639 12.141 8.42489 12.141 8.25988ZM15.1415 9.79893C14.949 9.87793 14.7565 9.94544 14.5715 9.95294C14.2845 9.96794 13.9715 9.85143 13.8015 9.70893C13.5375 9.48742 13.3485 9.36342 13.2695 8.97691C13.2355 8.8119 13.2545 8.55639 13.2845 8.40989C13.3525 8.09438 13.277 7.89187 13.0545 7.70787C12.8735 7.55786 12.643 7.51636 12.39 7.51636C12.2955 7.51636 12.209 7.47486 12.1445 7.44136C12.039 7.38886 11.9519 7.25735 12.035 7.09585C12.0615 7.04335 12.19 6.91584 12.22 6.89334C12.5635 6.69784 12.9595 6.76184 13.326 6.90834C13.6655 7.04735 13.9225 7.30236 14.292 7.66287C14.6695 8.09838 14.7375 8.21838 14.9525 8.54539C15.1225 8.8009 15.277 9.06341 15.3831 9.36392C15.4471 9.55142 15.3641 9.70493 15.1415 9.79893Z\" fill=\"currentColor\"/></svg></span><svg class=\"panelIcon\" width='18' height='18' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z' stroke='currentColor'/><path d='M5.5 1.5V14.5' stroke='currentColor'/></svg><span role='img' aria-label='新版本' class=\"badge\"></span></button></div></div></div>"
+        },
+        {
+          "label": "悬停模拟：鲸鱼标切成面板图标，角标不动",
+          "note": "悬停模拟：真实规则是 .collapsed .toggle:hover 下的图标互换，这里把两条规则原样搬到同名类上",
+          "bg": "sidebar",
+          "css": "/* 状态模拟：折叠轨道悬停时真实规则为 .collapsed .toggle:hover .panelIcon { display: inline } 与\n   .collapsed .toggle:hover .railMark { display: none }（SidebarRoot.module.css），\n   静态快照无法触发 :hover，按同样效果搬到 forceHover 上。 */\n.toggle.forceHover .panelIcon { display: inline; }\n.toggle.forceHover .railMark { display: none; }",
+          "html": "<div style='width:56px;display:flex'><div class=\"root collapsed\"><div class=\"logoRow\"><button type='button' class=\"iconButton toggle forceHover\" aria-label='打开侧边栏'><span class=\"railMark\" aria-hidden='true'><svg width=\"24\" height=\"17.6580310880829\" viewBox=\"0 0 23.16 17.04\" fill=\"none\" aria-hidden=\"true\"><path d=\"M22.9168 1.43018C22.6713 1.31018 22.5658 1.53918 22.4223 1.65519C22.3733 1.69269 22.3318 1.74169 22.2903 1.78669C21.9317 2.1697 21.5127 2.42121 20.9657 2.39121C20.1657 2.34621 19.4827 2.59771 18.8787 3.20973C18.7502 2.45521 18.3236 2.0047 17.6746 1.71569C17.3351 1.56568 16.9916 1.41518 16.7536 1.08867C16.5876 0.856163 16.5421 0.597155 16.4591 0.341647C16.4061 0.187643 16.3536 0.0301382 16.1761 0.00363739C15.9836 -0.0263635 15.9081 0.135141 15.8326 0.270145C15.5306 0.822162 15.4136 1.43018 15.4251 2.0462C15.4516 3.43174 16.0366 4.53527 17.1991 5.3203C17.3311 5.4103 17.3651 5.5003 17.3236 5.63181C17.2441 5.90231 17.1501 6.16482 17.0671 6.43533C17.0141 6.60784 16.9351 6.64584 16.7501 6.57033C16.1121 6.30383 15.5611 5.90931 15.074 5.4328C14.2475 4.63328 13.5 3.75075 12.568 3.05973C12.349 2.89822 12.13 2.74822 11.9034 2.60522C10.9524 1.68169 12.028 0.923165 12.277 0.833162C12.5375 0.739159 12.3675 0.41615 11.5259 0.42015C10.6844 0.42365 9.91439 0.705658 8.93286 1.08117C8.78935 1.13767 8.63835 1.17867 8.48384 1.21267C7.59332 1.04367 6.66829 1.00617 5.70226 1.11517C3.88321 1.31768 2.43016 2.1777 1.36213 3.64575C0.0790928 5.4103 -0.222916 7.41536 0.146595 9.50642C0.535106 11.7105 1.66014 13.535 3.38869 14.9616C5.18125 16.4406 7.24581 17.1657 9.60138 17.0266C11.0319 16.9441 12.6245 16.7526 14.421 15.2321C14.874 15.4576 15.3496 15.5476 16.1381 15.6151C16.7456 15.6716 17.3306 15.5851 17.7836 15.4911C18.4931 15.3411 18.4441 14.6841 18.1876 14.5636C16.1081 13.595 16.5646 13.9891 16.1496 13.67C17.2061 12.42 18.8202 10.1979 19.3182 7.17235C19.3672 6.83834 19.4297 6.36783 19.4222 6.09732C19.4182 5.93231 19.4562 5.86831 19.6447 5.84931C20.1657 5.78931 20.6712 5.64681 21.1357 5.3913C22.4833 4.65528 23.0268 3.44624 23.1548 1.9972C23.1738 1.77569 23.1508 1.54668 22.9168 1.43018ZM11.1749 14.4736C9.15936 12.889 8.18184 12.3675 7.77832 12.39C7.40081 12.4125 7.46881 12.8445 7.55182 13.126C7.63882 13.404 7.75182 13.5955 7.91033 13.8396C8.01983 14.0011 8.09533 14.2411 7.80083 14.4216C7.15181 14.8231 6.02327 14.2866 5.97027 14.2601C4.65673 13.4865 3.5587 12.4655 2.78467 11.069C2.03715 9.72493 1.60314 8.28289 1.53164 6.74384C1.51264 6.37233 1.62214 6.24082 1.99215 6.17332C2.47916 6.08332 2.98118 6.06432 3.46769 6.13582C5.52476 6.43633 7.27581 7.35586 8.74385 8.8129C9.58188 9.64243 10.2159 10.634 10.8689 11.6025C11.5634 12.631 12.3105 13.611 13.262 14.4146C13.598 14.6961 13.866 14.9101 14.1225 15.0681C13.349 15.1546 12.058 15.1731 11.1749 14.4746L11.1749 14.4736ZM12.141 8.25988C12.141 8.09488 12.273 7.96338 12.439 7.96338C12.4765 7.96338 12.5105 7.97088 12.541 7.98188C12.5825 7.99688 12.6205 8.01938 12.6505 8.05338C12.7035 8.10588 12.7335 8.18088 12.7335 8.25988C12.7335 8.42489 12.6015 8.55639 12.4355 8.55639C12.2695 8.55639 12.141 8.42489 12.141 8.25988ZM15.1415 9.79893C14.949 9.87793 14.7565 9.94544 14.5715 9.95294C14.2845 9.96794 13.9715 9.85143 13.8015 9.70893C13.5375 9.48742 13.3485 9.36342 13.2695 8.97691C13.2355 8.8119 13.2545 8.55639 13.2845 8.40989C13.3525 8.09438 13.277 7.89187 13.0545 7.70787C12.8735 7.55786 12.643 7.51636 12.39 7.51636C12.2955 7.51636 12.209 7.47486 12.1445 7.44136C12.039 7.38886 11.9519 7.25735 12.035 7.09585C12.0615 7.04335 12.19 6.91584 12.22 6.89334C12.5635 6.69784 12.9595 6.76184 13.326 6.90834C13.6655 7.04735 13.9225 7.30236 14.292 7.66287C14.6695 8.09838 14.7375 8.21838 14.9525 8.54539C15.1225 8.8009 15.277 9.06341 15.3831 9.36392C15.4471 9.55142 15.3641 9.70493 15.1415 9.79893Z\" fill=\"currentColor\"/></svg></span><svg class=\"panelIcon\" width='18' height='18' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z' stroke='currentColor'/><path d='M5.5 1.5V14.5' stroke='currentColor'/></svg><span role='img' aria-label='新版本' class=\"badge\"></span></button></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "useDesktopUpdate",
+          "type": "SnapshotSelectorHook<DesktopUpdateView>",
+          "default": "—",
+          "desc": "注入 hooks 绑定的选择器：读 presentation 与 failed，决定角标是否出现。"
+        },
+        {
+          "name": "useConnectionState",
+          "type": "SnapshotSelectorHook<ConnectionState>",
+          "default": "—",
+          "desc": "读 'connected' | 'disconnected' | 'connecting'：后者两种连接态让角标让位给连接指示（除非正在安装）。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'settings'>",
+          "default": "—",
+          "desc": "settings 词典：角标的 aria-label 与 Tooltip 详情取 <code>desktop.update.*</code>。"
+        }
+      ],
+      "notes": "它和 <code>DesktopUpdateIndicator</code> 共用一张样式表与同一份 store：宽侧栏时状态在触发行里的胶囊上，折叠后就近挪到展开按钮的右上角，所以同一时刻只有一处可见。角标 <code>aria-label</code> 直接取文案，Tooltip（<code>side=\"right\"</code>）再补详情，气泡在静态 DOM 里不出现；<code>failed</code> 时文案统一是「重试更新」。判定顺序是「连接中断/重连中且不在安装中 → 隐藏」，再判「未失败且（无 presentation 或 phase 为 idle）→ 隐藏」，其余情况都画这个 6px 点。折叠轨道的鲸鱼标与 36×36 方格由 ui-sidebar 绘制，示例把 <code>SidebarRoot.module.css</code> 一并内联，否则圆点会失去定位父级。",
+      "keywords": [
+        "更新角标",
+        "通知点",
+        "sidebar badge",
+        "折叠侧栏",
+        "新版本提示"
+      ]
+    },
+    {
+      "id": "developer-tools-row",
+      "name": "DeveloperToolsRow",
+      "exportName": "DeveloperToolsRow",
+      "zh": "代码视图开关",
+      "group": "settings",
+      "summary": "General 页的一行偏好：左列 14/20 的「显示代码工作视图」加 12/18 二级色说明，右列是共享的 36×20 开关（打开时轨道 <code>--dsw-alias-brand-primary</code>、拇指右移 16px；关闭时轨道 <code>--dsw-alias-border-l3</code>、拇指 <code>--dsw-alias-switch-thumb</code>）。整行两端对齐、间距 24px、上下 16px 内边距，底部一条 0.5px <code>--dsw-alias-border-l2</code> 分隔线（General 列只剥掉最后一行那条，这一行 order 15 通常不在末位）。写入在途时开关禁用（不透明度 0.5），写入被拒时说明下方补一条 <code>role=\"alert\"</code> 的「保存失败，请重试」。",
+      "source": "packages/client/ui-settings-general/src/client/DeveloperToolsRow.tsx#L19",
+      "css": [
+        "packages/client/ui-settings-general/src/client/DeveloperToolsRow.module.css",
+        "packages/client/ui-primitives/src/Switch.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l2",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-brand-primary",
+        "--dsw-alias-label-primary-foreground",
+        "--dsw-alias-switch-thumb",
+        "--dsw-focus-ring-color",
+        "--dsw-focus-ring-width"
+      ],
+      "specimens": [
+        {
+          "label": "开启 / 关闭：两条并排",
+          "note": "开关只看 aria-checked：true 铺品牌蓝并把拇指右移 16px，false 用 border-l3 轨道",
+          "bg": "layer2",
+          "html": "<div style='width:560px'><div class=\"row\"><div><div class=\"title\">显示代码工作视图</div><div class=\"description\">开启后，显示轨迹、本轮代码差异，可选择完整的 Agent 预设切换</div></div><button type='button' role='switch' aria-checked='true' aria-label='显示代码工作视图' class=\"switch\"><span class=\"thumb\"></span></button></div><div class=\"row\"><div><div class=\"title\">显示代码工作视图</div><div class=\"description\">开启后，显示轨迹、本轮代码差异，可选择完整的 Agent 预设切换</div></div><button type='button' role='switch' aria-checked='false' aria-label='显示代码工作视图' class=\"switch\"><span class=\"thumb\"></span></button></div></div>"
+        },
+        {
+          "label": "写入中：开关禁用",
+          "note": "setEnabled 在途时 Switch 收 disabled，观感是整块不透明度 0.5",
+          "bg": "layer2",
+          "html": "<div style='width:560px'><div class=\"row\"><div><div class=\"title\">显示代码工作视图</div><div class=\"description\">开启后，显示轨迹、本轮代码差异，可选择完整的 Agent 预设切换</div></div><button type='button' role='switch' aria-checked='true' aria-label='显示代码工作视图' class=\"switch\" disabled><span class=\"thumb\"></span></button></div></div>"
+        },
+        {
+          "label": "保存失败：说明下方补一条 role=\"alert\"",
+          "note": "失败行是源码里一个不带类名的裸 div，因此它只跟随继承字号，组件自己不画红色",
+          "bg": "layer2",
+          "html": "<div style='width:560px'><div class=\"row\"><div><div class=\"title\">显示代码工作视图</div><div class=\"description\">开启后，显示轨迹、本轮代码差异，可选择完整的 Agent 预设切换</div><div role='alert'>保存失败，请重试</div></div><button type='button' role='switch' aria-checked='false' aria-label='显示代码工作视图' class=\"switch\"><span class=\"thumb\"></span></button></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "useDeveloperTools",
+          "type": "SnapshotSelectorHook<boolean>",
+          "default": "—",
+          "desc": "注入 hooks 绑定的选择器：读 <code>configForms.developerTools.enabled</code> 的已接受值。"
+        },
+        {
+          "name": "setEnabled",
+          "type": "(enabled: boolean) => Promise<void>",
+          "default": "—",
+          "desc": "写回开关；在途期间组件把本地 busy 置真（开关禁用），拒绝时置 failed 让提示出现。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'settings'>",
+          "default": "—",
+          "desc": "settings 词典：<code>developerTools.title</code> / <code>.description</code> / <code>.error</code>。"
+        }
+      ],
+      "notes": "开关是受控且非乐观的：<code>checked</code> 只读 configForms 的已接受值，写入成功与否由那次 Promise 的结算决定，失败时已接受值原样留在界面上，只多一行提示。它注册在 <code>settings.general.item</code>（id <code>developer-tools</code>、order 15），所以总排在 General 列靠前的位置；行末那条 0.5px 分隔线由自己画，落在末位时由 GeneralSection 剥掉。示例里的开关是共享 <code>Switch</code>，<code>Switch.module.css</code> 一并列进 <code>css</code>：36×20 的轨道与拇指位移都来自它。",
+      "keywords": [
+        "开发者工具",
+        "代码工作视图",
+        "developer tools",
+        "轨迹与差异",
+        "General 开关行"
+      ]
+    },
+    {
+      "id": "host-release-prompt",
+      "name": "HostReleasePrompt",
+      "exportName": "HostReleasePrompt",
+      "zh": "服务版本变更",
+      "group": "settings",
+      "summary": "页面连到的 Host 换了 release 时弹出的确认框，注册在 <code>shell.overlay</code>：Modal 卡片宽 <code>min(480px, 100%)</code>，标题 16/24/500 加右上 28×28 关闭按钮，正文说明「服务版本已变化，本页面已暂停热更新」，下面是两行 13/20 的过渡网格（标签列 + 起点 + 56px 连接线 + 终点，行列间距 8px/12px）。服务行表示 Host 已完成的切换（起点淡出 <code>.faded</code>、绿色实线箭头 <code>.done</code>），页面行表示刷页才能完成的切换（终点淡出、<code>.label-tertiary</code> 虚线箭头 <code>.pending</code>）；两端的版本相同就改比 commit，缺失的一端显示「未解析」。页脚右侧并排 36px 的 outline「暂不刷新」与 primary「刷新以加载新版本」；<code>change</code> 为 undefined 时整块不渲染。",
+      "source": "packages/client/ui-settings-general/src/client/HostReleasePrompt.tsx#L61",
+      "css": [
+        "packages/client/ui-primitives/src/Modal.module.css",
+        "packages/client/ui-settings-general/src/client/HostReleasePrompt.module.css",
+        "packages/client/ui-primitives/src/Button.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-layer-2",
+        "--dsw-alias-bg-mask-1",
+        "--dsw-mask-blur",
+        "--dsw-elevation-prominent",
+        "--dsw-radius-panel",
+        "--dsw-radius-sm",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-state-success-primary",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-button-primary-fill",
+        "--dsw-alias-button-primary-hover",
+        "--dsw-alias-label-primary-foreground",
+        "--dsh-frame-chrome-top",
+        "--dsh-frame-overlay-top"
+      ],
+      "specimens": [
+        {
+          "label": "打开态：服务行已完成、页面行待刷新",
+          "note": "静态快照：Modal 的 .root 真实是 body 上的 fixed 全屏层，这里改为随流的相对定位，同时留住 .mask 的包含块",
+          "bg": "platform",
+          "pad": "lg",
+          "css": "/* 静态快照：Modal 的 .root 由 createPortal 挂在 body 上、position: fixed 铺满视口；\n   这里拉回文档流并保留 relative 作为 .mask 的包含块，尺寸与配色仍走真实样式。 */\n.root.snapshotStatic { position: relative; inset: auto; }",
+          "html": "<div style='width:560px'><div class=\"root snapshotStatic\" role='presentation'><div class=\"mask\" aria-hidden='true'></div><div class=\"dialog\" role='dialog' aria-modal='true' aria-label='服务版本变化'><div class=\"content\"><div class=\"header\"><h2 class=\"title\">服务版本变化</h2><button type='button' class=\"close\" aria-label='暂不刷新'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M2.5 2.5L13.5 13.5' stroke='currentColor'/><path d='M13.5 2.5L2.5 13.5' stroke='currentColor'/></svg></button></div><p class=\"description\">服务版本已变化，本页面已暂停热更新，刷新后加载新版本。</p><div class=\"body\"><div class=\"transitions\"><span class=\"label\">服务</span><span class=\"release faded\">0.4.3</span><span aria-hidden='true' class=\"line done\"></span><span class=\"release solid\">0.5.0</span><span class=\"label\">页面</span><span class=\"release solid\">0.4.2</span><span aria-hidden='true' class=\"line pending\"></span><span class=\"release faded\">0.5.0</span></div></div></div><div class=\"footer\"><button type='button' class=\"button outline md\" data-modal-autofocus>暂不刷新</button><button type='button' class=\"button primary md\">刷新以加载新版本</button></div></div></div></div>"
+        },
+        {
+          "label": "版本号相同：改比 commit",
+          "note": "transitionText 在两端 version 相等时退回 commit；页面行仍是待完成（虚线箭头）",
+          "bg": "platform",
+          "pad": "lg",
+          "css": "/* 静态快照：同上一例，Modal 的 .root 由 fixed 改回文档流内的相对定位。 */\n.root.snapshotStatic { position: relative; inset: auto; }",
+          "html": "<div style='width:560px'><div class=\"root snapshotStatic\" role='presentation'><div class=\"mask\" aria-hidden='true'></div><div class=\"dialog\" role='dialog' aria-modal='true' aria-label='服务版本变化'><div class=\"content\"><div class=\"header\"><h2 class=\"title\">服务版本变化</h2><button type='button' class=\"close\" aria-label='暂不刷新'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M2.5 2.5L13.5 13.5' stroke='currentColor'/><path d='M13.5 2.5L2.5 13.5' stroke='currentColor'/></svg></button></div><p class=\"description\">服务版本已变化，本页面已暂停热更新，刷新后加载新版本。</p><div class=\"body\"><div class=\"transitions\"><span class=\"label\">服务</span><span class=\"release faded\">9f3c2a1</span><span aria-hidden='true' class=\"line done\"></span><span class=\"release solid\">b71e0d4</span><span class=\"label\">页面</span><span class=\"release solid\">9f3c2a1</span><span aria-hidden='true' class=\"line pending\"></span><span class=\"release faded\">b71e0d4</span></div></div></div><div class=\"footer\"><button type='button' class=\"button outline md\" data-modal-autofocus>暂不刷新</button><button type='button' class=\"button primary md\">刷新以加载新版本</button></div></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "useReleaseChange",
+          "type": "HostObservable<ClientReleaseChange | undefined>",
+          "default": "—",
+          "desc": "注入 hooks 舱位，渲染器绑定为 useReleaseChange：change 为 undefined（Host 就是本页 release，或该 release 已被忽略）时整块不渲染。"
+        },
+        {
+          "name": "dismissRelease",
+          "type": "() => void",
+          "default": "—",
+          "desc": "关掉对话框并记下忽略这个 Host release；与 Modal 的关闭路径（右上按钮 / 点遮罩 / Escape）同一个入口。"
+        },
+        {
+          "name": "reloadPage",
+          "type": "() => void",
+          "default": "—",
+          "desc": "从 Host 重新加载整页，让页面换上 Host 的 release。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'settings'>",
+          "default": "—",
+          "desc": "settings 词典：<code>hostRelease.*</code>（标题 / 说明 / 服务 / 页面 / 未解析 / 两个按钮）。"
+        }
+      ],
+      "notes": "两个过渡行的语义不同：服务行是 Host 已经完成的切换（<code>previous → host</code>，连接线 <code>.done</code> 实线 + 成功色箭头、起点文字淡出），页面行是只有刷页才能完成的切换（<code>page → host</code>，连接线 <code>.pending</code> 虚线 + 三级色箭头、终点文字淡出）。两端版本不同比 version、相同比 commit，任一端缺失就写「未解析」。对话框在没有任何用户手势的情况下打开，所以焦点按 <code>data-modal-autofocus</code> 落在「暂不刷新」上——一次挂着的回车不会把页面刷掉。卡片同时带 Modal 与 HostReleasePrompt 两个模块的 <code>.dialog</code>（示例写成裸类名，构建脚本会给它两个前缀），宽度由后者覆盖成 480px。",
+      "keywords": [
+        "服务版本变化",
+        "release change",
+        "热更新",
+        "刷新提示",
+        "shell overlay",
+        "版本对比"
+      ]
+    },
+    {
+      "id": "settings-document-action",
+      "name": "SettingsDocumentAction",
+      "exportName": "SettingsDocumentAction",
+      "zh": "打开配置",
+      "group": "settings",
+      "summary": "设置面板标题栏里的「打开配置文件」动作，注册在 <code>settings.action</code>（order 0，排在关闭按钮之前）：一个 28px 高的 outline 小按钮（R8、0.5px <code>--dsw-alias-border-l3</code> 描边、12/18 文字、悬停铺 <code>--dsw-alias-interactive-bg-hover</code>），左边可挂一条最多 180px、单行省略的 <code>.error</code> 红字（12/18、<code>--dsw-alias-state-error-primary</code>）。只有 Host 元数据确认有本地文档时才渲染——<code>status</code> 不是 <code>ready</code> 就返回 <code>null</code>；打开请求在途时按钮禁用（不透明度 0.4），失败文案留到下一次点击才清。",
+      "source": "packages/client/ui-settings-general/src/client/SettingsDocumentAction.tsx#L29",
+      "css": [
+        "packages/client/ui-settings-general/src/client/SettingsDocumentAction.module.css",
+        "packages/client/ui-primitives/src/Button.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-state-error-primary",
+        "--dsw-alias-border-l3",
+        "--dsw-radius-sm",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-interactive-bg-hover"
+      ],
+      "specimens": [
+        {
+          "label": "默认：标题栏右侧的 28px outline 按钮",
+          "note": "容器是 shell 的 54px 标题栏右端，示例用右对齐的窄容器代替",
+          "bg": "layer2",
+          "html": "<div style='width:420px;display:flex;justify-content:flex-end'><div class=\"action\"><button type='button' class=\"button outline sm\">打开配置文件</button></div></div>"
+        },
+        {
+          "label": "打开中：按钮禁用（不透明度 0.4）",
+          "note": "state.opening 为真时唯一的变化是 Button 的 disabled",
+          "bg": "layer2",
+          "html": "<div style='width:420px;display:flex;justify-content:flex-end'><div class=\"action\"><button type='button' class=\"button outline sm\" disabled>打开配置文件</button></div></div>"
+        },
+        {
+          "label": "失败：按钮左侧补一条省略的红字",
+          "note": "错误文案是本地化短语，最多 180px，超出单行省略；原始诊断不出 UI",
+          "bg": "layer2",
+          "html": "<div style='width:420px;display:flex;justify-content:flex-end'><div class=\"action\"><span class=\"error\" role='alert'>无法打开配置文件</span><button type='button' class=\"button outline sm\">打开配置文件</button></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "controller",
+          "type": "SettingsDocumentStore",
+          "default": "—",
+          "desc": "文档状态所有者：<code>load()</code> 拉一次元数据，<code>open()</code> 走 loopback 的 <code>remote.settings</code> 打开原生文档。"
+        },
+        {
+          "name": "useSnapshot",
+          "type": "SnapshotSelectorHook<SettingsDocumentState>",
+          "default": "—",
+          "desc": "注入 hooks 绑定的选择器：读 <code>{ status, opening, error }</code>，status 非 ready 时整块不渲染。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'settings'>",
+          "default": "—",
+          "desc": "settings 词典：按钮文案 <code>openDocument</code> 与失败文案 <code>openDocument.error</code>。"
+        }
+      ],
+      "notes": "只有 Host 与页面在同一台机器（<code>ctx.remote.$host.isLoopback</code>）时才创建 store、才注册这个动作，所以远程部署里标题栏左侧是空的。<code>useEffect</code> 在挂载时调一次 <code>controller.load()</code>；<code>unavailable</code>（提供方没有本地文档或读取失败）与 <code>idle</code>/<code>loading</code> 一样返回 null。按钮是共享 <code>Button</code>（outline + sm），<code>Button.module.css</code> 一并列进 <code>css</code>：28px 高、R8、0.5px 描边与悬停底色都来自它，<code>SettingsDocumentAction.module.css</code> 只负责这行的 flex 排布与失败文案。",
+      "keywords": [
+        "打开配置文件",
+        "settings document",
+        "标题栏动作",
+        "settings.action",
+        "loopback"
+      ]
+    },
+    {
+      "id": "upload-row",
+      "name": "UploadRow",
+      "exportName": "UploadRow",
+      "zh": "上传偏好",
+      "group": "settings",
+      "summary": "General 页的 Session Log 上传偏好行（注册 id <code>session-log-deepseek</code>、order 90）：左列 14/20 的「在使用官方模型 API 时上传 Session Log」加 12/18 二级色「帮助改进 DeepSeek 模型与产品」，右列是共享的 36×20 开关；行结构与 DeveloperToolsRow 一致——两端对齐、24px 间距、上下 16px、底部 0.5px <code>--dsw-alias-border-l2</code>。开关在写入在途、配置表单还没 ready，或 Host 文档不可写时禁用（不透明度 0.5）；它始终显示 Host 已接受的值，不做乐观切换。",
+      "source": "packages/client/ui-settings-session-log/src/client/UploadRow.tsx#L26",
+      "css": [
+        "packages/client/ui-settings-session-log/src/client/UploadRow.module.css",
+        "packages/client/ui-primitives/src/Switch.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l2",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-brand-primary",
+        "--dsw-alias-label-primary-foreground",
+        "--dsw-alias-switch-thumb",
+        "--dsw-focus-ring-color",
+        "--dsw-focus-ring-width"
+      ],
+      "specimens": [
+        {
+          "label": "打开 / 关闭：已接受值决定开关",
+          "note": "value?.enabled === true 才打开；两态的轨道色与拇指位移都来自 Switch",
+          "bg": "layer2",
+          "html": "<div style='width:560px'><div class=\"row\"><div><div class=\"title\">在使用官方模型 API 时上传 Session Log</div><div class=\"description\">帮助改进 DeepSeek 模型与产品</div></div><button type='button' role='switch' aria-checked='true' aria-label='在使用官方模型 API 时上传 Session Log' class=\"switch\"><span class=\"thumb\"></span></button></div><div class=\"row\"><div><div class=\"title\">在使用官方模型 API 时上传 Session Log</div><div class=\"description\">帮助改进 DeepSeek 模型与产品</div></div><button type='button' role='switch' aria-checked='false' aria-label='在使用官方模型 API 时上传 Session Log' class=\"switch\"><span class=\"thumb\"></span></button></div></div>"
+        },
+        {
+          "label": "锁定：写入在途 / 表单未 ready / 文档只读",
+          "note": "三种条件共用一个 disabled，外观只差不透明度 0.5；已接受的值仍然可见",
+          "bg": "layer2",
+          "html": "<div style='width:560px'><div class=\"row\"><div><div class=\"title\">在使用官方模型 API 时上传 Session Log</div><div class=\"description\">帮助改进 DeepSeek 模型与产品</div></div><button type='button' role='switch' aria-checked='true' aria-label='在使用官方模型 API 时上传 Session Log' class=\"switch\" disabled><span class=\"thumb\"></span></button></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "useUpload",
+          "type": "SnapshotSelectorHook<ConfigFormSnapshot<UploadSettings>>",
+          "default": "—",
+          "desc": "注入 hooks 绑定的选择器：读 <code>value?.enabled</code>、<code>status</code> 与 <code>writable</code>。"
+        },
+        {
+          "name": "useMutation",
+          "type": "SnapshotSelectorHook<UploadMutation>",
+          "default": "—",
+          "desc": "读 <code>busy</code>（写入在途）；同一份快照里的 <code>notice</code> 由 UploadToast 读。"
+        },
+        {
+          "name": "setEnabled",
+          "type": "(enabled: boolean) => Promise<void>",
+          "default": "—",
+          "desc": "把开关写进 Host 设置；失败不抛给这一行，结果由 UploadToast 播报。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'settings.sessionLog'>",
+          "default": "—",
+          "desc": "settings.sessionLog 词典：<code>title</code> 与 <code>description</code>。"
+        }
+      ],
+      "notes": "这一半只画行：上传开关写的是 Host 设置里 <code>session-log-deepseek</code> 命名空间的 <code>enabled</code> 字段，日志只在用官方模型 API 时上传，文案本身就是这句话的说明。写失败时行的观感不变（<code>UploadPreference</code> 不做乐观更新，Host 已接受的值继续显示），失败由 shell overlay 里的 UploadToast 报出，面板关掉也还能看到。它在 <code>settings.general.item</code> 的 order 是 90，后面还有 order 100 的版本行，所以行末那条 0.5px 分隔线不会落到它身上。示例里的开关是共享 <code>Switch</code>，<code>Switch.module.css</code> 一并列进 <code>css</code>。",
+      "keywords": [
+        "上传 Session Log",
+        "session log",
+        "API 日志上传",
+        "偏好行",
+        "General 开关行"
+      ]
+    },
+    {
+      "id": "upload-toast",
+      "name": "UploadToast",
+      "exportName": "UploadToast",
+      "zh": "上传结果",
+      "group": "settings",
+      "summary": "上传偏好的写入结果横幅，注册在 <code>shell.overlay</code>：<code>notice === 'saved'</code> 时走 <code>Toast tone=\"success\"</code>（自带 16px 绿色对勾 + 「设置已保存」），其余情况是「无法保存设置」——注意它两个分支都不传 <code>icon</code>，所以失败横幅的图标位是空的，只有文字。横幅本身是 12px/16px 内边距、<code>--dsw-radius-lg</code> 圆角、两个主题都一样的深色 <code>--dsw-alias-toast-bg</code> 表面，14/22 文字，固定在视口顶部 40px 居中、<code>z-index: 1100</code>，不吃指针事件；满透明度保持 3 秒后淡出 1 秒，淡出结束由 <code>onDone</code> 调 <code>dismiss</code>。",
+      "source": "packages/client/ui-settings-session-log/src/client/UploadRow.tsx#L45",
+      "css": [
+        "packages/client/ui-primitives/src/Toast.module.css"
+      ],
+      "tokens": [
+        "--dsw-radius-lg",
+        "--dsw-alias-toast-bg",
+        "--dsw-alias-toast-label",
+        "--dsw-shadow-lv3",
+        "--dsw-alias-state-success-primary"
+      ],
+      "specimens": [
+        {
+          "label": "保存成功：tone=\"success\"",
+          "note": "静态快照：取消 fixed 定位与自动淡出；成功对勾由 Toast 自己给，不走 icon 槽",
+          "html": "<div style='width:520px'><div class=\"toast snapshotStatic\" role='alert' style=\"--dsh-toast-hold:3000ms\"><span class=\"icon success\" aria-hidden='true'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M12.5303 6.53027L8.80273 10.2578C8.54967 10.5109 8.31796 10.7439 8.10645 10.9141C7.88375 11.0932 7.616 11.2602 7.27344 11.3145C7.09229 11.3431 6.90771 11.3431 6.72656 11.3145C6.384 11.2602 6.11625 11.0932 5.89355 10.9141C5.68204 10.7439 5.45033 10.5109 5.19727 10.2578L3.46973 8.53027L4.53027 7.46973L6.25781 9.19727C6.53457 9.47402 6.70036 9.63859 6.83398 9.74609C6.95637 9.84453 6.98241 9.83644 6.96094 9.83301C6.98679 9.83709 7.01321 9.83709 7.03906 9.83301C7.01759 9.83644 7.04363 9.84453 7.16602 9.74609C7.29964 9.63859 7.46543 9.47402 7.74219 9.19727L11.4697 5.46973L12.5303 6.53027Z' fill='currentColor'/><path d='M14.5996 8C14.5996 4.35492 11.6451 1.40039 8 1.40039C4.35492 1.40039 1.40039 4.35492 1.40039 8C1.40039 11.6451 4.35492 14.5996 8 14.5996C11.6451 14.5996 14.5996 11.6451 14.5996 8ZM15.9004 8C15.9004 12.363 12.363 15.9004 8 15.9004C3.63695 15.9004 0.0996094 12.363 0.0996094 8C0.0996094 3.63695 3.63695 0.0996094 8 0.0996094C12.363 0.0996094 15.9004 3.63695 15.9004 8Z' fill='currentColor'/></svg></span><span class=\"text\">设置已保存</span></div></div>",
+          "css": "/* 静态快照：横幅真实由 Toast 用 createPortal 挂到 body，position: fixed 居中并在 3s 后开始 1s 淡出；\n   这里把定位拉回文档流、停掉动画，让快照停在可见态，尺寸与配色仍走真实样式。 */\n.toast.snapshotStatic { position: relative; inset: auto; transform: none; margin: 0 auto; animation: none; }"
+        },
+        {
+          "label": "保存失败：不带 tone，也不带 icon 槽",
+          "note": "静态快照：同上一例取消 fixed 与自动淡出；失败时图标位是空的（源码只传 text）",
+          "html": "<div style='width:520px'><div class=\"toast snapshotStatic\" role='alert' style=\"--dsh-toast-hold:3000ms\"><span class=\"text\">无法保存设置</span></div></div>",
+          "css": "/* 静态快照：同上一例，取消 fixed 定位与自动淡出。 */\n.toast.snapshotStatic { position: relative; inset: auto; transform: none; margin: 0 auto; animation: none; }"
+        }
+      ],
+      "props": [
+        {
+          "name": "useMutation",
+          "type": "SnapshotSelectorHook<UploadMutation>",
+          "default": "—",
+          "desc": "读 <code>notice</code>（'saved' | 'failed' | null）与 <code>sequence</code>；null 时整块不渲染。"
+        },
+        {
+          "name": "dismiss",
+          "type": "() => void",
+          "default": "—",
+          "desc": "淡出结束后把 notice 清空（Toast 的 <code>onDone</code>）。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'settings.sessionLog'>",
+          "default": "—",
+          "desc": "settings.sessionLog 词典：<code>saved</code>（设置已保存）与 <code>failed</code>（无法保存设置）。"
+        }
+      ],
+      "notes": "它与 UploadRow 是同一文件里的一对：行写设置、它报结果，所以设置面板关掉之后这条横幅仍然可见（挂在 <code>shell.overlay</code>）。<code>key</code> 用递增的 <code>sequence</code>，重放同一条文案也会重新计时。失败分支不传 <code>icon</code>，因此 16px 图标位整格不渲染——这点与传了警告字形的 Toast（如删除失败）不同，是本组件刻意的选择。行那一半的 <code>UploadRow.module.css</code> 只声明 <code>.row</code> / <code>.title</code> / <code>.description</code>，本组件的 DOM 完全不碰它，所以 <code>css</code> 只列 Toast 原语的样式表。",
+      "keywords": [
+        "上传结果",
+        "设置已保存",
+        "toast",
+        "横幅",
+        "shell overlay"
+      ]
+    }
+  ]
+}

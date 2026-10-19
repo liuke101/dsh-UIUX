@@ -1,0 +1,633 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "id": "inspector-details",
+      "name": "InspectorDetails",
+      "exportName": "InspectorDetails",
+      "zh": "原始数据面板",
+      "group": "agent",
+      "summary": "会话检查器底部那块可以调高的原始数据面板：顶边是一条 5px 高的 <code>.detailsResize</code> 拖拽条（<code>cursor: row-resize</code>、<code>touch-action: none</code>，指针按下后接管拖动），下面 <code>padding: 6px 8px</code> 的工具栏里「原始数据」标题占满剩余宽度、右侧是「关闭」按钮，底缘 0.5px <code>--dsw-alias-border-l2</code>。主体是等宽字体的 <code>&lt;pre&gt;</code>（<code>overflow: auto</code>、<code>white-space: pre-wrap</code>、<code>overflow-wrap: anywhere</code>），或者换成一整块 <code>.objectDetails</code>（8px 内边距 + 独立滚动）来放对象树——传了 <code>children</code> 就走后者。高度由组件内联的 <code>flex-basis</code> 百分比决定（默认 40%，CSS 兜底也是 <code>flex: 0 0 40%</code>），上限 <code>max-height: 80%</code>，键盘 ↑/↓ 每次 5%、Home/End 直落 15%/80%。",
+      "source": "packages/experimental/session-inspector/src/client/views/InspectorDetails.tsx#L29",
+      "css": [
+        "packages/experimental/session-inspector/src/client/views/inspector.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l2",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-scrollbar-bg-l2",
+        "--dsw-alias-scrollbar-hover-l2",
+        "--dsw-alias-state-business-primary"
+      ],
+      "specimens": [
+        {
+          "label": "默认态：拖拽条 + 工具栏 + 原始 JSON",
+          "note": "静态快照。外层 <code>.root</code> 是它在 InspectorTable 里的宿主容器（提供 11px 字号与 <code>--dsw-alias-label-primary</code>）。",
+          "html": "<section class=\"root\" style='height:220px;width:460px'><div class=\"details\" style='flex-basis:40%'><div role='separator' tabindex='0' aria-orientation='horizontal' aria-label='调整原始数据面板高度' aria-valuemin='15' aria-valuemax='80' aria-valuenow='40' class=\"detailsResize\"></div><div class=\"toolbar\"><span>原始数据</span><button type='button'>关闭</button></div><pre>{\n  \"type\": \"assistant/message\",\n  \"seq\": 128,\n  \"time\": 1776582271882,\n  \"data\": {\n    \"attemptId\": \"attempt-2-1\",\n    \"turn\": 2,\n    \"step\": 1,\n    \"status\": \"running\"\n  }\n}</pre></div></section>"
+        },
+        {
+          "label": "对象数据：children 走 .objectDetails",
+          "note": "对话分组模式下 InspectorTable 把 InspectorObjectTree 塞进 children，纯文本 <code>&lt;pre&gt;</code> 换成滚动区。",
+          "html": "<section class=\"root\" style='height:220px;width:520px'><div class=\"details\" style='flex-basis:40%'><div role='separator' tabindex='0' aria-orientation='horizontal' aria-label='调整原始数据面板高度' aria-valuemin='15' aria-valuemax='80' aria-valuenow='40' class=\"detailsResize\"></div><div class=\"toolbar\"><span>原始数据</span><button type='button'>关闭</button></div><div class=\"objectDetails\"><ul class=\"objectTree\"><li><details open=''><summary><span class=\"objectField\">$: </span><button type='button' class=\"objectReference\">↗ Node Data · assistant-step:2</button> <span class=\"objectMuted\">Object</span></summary><ul><li><span class=\"objectField\">status: </span><span class=\"objectValue\">\"running\"</span></li><li><span class=\"objectField\">turn: </span><span class=\"objectValue\">2</span></li><li><span class=\"objectField\">step: </span><span class=\"objectValue\">1</span></li><li><span class=\"objectField\">usage: </span><span class=\"objectValue\">undefined</span></li></ul></details></li></ul></div></div></section>"
+        },
+        {
+          "label": "序列化失败：<pre role='alert'>",
+          "note": "文本换成「无法序列化这条记录…」加错误信息，唯一的结构差别是 <code>role=\"alert\"</code>。",
+          "html": "<section class=\"root\" style='height:190px;width:460px'><div class=\"details\" style='flex-basis:40%'><div role='separator' tabindex='0' aria-orientation='horizontal' aria-label='调整原始数据面板高度' aria-valuemin='15' aria-valuemax='80' aria-valuenow='40' class=\"detailsResize\"></div><div class=\"toolbar\"><span>原始数据</span><button type='button'>关闭</button></div><pre role='alert'>无法序列化这条记录，可以选择其他记录继续查看。\nConverting circular structure to JSON</pre></div></section>"
+        },
+        {
+          "label": "拖拽条：悬停 / 聚焦铺品牌蓝",
+          "note": "悬停模拟——把 CSS 里 <code>:hover / :active / :focus-visible</code> 那条规则原样搬到同名类上。",
+          "html": "<section class=\"root\" style='height:120px;width:460px'><div class=\"details\" style='flex-basis:40%'><div role='separator' tabindex='0' aria-orientation='horizontal' aria-label='调整原始数据面板高度' aria-valuemin='15' aria-valuemax='80' aria-valuenow='40' class=\"detailsResize\"></div><div class=\"toolbar\"><span>原始数据</span><button type='button'>关闭</button></div><pre>{\n  \"type\": \"tool-call-delta\",\n  \"seq\": 130\n}</pre></div></section>",
+          "css": "/* 状态模拟：.detailsResize 的 :hover、:active、:focus-visible 都是同一条\n   background: var(--dsw-alias-state-business-primary)，静态快照无法真的悬停这条 5px 高的分隔条。 */\n.detailsResize { background: var(--dsw-alias-state-business-primary); }"
+        }
+      ],
+      "props": [
+        {
+          "name": "text",
+          "type": "string",
+          "default": "—",
+          "desc": "面板要显示的完整原始文本：正常时是 inspectorJson 的输出，失败时是「无法序列化…」加错误信息。"
+        },
+        {
+          "name": "failed",
+          "type": "boolean",
+          "default": "—",
+          "desc": "序列化是否失败；为真时纯文本分支的 <code>&lt;pre&gt;</code> 带上 <code>role=\"alert\"</code>。"
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "default": "—",
+          "desc": "传了就渲染 <code>.objectDetails</code> 滚动区（放对象树），不传才是纯文本 <code>&lt;pre&gt;</code>。"
+        },
+        {
+          "name": "close",
+          "type": "() => void",
+          "default": "—",
+          "desc": "「关闭」按钮的回调，由 InspectorTable 清掉选中行与对象导航历史。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'session-inspector'>",
+          "default": "—",
+          "desc": "session-inspector 命名空间的翻译座位（table.raw / table.close / table.resizeDetails）。"
+        }
+      ],
+      "notes": "拖拽条是 <code>role=\"separator\"</code> + <code>tabindex=\"0\"</code> 的 5px 横条，<code>aria-valuemin/max/now</code> 报 15/80/当前百分比，<code>aria-controls</code> 指向面板自身的 <code>useId()</code>；拖动期间 <code>setPointerCapture</code> 锁定指针，<code>onLostPointerCapture</code> 兜底清状态。高度只在 15%–80% 之间取值（<code>clampPercent</code>），<code>max-height: 80%</code> 保证上方的表格不会被完全挤掉。失败态只改 <code>role</code>，颜色不变。易混：InspectorTable 的滚动区是 <code>.scroller</code>，本面板的滚动区是 <code>.details pre</code> 或 <code>.objectDetails</code>，两者互不嵌套。",
+      "keywords": [
+        "原始数据",
+        "详情面板",
+        "raw data",
+        "拖拽调整高度",
+        "inspector details"
+      ]
+    },
+    {
+      "id": "inspector-json-tree",
+      "name": "InspectorJsonTree",
+      "exportName": "InspectorJsonTree",
+      "zh": "JSON 值树",
+      "group": "agent",
+      "summary": "把 <code>inspectorJson()</code> 的文本 <code>JSON.parse</code> 之后摊成的静态值树：根是 <code>&lt;ul class=\"objectTree\"&gt;</code>，每个容器（根和所有嵌套对象/数组）都是默认展开的 <code>&lt;details open&gt;</code>，键名用 <code>.objectField</code>、标量用 <code>.objectValue</code>、类型标签（<code>Object</code> / <code>Array(n)</code>）与「空」占位用 <code>.objectMuted</code>。等宽字体、每层缩进 16px、每条 2px 上下留白，超长字符串靠 <code>overflow-wrap: anywhere</code> 折行。因为没有对象导航，它没有 <code>↗</code> 跳转按钮，也不分页——数组的 50 条上限在这里是 <code>Infinity</code>，整条记录的 JSON 一次列完；<code>text</code> 为空串时根行显示 <code>undefined</code>。",
+      "source": "packages/experimental/session-inspector/src/client/views/InspectorObjectTree.tsx#L103",
+      "css": [
+        "packages/experimental/session-inspector/src/client/views/inspector.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary"
+      ],
+      "specimens": [
+        {
+          "label": "默认：一条 assistant/message 记录的完整值树",
+          "note": "静态快照。真实产品里这棵树挂在 InspectorDetails 的 <code>.objectDetails</code> 里，这里保留同一层包装。",
+          "html": "<div class=\"objectDetails\" style='width:480px'><ul class=\"objectTree\"><li><details open=''><summary><span class=\"objectField\">$: </span> <span class=\"objectMuted\">Object</span></summary><ul><li><span class=\"objectField\">type: </span><span class=\"objectValue\">\"assistant/message\"</span></li><li><span class=\"objectField\">seq: </span><span class=\"objectValue\">128</span></li><li><details open=''><summary><span class=\"objectField\">data: </span> <span class=\"objectMuted\">Object</span></summary><ul><li><span class=\"objectField\">attemptId: </span><span class=\"objectValue\">\"attempt-2-1\"</span></li><li><span class=\"objectField\">turn: </span><span class=\"objectValue\">2</span></li><li><span class=\"objectField\">step: </span><span class=\"objectValue\">1</span></li><li><span class=\"objectField\">status: </span><span class=\"objectValue\">\"running\"</span></li></ul></details></li><li><details open=''><summary><span class=\"objectField\">chunks: </span> <span class=\"objectMuted\">Array(3)</span></summary><ul><li><span class=\"objectField\">0: </span><span class=\"objectValue\">\"block-start\"</span></li><li><span class=\"objectField\">1: </span><span class=\"objectValue\">\"text-delta\"</span></li><li><span class=\"objectField\">2: </span><span class=\"objectValue\">\"block-end\"</span></li></ul></details></li></ul></details></li></ul></div>"
+        },
+        {
+          "label": "空文本 → undefined；标量根",
+          "note": "三种 <code>JSON.parse</code> 边界结果；空串走的是 undefined 分支（没有 JSON.parse 异常兜底）。",
+          "html": "<div style='display:flex;gap:16px;align-items:flex-start'><div class=\"objectDetails\" style='width:170px'><ul class=\"objectTree\"><li><span class=\"objectField\">$: </span><span class=\"objectValue\">undefined</span></li></ul></div><div class=\"objectDetails\" style='width:170px'><ul class=\"objectTree\"><li><span class=\"objectField\">$: </span><span class=\"objectValue\">null</span></li></ul></div><div class=\"objectDetails\" style='width:170px'><ul class=\"objectTree\"><li><span class=\"objectField\">$: </span><span class=\"objectValue\">128</span></li></ul></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "text",
+          "type": "string",
+          "default": "—",
+          "desc": "inspectorJson 的输出文本；空串表示值本身是 undefined，解析出的值直接当树根。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'session-inspector'>",
+          "default": "—",
+          "desc": "session-inspector 命名空间的翻译座位，用到 object.empty / object.properties 等标签。"
+        }
+      ],
+      "notes": "与 InspectorObjectTree 的差别都在这一层：<code>navigation</code> 为空所以不渲染 <code>↗</code> 引用按钮、不订阅 publication、也不做 50 条分页（<code>limit</code> 取 <code>Infinity</code>），并且数组/类型化数组合成出来的「其他属性」伪行在 JSON 模式下被直接跳过。展开/收起是原生 <code>&lt;details&gt;</code>，键盘与读屏直接可用；根行默认展开后由用户自行折叠。解析失败没有兜底分支——调用方（InspectorTable）先看 <code>inspectorJson</code> 的 <code>failed</code>，失败时把文本交给 InspectorDetails 而不是这棵树。",
+      "keywords": [
+        "JSON 树",
+        "值树",
+        "json tree",
+        "原始数据",
+        "对象展开"
+      ]
+    },
+    {
+      "id": "inspector-object-tree",
+      "name": "InspectorObjectTree",
+      "exportName": "InspectorObjectTree",
+      "zh": "对象值树",
+      "group": "agent",
+      "summary": "运行时对象的惰性值树：根与嵌套的 Node Data 内联展开，其余已注册对象（Node / Group / Turn / Step 及其 Data）渲染成品牌蓝的 <code>↗ 类型 · identity</code> 跳转按钮，点一下会选中对应行并把元素 reveal 回主 Chat。展开一层只读一层（getter 不执行，显示 <code>[Getter / Setter，未执行]</code>），循环引用在祖先表里查路径显示 <code>↩ 路径</code>，稀疏数组的洞显示 <code>[空槽]</code>，无法展开的值显示 <code>WeakMap</code> / <code>Date(...)</code> 这类标签，空集合里放一条 <code>.objectMuted</code> 的「空」。集合先列 50 条，多了在末尾给一个 <code>.objectReference</code> 的「显示更多」，每点一次再加 50；展开结果按值身份与 publication 缓存。",
+      "source": "packages/experimental/session-inspector/src/client/views/InspectorObjectTree.tsx#L115",
+      "css": [
+        "packages/experimental/session-inspector/src/client/views/inspector.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-state-business-primary"
+      ],
+      "specimens": [
+        {
+          "label": "展开 data: 与 blocks: 后的状态",
+          "note": "静态快照，挂在 InspectorDetails 的 <code>.objectDetails</code> 滚动区里。",
+          "html": "<div class=\"objectDetails\" style='width:560px'><ul class=\"objectTree\"><li><details open=''><summary><span class=\"objectField\">$: </span> <span class=\"objectMuted\">Object</span></summary><ul><li><span class=\"objectField\">kind: </span><span class=\"objectValue\">\"assistant-step\"</span></li><li><span class=\"objectField\">key: </span><span class=\"objectValue\">\"assistant-step:2\"</span></li><li><span class=\"objectField\">turn: </span><button type='button' class=\"objectReference\">↗ Turn · 2</button></li><li><details open=''><summary><span class=\"objectField\">data: </span><button type='button' class=\"objectReference\">↗ Node Data · assistant-step:2</button> <span class=\"objectMuted\">Object</span></summary><ul><li><span class=\"objectField\">status: </span><span class=\"objectValue\">\"running\"</span></li><li><details open=''><summary><span class=\"objectField\">blocks: </span> <span class=\"objectMuted\">Array(2)</span></summary><ul><li><span class=\"objectField\">0: </span><button type='button' class=\"objectReference\">↗ Node · tool-call:call_00_7f3A2b</button></li><li><span class=\"objectField\">1: </span><span class=\"objectValue\">\"text-delta\"</span></li></ul></details></li><li><span class=\"objectField\">usage: </span><span class=\"objectValue\">undefined</span></li></ul></details></li></ul></details></li></ul></div>"
+        },
+        {
+          "label": "边界值：空槽 / 访问器 / 循环引用 / 不可展开的值",
+          "note": "静态快照；四种兜底显示都挂在叶子上，键名照旧是 <code>.objectField</code>。",
+          "html": "<div class=\"objectDetails\" style='width:560px'><ul class=\"objectTree\"><li><details open=''><summary><span class=\"objectField\">$: </span> <span class=\"objectMuted\">Object</span></summary><ul><li><details open=''><summary><span class=\"objectField\">args: </span> <span class=\"objectMuted\">Array(3)</span></summary><ul><li><span class=\"objectField\">0: </span><span class=\"objectValue\">\"pnpm\"</span></li><li><span class=\"objectField\">1: </span><span class=\"objectMuted\">[空槽]</span></li><li><span class=\"objectField\">2: </span><span class=\"objectValue\">\"test\"</span></li></ul></details></li><li><span class=\"objectField\">signal: </span><span class=\"objectMuted\">[Getter / Setter，未执行]</span></li><li><span class=\"objectField\">parent: </span><span class=\"objectMuted\">↩ $.turn.step</span></li><li><span class=\"objectField\">cache: </span><span class=\"objectValue\">WeakMap</span></li><li><span class=\"objectField\">album: </span><button type='button' class=\"objectReference\">↗ Group Data · ui-chat</button></li></ul></details></li></ul></div>"
+        },
+        {
+          "label": "空容器、折叠态与「显示更多」",
+          "note": "静态快照；为看清结构只画了数组的前三条，真实列表到第 50 条才出现末尾那个按钮。",
+          "html": "<div style='display:flex;gap:16px;align-items:flex-start'><div class=\"objectDetails\" style='width:300px'><ul class=\"objectTree\"><li><details open=''><summary><span class=\"objectField\">$: </span> <span class=\"objectMuted\">Map(2)</span></summary><ul><li><details><summary><span class=\"objectField\">0: </span> <span class=\"objectMuted\">Object</span></summary></details></li><li><details open=''><summary><span class=\"objectField\">1: </span> <span class=\"objectMuted\">Set(0)</span></summary><ul><li class=\"objectMuted\">空</li></ul></details></li></ul></details></li></ul></div><div class=\"objectDetails\" style='width:300px'><ul class=\"objectTree\"><li><details open=''><summary><span class=\"objectField\">chunks: </span> <span class=\"objectMuted\">Array(64)</span></summary><ul><li><span class=\"objectField\">0: </span><span class=\"objectValue\">\"block-start\"</span></li><li><span class=\"objectField\">1: </span><span class=\"objectValue\">\"text-delta\"</span></li><li><span class=\"objectField\">2: </span><span class=\"objectValue\">\"tool-call-delta\"</span></li><li><button type='button' class=\"objectReference\">显示更多</button></li></ul></details></li></ul></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "value",
+          "type": "unknown",
+          "default": "—",
+          "desc": "要检查的原始运行时对象；不会被 JSON 化，也不会触达 getter。"
+        },
+        {
+          "name": "objects",
+          "type": "InspectorObjects",
+          "default": "—",
+          "desc": "会话内对象索引：<code>reference(value)</code> 给出弱身份引用与 kind，<code>updates</code> 用于失效缓存。"
+        },
+        {
+          "name": "navigate",
+          "type": "(reference: InspectorObjectReference) => void",
+          "default": "—",
+          "desc": "点击 <code>↗</code> 链接时交出引用；InspectorTable 用它压入面包屑、reveal 主 Chat 并选中对应行。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'session-inspector'>",
+          "default": "—",
+          "desc": "session-inspector 命名空间的翻译座位（object.node / object.absent / object.more 等）。"
+        }
+      ],
+      "notes": "只有 kind 为 <code>nodeData</code> 的引用会内联展开，<code>node</code> / <code>group</code> / <code>turn</code> / <code>step</code> 及其 Data 一律是跳转链接——所以在对话分组视图里可以一直往下点进对象图。循环判定靠一张从根往下累积的祖先表（值 → 路径），重复出现的祖先只画 <code>↩ 路径</code> 不再递归，避免了 Location 存储那种自引用结构把树撑爆。getter/setter 只显示占位不执行；<code>Node Data</code> 的标题行既是样式标签也是链接（先 <code>preventDefault</code> + <code>stopPropagation</code>，不会顺带折叠）。展开失败时整行变成 <code>&lt;li role=\"alert\"&gt;</code>。分页每页 50 条，<code>limit</code> 只增不减，直到该值或 publication 版本变化才重算。",
+      "keywords": [
+        "对象树",
+        "运行时对象",
+        "object tree",
+        "引用跳转",
+        "Map",
+        "循环引用"
+      ]
+    },
+    {
+      "id": "inspector-table",
+      "name": "InspectorTable",
+      "exportName": "InspectorTable",
+      "zh": "检查器表格",
+      "group": "agent",
+      "summary": "会话检查器的主表：工具栏一行显示「原始数据 · 128」这类计数（筛选生效时变成「命中 / 总数」）与「加载更早」「跟踪最新」两个按钮，下面是 <code>table-layout: fixed</code>、<code>min-width: 660px</code> 的表格——序号列 64px、类型列 190px（表头里嵌着 TypeFilter 漏斗按钮）、T/S 列 65px、时间列 100px（对话分组模式不显示）、数据列自适应。行高固定 30px、字体 11px 等宽、底缘 0.5px <code>--dsw-alias-border-l1</code>，表头 <code>position: sticky</code> 压 <code>--dsw-alias-bg-module-platform</code>。只渲染可视行（@tanstack/react-virtual，overscan 12），父行在自己的层级上粘顶，选中行整行铺 <code>--dsw-alias-interactive-bg-hover</code> 并在下方撑开 InspectorDetails 面板。",
+      "source": "packages/experimental/session-inspector/src/client/views/InspectorTable.tsx#L112",
+      "css": [
+        "packages/experimental/session-inspector/src/client/views/inspector.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-module-platform",
+        "--dsw-alias-border-l1",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-scrollbar-bg-l2",
+        "--dsw-alias-scrollbar-hover-l2",
+        "--dsw-alias-state-business-primary",
+        "--dsw-specific-bubble-highlight"
+      ],
+      "specimens": [
+        {
+          "label": "原始数据：工具栏、五列表头与两层层级行",
+          "note": "静态快照（虚拟化只画可视行，这里给首屏）。时间列显示 UTC 毫秒片段。",
+          "html": "<section class=\"root\" style='width:720px;height:300px'><div class=\"toolbar\"><span>原始数据 · 128</span><button type='button'>加载更早</button><button type='button'>跟踪最新</button></div><div class=\"scroller\"><table class=\"table\" aria-label='原始数据' aria-rowcount='6'><thead><tr><th class=\"idColumn\">序号</th><th class=\"typeColumn\"><span class=\"typeHeader\">类型<button type='button' class=\"typeFilterButton\" aria-label='筛选类型' title='筛选类型' aria-haspopup='dialog' aria-expanded='false' aria-pressed='false'><svg width='13' height='13' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.3' aria-hidden='true'><path d='M2 3h12L9.5 8v5l-3-1.5V8L2 3Z' /></svg></button></span></th><th class=\"locationColumn\">T/S</th><th class=\"timeColumn\">时间 (UTC)</th><th>数据</th></tr></thead><tbody><tr aria-selected='false'><td class=\"identity\"><span class=\"identityText\" tabindex='0'>128</span></td><td style='padding-inline-start:8px'><button type='button' class=\"disclosure\" aria-label='收起子行' aria-expanded='true'>▾</button><button type='button' class=\"record\">assistant/message</button></td><td>2/1</td><td>12:04:31.882</td><td><button type='button' class=\"preview\">turn: 2 · step: 1 · status: running</button></td></tr><tr aria-selected='false'><td class=\"identity\"><span class=\"identityText\" tabindex='0'>0</span></td><td style='padding-inline-start:28px'><button type='button' class=\"disclosure\" aria-label='收起子行' aria-expanded='true'>▾</button><button type='button' class=\"record\">block-start</button></td><td>2/1</td><td>12:04:31.901</td><td><button type='button' class=\"preview\">index: 0 · blockType: text</button></td></tr><tr aria-selected='false'><td class=\"identity\"><span class=\"identityText\" tabindex='0'>1</span></td><td style='padding-inline-start:48px'><button type='button' class=\"record\">text-delta</button></td><td>2/1</td><td>12:04:31.904</td><td><button type='button' class=\"preview\">index: 0 · text: 先看 InspectorTable 的行源和筛选路径</button></td></tr><tr aria-selected='false'><td class=\"identity\"><span class=\"identityText\" tabindex='0'>2</span></td><td style='padding-inline-start:48px'><button type='button' class=\"record\">text-delta</button></td><td>2/1</td><td>12:04:31.912</td><td><button type='button' class=\"preview\">index: 0 · text: 再确认 tool-call 的 command 字段在哪一层</button></td></tr><tr aria-selected='false'><td class=\"identity\"><span class=\"identityText\" tabindex='0'>3</span></td><td style='padding-inline-start:28px'><button type='button' class=\"record\">block-end</button></td><td>2/1</td><td>12:04:31.940</td><td><button type='button' class=\"preview\">index: 0 · blockType: text</button></td></tr></tbody></table></div></section>"
+        },
+        {
+          "label": "对话分组：粘性父行、选中行与下方原始数据面板",
+          "note": "静态快照。对话分组模式不显示时间列，工具栏左侧换成展示形式选择器；粘性行按层级给 <code>top: (level+1)×30px</code>。",
+          "html": "<section class=\"root\" style='width:720px;height:420px'><div class=\"toolbar\"><span><span class=\"modeControls\"><select class=\"modeSelector\" aria-label='展示形式'><option>原始数据</option><option selected=''>对话分组</option></select><button type='button' class=\"pickButton\" aria-pressed='false' aria-label='在对话面板中选取元素' title='在对话面板中选取元素'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.3' aria-hidden='true'><circle cx='8' cy='8' r='4.5' /><path d='M8 0v5M8 11v5M0 8h5M11 8h5' /></svg></button></span> · 24</span><button type='button'>跟踪最新</button></div><div class=\"scroller\"><table class=\"table\" aria-label='对话分组' aria-rowcount='4'><thead><tr><th class=\"idColumn\">序号</th><th class=\"typeColumn\"><span class=\"typeHeader\">类型<button type='button' class=\"typeFilterButton\" aria-label='筛选类型' title='筛选类型' aria-haspopup='dialog' aria-expanded='false' aria-pressed='false'><svg width='13' height='13' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.3' aria-hidden='true'><path d='M2 3h12L9.5 8v5l-3-1.5V8L2 3Z' /></svg></button></span></th><th class=\"locationColumn\">T/S</th><th>数据</th></tr></thead><tbody><tr class=\"sticky\" style='top:30px;z-index:9' aria-selected='false'><td class=\"identity\"><span class=\"identityText\" tabindex='0'>assistant-step:2</span></td><td style='padding-inline-start:8px'><button type='button' class=\"disclosure\" aria-label='收起子行' aria-expanded='true'>▾</button><button type='button' class=\"record\">assistant-step</button></td><td>2/1</td><td><button type='button' class=\"preview\">status: running · turn: 2 · step: 1</button></td></tr><tr aria-selected='false'><td class=\"identity\"><span class=\"identityText\" tabindex='0'>tool-call:call_00_7f3A2b</span></td><td style='padding-inline-start:28px'><button type='button' class=\"disclosure\" aria-label='展开子行' aria-expanded='false'>▸</button><button type='button' class=\"record\">tool-call</button></td><td>2/1</td><td><button type='button' class=\"preview\">name: bash · state: running</button></td></tr><tr class=\"selected\" aria-selected='true'><td class=\"identity\"><span class=\"identityText\" tabindex='0'>user:12</span></td><td style='padding-inline-start:8px'><button type='button' class=\"record\">user</button></td><td>2</td><td><button type='button' class=\"preview\">会话数据诊断里搜不到 tool-call 的参数</button></td></tr></tbody></table></div><div class=\"details\" style='flex-basis:40%'><div role='separator' tabindex='0' aria-orientation='horizontal' aria-label='调整原始数据面板高度' aria-valuemin='15' aria-valuemax='80' aria-valuenow='40' class=\"detailsResize\"></div><div class=\"toolbar\"><span>原始数据</span><button type='button'>关闭</button></div><div class=\"objectDetails\"><nav class=\"objectBreadcrumbs\" aria-label='原始数据导航'><ol><li><button type='button' title='assistant-step · assistant-step:2'>assistant-step · assistant-step:2</button></li><li><span aria-hidden='true'>›</span><button type='button' title='Node · tool-call:call_00_7f3A2b' disabled aria-current='page'>Node · tool-call:call_00_7f3A2b</button></li></ol></nav><ul class=\"objectTree\"><li><details open=''><summary><span class=\"objectField\">$: </span><button type='button' class=\"objectReference\">↗ Node · tool-call:call_00_7f3A2b</button> <span class=\"objectMuted\">Object</span></summary><ul><li><span class=\"objectField\">name: </span><span class=\"objectValue\">\"bash\"</span></li><li><span class=\"objectField\">state: </span><span class=\"objectValue\">\"running\"</span></li></ul></details></li></ul></div></div></section>"
+        },
+        {
+          "label": "类型筛选生效：命中计数与上下文行",
+          "note": "静态快照。未命中的父级上下文行加 <code>.contextRow</code>，类型文字转三级色但仍参与展开与粘顶。",
+          "html": "<section class=\"root\" style='width:720px;height:240px'><div class=\"toolbar\"><span>原始数据 · 3 / 128</span><button type='button'>跟踪最新</button></div><div class=\"scroller\"><table class=\"table\" aria-label='原始数据' aria-rowcount='4'><thead><tr><th class=\"idColumn\">序号</th><th class=\"typeColumn\"><span class=\"typeHeader\">类型<button type='button' class=\"typeFilterButton\" aria-label='筛选类型' title='筛选类型: *tool-call*' aria-haspopup='dialog' aria-expanded='false' aria-pressed='true'><svg width='13' height='13' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.3' aria-hidden='true'><path d='M2 3h12L9.5 8v5l-3-1.5V8L2 3Z' /></svg></button></span></th><th class=\"locationColumn\">T/S</th><th class=\"timeColumn\">时间 (UTC)</th><th>数据</th></tr></thead><tbody><tr class=\"contextRow\" data-inspector-context='' title='匹配记录的父级上下文' aria-selected='false'><td class=\"identity\"><span class=\"identityText\" tabindex='0'>126</span></td><td style='padding-inline-start:8px'><button type='button' class=\"disclosure\" aria-label='收起子行' aria-expanded='true'>▾</button><button type='button' class=\"record\">assistant/message</button></td><td>2/1</td><td>12:04:31.700</td><td><button type='button' class=\"preview\">turn: 2 · step: 1 · status: settled</button></td></tr><tr class=\"selected contextRow\" data-inspector-context='' title='匹配记录的父级上下文' aria-selected='true'><td class=\"identity\"><span class=\"identityText\" tabindex='0'>3</span></td><td style='padding-inline-start:48px'><button type='button' class=\"record\">tool-call-delta</button></td><td>2/1</td><td>12:04:31.930</td><td><button type='button' class=\"preview\">command: pnpm test --filter session-inspector</button></td></tr><tr class=\"contextRow\" data-inspector-context='' title='匹配记录的父级上下文' aria-selected='false'><td class=\"identity\"><span class=\"identityText\" tabindex='0'>4</span></td><td style='padding-inline-start:48px'><button type='button' class=\"record\">reasoning-delta</button></td><td>2/1</td><td>12:04:31.955</td><td><button type='button' class=\"preview\">筛选要挂在行源上，别塞进虚拟列表</button></td></tr></tbody></table></div></section>"
+        },
+        {
+          "label": "空态：暂无记录 + 加载更早（加载中…）",
+          "note": "静态快照。没有行时表格只留表头，<code>.empty</code> 提示挂在滚动区里；<code>useSession</code> 的 <code>loadingOlder</code> 让按钮变灰。",
+          "html": "<section class=\"root\" style='width:720px;height:240px'><div class=\"toolbar\"><span>原始数据 · 0</span><button type='button' disabled>加载中…</button><button type='button'>跟踪最新</button></div><div class=\"scroller\"><table class=\"table\" aria-label='原始数据' aria-rowcount='1'><thead><tr><th class=\"idColumn\">序号</th><th class=\"typeColumn\"><span class=\"typeHeader\">类型<button type='button' class=\"typeFilterButton\" aria-label='筛选类型' title='筛选类型' aria-haspopup='dialog' aria-expanded='false' aria-pressed='false'><svg width='13' height='13' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.3' aria-hidden='true'><path d='M2 3h12L9.5 8v5l-3-1.5V8L2 3Z' /></svg></button></span></th><th class=\"locationColumn\">T/S</th><th class=\"timeColumn\">时间 (UTC)</th><th>数据</th></tr></thead><tbody></tbody></table><p class=\"empty\">暂无记录</p></div></section>"
+        }
+      ],
+      "props": [
+        {
+          "name": "title",
+          "type": "string",
+          "default": "—",
+          "desc": "这张表的标题，同时是 <code>&lt;section&gt;</code> 与 <code>&lt;table&gt;</code> 的 <code>aria-label</code>。"
+        },
+        {
+          "name": "flash",
+          "type": "boolean",
+          "default": "—",
+          "desc": "新行到达时是否播 700ms 背景脉冲（从 <code>--dsw-specific-bubble-highlight</code> 淡到透明）；对话分组模式为真。"
+        },
+        {
+          "name": "showTime",
+          "type": "boolean",
+          "default": "—",
+          "desc": "是否显示「时间 (UTC)」列；原始数据为真（五列），对话分组为假（四列）。"
+        },
+        {
+          "name": "modeSelector",
+          "type": "ReactNode",
+          "default": "—",
+          "desc": "替代标题渲染在工具栏最左的展示形式选择器；不传就显示 <code>title</code>。"
+        },
+        {
+          "name": "objects",
+          "type": "InspectorObjects",
+          "default": "—",
+          "desc": "会话内对象索引；传了才走 InspectorObjectTree 与面包屑，否则详情面板渲染 JSON 值树。"
+        },
+        {
+          "name": "navigation",
+          "type": "{ reveal: (target: InspectorChatTarget) => void; target: (key: string) => InspectorChatTarget | undefined }",
+          "default": "—",
+          "desc": "选中行时把对应 Chat 元素 reveal 回主区域的回调，以及行 → Chat 坐标的解析函数。"
+        },
+        {
+          "name": "pickedRow",
+          "type": "{ readonly key: string } | undefined",
+          "default": "undefined",
+          "desc": "主 Chat 里选取到的元素命中的行；变化时自动展开父级、滚动居中并补一次脉冲。"
+        },
+        {
+          "name": "notice",
+          "type": "string | undefined",
+          "default": "undefined",
+          "desc": "表格上方的提示条文案（选取指引、无匹配、Chat 未打开），渲染成 <code>.pickNotice</code> + <code>role=\"status\"</code>。"
+        },
+        {
+          "name": "useRows",
+          "type": "ObservableSnapshot<readonly InspectorRow[]>",
+          "default": "—",
+          "desc": "深度优先的整表行源（原始日志或对话分组），筛选与层级折叠都在它之上算。"
+        },
+        {
+          "name": "useRecord",
+          "type": "(key: string) => ObservableSnapshot<InspectorRecord | undefined> | undefined",
+          "default": "—",
+          "desc": "按行 key 订阅这一行的类型、identity、位置、时间与原始值，行内不订阅整表。"
+        },
+        {
+          "name": "useSession",
+          "type": "ConvViewProps['useSession']",
+          "default": "—",
+          "desc": "会话快照座位，提供 <code>hasMore</code> / <code>loadingOlder</code> / <code>openError</code>。"
+        },
+        {
+          "name": "loadOlder",
+          "type": "() => Promise<void>",
+          "default": "—",
+          "desc": "「加载更早」按钮的动作；失败时把错误挂到表格上方的 <code>role=\"alert\"</code> 段落。"
+        },
+        {
+          "name": "typeOf",
+          "type": "(key: string) => string | undefined",
+          "default": "—",
+          "desc": "取某一行的当前类型用于筛选候选与匹配，不必挂载该行的订阅。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'session-inspector'>",
+          "default": "—",
+          "desc": "session-inspector 命名空间的翻译座位（列名、加载/空态、展开收起、上下文提示）。"
+        }
+      ],
+      "notes": "虚拟化：@tanstack/react-virtual，行高固定 30px、<code>overscan: 12</code>，顶部与底部各留一行高的 padding；<code>anchorTo</code> 在默认跟随时贴尾、手动操作后改为钉住视口，滚动到底 40px 内自动回到跟随。粘性父行按层级叠：<code>top: (level+1)×30px</code>、<code>z-index: 9-level</code>，底色转 <code>--dsw-alias-bg-module-platform</code>，被选中的粘性行类型文字转品牌蓝。交互：类型按钮与摘要按钮都选中该行并把对应 Chat 元素 reveal 到主区域；<code>▾/▸</code> 方块切换子行，手动展开会把跟随模式切到 manual 并用锚点把该行钉回原位；<code>prefers-reduced-motion: reduce</code> 时脉冲动画与首行动画都取消。无障碍：行带 <code>aria-selected</code>，展开方块带 <code>aria-expanded</code> 与「展开/收起子行」，上下文行有 <code>data-inspector-context</code> 与 title，错误用 <code>&lt;p role=\"alert\"&gt;</code>。类型列里的漏斗按钮打开的是 TypeFilter（浮层见 type-filter 条目），因此本条的样式表只列自己的 inspector.module.css。",
+      "keywords": [
+        "检查器表格",
+        "虚拟表格",
+        "虚拟化",
+        "原始日志",
+        "对话分组",
+        "层级行"
+      ]
+    },
+    {
+      "id": "type-filter",
+      "name": "TypeFilter",
+      "exportName": "TypeFilter",
+      "zh": "类型筛选",
+      "group": "agent",
+      "summary": "类型列头里那个 13px 漏斗按钮和它的浮层编辑器：按钮 <code>display: inline-flex</code>、2px 内边距、3px 圆角，未过滤时透明，过滤生效（<code>aria-pressed=\"true\"</code>）或悬停时转品牌蓝并铺 <code>--dsw-alias-interactive-bg-hover</code>。浮层是 portal 到 body 的 <code>MenuSurface compact</code>（半透明菜单材质 + 12px 圆角，宽 290px、最大高度 <code>calc(100vh - 24px)</code>），里面依次是关键词输入框（<code>role=\"combobox\"</code>，<code>padding: 5px 6px</code>）、一行说明、最高 180px 的候选列表（<code>role=\"listbox\"</code> + <code>role=\"option\"</code>，键盘高亮项与悬停同样转品牌蓝）和右对齐的「清空 / 取消 / 确认筛选」三个描边按钮。",
+      "source": "packages/experimental/session-inspector/src/client/views/TypeFilter.tsx#L21",
+      "css": [
+        "packages/experimental/session-inspector/src/client/views/inspector.module.css",
+        "packages/client/ui-primitives/src/MenuSurface.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-base",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-state-business-primary",
+        "--dsw-menu-backdrop-filter",
+        "--dsw-menu-surface-fill",
+        "--dsw-radius-lg",
+        "--dsw-radius-md"
+      ],
+      "specimens": [
+        {
+          "label": "触发器：未过滤 / 已过滤",
+          "note": "静态快照。已过滤那颗按的是 <code>aria-pressed=\"true\"</code>，和 <code>:hover</code> 共用一条规则。",
+          "html": "<div style='display:flex;gap:28px;align-items:center'><span style='display:inline-flex;flex-direction:column;align-items:center;gap:8px'><button type='button' class=\"typeFilterButton\" aria-label='筛选类型' title='筛选类型' aria-haspopup='dialog' aria-expanded='false' aria-pressed='false'><svg width='13' height='13' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.3' aria-hidden='true'><path d='M2 3h12L9.5 8v5l-3-1.5V8L2 3Z' /></svg></button><span style='font-size:11px'>未过滤</span></span><span style='display:inline-flex;flex-direction:column;align-items:center;gap:8px'><button type='button' class=\"typeFilterButton\" aria-label='筛选类型' title='筛选类型: *tool-call*' aria-haspopup='dialog' aria-expanded='false' aria-pressed='true'><svg width='13' height='13' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.3' aria-hidden='true'><path d='M2 3h12L9.5 8v5l-3-1.5V8L2 3Z' /></svg></button><span style='font-size:11px'>已过滤：tool-call</span></span></div>"
+        },
+        {
+          "label": "展开态：输入框 + 说明 + 正在查找候选",
+          "note": "静态快照：浮层在真实产品里 fixed 定位，这里拉回文档流。",
+          "html": "<div style='display:flex;flex-direction:column;align-items:flex-start;gap:10px'><button type='button' class=\"typeFilterButton\" aria-label='筛选类型' title='筛选类型' aria-haspopup='dialog' aria-expanded='true' aria-pressed='false'><svg width='13' height='13' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.3' aria-hidden='true'><path d='M2 3h12L9.5 8v5l-3-1.5V8L2 3Z' /></svg></button><div class=\"surface compact typeFilterPanel\" data-menu-material='translucent' role='dialog' aria-label='筛选类型'><div aria-hidden='true' class=\"material\"></div><div><input class=\"typeFilterInput\" value='' role='combobox' aria-label='类型关键词' aria-autocomplete='list' aria-expanded='true' aria-controls='types-loading' placeholder='输入类型片段，如 delta' /><div class=\"typeFilterHelp\">默认包含匹配（*关键词*）；Enter 确认，Esc 取消。</div><div id='types-loading' role='listbox' aria-label='类型候选' aria-busy='true' class=\"typeFilterOptions\"></div><div role='status'>正在查找候选…</div><div class=\"typeFilterActions\"><button type='button'>清空</button><button type='button'>取消</button><button type='button'>确认筛选</button></div></div></div></div>",
+          "css": "/* 状态模拟：浮层是 portal 到 body 的 position: fixed 面板，快照里拉回文档流；\n   保留 relative 让菜单材质层（material，inset: 0）仍以卡片为包含块。 */\n.typeFilterPanel { position: relative; inset: auto; }"
+        },
+        {
+          "label": "候选列表：键盘高亮项",
+          "note": "静态快照，浮层同样拉回文档流；高亮用真实的 <code>aria-selected=\"true\"</code>，箭头键与悬停都落到同一条规则上。",
+          "html": "<div style='display:flex;flex-direction:column;align-items:flex-start;gap:10px'><button type='button' class=\"typeFilterButton\" aria-label='筛选类型' title='筛选类型: *delta*' aria-haspopup='dialog' aria-expanded='true' aria-pressed='true'><svg width='13' height='13' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.3' aria-hidden='true'><path d='M2 3h12L9.5 8v5l-3-1.5V8L2 3Z' /></svg></button><div class=\"surface compact typeFilterPanel\" data-menu-material='translucent' role='dialog' aria-label='筛选类型'><div aria-hidden='true' class=\"material\"></div><div><input class=\"typeFilterInput\" value='delta' role='combobox' aria-label='类型关键词' aria-autocomplete='list' aria-expanded='true' aria-controls='types-delta' aria-activedescendant='types-delta-1' placeholder='输入类型片段，如 delta' /><div class=\"typeFilterHelp\">默认包含匹配（*关键词*）；Enter 确认，Esc 取消。</div><div id='types-delta' role='listbox' aria-label='类型候选' aria-busy='false' class=\"typeFilterOptions\"><button type='button' role='option' aria-selected='false' tabindex='-1' title='text-delta'>text-delta</button><button type='button' role='option' aria-selected='true' tabindex='-1' title='tool-call-delta'>tool-call-delta</button><button type='button' role='option' aria-selected='false' tabindex='-1' title='reasoning-delta'>reasoning-delta</button></div><div class=\"typeFilterActions\"><button type='button'>清空</button><button type='button'>取消</button><button type='button'>确认筛选</button></div></div></div></div>",
+          "css": "/* 状态模拟：同上，把 portal 的 fixed 浮层拉回文档流。 */\n.typeFilterPanel { position: relative; inset: auto; }"
+        },
+        {
+          "label": "无候选 / 拉取失败",
+          "note": "静态快照，浮层拉回文档流；两种状态都只多一行文字，不影响仍可确认的关键词。",
+          "html": "<div style='display:flex;gap:16px;align-items:flex-start'><div class=\"surface compact typeFilterPanel\" data-menu-material='translucent' role='dialog' aria-label='筛选类型'><div aria-hidden='true' class=\"material\"></div><div><input class=\"typeFilterInput\" value='tool-xyz' role='combobox' aria-label='类型关键词' aria-autocomplete='list' aria-expanded='true' aria-controls='types-none' placeholder='输入类型片段，如 delta' /><div class=\"typeFilterHelp\">默认包含匹配（*关键词*）；Enter 确认，Esc 取消。</div><div id='types-none' role='listbox' aria-label='类型候选' aria-busy='false' class=\"typeFilterOptions\"></div><div role='status'>没有匹配候选，仍可确认当前关键词。</div><div class=\"typeFilterActions\"><button type='button'>清空</button><button type='button'>取消</button><button type='button'>确认筛选</button></div></div></div><div class=\"surface compact typeFilterPanel\" data-menu-material='translucent' role='dialog' aria-label='筛选类型'><div aria-hidden='true' class=\"material\"></div><div><input class=\"typeFilterInput\" value='tool-call' role='combobox' aria-label='类型关键词' aria-autocomplete='list' aria-expanded='true' aria-controls='types-failed' placeholder='输入类型片段，如 delta' /><div class=\"typeFilterHelp\">默认包含匹配（*关键词*）；Enter 确认，Esc 取消。</div><div id='types-failed' role='listbox' aria-label='类型候选' aria-busy='false' class=\"typeFilterOptions\"></div><div role='alert'>无法获取类型候选。 TypeError: Failed to fetch</div><div class=\"typeFilterActions\"><button type='button'>清空</button><button type='button'>取消</button><button type='button'>确认筛选</button></div></div></div></div>",
+          "css": "/* 状态模拟：同上，把 portal 的 fixed 浮层拉回文档流。 */\n.typeFilterPanel { position: relative; inset: auto; }"
+        }
+      ],
+      "props": [
+        {
+          "name": "value",
+          "type": "string",
+          "default": "—",
+          "desc": "已经确认的筛选关键词；非空时按钮为按下态，title 里带上 <code>*value*</code>。"
+        },
+        {
+          "name": "suggest",
+          "type": "(query: string) => Promise<readonly string[]>",
+          "default": "—",
+          "desc": "候选来源：浮层打开或草稿变化时异步取一次；慢响应不会覆盖更新的关键词。"
+        },
+        {
+          "name": "apply",
+          "type": "(query: string) => void",
+          "default": "—",
+          "desc": "确认回调：Enter、点候选项或「确认筛选」时提交，提交后关闭浮层并把焦点还给按钮。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'session-inspector'>",
+          "default": "—",
+          "desc": "session-inspector 命名空间的翻译座位（filter.title / filter.help / filter.apply 等）。"
+        }
+      ],
+      "notes": "编辑期间不改变表格：<code>draft</code> 只有 Enter、「确认筛选」或点候选项才提交。浮层 portal 到 body，用 <code>useAnchoredPosition</code> 定位（<code>gap: 4</code>、<code>margin: 12</code>）；位置还没算出来时先 <code>visibility: hidden</code> 挂在 (0,0)，避免闪一下。打开即聚焦并全选输入框；Esc 关闭并把焦点还给触发器；外部 <code>pointerdown</code>、窗口 <code>blur</code> 或焦点移出面板 + 触发器之外也会关闭。键盘：↑/↓ 在候选里循环（<code>aria-activedescendant</code> 跟着走并 <code>scrollIntoView</code>），Enter 有高亮项就提交那一项、否则提交草稿。IME 组字期间的 Enter（<code>isComposing</code> / <code>keyCode 229</code>）不确认。候选列表 <code>aria-busy</code> 表示是否还在取；失败走 <code>role=\"alert\"</code>，无候选与加载中各有一条 <code>role=\"status\"</code>。菜单材质是 MenuSurface 的 <code>.material</code>（半透明 + backdrop-filter），darwin 下它还会 portal 一块 <code>.backing</code> 垫在不透明底色上，快照里省略。",
+      "keywords": [
+        "类型筛选",
+        "漏斗按钮",
+        "type filter",
+        "候选列表",
+        "combobox"
+      ]
+    },
+    {
+      "id": "session-inspector-view",
+      "name": "SessionInspectorView",
+      "exportName": "SessionInspectorView",
+      "zh": "会话检查器",
+      "group": "agent",
+      "summary": "右侧边栏「会话数据诊断」标签页的整块视图：工具栏最左是「原始数据 / 对话分组」下拉（<code>.modeSelector</code> 用 <code>--dsw-alias-bg-module-platform</code> 底色、2px×4px 内边距）和一颗 16px 十字选取按钮，同一行右侧是总计数、「加载更早」与「跟踪最新」；下面可选一条 <code>.pickNotice</code> 提示条，再下面是 30px 行高的虚拟表格，选中行时底部撑开原始数据面板。展示形式是这个视图自己的本地状态（<code>key={mode}</code> 会重建整张表），所以切换时只有当前来源被订阅；选取按钮按下后主 Chat 会进入悬停预览、点击选取的模式。",
+      "source": "packages/experimental/session-inspector/src/client/views/View.tsx#L47",
+      "css": [
+        "packages/experimental/session-inspector/src/client/views/inspector.module.css",
+        "packages/client/ui-primitives/src/MenuSurface.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-module-platform",
+        "--dsw-alias-border-l1",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-scrollbar-bg-l2",
+        "--dsw-alias-scrollbar-hover-l2",
+        "--dsw-alias-state-business-primary",
+        "--dsw-specific-bubble-highlight",
+        "--dsw-menu-backdrop-filter",
+        "--dsw-menu-surface-fill",
+        "--dsw-radius-lg",
+        "--dsw-radius-md"
+      ],
+      "specimens": [
+        {
+          "label": "原始数据：完整工具栏与表格首屏",
+          "note": "静态快照。真实侧栏比这里窄（表格 <code>min-width: 660px</code>，窄了横向滚动）；外层 <code>.root</code> 就是视图的根。",
+          "html": "<section class=\"root\" style='width:660px;height:300px'><div class=\"toolbar\"><span><span class=\"modeControls\"><select class=\"modeSelector\" aria-label='展示形式'><option selected=''>原始数据</option><option>对话分组</option></select><button type='button' class=\"pickButton\" aria-pressed='false' aria-label='在对话面板中选取元素' title='在对话面板中选取元素'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.3' aria-hidden='true'><circle cx='8' cy='8' r='4.5' /><path d='M8 0v5M8 11v5M0 8h5M11 8h5' /></svg></button></span> · 128</span><button type='button'>加载更早</button><button type='button'>跟踪最新</button></div><div class=\"scroller\"><table class=\"table\" aria-label='原始数据' aria-rowcount='5'><thead><tr><th class=\"idColumn\">序号</th><th class=\"typeColumn\"><span class=\"typeHeader\">类型<button type='button' class=\"typeFilterButton\" aria-label='筛选类型' title='筛选类型' aria-haspopup='dialog' aria-expanded='false' aria-pressed='false'><svg width='13' height='13' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.3' aria-hidden='true'><path d='M2 3h12L9.5 8v5l-3-1.5V8L2 3Z' /></svg></button></span></th><th class=\"locationColumn\">T/S</th><th class=\"timeColumn\">时间 (UTC)</th><th>数据</th></tr></thead><tbody><tr aria-selected='false'><td class=\"identity\"><span class=\"identityText\" tabindex='0'>128</span></td><td style='padding-inline-start:8px'><button type='button' class=\"disclosure\" aria-label='收起子行' aria-expanded='true'>▾</button><button type='button' class=\"record\">assistant/message</button></td><td>2/1</td><td>12:04:31.882</td><td><button type='button' class=\"preview\">turn: 2 · step: 1 · status: running</button></td></tr><tr aria-selected='false'><td class=\"identity\"><span class=\"identityText\" tabindex='0'>0</span></td><td style='padding-inline-start:28px'><button type='button' class=\"disclosure\" aria-label='收起子行' aria-expanded='true'>▾</button><button type='button' class=\"record\">block-start</button></td><td>2/1</td><td>12:04:31.901</td><td><button type='button' class=\"preview\">index: 0 · blockType: text</button></td></tr><tr aria-selected='false'><td class=\"identity\"><span class=\"identityText\" tabindex='0'>1</span></td><td style='padding-inline-start:48px'><button type='button' class=\"record\">text-delta</button></td><td>2/1</td><td>12:04:31.904</td><td><button type='button' class=\"preview\">index: 0 · text: 先看 InspectorTable 的行源和筛选路径</button></td></tr><tr aria-selected='false'><td class=\"identity\"><span class=\"identityText\" tabindex='0'>2</span></td><td style='padding-inline-start:48px'><button type='button' class=\"record\">reasoning-delta</button></td><td>2/1</td><td>12:04:31.930</td><td><button type='button' class=\"preview\">筛选要挂在行源上，别塞进虚拟列表</button></td></tr></tbody></table></div></section>"
+        },
+        {
+          "label": "对话分组 + 选取元素中：提示条与下方原始数据面板",
+          "note": "静态快照。选取模式只多一条 <code>.pickNotice</code>（<code>role=\"status\"</code>）与按钮的按下态；底部面板是选中行撑开的。",
+          "html": "<section class=\"root\" style='width:660px;height:440px'><div class=\"toolbar\"><span><span class=\"modeControls\"><select class=\"modeSelector\" aria-label='展示形式'><option>原始数据</option><option selected=''>对话分组</option></select><button type='button' class=\"pickButton\" aria-pressed='true' aria-label='在对话面板中选取元素' title='取消选取 (Esc)'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.3' aria-hidden='true'><circle cx='8' cy='8' r='4.5' /><path d='M8 0v5M8 11v5M0 8h5M11 8h5' /></svg></button></span> · 24</span><button type='button'>跟踪最新</button></div><div class=\"pickNotice\" role='status'>在左侧 Chat 中悬停预览，点击选取；Esc 取消。</div><div class=\"scroller\"><table class=\"table\" aria-label='对话分组' aria-rowcount='4'><thead><tr><th class=\"idColumn\">序号</th><th class=\"typeColumn\"><span class=\"typeHeader\">类型<button type='button' class=\"typeFilterButton\" aria-label='筛选类型' title='筛选类型' aria-haspopup='dialog' aria-expanded='false' aria-pressed='false'><svg width='13' height='13' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.3' aria-hidden='true'><path d='M2 3h12L9.5 8v5l-3-1.5V8L2 3Z' /></svg></button></span></th><th class=\"locationColumn\">T/S</th><th>数据</th></tr></thead><tbody><tr class=\"sticky\" style='top:30px;z-index:9' aria-selected='false'><td class=\"identity\"><span class=\"identityText\" tabindex='0'>assistant-step:2</span></td><td style='padding-inline-start:8px'><button type='button' class=\"disclosure\" aria-label='收起子行' aria-expanded='true'>▾</button><button type='button' class=\"record\">assistant-step</button></td><td>2/1</td><td><button type='button' class=\"preview\">status: running · turn: 2 · step: 1</button></td></tr><tr class=\"selected\" aria-selected='true'><td class=\"identity\"><span class=\"identityText\" tabindex='0'>tool-call:call_00_7f3A2b</span></td><td style='padding-inline-start:28px'><button type='button' class=\"record\">tool-call</button></td><td>2/1</td><td><button type='button' class=\"preview\">name: bash · state: running</button></td></tr></tbody></table></div><div class=\"details\" style='flex-basis:40%'><div role='separator' tabindex='0' aria-orientation='horizontal' aria-label='调整原始数据面板高度' aria-valuemin='15' aria-valuemax='80' aria-valuenow='40' class=\"detailsResize\"></div><div class=\"toolbar\"><span>原始数据</span><button type='button'>关闭</button></div><div class=\"objectDetails\"><nav class=\"objectBreadcrumbs\" aria-label='原始数据导航'><ol><li><button type='button' title='tool-call · tool-call:call_00_7f3A2b'>tool-call · tool-call:call_00_7f3A2b</button></li><li><span aria-hidden='true'>›</span><button type='button' title='Node Data · tool-call:call_00_7f3A2b' disabled aria-current='page'>Node Data · tool-call:call_00_7f3A2b</button></li></ol></nav><ul class=\"objectTree\"><li><details open=''><summary><span class=\"objectField\">$: </span><button type='button' class=\"objectReference\">↗ Node Data · tool-call:call_00_7f3A2b</button> <span class=\"objectMuted\">Object</span></summary><ul><li><span class=\"objectField\">name: </span><span class=\"objectValue\">\"bash\"</span></li><li><span class=\"objectField\">description: </span><span class=\"objectValue\">\"运行测试\"</span></li><li><span class=\"objectField\">state: </span><span class=\"objectValue\">\"running\"</span></li></ul></details></li></ul></div></div></section>"
+        },
+        {
+          "label": "类型筛选打开：浮层压住表格",
+          "note": "静态快照：浮层在真实产品里 portal 到 body 并按触发器矩形 fixed 定位，这里放进表头上方的零高定位壳里拉回文档流。",
+          "html": "<section class=\"root\" style='width:660px;height:320px'><div class=\"toolbar\"><span><span class=\"modeControls\"><select class=\"modeSelector\" aria-label='展示形式'><option selected=''>原始数据</option><option>对话分组</option></select><button type='button' class=\"pickButton\" aria-pressed='false' aria-label='在对话面板中选取元素' title='在对话面板中选取元素'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.3' aria-hidden='true'><circle cx='8' cy='8' r='4.5' /><path d='M8 0v5M8 11v5M0 8h5M11 8h5' /></svg></button></span> · 3 / 128</span><button type='button'>跟踪最新</button></div><div style='position:relative;flex:none;height:0;min-height:0;padding-left:186px'><div class=\"surface compact typeFilterPanel\" data-menu-material='translucent' role='dialog' aria-label='筛选类型'><div aria-hidden='true' class=\"material\"></div><div><input class=\"typeFilterInput\" value='delta' role='combobox' aria-label='类型关键词' aria-autocomplete='list' aria-expanded='true' aria-controls='types-view' aria-activedescendant='types-view-0' placeholder='输入类型片段，如 delta' /><div class=\"typeFilterHelp\">默认包含匹配（*关键词*）；Enter 确认，Esc 取消。</div><div id='types-view' role='listbox' aria-label='类型候选' aria-busy='false' class=\"typeFilterOptions\"><button type='button' role='option' aria-selected='true' tabindex='-1' title='text-delta'>text-delta</button><button type='button' role='option' aria-selected='false' tabindex='-1' title='tool-call-delta'>tool-call-delta</button><button type='button' role='option' aria-selected='false' tabindex='-1' title='reasoning-delta'>reasoning-delta</button></div><div class=\"typeFilterActions\"><button type='button'>清空</button><button type='button'>取消</button><button type='button'>确认筛选</button></div></div></div></div><div class=\"scroller\"><table class=\"table\" aria-label='原始数据' aria-rowcount='4'><thead><tr><th class=\"idColumn\">序号</th><th class=\"typeColumn\"><span class=\"typeHeader\">类型<button type='button' class=\"typeFilterButton\" aria-label='筛选类型' title='筛选类型: *delta*' aria-haspopup='dialog' aria-expanded='true' aria-pressed='true'><svg width='13' height='13' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.3' aria-hidden='true'><path d='M2 3h12L9.5 8v5l-3-1.5V8L2 3Z' /></svg></button></span></th><th class=\"locationColumn\">T/S</th><th class=\"timeColumn\">时间 (UTC)</th><th>数据</th></tr></thead><tbody><tr class=\"contextRow\" data-inspector-context='' title='匹配记录的父级上下文' aria-selected='false'><td class=\"identity\"><span class=\"identityText\" tabindex='0'>128</span></td><td style='padding-inline-start:8px'><button type='button' class=\"disclosure\" aria-label='收起子行' aria-expanded='true'>▾</button><button type='button' class=\"record\">assistant/message</button></td><td>2/1</td><td>12:04:31.882</td><td><button type='button' class=\"preview\">turn: 2 · step: 1 · status: running</button></td></tr><tr aria-selected='false'><td class=\"identity\"><span class=\"identityText\" tabindex='0'>1</span></td><td style='padding-inline-start:48px'><button type='button' class=\"record\">text-delta</button></td><td>2/1</td><td>12:04:31.904</td><td><button type='button' class=\"preview\">index: 0 · text: 先看 InspectorTable 的行源和筛选路径</button></td></tr></tbody></table></div></section>",
+          "css": "/* 状态模拟：类型筛选浮层在真实产品里 portal 到 body、由 useAnchoredPosition 定位成 fixed。\n   快照里写回 relative + inset:auto，让菜单材质层（material，inset: 0）仍以卡片为包含块。 */\n.typeFilterPanel { position: relative; inset: auto; }"
+        }
+      ],
+      "props": [
+        {
+          "name": "useSession",
+          "type": "PropsRuntime<'sidebar.right.pane.tab'>['useSession']",
+          "default": "—",
+          "desc": "侧栏标签页的会话快照座位，透传给 InspectorTable 读 hasMore / loadingOlder / openError。"
+        },
+        {
+          "name": "chatRoot",
+          "type": "() => HTMLElement | undefined",
+          "default": "—",
+          "desc": "当前会话主 Chat 列的根元素；用来在选取/跳转时把目标滚进视野。"
+        },
+        {
+          "name": "pickChat",
+          "type": "(owner: HTMLElement, picked: (target) => boolean, cancelled: () => void) => (() => void) | undefined",
+          "default": "—",
+          "desc": "开启主 Chat 的选取手势；返回停止函数，插件被销毁或 Chat 不可用时返回 undefined（按钮随即弹「请先打开 Chat」）。"
+        },
+        {
+          "name": "resolveChatTargets",
+          "type": "(target: InspectorChatTarget) => readonly InspectorChatTarget[]",
+          "default": "—",
+          "desc": "把日志/对象坐标解析成精确与邻近的已加载 Chat 身份，用于 reveal 高亮。"
+        },
+        {
+          "name": "hooks",
+          "type": "{ chatRows: ObservableSnapshot<readonly InspectorRow[]>; logRows: ObservableSnapshot<readonly InspectorRow[]> }",
+          "default": "—",
+          "desc": "两种展示形式各自的行源；没被选中的那个不会被订阅。"
+        },
+        {
+          "name": "keyedHooks",
+          "type": "{ chatRecord: ...; logRecord: ... }",
+          "default": "—",
+          "desc": "两种展示形式的按行记录源（key → InspectorRecord），同样按需订阅。"
+        },
+        {
+          "name": "loadOlder",
+          "type": "() => Promise<void>",
+          "default": "—",
+          "desc": "「加载更早」的动作，透传给 InspectorTable。"
+        },
+        {
+          "name": "objects",
+          "type": "InspectorObjects",
+          "default": "—",
+          "desc": "会话内对象索引；只在对话分组模式下传给 InspectorTable，开启对象树与面包屑导航。"
+        },
+        {
+          "name": "recordType",
+          "type": "(key: string, mode: InspectorPresentation) => string | undefined",
+          "default": "—",
+          "desc": "按当前展示形式取行的原始类型（<code>'chat-node' | 'session-log'</code>），供筛选使用。"
+        },
+        {
+          "name": "logChatTarget",
+          "type": "(key: string) => InspectorChatTarget | undefined",
+          "default": "—",
+          "desc": "原始数据行 → 它在主 Chat 里的精确或近似位置。"
+        },
+        {
+          "name": "pickRow",
+          "type": "(target: InspectorPickTarget, mode: InspectorPresentation) => string | undefined",
+          "default": "—",
+          "desc": "选取到的 Chat 身份 → 当前表格里最接近的行；返回 undefined 表示这张表没有匹配记录。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'session-inspector'>",
+          "default": "—",
+          "desc": "session-inspector 命名空间的翻译座位（view.* / picker.* 等）。"
+        }
+      ],
+      "notes": "展示形式是这个视图内的本地 state，不注册成两个 Conversation View；<code>key={mode}</code> 让 InspectorTable 在切换时整体重建，因此只有当前来源的行源与记录源被订阅。选取流程：按钮 <code>aria-pressed</code> 标记按下态，进入后 <code>pickChat</code> 接管主 Chat 的悬停/点击；<code>pickRow</code> 找不到行就提示「当前表格没有匹配记录」，<code>pickChat</code> 返回 undefined 则提示「请先在主区域打开当前 Session 的 Chat」，提示条同时承担 <code>role=\"status\"</code> 的播报。视图没有自己的样式表，观感全部来自 inspector.module.css；打开类型筛选时还会用到 MenuSurface 的菜单材质，所以这两张表都列进来了。切换展示形式、重新选取、应用筛选都会清掉选取状态与导航历史。",
+      "keywords": [
+        "会话检查器",
+        "会话数据诊断",
+        "session inspector",
+        "侧边栏",
+        "展示形式",
+        "选取元素"
+      ]
+    },
+    {
+      "id": "inspector-resize-handle",
+      "name": "InspectorResizeHandle",
+      "exportName": "InspectorResizeHandle",
+      "zh": "面板拖拽条",
+      "group": "agent",
+      "summary": "NodeJS 诊断底部面板顶边那条分隔条：<code>position: absolute; inset: 0 0 auto</code> 贴在面板上缘、高 6px、<code>cursor: row-resize</code>、<code>touch-action: none</code>，自身没有可见文字，只有 <code>role=\"separator\"</code> 与 <code>aria-valuenow</code>。指针按下后按 <code>window.innerHeight</code> 把纵向位移换算成百分比，范围 20–80（面板用 <code>--inspector-height</code> 的 dvh 值撑高）；悬停或键盘聚焦时才铺一层 <code>--dsw-alias-interactive-bg-hover</code>，其余时间是透明的——看着就是面板顶边那条 0.5px 的 <code>--dsw-alias-border-l3</code>。",
+      "source": "packages/experimental/inspector/src/client/bottom/resize.tsx#L14",
+      "css": [
+        "packages/experimental/inspector/src/client/bottom/page.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-base",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-primary"
+      ],
+      "specimens": [
+        {
+          "label": "面板顶边：6px 拖拽条 + 标题行",
+          "note": "静态快照。快照把高度收成 150px；真实外壳写的是 <code>${height}dvh</code>（默认 45），面板主体是 DevTools 的 iframe（<code>.page</code>），这里省略。",
+          "html": "<div class=\"panel\" style='--inspector-height:150px;width:560px'><div class=\"resize\" role='separator' tabindex='0' aria-label='调整 NodeJS 诊断面板高度' aria-orientation='horizontal' aria-controls='inspector-panel' aria-valuemin='20' aria-valuemax='80' aria-valuenow='45'></div><header class=\"header\"><span>NodeJS 诊断</span></header></div>"
+        },
+        {
+          "label": "悬停 / 聚焦：铺一层交互底色",
+          "note": "悬停模拟——6px 高的分隔条没法静态触发 <code>:hover</code> / <code>:focus-visible</code>，把那条规则原样搬到同名类上。",
+          "html": "<div class=\"panel\" style='--inspector-height:110px;width:560px'><div class=\"resize\" role='separator' tabindex='0' aria-label='调整 NodeJS 诊断面板高度' aria-orientation='horizontal' aria-controls='inspector-panel' aria-valuemin='20' aria-valuemax='80' aria-valuenow='45'></div><header class=\"header\"><span>NodeJS 诊断</span></header></div>",
+          "css": "/* 状态模拟：.resize 的 :hover 与 :focus-visible 共用一条\n   background: var(--dsw-alias-interactive-bg-hover)，静态快照无法真的悬停或聚焦它。 */\n.resize { background: var(--dsw-alias-interactive-bg-hover); }"
+        }
+      ],
+      "props": [
+        {
+          "name": "height",
+          "type": "number",
+          "default": "—",
+          "desc": "当前面板高度（视口高度百分比，默认 45）；<code>aria-valuenow</code> 取它的四舍五入值。"
+        },
+        {
+          "name": "onResize",
+          "type": "(height: number) => void",
+          "default": "—",
+          "desc": "拖动或键盘调整时回传新高度，组件内已 clamp 到 20–80。"
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "default": "—",
+          "desc": "分隔条的无障碍名称，来自 inspectorPanel 命名空间的 <code>resize</code>（「调整 NodeJS 诊断面板高度」）。"
+        },
+        {
+          "name": "panelId",
+          "type": "string",
+          "default": "—",
+          "desc": "被控制面板的 id，写到 <code>aria-controls</code> 上。"
+        }
+      ],
+      "notes": "操作方式只有指针与键盘两种：按下后 <code>setPointerCapture</code> 锁指针，位移按视口高度换算成百分比（<code>drag.height + (start.y - event.clientY) / window.innerHeight * 100</code>），Up/Down 每次 ±5、Home/End 到 20/80；<code>onLostPointerCapture</code> 兜底结束拖动。拖拽条只有 6px 高、没有可见文字，所以 <code>aria-label</code> 与 <code>aria-valuemin/max/now</code> 是它唯一的可发现性来源。易混：会话检查器里 InspectorDetails 的拖拽条是 <code>inspector.module.css</code> 的 <code>.detailsResize</code>（5px、15%–80%、在面板上缘），这里是底部 NodeJS 诊断面板的 <code>.resize</code>（6px、20%–80%），两者不是同一个组件。",
+      "keywords": [
+        "拖拽条",
+        "分隔条",
+        "resize handle",
+        "NodeJS 诊断",
+        "separator",
+        "面板高度"
+      ]
+    }
+  ]
+}

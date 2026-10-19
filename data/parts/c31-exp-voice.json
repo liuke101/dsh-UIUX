@@ -1,0 +1,936 @@
+{
+ "schemaVersion": 1,
+ "entries": [
+  {
+   "id": "microphone-picker",
+   "name": "MicrophonePicker",
+   "exportName": "MicrophonePicker",
+   "zh": "麦克风选择",
+   "group": "conversation",
+   "summary": "语音设置里的输入设备行：两列网格（100px 标签 + 最宽 280px 的下拉），选中设备后浏览器会开一路只测电平的静音预览——8 根 3×12px 的小竖条贴在 select 右内侧 24px 处，有信号的那些换成 <code>--dsw-alias-state-success-primary</code> 的绿色，因此预览中的 select 会多出 72px 右内边距。设备被拔掉时该 option 变 <code>disabled</code> 并追加「— 不可用」，权限或设备错误在下方第二列以 12px 红色文案给出。它只量电平、不留音频；页面隐藏时预览会被释放。",
+   "source": "packages/experimental/client-ui-voice-input/src/client/MicrophonePicker.tsx#L33",
+   "css": [
+    "packages/experimental/client-ui-voice-input/src/client/VoiceInput.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-border-l1",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-interactive-bg-hover-solid",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-state-error-primary",
+    "--dsw-alias-state-success-primary",
+    "--dsw-specific-selector"
+   ],
+   "specimens": [
+    {
+     "label": "已选设备：预览中的输入电平",
+     "note": "静态快照：电平条由 requestAnimationFrame 写 data-active，这里冻结在说话中的一帧",
+     "html": "<div style=\"width:420px\"><div class=\"deviceRow\" data-voice-input-device>\n      <label for=\"voice-input-device\">输入设备</label>\n      <span class=\"deviceField\"><select id=\"voice-input-device\" class=\"deviceSelectMeter\">\n        <option value=\"\">系统默认（MacBook Pro 麦克风）</option>\n        <option value=\"usb-mic\">外接 USB 麦克风</option>\n        <option value=\"airpods\">AirPods Pro</option>\n      </select><span class=\"deviceMeter\"><span class=\"inputLevel\" role=\"img\" aria-label=\"麦克风输入电平\"><span data-active=\"true\"></span><span data-active=\"true\"></span><span data-active=\"true\"></span><span data-active=\"true\"></span><span data-active=\"true\"></span><span data-active=\"false\"></span><span data-active=\"false\"></span><span data-active=\"false\"></span></span></span></span>\n      \n    </div></div>"
+    },
+    {
+     "label": "设备不可用：option 禁用 + 红色错误行",
+     "note": "静态快照：devicechange 之后选中的设备不在枚举结果里",
+     "html": "<div style=\"width:420px\"><div class=\"deviceRow\" data-voice-input-device>\n      <label for=\"voice-input-device\">输入设备</label>\n      <span class=\"deviceField\"><select id=\"voice-input-device\">\n        <option value=\"\">系统默认（MacBook Pro 麦克风）</option>\n        <option value=\"usb-mic\" disabled>外接 USB 麦克风 — 不可用</option>\n        <option value=\"airpods\">AirPods Pro</option>\n      </select></span>\n      <span class=\"deviceError\" role=\"alert\">麦克风不可用，请选择其他输入设备</span>\n    </div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "useMicrophoneDevice",
+     "type": "InjectFace<VoiceInputInjected>['useMicrophoneDevice']",
+     "default": "—",
+     "desc": "读取当前选中的麦克风（Host 快照 + localStorage 持久化）的 hooks 舱位。"
+    },
+    {
+     "name": "selectMicrophone",
+     "type": "(device: MicrophoneDevice) => void",
+     "default": "—",
+     "desc": "记住浏览器里选中的输入设备，供后续预览与录音复用。"
+    },
+    {
+     "name": "createRecording",
+     "type": "() => Recording",
+     "default": "—",
+     "desc": "取一路由插件生命周期托管的录音对象；预览只用它的 amplitude()，不落音频。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'voice-input'>",
+     "default": "—",
+     "desc": "voice-input 命名空间的翻译座位。"
+    }
+   ],
+   "notes": "设备标签缺失时按位置回退：系统默认行有设备名时显示「系统默认（物理设备名）」，拿不到标签时就只是「系统默认」；其余设备只有 <code>index &gt; 0</code> 才带编号「麦克风 N」，<code>index 0</code> 的那台只显示「麦克风」。权限未授予前浏览器可能不返回 label，因此「枚举为空」不等于设备断开。480px 以下媒体查询把两列网格压成一列。",
+   "keywords": [
+    "麦克风",
+    "输入设备",
+    "microphone",
+    "input device",
+    "电平",
+    "voice-input"
+   ]
+  },
+  {
+   "id": "preparation-card",
+   "name": "PreparationCard",
+   "exportName": "PreparationCard",
+   "zh": "准备卡片",
+   "group": "conversation",
+   "summary": "一个识别服务的准备卡：<code>section.preparation</code> 用 14px 内边距、10px 间距、0.5px <code>--dsw-alias-border-l1</code> 描边和 10px 圆角，先给服务名，再给可选的本地安装估算块（硬盘 / 内存 / 首次准备三行 <code>dl</code>，8px 圆角灰底）。主体是一条 <code>DisclosureRow</code> 摘要行，被 <code>.summaryRow</code> 覆盖成最小 28px 且可折行（<code>min-height:28px; height:auto; flex-wrap:wrap</code>）：左侧 16px 的共享 step 状态点（准备中是旋转弧、就绪是绿底勾、失败是红底、未准备是空心圈），右侧折行显示度量文案与折叠箭头；展开后是 <code>ol.steps</code> 步骤表（每步 16px 状态点 + 14px 行距，下载步骤可带 6px 高的 <code>progress</code> 与资源名）。失败时追加原因 / 建议 / 来源与错误码三行文字，底部 28px 的 sm 按钮给「下载并准备 · 重试准备」与「取消准备」。",
+   "source": "packages/experimental/client-ui-voice-input/src/client/PreparationCard.tsx#L45",
+   "css": [
+    "packages/experimental/client-ui-voice-input/src/client/VoiceInput.module.css",
+    "packages/client/ui-primitives/src/DisclosureRow.module.css",
+    "packages/client/ui-primitives/src/TextShimmer.module.css",
+    "packages/client/ui-primitives/src/StateDot.module.css",
+    "packages/client/ui-primitives/src/Button.module.css"
+   ],
+   "tokens": [
+    "--dsh-content-font-delta",
+    "--dsh-content-font-size-secondary",
+    "--dsw-alias-border-l1",
+    "--dsw-alias-border-l3",
+    "--dsw-alias-button-primary-fill",
+    "--dsw-alias-button-primary-hover",
+    "--dsw-alias-button-tool-bar-fill",
+    "--dsw-alias-button-tool-bar-hover",
+    "--dsw-alias-interactive-bg-active",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-interactive-bg-hover-solid",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-primary-foreground",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-shimmer",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-state-error-primary",
+    "--dsw-alias-state-idle-primary",
+    "--dsw-alias-state-success-primary",
+    "--dsw-alias-state-warn-primary",
+    "--dsw-radius-md",
+    "--dsw-radius-sm",
+    "--dsw-specific-selector"
+   ],
+   "specimens": [
+    {
+     "label": "展开态：下载中的步骤表 + 取消准备",
+     "note": "静态快照：进行中的步骤用共享 ongoing 弧，下载条取自 downloading 阶段的字节数",
+     "html": "<div style=\"width:460px\"><section class=\"preparation\" data-speech-provider=\"sensevoice-int8\">\n      <strong>SenseVoiceSmall (INT8)</strong>\n      <div class=\"c1-root\" data-open=\"true\">\n      <div class=\"c1-header\" data-disclosure-header>\n        <div class=\"c1-row c0-summaryRow\" data-disclosure-row>\n          <button type=\"button\" class=\"c1-leading\" aria-label=\"准备步骤\" aria-expanded=\"true\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10\" stroke=\"currentColor\"/></svg></button>\n          <span class=\"c2-root\"><span class=\"c2-content\"><span class=\"c2-text c1-title c0-summaryTitle\">准备步骤</span></span></span>\n        </div>\n      </div><ol class=\"c0-steps\">\n        <li data-step=\"check\" data-step-state=\"complete\" aria-label=\"检查本地资源 · 已完成\"><span class=\"step\" data-state=\"done\" style=\"width:16px;height:16px\" aria-hidden=\"true\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4\" stroke=\"currentColor\"/></svg></span><div class=\"c0-stepBody\"><span>检查本地资源</span></div></li>\n        <li data-step=\"model\" data-step-state=\"running\" aria-label=\"准备语音识别模型 · 进行中\"><svg class=\"spinner\" data-state=\"ongoing\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><g class=\"spinnerMotion\"><circle class=\"spinnerTrack\" cx=\"12\" cy=\"12\" r=\"9.5\"></circle><circle class=\"spinnerArc\" cx=\"12\" cy=\"12\" r=\"9.5\"></circle></g></svg><div class=\"c0-stepBody\"><span>准备语音识别模型</span><div class=\"c0-stepProgress\"><span class=\"c0-metric\" role=\"status\">下载：412.6 / 1024.0 MB，40%</span><progress class=\"c0-progress\" aria-label=\"下载进度\" value=\"412600000\" max=\"1024000000\"></progress><small>tokens.txt</small></div></div></li>\n        <li data-step=\"vad\" data-step-state=\"pending\" aria-label=\"准备语音检测模型 · 未开始\"><span class=\"step\" data-state=\"idle\" style=\"width:16px;height:16px\" aria-hidden=\"true\"></span><div class=\"c0-stepBody\"><span>准备语音检测模型</span></div></li>\n        <li data-step=\"verify\" data-step-state=\"pending\" aria-label=\"校验模型文件 · 未开始\"><span class=\"step\" data-state=\"idle\" style=\"width:16px;height:16px\" aria-hidden=\"true\"></span><div class=\"c0-stepBody\"><span>校验模型文件</span></div></li>\n      </ol>\n    </div>\n      <div class=\"preparationActions\"><button type=\"button\" class=\"button ghost sm\">取消准备</button></div>\n    </section></div>"
+    },
+    {
+     "label": "未准备：安装估算 + 下载源 + 下载并准备",
+     "note": "静态快照：unprepared 阶段还没有 steps，摘要行不可展开",
+     "html": "<div style=\"width:460px\"><section class=\"preparation\" data-speech-provider=\"sensevoice-int8\">\n      <strong>SenseVoiceSmall (INT8)</strong>\n      <div class=\"setupEstimate\">\n        <p>将在运行 DSH 的机器上下载本地模型，无需安装 Python 或编译工具。</p>\n        <dl>\n          <div><dt>硬盘空间</dt><dd>建议预留约 2 GB，包含模型、运行时和下载缓存</dd></div>\n          <div><dt>运行内存</dt><dd>模型加载后约 1.5 GB，识别时可能更高</dd></div>\n          <div><dt>首次准备</dt><dd>参考 3–10 分钟，取决于网络和机器性能</dd></div>\n        </dl>\n        <small>以上为估算；网络较慢时可能更久。已下载的资源会复用，默认在闲置后释放模型内存。</small>\n      </div>\n      <div class=\"c1-root\">\n      <div class=\"c1-header\" data-disclosure-header>\n        <div class=\"c1-row c0-summaryRow\" data-disclosure-row>\n          <span class=\"c1-leading\"><span class=\"step\" data-state=\"idle\" style=\"width:16px;height:16px\" aria-hidden=\"true\"></span></span>\n          <span class=\"c2-root\"><span class=\"c2-content\"><span class=\"c2-text c1-title c0-summaryTitle\">首次使用需要下载本地识别模型。</span><span class=\"c0-metric\" role=\"status\"></span></span></span>\n        </div>\n      </div>\n    </div>\n      <div class=\"sourceChoice\"><label>模型下载源<select aria-label=\"模型下载源\">\n        <option value=\"\">自动选择（推荐）</option>\n        <option value=\"https://huggingface.co\">Hugging Face</option>\n        <option value=\"https://hf-mirror.com\">HF-Mirror（国内镜像）</option>\n      </select></label><small class=\"metric\">优先使用响应较快的源，下载失败时自动尝试其他源。</small></div>\n      <div class=\"preparationActions\"><button type=\"button\" class=\"button outline sm\">下载并准备</button></div>\n    </section></div>"
+    },
+    {
+     "label": "失败态：下载失败说明 + 重试准备",
+     "note": "静态快照：failed 阶段且带 download 详情，重试只补未完成的资源",
+     "html": "<div style=\"width:460px\"><section class=\"preparation\" data-speech-provider=\"sensevoice-int8\">\n      <strong>SenseVoiceSmall (INT8)</strong>\n      <div class=\"c1-root\">\n      <div class=\"c1-header\" data-disclosure-header>\n        <div class=\"c1-row c0-summaryRow\" data-disclosure-row>\n          <button type=\"button\" class=\"c1-leading\" aria-label=\"准备失败\" aria-expanded=\"false\"><span class=\"step\" data-state=\"error\" style=\"width:16px;height:16px\" aria-hidden=\"true\"></span></button>\n          <span class=\"c2-root\"><span class=\"c2-content\"><span class=\"c2-text c1-title c0-summaryTitle\">准备失败</span><span class=\"c0-metric\" role=\"status\"></span><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></span></span>\n        </div>\n      </div>\n    </div>\n      <div class=\"downloadFailure\" role=\"alert\">\n        <p class=\"preparationError\">无法下载 tokens.txt：下载服务返回 HTTP 503。</p>\n        <p>请确认下载地址可用、代理可正常连接下载服务，或稍后重试。</p>\n        <small class=\"metric\">下载来源：https://huggingface.co</small>\n        <small class=\"metric\">错误码：HTTP_503</small>\n      </div>\n      <div class=\"preparationActions\"><button type=\"button\" class=\"button outline sm\">重试准备</button></div>\n    </section></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "provider",
+     "type": "SpeechProviderView",
+     "default": "—",
+     "desc": "一个识别服务的视图：名称、位置（host-local / cloud）、可用语言、下载源与当前 preparation 状态。"
+    },
+    {
+     "name": "connected",
+     "type": "boolean",
+     "default": "—",
+     "desc": "Host 是否在线；为假时摘要显示「正在连接语音服务…」且准备与取消按钮禁用。"
+    },
+    {
+     "name": "prepare",
+     "type": "(providerId: SpeechProviderId, options?: SpeechPreparationOptions) => Promise<void>",
+     "default": "—",
+     "desc": "开始或加入该服务的准备任务，可带一次性下载源选择。"
+    },
+    {
+     "name": "cancelPreparation",
+     "type": "(providerId: SpeechProviderId) => Promise<void>",
+     "default": "—",
+     "desc": "取消进行中的准备；已下载并通过校验的文件会保留。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'voice-input'>",
+     "default": "—",
+     "desc": "voice-input 命名空间的翻译座位。"
+    }
+   ],
+   "notes": "状态点复用 <code>StateDot</code> 的 <code>step</code> 外观：<code>ready</code>/<code>standby</code> 为绿底勾、<code>failed</code> 为红底、<code>unprepared</code>/<code>cancelled</code> 为空心圈、其余为共享的 ongoing 旋转弧。摘要文案按阶段取：未连接 → 重连中，进行中且有当前步骤 → 该步骤名，否则依次落到「下载中 / 准备失败 / 本地语音已就绪」与阶段默认句；度量在下载时是字节数、准备中是有 startedAt 的等待秒数。准备按钮只在 <code>unprepared</code>/<code>cancelled</code>/<code>failed</code> 三个阶段出现，<code>cancelling</code> 时取消按钮禁用。",
+   "keywords": [
+    "准备",
+    "模型下载",
+    "SenseVoiceSmall",
+    "preparation",
+    "语音识别",
+    "voice-input"
+   ]
+  },
+  {
+   "id": "voice-preparation",
+   "name": "VoicePreparation",
+   "exportName": "VoicePreparation",
+   "zh": "语音准备",
+   "group": "conversation",
+   "summary": "插件详情页与「设置」里共用的语音偏好整块：外层是一个无 class 的 <code>div</code>，先给 <code>.preferences</code> 网格（12px 行距、18px 上下外边距、13px 字号）——输入设备行、识别服务下拉、识别语言下拉，再加一句 13px 说明（host-local 讲音频不出机器、cloud 讲音频会外发）；随后按 <code>catalog.providers</code> 顺序逐个渲染 <code>PreparationCard</code>。保存失败时在网格末尾补一条 <code>role=\"alert\"</code> 的失败文案；catalog 还没到时只剩一句 <code>role=\"status\"</code> 的「正在读取识别服务…」。",
+   "source": "packages/experimental/client-ui-voice-input/src/client/PreparationCard.tsx#L132",
+   "css": [
+    "packages/experimental/client-ui-voice-input/src/client/VoiceInput.module.css",
+    "packages/client/ui-primitives/src/DisclosureRow.module.css",
+    "packages/client/ui-primitives/src/TextShimmer.module.css",
+    "packages/client/ui-primitives/src/StateDot.module.css",
+    "packages/client/ui-primitives/src/Button.module.css"
+   ],
+   "tokens": [
+    "--dsh-content-font-delta",
+    "--dsh-content-font-size-secondary",
+    "--dsw-alias-border-l1",
+    "--dsw-alias-border-l3",
+    "--dsw-alias-button-primary-fill",
+    "--dsw-alias-button-primary-hover",
+    "--dsw-alias-button-tool-bar-fill",
+    "--dsw-alias-button-tool-bar-hover",
+    "--dsw-alias-interactive-bg-active",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-interactive-bg-hover-solid",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-primary-foreground",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-shimmer",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-state-error-primary",
+    "--dsw-alias-state-idle-primary",
+    "--dsw-alias-state-success-primary",
+    "--dsw-alias-state-warn-primary",
+    "--dsw-radius-md",
+    "--dsw-radius-sm",
+    "--dsw-specific-selector"
+   ],
+   "specimens": [
+    {
+     "label": "偏好网格 + 一张折叠的准备卡",
+     "note": "静态快照：下拉由 Host 快照驱动，这里冻结在 host-local 服务已就绪的一帧",
+     "html": "<div style=\"width:460px\"><div><div class=\"preferences\">\n      <div class=\"deviceRow\" data-voice-input-device>\n      <label for=\"voice-input-device\">输入设备</label>\n      <span class=\"deviceField\"><select id=\"voice-input-device\" class=\"deviceSelectMeter\">\n        <option value=\"\">系统默认（MacBook Pro 麦克风）</option>\n        <option value=\"usb-mic\">外接 USB 麦克风</option>\n        <option value=\"airpods\">AirPods Pro</option>\n      </select><span class=\"deviceMeter\"><span class=\"inputLevel\" role=\"img\" aria-label=\"麦克风输入电平\"><span data-active=\"true\"></span><span data-active=\"true\"></span><span data-active=\"true\"></span><span data-active=\"true\"></span><span data-active=\"true\"></span><span data-active=\"true\"></span><span data-active=\"false\"></span><span data-active=\"false\"></span></span></span></span>\n      \n    </div>\n      <label>识别服务<select><option value=\"sensevoice-int8\">SenseVoiceSmall (INT8)</option><option value=\"sensevoice-fp32\">SenseVoiceSmall (FP32)</option></select></label>\n      <label>识别语言<select><option value=\"auto\">自动识别</option><option value=\"zh\">中文</option><option value=\"en\">英语</option><option value=\"yue\">粤语</option><option value=\"ja\">日语</option><option value=\"ko\">韩语</option></select></label>\n      <p>音频在运行 DSH 的机器上识别。需要下载模型时，请确保该机器能访问所选下载源及其文件服务。如需代理，请在该机器上配置。</p>\n    </div><section class=\"preparation\" data-speech-provider=\"sensevoice-int8\">\n      <strong>SenseVoiceSmall (INT8)</strong>\n      <div class=\"c1-root\">\n      <div class=\"c1-header\" data-disclosure-header>\n        <div class=\"c1-row c0-summaryRow\" data-disclosure-row>\n          <button type=\"button\" class=\"c1-leading\" aria-label=\"本地语音已就绪。\" aria-expanded=\"false\"><span class=\"step\" data-state=\"done\" style=\"width:16px;height:16px\" aria-hidden=\"true\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4\" stroke=\"currentColor\"/></svg></span></button>\n          <span class=\"c2-root\"><span class=\"c2-content\"><span class=\"c2-text c1-title c0-summaryTitle\">本地语音已就绪。</span><span class=\"c0-metric\" role=\"status\"></span><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></span></span>\n        </div>\n      </div>\n    </div>\n    </section></div></div>"
+    },
+    {
+     "label": "catalog 未到达：加载中 + 读取失败提示",
+     "note": "静态快照：readiness 未连上时只渲染这两行状态文案",
+     "html": "<div style=\"width:460px\"><div><p role=\"status\">正在读取识别服务…</p><p role=\"alert\">语音识别失败：连接已断开</p></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "useSpeechReadiness",
+     "type": "InjectFace<VoiceInputInjected>['useSpeechReadiness']",
+     "default": "—",
+     "desc": "读取 Host 语音快照（服务列表、当前选中项、连接与错误）的 hooks 舱位。"
+    },
+    {
+     "name": "configure",
+     "type": "(patch: SpeechSelectionPatch) => Promise<void>",
+     "default": "—",
+     "desc": "提交识别服务 / 语言的偏好改动，写失败时把错误显示在网格末尾。"
+    },
+    {
+     "name": "prepare",
+     "type": "(providerId, options?) => Promise<void>",
+     "default": "—",
+     "desc": "透传给下面每张准备卡的准备回调。"
+    },
+    {
+     "name": "cancelPreparation",
+     "type": "(providerId: SpeechProviderId) => Promise<void>",
+     "default": "—",
+     "desc": "透传给准备卡的取消回调。"
+    },
+    {
+     "name": "createRecording",
+     "type": "() => Recording",
+     "default": "—",
+     "desc": "透传给输入设备行的录音对象来源。"
+    },
+    {
+     "name": "useMicrophoneDevice",
+     "type": "InjectFace<VoiceInputInjected>['useMicrophoneDevice']",
+     "default": "—",
+     "desc": "透传给输入设备行的当前麦克风。"
+    },
+    {
+     "name": "selectMicrophone",
+     "type": "(device: MicrophoneDevice) => void",
+     "default": "—",
+     "desc": "透传给输入设备行的切换回调。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'voice-input'>",
+     "default": "—",
+     "desc": "voice-input 命名空间的翻译座位。"
+    }
+   ],
+   "notes": "这一块自己不含按钮：保存是设置表单的事，准备与取消都下沉到每张 <code>PreparationCard</code>。<code>saving</code> 期间三个下拉一并禁用，避免上一笔 <code>configure</code> 还没落地就改下一项。",
+   "keywords": [
+    "语音设置",
+    "识别服务",
+    "识别语言",
+    "voice preparation",
+    "voice-input"
+   ]
+  },
+  {
+   "id": "voice-setup-dialog",
+   "name": "VoiceSetupDialog",
+   "exportName": "VoiceSetupDialog",
+   "zh": "语音引导弹窗",
+   "group": "conversation",
+   "summary": "语音激活引导弹窗，直接用产品 <code>Modal</code> 的默认外壳：宽 <code>min(380px, 100%)</code>、<code>--dsw-radius-panel</code> 圆角、<code>--dsw-elevation-prominent</code> 投影的卡片，标题行内边距 22/14/12/24px，右上角是 28px 的关闭按钮；正文是 24px 侧距、14px/22px 的一句说明，页脚右对齐两个 36px 按钮——ghost「稍后」与 primary「前往安装 / 前往语音插件设置」，后者带 <code>data-modal-autofocus</code>，打开时由 Modal 的焦点管理接手。标题与正文随 <code>needsInstallation</code> 切换：需要安装时讲首次要下载本地模型，否则讲识别尚未就绪、去详情页看状态。",
+   "source": "packages/experimental/client-ui-voice-input/src/client/VoiceSetupDialog.tsx#L16",
+   "css": [
+    "packages/client/ui-primitives/src/Modal.module.css",
+    "packages/client/ui-primitives/src/Button.module.css"
+   ],
+   "tokens": [
+    "--ds-ease-in-out",
+    "--ds-transition-duration",
+    "--dsh-frame-chrome-top",
+    "--dsh-frame-overlay-top",
+    "--dsw-alias-bg-layer-2",
+    "--dsw-alias-bg-mask-1",
+    "--dsw-alias-border-l3",
+    "--dsw-alias-button-primary-fill",
+    "--dsw-alias-button-primary-hover",
+    "--dsw-alias-button-tool-bar-fill",
+    "--dsw-alias-button-tool-bar-hover",
+    "--dsw-alias-interactive-bg-active",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-primary-foreground",
+    "--dsw-alias-label-secondary",
+    "--dsw-elevation-prominent",
+    "--dsw-mask-blur",
+    "--dsw-radius-md",
+    "--dsw-radius-panel",
+    "--dsw-radius-sm"
+   ],
+   "specimens": [
+    {
+     "label": "需要安装：前往安装",
+     "note": "静态快照：遮罩与卡片由 Modal portal 到 body，这里拉回文档流",
+     "html": "<div style=\"width:520px\"><div class=\"root snapshotStatic\" role=\"presentation\">\n      <div class=\"mask\" aria-hidden=\"true\"></div>\n      <div class=\"dialog\" tabindex=\"-1\" role=\"dialog\" aria-modal=\"true\" aria-label=\"使用语音输入前需要安装\">\n        <div class=\"content\">\n          <div class=\"header\"><h2 class=\"title\">使用语音输入前需要安装</h2><button type=\"button\" class=\"close\" aria-label=\"取消\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></div>\n          <div class=\"body\"><p>语音输入插件已开启。首次使用需要在本机下载并准备识别模型，请前往插件详情页查看空间、内存和时间说明，再开始安装。</p></div>\n        </div>\n        <div class=\"footer\"><button type=\"button\" class=\"button ghost md\">稍后</button><button type=\"button\" class=\"button primary md\" data-modal-autofocus>前往安装</button></div>\n      </div>\n    </div></div>",
+     "css": "/* 静态快照：Modal 的 .root 在真实产品里是 body 上的 fixed 全屏遮罩层，这里改回文档流，\n   同时保留它作为 .mask 绝对定位的父级。 */\n.root.snapshotStatic { position: relative; }"
+    },
+    {
+     "label": "未就绪：前往语音插件设置",
+     "note": "静态快照：同一张卡片，换成 unavailable 分支的文案",
+     "html": "<div style=\"width:520px\"><div class=\"root snapshotStatic\" role=\"presentation\">\n      <div class=\"mask\" aria-hidden=\"true\"></div>\n      <div class=\"dialog\" tabindex=\"-1\" role=\"dialog\" aria-modal=\"true\" aria-label=\"语音识别尚未就绪\">\n        <div class=\"content\">\n          <div class=\"header\"><h2 class=\"title\">语音识别尚未就绪</h2><button type=\"button\" class=\"close\" aria-label=\"取消\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></div>\n          <div class=\"body\"><p>请前往语音插件详情页查看识别服务状态、准备进度或错误信息</p></div>\n        </div>\n        <div class=\"footer\"><button type=\"button\" class=\"button ghost md\">稍后</button><button type=\"button\" class=\"button primary md\" data-modal-autofocus>前往语音插件设置</button></div>\n      </div>\n    </div></div>",
+     "css": "/* 静态快照：Modal 的 .root 在真实产品里是 body 上的 fixed 全屏遮罩层，这里改回文档流，\n   同时保留它作为 .mask 绝对定位的父级。 */\n.root.snapshotStatic { position: relative; }"
+    }
+   ],
+   "props": [
+    {
+     "name": "open",
+     "type": "boolean",
+     "default": "—",
+     "desc": "是否显示；Modal 在 false 时直接返回 null。"
+    },
+    {
+     "name": "needsInstallation",
+     "type": "boolean",
+     "default": "—",
+     "desc": "区分「需要首次安装」与「识别未就绪」两套标题、正文与主按钮文案。"
+    },
+    {
+     "name": "onDismiss",
+     "type": "PropsRuntime<'plugins.bundle.activation'>['onDismiss']",
+     "default": "—",
+     "desc": "收起引导：取消按钮、关闭按钮、遮罩点击与 Escape 都走它。"
+    },
+    {
+     "name": "onOpenDetails",
+     "type": "PropsRuntime<'plugins.bundle.activation'>['onOpenDetails']",
+     "default": "—",
+     "desc": "跳到该 bundle 的插件详情页；本组件不会因此开始下载或录音。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'voice-input'>",
+     "default": "—",
+     "desc": "voice-input 命名空间的翻译座位（关闭按钮取 common 的 cancel）。"
+    }
+   ],
+   "notes": "它只负责「说清楚去装什么」，绝不调用 <code>prepare</code>：下载必须由用户进详情页后显式触发。卡片宽 <code>min(380px, 100%)</code>，页脚只有两个按钮、没有第三个取消位——取消路径就是右上角关闭与遮罩点击。",
+   "keywords": [
+    "安装引导",
+    "语音设置弹窗",
+    "setup prompt",
+    "语音输入",
+    "voice-input"
+   ]
+  },
+  {
+   "id": "voice-setup-prompt",
+   "name": "VoiceSetupPrompt",
+   "exportName": "VoiceSetupPrompt",
+   "zh": "语音引导",
+   "group": "conversation",
+   "summary": "挂在 <code>plugins.bundle.activation</code> 上的激活引导入口，本身不产生任何 DOM：它读 <code>useSpeechReadiness</code>，取当前选中服务的准备阶段，只在「该服务是 host-local 且阶段为 <code>unprepared</code>」时渲染 <code>VoiceSetupDialog</code>（<code>needsInstallation</code> 恒为真）；阶段已过 <code>checking</code> 而不再需要安装时，用一次 effect 调 <code>onDismiss</code> 把引导收掉。它不开始下载、不申请麦克风，也不碰草稿。",
+   "source": "packages/experimental/client-ui-voice-input/src/client/VoiceSetupPrompt.tsx#L18",
+   "css": [
+    "packages/client/ui-primitives/src/Modal.module.css",
+    "packages/client/ui-primitives/src/Button.module.css"
+   ],
+   "tokens": [
+    "--ds-ease-in-out",
+    "--ds-transition-duration",
+    "--dsh-frame-chrome-top",
+    "--dsh-frame-overlay-top",
+    "--dsw-alias-bg-layer-2",
+    "--dsw-alias-bg-mask-1",
+    "--dsw-alias-border-l3",
+    "--dsw-alias-button-primary-fill",
+    "--dsw-alias-button-primary-hover",
+    "--dsw-alias-button-tool-bar-fill",
+    "--dsw-alias-button-tool-bar-hover",
+    "--dsw-alias-interactive-bg-active",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-primary-foreground",
+    "--dsw-alias-label-secondary",
+    "--dsw-elevation-prominent",
+    "--dsw-mask-blur",
+    "--dsw-radius-md",
+    "--dsw-radius-panel",
+    "--dsw-radius-sm"
+   ],
+   "specimens": [
+    {
+     "label": "需要准备时渲染出的引导弹窗",
+     "note": "该组件本身无独立外观，这里展示它渲染的内容（静态快照）",
+     "html": "<div style=\"width:520px\"><div class=\"root snapshotStatic\" role=\"presentation\">\n      <div class=\"mask\" aria-hidden=\"true\"></div>\n      <div class=\"dialog\" tabindex=\"-1\" role=\"dialog\" aria-modal=\"true\" aria-label=\"使用语音输入前需要安装\">\n        <div class=\"content\">\n          <div class=\"header\"><h2 class=\"title\">使用语音输入前需要安装</h2><button type=\"button\" class=\"close\" aria-label=\"取消\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></div>\n          <div class=\"body\"><p>语音输入插件已开启。首次使用需要在本机下载并准备识别模型，请前往插件详情页查看空间、内存和时间说明，再开始安装。</p></div>\n        </div>\n        <div class=\"footer\"><button type=\"button\" class=\"button ghost md\">稍后</button><button type=\"button\" class=\"button primary md\" data-modal-autofocus>前往安装</button></div>\n      </div>\n    </div></div>",
+     "css": "/* 静态快照：Modal 的 .root 在真实产品里是 body 上的 fixed 全屏遮罩层，这里改回文档流，\n   同时保留它作为 .mask 绝对定位的父级。 */\n.root.snapshotStatic { position: relative; }"
+    }
+   ],
+   "props": [
+    {
+     "name": "useSpeechReadiness",
+     "type": "InjectFace<VoiceInputInjected>['useSpeechReadiness']",
+     "default": "—",
+     "desc": "读取 Host 语音快照的 hooks 舱位；判定只用其中的 catalog.selection 与对应 provider。"
+    },
+    {
+     "name": "onDismiss",
+     "type": "PropsRuntime<'plugins.bundle.activation'>['onDismiss']",
+     "default": "—",
+     "desc": "不需要安装时调用它，把该插槽的引导收起；打开态下也由它关闭弹窗。"
+    },
+    {
+     "name": "onOpenDetails",
+     "type": "PropsRuntime<'plugins.bundle.activation'>['onOpenDetails']",
+     "default": "—",
+     "desc": "透传给弹窗的「前往安装」，跳插件详情页。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'voice-input'>",
+     "default": "—",
+     "desc": "voice-input 命名空间的翻译座位。"
+    }
+   ],
+   "notes": "判定条件写死为 host-local：云端服务不需要下载，因此永远不会弹这张卡。<code>readiness.connected</code> 为假时 <code>phase</code> 取 <code>undefined</code>，两个分支都不成立，即既不开弹窗也不误调 <code>onDismiss</code>。",
+   "keywords": [
+    "激活引导",
+    "安装提示",
+    "activation",
+    "voice setup",
+    "voice-input"
+   ]
+  },
+  {
+   "id": "waveform",
+   "name": "Waveform",
+   "exportName": "Waveform",
+   "zh": "波形图",
+   "group": "conversation",
+   "summary": "录音中的实时波形：一张 <code>viewBox=\"0 0 640 40\"</code>、<code>preserveAspectRatio=\"none\"</code> 的 SVG，布局上是 <code>flex:1; width:0; height:24px; min-width:24px</code>，颜色取 <code>--dsw-alias-label-secondary</code>。里面固定 80 条 3px 粗、圆头、间隔 8px 的竖线，透明度从 0.25 线性升到 0.92；每 50ms 采一次振幅并整体右移一位，线长从 2px（静音基线）到 36px。它用 <code>role=\"img\"</code> + <code>aria-label</code> 对外表达，几何全部走 attribute，不触发 React 重渲染。",
+   "source": "packages/experimental/client-ui-voice-input/src/client/Waveform.tsx#L7",
+   "css": [
+    "packages/experimental/client-ui-voice-input/src/client/VoiceInput.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-border-l1",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-interactive-bg-hover-solid",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-state-error-primary",
+    "--dsw-alias-state-success-primary",
+    "--dsw-specific-selector"
+   ],
+   "specimens": [
+    {
+     "label": "说话中：从左到右抬起的包络",
+     "note": "静态快照：新采样画在最右侧，历史向左衰减；这里冻结在说话中的一帧",
+     "html": "<div style=\"display:flex;width:560px\"><svg class=\"waveform\" viewBox=\"0 0 640 40\" preserveAspectRatio=\"none\" role=\"img\" aria-label=\"麦克风输入电平\"><line x1=\"4\" x2=\"4\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.25\"/><line x1=\"12\" x2=\"12\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.25833333333333336\"/><line x1=\"20\" x2=\"20\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.26666666666666666\"/><line x1=\"28\" x2=\"28\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.275\"/><line x1=\"36\" x2=\"36\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.2833333333333333\"/><line x1=\"44\" x2=\"44\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.2916666666666667\"/><line x1=\"52\" x2=\"52\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.3\"/><line x1=\"60\" x2=\"60\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.30833333333333335\"/><line x1=\"68\" x2=\"68\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.31666666666666665\"/><line x1=\"76\" x2=\"76\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.325\"/><line x1=\"84\" x2=\"84\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.3333333333333333\"/><line x1=\"92\" x2=\"92\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.3416666666666667\"/><line x1=\"100\" x2=\"100\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.35\"/><line x1=\"108\" x2=\"108\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.35833333333333334\"/><line x1=\"116\" x2=\"116\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.3666666666666667\"/><line x1=\"124\" x2=\"124\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.375\"/><line x1=\"132\" x2=\"132\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.3833333333333333\"/><line x1=\"140\" x2=\"140\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.39166666666666666\"/><line x1=\"148\" x2=\"148\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.4\"/><line x1=\"156\" x2=\"156\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.4083333333333333\"/><line x1=\"164\" x2=\"164\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.41666666666666663\"/><line x1=\"172\" x2=\"172\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.425\"/><line x1=\"180\" x2=\"180\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.43333333333333335\"/><line x1=\"188\" x2=\"188\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.44166666666666665\"/><line x1=\"196\" x2=\"196\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.45\"/><line x1=\"204\" x2=\"204\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.45833333333333337\"/><line x1=\"212\" x2=\"212\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.4666666666666667\"/><line x1=\"220\" x2=\"220\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.475\"/><line x1=\"228\" x2=\"228\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.48333333333333334\"/><line x1=\"236\" x2=\"236\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.4916666666666667\"/><line x1=\"244\" x2=\"244\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.5\"/><line x1=\"252\" x2=\"252\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.5083333333333333\"/><line x1=\"260\" x2=\"260\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.5166666666666666\"/><line x1=\"268\" x2=\"268\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.525\"/><line x1=\"276\" x2=\"276\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.5333333333333333\"/><line x1=\"284\" x2=\"284\" y1=\"18.8\" y2=\"21.2\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.5416666666666667\"/><line x1=\"292\" x2=\"292\" y1=\"18.2\" y2=\"21.8\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.55\"/><line x1=\"300\" x2=\"300\" y1=\"18.4\" y2=\"21.6\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.5583333333333333\"/><line x1=\"308\" x2=\"308\" y1=\"18.6\" y2=\"21.4\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.5666666666666667\"/><line x1=\"316\" x2=\"316\" y1=\"17.8\" y2=\"22.2\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.575\"/><line x1=\"324\" x2=\"324\" y1=\"17.6\" y2=\"22.4\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.5833333333333333\"/><line x1=\"332\" x2=\"332\" y1=\"17.5\" y2=\"22.5\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.5916666666666667\"/><line x1=\"340\" x2=\"340\" y1=\"16.9\" y2=\"23.1\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.6\"/><line x1=\"348\" x2=\"348\" y1=\"17.9\" y2=\"22.1\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.6083333333333334\"/><line x1=\"356\" x2=\"356\" y1=\"17.8\" y2=\"22.2\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.6166666666666667\"/><line x1=\"364\" x2=\"364\" y1=\"15.1\" y2=\"24.9\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.625\"/><line x1=\"372\" x2=\"372\" y1=\"15.8\" y2=\"24.2\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.6333333333333333\"/><line x1=\"380\" x2=\"380\" y1=\"18.3\" y2=\"21.7\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.6416666666666666\"/><line x1=\"388\" x2=\"388\" y1=\"16.2\" y2=\"23.8\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.65\"/><line x1=\"396\" x2=\"396\" y1=\"14.6\" y2=\"25.4\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.6583333333333333\"/><line x1=\"404\" x2=\"404\" y1=\"15.8\" y2=\"24.2\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.6666666666666667\"/><line x1=\"412\" x2=\"412\" y1=\"15.2\" y2=\"24.8\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.675\"/><line x1=\"420\" x2=\"420\" y1=\"15.8\" y2=\"24.2\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.6833333333333333\"/><line x1=\"428\" x2=\"428\" y1=\"16.9\" y2=\"23.1\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.6916666666666667\"/><line x1=\"436\" x2=\"436\" y1=\"13.0\" y2=\"27.0\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.7\"/><line x1=\"444\" x2=\"444\" y1=\"12.3\" y2=\"27.7\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.7083333333333333\"/><line x1=\"452\" x2=\"452\" y1=\"17.5\" y2=\"22.5\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.7166666666666667\"/><line x1=\"460\" x2=\"460\" y1=\"15.9\" y2=\"24.1\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.725\"/><line x1=\"468\" x2=\"468\" y1=\"11.1\" y2=\"28.9\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.7333333333333334\"/><line x1=\"476\" x2=\"476\" y1=\"13.3\" y2=\"26.7\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.7416666666666667\"/><line x1=\"484\" x2=\"484\" y1=\"14.7\" y2=\"25.3\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.75\"/><line x1=\"492\" x2=\"492\" y1=\"17.0\" y2=\"23.0\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.7583333333333333\"/><line x1=\"500\" x2=\"500\" y1=\"17.6\" y2=\"22.4\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.7666666666666667\"/><line x1=\"508\" x2=\"508\" y1=\"16.6\" y2=\"23.4\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.775\"/><line x1=\"516\" x2=\"516\" y1=\"15.5\" y2=\"24.5\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.7833333333333333\"/><line x1=\"524\" x2=\"524\" y1=\"17.7\" y2=\"22.3\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.7916666666666666\"/><line x1=\"532\" x2=\"532\" y1=\"16.6\" y2=\"23.4\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.8\"/><line x1=\"540\" x2=\"540\" y1=\"8.4\" y2=\"31.6\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.8083333333333333\"/><line x1=\"548\" x2=\"548\" y1=\"9.2\" y2=\"30.8\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.8166666666666667\"/><line x1=\"556\" x2=\"556\" y1=\"14.7\" y2=\"25.3\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.825\"/><line x1=\"564\" x2=\"564\" y1=\"12.2\" y2=\"27.8\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.8333333333333334\"/><line x1=\"572\" x2=\"572\" y1=\"11.4\" y2=\"28.6\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.8416666666666667\"/><line x1=\"580\" x2=\"580\" y1=\"11.4\" y2=\"28.6\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.85\"/><line x1=\"588\" x2=\"588\" y1=\"6.9\" y2=\"33.1\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.8583333333333333\"/><line x1=\"596\" x2=\"596\" y1=\"11.4\" y2=\"28.6\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.8666666666666667\"/><line x1=\"604\" x2=\"604\" y1=\"16.9\" y2=\"23.1\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.875\"/><line x1=\"612\" x2=\"612\" y1=\"7.5\" y2=\"32.5\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.8833333333333333\"/><line x1=\"620\" x2=\"620\" y1=\"4.0\" y2=\"36.0\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.8916666666666667\"/><line x1=\"628\" x2=\"628\" y1=\"13.6\" y2=\"26.4\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.9\"/><line x1=\"636\" x2=\"636\" y1=\"12.9\" y2=\"27.1\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.9083333333333333\"/></svg></div>"
+    },
+    {
+     "label": "静音基线：2px 点线",
+     "note": "静态快照：未收到声音时就是初次的 80 条 y1=19 / y2=21",
+     "html": "<div style=\"display:flex;width:560px\"><svg class=\"waveform\" viewBox=\"0 0 640 40\" preserveAspectRatio=\"none\" role=\"img\" aria-label=\"麦克风输入电平\"><line x1=\"4\" x2=\"4\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.25\"/><line x1=\"12\" x2=\"12\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.25833333333333336\"/><line x1=\"20\" x2=\"20\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.26666666666666666\"/><line x1=\"28\" x2=\"28\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.275\"/><line x1=\"36\" x2=\"36\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.2833333333333333\"/><line x1=\"44\" x2=\"44\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.2916666666666667\"/><line x1=\"52\" x2=\"52\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.3\"/><line x1=\"60\" x2=\"60\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.30833333333333335\"/><line x1=\"68\" x2=\"68\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.31666666666666665\"/><line x1=\"76\" x2=\"76\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.325\"/><line x1=\"84\" x2=\"84\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.3333333333333333\"/><line x1=\"92\" x2=\"92\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.3416666666666667\"/><line x1=\"100\" x2=\"100\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.35\"/><line x1=\"108\" x2=\"108\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.35833333333333334\"/><line x1=\"116\" x2=\"116\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.3666666666666667\"/><line x1=\"124\" x2=\"124\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.375\"/><line x1=\"132\" x2=\"132\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.3833333333333333\"/><line x1=\"140\" x2=\"140\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.39166666666666666\"/><line x1=\"148\" x2=\"148\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.4\"/><line x1=\"156\" x2=\"156\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.4083333333333333\"/><line x1=\"164\" x2=\"164\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.41666666666666663\"/><line x1=\"172\" x2=\"172\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.425\"/><line x1=\"180\" x2=\"180\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.43333333333333335\"/><line x1=\"188\" x2=\"188\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.44166666666666665\"/><line x1=\"196\" x2=\"196\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.45\"/><line x1=\"204\" x2=\"204\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.45833333333333337\"/><line x1=\"212\" x2=\"212\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.4666666666666667\"/><line x1=\"220\" x2=\"220\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.475\"/><line x1=\"228\" x2=\"228\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.48333333333333334\"/><line x1=\"236\" x2=\"236\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.4916666666666667\"/><line x1=\"244\" x2=\"244\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.5\"/><line x1=\"252\" x2=\"252\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.5083333333333333\"/><line x1=\"260\" x2=\"260\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.5166666666666666\"/><line x1=\"268\" x2=\"268\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.525\"/><line x1=\"276\" x2=\"276\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.5333333333333333\"/><line x1=\"284\" x2=\"284\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.5416666666666667\"/><line x1=\"292\" x2=\"292\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.55\"/><line x1=\"300\" x2=\"300\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.5583333333333333\"/><line x1=\"308\" x2=\"308\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.5666666666666667\"/><line x1=\"316\" x2=\"316\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.575\"/><line x1=\"324\" x2=\"324\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.5833333333333333\"/><line x1=\"332\" x2=\"332\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.5916666666666667\"/><line x1=\"340\" x2=\"340\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.6\"/><line x1=\"348\" x2=\"348\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.6083333333333334\"/><line x1=\"356\" x2=\"356\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.6166666666666667\"/><line x1=\"364\" x2=\"364\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.625\"/><line x1=\"372\" x2=\"372\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.6333333333333333\"/><line x1=\"380\" x2=\"380\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.6416666666666666\"/><line x1=\"388\" x2=\"388\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.65\"/><line x1=\"396\" x2=\"396\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.6583333333333333\"/><line x1=\"404\" x2=\"404\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.6666666666666667\"/><line x1=\"412\" x2=\"412\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.675\"/><line x1=\"420\" x2=\"420\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.6833333333333333\"/><line x1=\"428\" x2=\"428\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.6916666666666667\"/><line x1=\"436\" x2=\"436\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.7\"/><line x1=\"444\" x2=\"444\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.7083333333333333\"/><line x1=\"452\" x2=\"452\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.7166666666666667\"/><line x1=\"460\" x2=\"460\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.725\"/><line x1=\"468\" x2=\"468\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.7333333333333334\"/><line x1=\"476\" x2=\"476\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.7416666666666667\"/><line x1=\"484\" x2=\"484\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.75\"/><line x1=\"492\" x2=\"492\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.7583333333333333\"/><line x1=\"500\" x2=\"500\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.7666666666666667\"/><line x1=\"508\" x2=\"508\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.775\"/><line x1=\"516\" x2=\"516\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.7833333333333333\"/><line x1=\"524\" x2=\"524\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.7916666666666666\"/><line x1=\"532\" x2=\"532\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.8\"/><line x1=\"540\" x2=\"540\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.8083333333333333\"/><line x1=\"548\" x2=\"548\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.8166666666666667\"/><line x1=\"556\" x2=\"556\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.825\"/><line x1=\"564\" x2=\"564\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.8333333333333334\"/><line x1=\"572\" x2=\"572\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.8416666666666667\"/><line x1=\"580\" x2=\"580\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.85\"/><line x1=\"588\" x2=\"588\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.8583333333333333\"/><line x1=\"596\" x2=\"596\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.8666666666666667\"/><line x1=\"604\" x2=\"604\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.875\"/><line x1=\"612\" x2=\"612\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.8833333333333333\"/><line x1=\"620\" x2=\"620\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.8916666666666667\"/><line x1=\"628\" x2=\"628\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.9\"/><line x1=\"636\" x2=\"636\" y1=\"19\" y2=\"21\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" opacity=\"0.9083333333333333\"/></svg></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "recording",
+     "type": "Recording | undefined",
+     "default": "undefined",
+     "desc": "进行中的录音对象；每帧只调它的 amplitude()，为 undefined 时画静音基线。"
+    },
+    {
+     "name": "label",
+     "type": "string",
+     "default": "—",
+     "desc": "本地化的无障碍标签，例如「麦克风输入电平」。"
+    }
+   ],
+   "notes": "线长映射是 <code>1 + min(1, level × 5) × 17</code>，所以很小的声音也会立刻抬起来；静音时退化成 2px 的点线而不是空白。它自己不持状态，卸载时取消 requestAnimationFrame。",
+   "keywords": [
+    "波形",
+    "录音",
+    "amplitude",
+    "waveform",
+    "voice-input"
+   ]
+  },
+  {
+   "id": "translation-body",
+   "name": "TranslationBody",
+   "exportName": "TranslationBody",
+   "zh": "翻译正文",
+   "group": "conversation",
+   "summary": "展开思考内容时的翻译正文：<code>data-cot-translation</code> 容器带 <code>data-translation-state</code>（ready / pending / failed）与 <code>data-translation-view</code>（translated / original）两个状态属性；上面是一条最小 28px、可折行的工具栏——最左是向左偏 10px 以对齐正文的 sm ghost 按钮「查看原文 / 查看译文」，翻译中跟一个 14px 旋转弧，失败时换成 13px 的「翻译暂不可用，已显示原文」与「重试」。正文交给 <code>conversation.chat.reasoning.content</code> 这个 Factory，默认即 <code>MarkdownText</code> 的 compact 变体（13px/20px、三级色）。",
+   "source": "packages/experimental/client-ui-cot-translation/src/client/TranslationBody.tsx#L30",
+   "css": [
+    "packages/experimental/client-ui-cot-translation/src/client/Translation.module.css",
+    "packages/client/ui-primitives/src/markdown/MarkdownText.module.css",
+    "packages/client/ui-primitives/src/Button.module.css"
+   ],
+   "tokens": [
+    "--ds-ease-in-out",
+    "--ds-font-family-code",
+    "--ds-transition-duration",
+    "--dsh-content-font-delta-secondary",
+    "--dsh-content-font-size-secondary",
+    "--dsh-scrollbar-width",
+    "--dsw-alias-bg-base",
+    "--dsw-alias-border-l1",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-border-l3",
+    "--dsw-alias-border-l4",
+    "--dsw-alias-button-primary-fill",
+    "--dsw-alias-button-primary-hover",
+    "--dsw-alias-button-tool-bar-fill",
+    "--dsw-alias-button-tool-bar-hover",
+    "--dsw-alias-interactive-bg-active",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-caption",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-primary-foreground",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-link",
+    "--dsw-alias-markdown-inline-code",
+    "--dsw-alias-state-business-primary",
+    "--dsw-focus-ring-color",
+    "--dsw-focus-ring-width",
+    "--dsw-font-markdown-base",
+    "--dsw-font-markdown-base-strong",
+    "--dsw-font-markdown-code",
+    "--dsw-font-markdown-h1",
+    "--dsw-font-markdown-h2",
+    "--dsw-font-markdown-h3",
+    "--dsw-font-markdown-h4",
+    "--dsw-font-markdown-table",
+    "--dsw-font-markdown-table-head",
+    "--dsw-radius-md",
+    "--dsw-radius-sm",
+    "--dsw-radius-xs"
+   ],
+   "specimens": [
+    {
+     "label": "已翻译：查看原文 + 译文正文",
+     "note": "静态快照：ready 状态、translated 视图",
+     "html": "<div style=\"width:640px\"><div data-cot-translation=\"true\" data-translation-state=\"ready\" data-translation-view=\"translated\">\n      <div class=\"c0-toolbar\"><button type=\"button\" class=\"button ghost sm c0-viewToggle\">查看原文</button></div>\n      <div class=\"markdown compact\" data-markdown-variant=\"compact\"><p>先把 <code>.bubble</code> 的宽度上限改成 <code>min(calc(var(--dsh-chat-content-width, 748px) * 0.702), 82%)</code>，这样拖动列宽时气泡会跟着变，不是写死的 525px。</p><p>再把三处圆角统一到 <code>--dsw-radius-md</code>，然后跑一遍 <code>pnpm run test:gui</code> 看对照截图。</p><ul><li>引用摘要在气泡下方单独一行，13px 三级色。</li><li>时间戳留在操作行左侧，同样 13px。</li></ul></div>\n    </div></div>"
+    },
+    {
+     "label": "失败：回退原文 + 重试",
+     "note": "静态快照：failed 状态自动切到 original 视图，切换按钮禁用",
+     "html": "<div style=\"width:640px\"><div data-cot-translation=\"true\" data-translation-state=\"failed\" data-translation-view=\"original\">\n      <div class=\"c0-toolbar\"><button type=\"button\" class=\"button ghost sm c0-viewToggle\" disabled>查看译文</button><span class=\"c0-failure\" role=\"status\">翻译暂不可用，已显示原文</span><button type=\"button\" class=\"button ghost sm\">重试</button></div>\n      <div class=\"markdown compact\" data-markdown-variant=\"compact\"><p>The width cap is <code>min(calc(var(--dsh-chat-content-width, 748px) * 0.702), 82%)</code>, so the bubble follows the column instead of a hard 525px.</p><p>Then unify the three radii on <code>--dsw-radius-md</code> and run <code>pnpm run test:gui</code> to compare screenshots.</p></div>\n    </div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "text",
+     "type": "string",
+     "default": "—",
+     "desc": "完整或流式中的思考原文（来自 reasoning.body 槽位的 owner props）。"
+    },
+    {
+     "name": "running",
+     "type": "boolean",
+     "default": "—",
+     "desc": "思考尾部是否仍在流式；为真时最后一段不参与翻译。"
+    },
+    {
+     "name": "usePreferences",
+     "type": "InjectFace<TranslationBodyInjected>['usePreferences']",
+     "default": "—",
+     "desc": "读取翻译偏好（provider 与 targetLanguage）的 hooks 舱位。"
+    },
+    {
+     "name": "useTranslationLocale",
+     "type": "InjectFace<TranslationBodyInjected>['useTranslationLocale']",
+     "default": "—",
+     "desc": "读取当前界面语言，targetLanguage 为 auto 时用它当目标语言。"
+    },
+    {
+     "name": "useTranslationLimit",
+     "type": "InjectFace<TranslationBodyInjected>['useTranslationLimit']",
+     "default": "—",
+     "desc": "读取单次请求的 UTF-16 上限，超长段落会先按空白切分再发。"
+    },
+    {
+     "name": "translate",
+     "type": "(request: TranslationRequest, signal: AbortSignal) => Promise<string>",
+     "default": "—",
+     "desc": "向 Host 发一次可取消的翻译请求；偏好或上限变化会让请求抛错。"
+    },
+    {
+     "name": "renderFactorySlot",
+     "type": "PropsRenderFactories['renderFactorySlot']",
+     "default": "—",
+     "desc": "渲染 conversation.chat.reasoning.content 这个 Content Factory 的渲染座位。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'cotTranslation'>",
+     "default": "—",
+     "desc": "cotTranslation 命名空间的翻译座位。"
+    }
+   ],
+   "notes": "按空行切段、逐段请求并缓存，因此「查看原文」不会丢已经拿到的译文；请求失败立刻整篇回退到原文（<code>showOriginal = original || failed</code>）并禁止切换，重试只补未翻译的段。切换按钮的文案是「下一步要看的视图」而不是当前视图：显示译文时写「查看原文」。超过上限的段落会在最近的空白处切开再发，未完成的尾段在流式期间保持原文。",
+   "keywords": [
+    "思维链翻译",
+    "查看原文",
+    "翻译失败",
+    "cot translation",
+    "reasoning"
+   ]
+  },
+  {
+   "id": "translation-settings",
+   "name": "TranslationSettings",
+   "exportName": "TranslationSettings",
+   "zh": "翻译设置",
+   "group": "conversation",
+   "summary": "插件设置页里的思维链翻译表单：外套 <code>SettingsForm</code> 的 <code>.form</code> 与 16px 上边距的 <code>.footer</code>（一颗 13px、深底反白的「保存」，未改动 / 非法 / 保存中都禁用；出现保存失败说明时说明占满剩余宽度、把按钮挤到右侧）。表单里先两行 13px/20px 的 <code>.notice</code>——一行讲展开的思考会发给所选服务，另一行按付费与否换文案；然后是「翻译服务」<code>.field</code>（32px 高、带 <code>--dsw-alias-border-l4</code> 描边的原生下拉，被覆盖时在标题行补 <code>Tag</code>「已覆盖」与「恢复默认」），最后是共享的 <code>SettingsValueField</code> 目标语言输入框（34px 高、下方 12px 提示或红色非法提示）。",
+   "source": "packages/experimental/client-ui-cot-translation/src/client/TranslationSettings.tsx#L35",
+   "css": [
+    "packages/experimental/client-ui-cot-translation/src/client/Translation.module.css",
+    "packages/client/ui-primitives/src/settings-form/SettingsForm.module.css",
+    "packages/client/ui-primitives/src/settings-form/fields.module.css",
+    "packages/client/ui-primitives/src/Tag.module.css",
+    "packages/client/ui-primitives/src/Button.module.css"
+   ],
+   "tokens": [
+    "--dsh-content-font-size-secondary",
+    "--dsw-alias-bg-base",
+    "--dsw-alias-bg-layer-3",
+    "--dsw-alias-bg-layer-4",
+    "--dsw-alias-bg-module-platform",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-border-l3",
+    "--dsw-alias-border-l4",
+    "--dsw-alias-button-primary-fill",
+    "--dsw-alias-button-primary-hover",
+    "--dsw-alias-button-tool-bar-fill",
+    "--dsw-alias-button-tool-bar-hover",
+    "--dsw-alias-interactive-bg-active",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-error",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-primary-foreground",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-state-error-primary",
+    "--dsw-alias-state-success-primary",
+    "--dsw-alias-state-warn-primary",
+    "--dsw-focus-ring-color",
+    "--dsw-focus-ring-width",
+    "--dsw-radius-md",
+    "--dsw-radius-sm"
+   ],
+   "specimens": [
+    {
+     "label": "默认：匿名服务 + 未改动",
+     "note": "静态快照：未改动，保存按钮禁用",
+     "html": "<div style=\"width:560px\"><div class=\"form\"><p class=\"c0-notice\">展开的思考内容会发送给所选翻译服务，可能包含私有代码或对话细节。</p>\n      <p class=\"c0-notice\">Bing 和 Google 翻译无需额外登录或 API key，但匿名接口可能拒绝或限制请求</p>\n      <div class=\"c0-field\">\n        <div class=\"c0-toolbar\"><label for=\"cot-provider\">翻译服务</label></div>\n        <select id=\"cot-provider\">\n          <option value=\"bing\" selected>Bing</option><option value=\"google\">Google</option><option value=\"deepseek-account\">DeepSeek Flash · 账号（付费）</option><option value=\"deepseek-official\">DeepSeek Flash · 官方 API（付费）</option>\n        </select>\n      </div>\n      <div class=\"c2-field\">\n        <div class=\"c2-head\">\n          <div class=\"c2-labelGroup\"><label class=\"c2-label\" for=\"cot-language\">目标语言</label></div>\n          \n        </div>\n        <input class=\"c2-input\" id=\"cot-language\" type=\"text\" value=\"auto\" aria-describedby=\"cot-language-message\">\n        <p id=\"cot-language-message\" class=\"c2-hint\">auto 使用界面语言；也可填写语言代码，例如 zh、en、ja</p>\n      </div><div class=\"footer\"><button type=\"button\" class=\"save\" disabled>保存</button></div></div></div>"
+    },
+    {
+     "label": "已覆盖 + 付费服务：可保存",
+     "note": "静态快照：字段带 overridden 标记，表单已有改动所以保存可点",
+     "html": "<div style=\"width:560px\"><div class=\"form\"><p class=\"c0-notice\">展开的思考内容会发送给所选翻译服务，可能包含私有代码或对话细节。</p>\n      <p class=\"c0-notice\">每个未缓存片段都会通过所选账号或官方 API 凭据单独发送一次付费的 DeepSeek Flash 请求；重新展开会复用已保存的译文，更改服务、语言、原文或请求设置可能发送新的付费请求</p>\n      <div class=\"c0-field\">\n        <div class=\"c0-toolbar\"><label for=\"cot-provider\">翻译服务</label><span class=\"tag\" data-tone=\"neutral\">已覆盖</span><button type=\"button\" class=\"button ghost sm\">恢复默认</button></div>\n        <select id=\"cot-provider\">\n          <option value=\"bing\">Bing</option><option value=\"google\">Google</option><option value=\"deepseek-account\" selected>DeepSeek Flash · 账号（付费）</option><option value=\"deepseek-official\">DeepSeek Flash · 官方 API（付费）</option>\n        </select>\n      </div>\n      <div class=\"c2-field\">\n        <div class=\"c2-head\">\n          <div class=\"c2-labelGroup\"><label class=\"c2-label\" for=\"cot-language\">目标语言</label></div>\n          <span class=\"c2-badges\"><span class=\"tag\" data-tone=\"neutral\">已覆盖</span><button type=\"button\" class=\"c2-reset\">恢复默认</button></span>\n        </div>\n        <input class=\"c2-input\" id=\"cot-language\" type=\"text\" value=\"zh-CN\" aria-describedby=\"cot-language-message\">\n        <p id=\"cot-language-message\" class=\"c2-hint\">auto 使用界面语言；也可填写语言代码，例如 zh、en、ja</p>\n      </div><div class=\"footer\"><button type=\"button\" class=\"save\">保存</button></div></div></div>"
+    },
+    {
+     "label": "只读部署 + 目标语言非法",
+     "note": "静态快照：readOnly 提示置顶，所有控件与保存禁用；非法提示用红色",
+     "html": "<div style=\"width:560px\"><div class=\"form\"><p class=\"readOnly\" role=\"status\">本部署的设置为只读</p><p class=\"c0-notice\">展开的思考内容会发送给所选翻译服务，可能包含私有代码或对话细节。</p>\n      <p class=\"c0-notice\">Bing 和 Google 翻译无需额外登录或 API key，但匿名接口可能拒绝或限制请求</p>\n      <div class=\"c0-field\">\n        <div class=\"c0-toolbar\"><label for=\"cot-provider\">翻译服务</label></div>\n        <select id=\"cot-provider\" disabled>\n          <option value=\"bing\">Bing</option><option value=\"google\" selected>Google</option><option value=\"deepseek-account\">DeepSeek Flash · 账号（付费）</option><option value=\"deepseek-official\">DeepSeek Flash · 官方 API（付费）</option>\n        </select>\n      </div>\n      <div class=\"c2-field\">\n        <div class=\"c2-head\">\n          <div class=\"c2-labelGroup\"><label class=\"c2-label\" for=\"cot-language\">目标语言</label></div>\n          \n        </div>\n        <input class=\"c2-input\" id=\"cot-language\" type=\"text\" value=\"zh_CN\" aria-invalid=\"true\" disabled aria-describedby=\"cot-language-message\">\n        <p id=\"cot-language-message\" class=\"c2-invalid\">请填写 auto 或语言代码，例如 zh、en、ja</p>\n      </div><div class=\"footer\"><button type=\"button\" class=\"save\" disabled>保存</button></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "useTranslationForm",
+     "type": "InjectFace<TranslationSettingsInjected>['useTranslationForm']",
+     "default": "—",
+     "desc": "读取暂存草稿（provider 与 targetLanguage 两栏的文本、覆盖、非法与表单整体状态）的 hooks 舱位。"
+    },
+    {
+     "name": "useAvailableProviders",
+     "type": "InjectFace<TranslationSettingsInjected>['useAvailableProviders']",
+     "default": "—",
+     "desc": "读取本次部署可用的翻译服务列表，用于过滤下拉选项。"
+    },
+    {
+     "name": "refreshProviders",
+     "type": "() => void",
+     "default": "—",
+     "desc": "重新计算原生路由的可用性，只刷新资格、不发翻译也不起推理。"
+    },
+    {
+     "name": "edit",
+     "type": "(field: 'provider' | 'targetLanguage', text: string) => void",
+     "default": "—",
+     "desc": "把一次输入暂存进草稿；只有保存才会落盘。"
+    },
+    {
+     "name": "resetField",
+     "type": "(field: 'provider' | 'targetLanguage') => void",
+     "default": "—",
+     "desc": "把某一栏暂存成「清除」，保存后重新继承上层配置。"
+    },
+    {
+     "name": "save",
+     "type": "() => void",
+     "default": "—",
+     "desc": "把两栏草稿写回 Host 配置。"
+    },
+    {
+     "name": "discard",
+     "type": "() => void",
+     "default": "—",
+     "desc": "丢弃草稿；表单卸载时自动调用。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'cotTranslation'>",
+     "default": "—",
+     "desc": "cotTranslation 命名空间的翻译座位（表单框架文案走 formLabels）。"
+    }
+   ],
+   "notes": "可用服务里没有当前草稿值时，下拉会多出一条 disabled 的「服务 — 不可用」并在下方提示；paying 与否只看草稿是不是 <code>deepseek-account</code> / <code>deepseek-official</code>，两行 notice 与保存都跟着禁用状态走。这里没有「取消」按钮：离开页面即丢弃草稿，这是 <code>SettingsForm</code> 的约定。",
+   "keywords": [
+    "翻译设置",
+    "目标语言",
+    "translation settings",
+    "cot-translation",
+    "付费提示"
+   ]
+  },
+  {
+   "id": "team-action",
+   "name": "TeamAction",
+   "exportName": "TeamAction",
+   "zh": "团队面板",
+   "group": "conversation",
+   "summary": "会话标题栏里的智能体团队入口：一颗 28px 高的 <code>.trigger</code>（<code>IconUsersOutlineRegular</code> + 12px 标签，颜色是三级色、悬停转主色），点开后在 body 上 portal 一块宽 <code>min(500px, 100vw-32px)</code>、最大高 <code>min(680px, 100vh-32px)</code> 的菜单面板——12px 圆角、<code>--dsw-elevation-prominent</code> 投影，皮肤画在 <code>::before</code> 上（背景 <code>--dsw-specific-menu</code> 加 <code>--dsw-menu-backdrop-filter</code>）。面板里是两段：成员区两列网格，每张卡 10/12px 内边距、8px 圆角、描边用 <code>--dsw-elevation-stroke</code>，当前会话那张换成强调色内描边并带 info 色「当前会话」小胶囊；任务区是单列任务卡（13px 标题 + 11px 状态、两行截断的描述、<code>.meta</code> 行给 id / Owner / 依赖 / 写入范围，需要时可展开）。成员只有 1 个且没有共享任务时面板收窄成 <code>min(320px, 100vw-32px)</code> 的单列。",
+   "source": "packages/experimental/client-ui-agent-team/src/client/TeamAction.tsx#L179",
+   "css": [
+    "packages/experimental/client-ui-agent-team/src/client/TeamAction.module.css",
+    "packages/client/ui-primitives/src/StateDot.module.css",
+    "packages/client/ui-primitives/src/Tag.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-layer-2",
+    "--dsw-alias-bg-layer-3",
+    "--dsw-alias-bg-module-platform",
+    "--dsw-alias-border-l1",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-border-l3",
+    "--dsw-alias-border-l4",
+    "--dsw-alias-label-caption",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-primary-foreground",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-scrollbar-bg-l2",
+    "--dsw-alias-scrollbar-hover-l2",
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-state-error-primary",
+    "--dsw-alias-state-idle-primary",
+    "--dsw-alias-state-success-primary",
+    "--dsw-alias-state-warn-primary",
+    "--dsw-elevation-panel",
+    "--dsw-elevation-prominent",
+    "--dsw-elevation-stroke",
+    "--dsw-menu-backdrop-filter",
+    "--dsw-specific-menu"
+   ],
+   "specimens": [
+    {
+     "label": "打开态：成员名册 + 共享任务",
+     "note": "静态快照：面板真实在 body 的 portal 里 fixed 定位，这里拉回文档流；第二张卡是悬停模拟",
+     "html": "<div style=\"width:520px\"><div class=\"root\" data-team-action>\n      <button type=\"button\" class=\"trigger\" aria-label=\"智能体团队\" aria-haspopup=\"dialog\" aria-expanded=\"true\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M6 8.25C7.51878 8.25 8.75 7.01878 8.75 5.5C8.75 3.98122 7.51878 2.75 6 2.75C4.48122 2.75 3.25 3.98122 3.25 5.5C3.25 7.01878 4.48122 8.25 6 8.25Z\" stroke=\"currentColor\"/><path d=\"M1 14.5C1 11.5 3.5 10.25 6 10.25C8.5 10.25 11 11.5 11 14.5\" stroke=\"currentColor\"/><path d=\"M10.5 2.9C11.65 3.35 12.45 4.35 12.45 5.5C12.45 6.65 11.65 7.65 10.5 8.1\" stroke=\"currentColor\"/><path d=\"M12.4 10.6C13.9 11.3 15 12.6 15 14.5\" stroke=\"currentColor\"/></svg><span class=\"triggerLabel\">智能体团队</span></button>\n      <div class=\"panel panelSnapshot\" role=\"dialog\" tabindex=\"-1\" aria-label=\"智能体团队\" data-team-panel>\n        <div class=\"body\">\n          <section>\n            <h3>成员<span class=\"count\">3</span></h3>\n            <div class=\"roster\">\n              <button type=\"button\" class=\"member memberCurrent\" disabled>\n            <span class=\"memberDot\"><svg class=\"spinner\" data-state=\"ongoing\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><g class=\"spinnerMotion\"><circle class=\"spinnerTrack\" cx=\"12\" cy=\"12\" r=\"9.5\"></circle><circle class=\"spinnerArc\" cx=\"12\" cy=\"12\" r=\"9.5\"></circle></g></svg></span>\n            <span class=\"memberText\"><span class=\"memberName\"><span class=\"memberNameText\">lead</span><span class=\"tag currentTag\" data-tone=\"info\">当前会话</span></span><small>运行中<span class=\"memberModel\"> · 模型: deepseek-chat</span></small></span>\n          </button>\n              <button type=\"button\" class=\"member memberForceHover\">\n            <span class=\"memberDot\"><svg class=\"spinner\" data-state=\"ongoing\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><g class=\"spinnerMotion\"><circle class=\"spinnerTrack\" cx=\"12\" cy=\"12\" r=\"9.5\"></circle><circle class=\"spinnerArc\" cx=\"12\" cy=\"12\" r=\"9.5\"></circle></g></svg></span>\n            <span class=\"memberText\"><span class=\"memberName\"><span class=\"memberNameText\">ui-dockkit</span></span><small>运行中<span class=\"memberModel\"> · 模型: deepseek-chat</span></small></span>\n          </button>\n              <button type=\"button\" class=\"member\">\n            <span class=\"memberDot\"><svg class=\"inactiveIcon\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 8.25C9.51878 8.25 10.75 7.01878 10.75 5.5C10.75 3.98122 9.51878 2.75 8 2.75C6.48122 2.75 5.25 3.98122 5.25 5.5C5.25 7.01878 6.48122 8.25 8 8.25Z\" stroke=\"currentColor\"/><path d=\"M2.5 14.5C2.5 11.5 5.25 10.25 8 10.25C10.75 10.25 13.5 11.5 13.5 14.5\" stroke=\"currentColor\"/></svg></span>\n            <span class=\"memberText\"><span class=\"memberName\"><span class=\"memberNameText\">host-bridge</span></span><small>未运行</small></span>\n          </button>\n            </div>\n          </section>\n          <section>\n            <h3>共享任务<span class=\"count\">3</span></h3>\n            <div class=\"tasks\">\n              <article class=\"task\">\n          <div class=\"taskTitle\"><strong>拆分 UI 与 Host 改动</strong><span class=\"taskState\"><svg class=\"spinner\" data-state=\"ongoing\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><g class=\"spinnerMotion\"><circle class=\"spinnerTrack\" cx=\"12\" cy=\"12\" r=\"9.5\"></circle><circle class=\"spinnerArc\" cx=\"12\" cy=\"12\" r=\"9.5\"></circle></g></svg><span>进行中</span></span></div>\n          <p class=\"clampedDescription\">先把 DockSurface 的落点判定抽成纯函数，再让 Host 侧只负责广播意图；两边用同一份类型定义，避免手势状态跨端复制。</p>\n          <div class=\"meta\"><button type=\"button\" class=\"expandToggle\" aria-expanded=\"false\">展开<svg width=\"12\" height=\"12\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></button><span>task-12</span><span>Owner: ui-dockkit</span><span>写入范围: packages/client/ui-dockkit</span></div>\n        </article>\n              <article class=\"task\">\n          <div class=\"taskTitle\"><strong>补齐浮层回归用例</strong><span class=\"taskState\"><span class=\"dot\" data-state=\"warning\" style=\"width:10px;height:10px\" aria-hidden=\"true\"></span><span>待处理</span></span></div>\n          <p>浮层拖出再收起时 pane 的 activeTab 不应变化。</p>\n          <div class=\"meta\"><span>task-13</span><span>Owner: 未分配</span><span>被依赖阻塞</span><span>依赖: task-12</span></div>\n        </article>\n              <article class=\"task\">\n          <div class=\"taskTitle\"><strong>统一圆角 token</strong><span class=\"taskState\"><span class=\"dot\" data-state=\"done\" style=\"width:10px;height:10px\" aria-hidden=\"true\"></span><span>已完成</span></span></div>\n          <p>三处 8px 硬编码改成 --dsw-radius-md。</p>\n          <div class=\"meta\"><span>task-11</span><span>Owner: 未分配</span><span class=\"warning\">与 task-09 的写入范围重叠</span></div>\n        </article>\n            </div>\n          </section>\n        </div>\n      </div>\n    </div></div>",
+     "css": "/* 静态快照：面板真实渲染在 body 的 portal 里，带 position:fixed 与内联坐标；这里拉回文档流，\n   relative 同时保住 ::before 菜单皮肤的包含块。悬停态无法静态触发，把 .member:hover 的两条规则\n   原样搬到 .memberForceHover 上。 */\n.panel.panelSnapshot { position: relative; inset: auto; }\n.member.memberForceHover { --dsw-elevation-stroke-color: var(--dsw-alias-border-l3); box-shadow: var(--dsw-elevation-panel); }\n.member.memberForceHover .memberModel { display: inline; }"
+    },
+    {
+     "label": "紧凑面板：单个成员、无共享任务",
+     "note": "静态快照：members 只有 1 个且 tasks 为空时用 panelCompact",
+     "html": "<div style=\"width:360px\"><div class=\"panel panelCompact panelSnapshot\" role=\"dialog\" tabindex=\"-1\" aria-label=\"智能体团队\" data-team-panel>\n        <div class=\"body\">\n          <section>\n            <h3>成员</h3>\n            <div class=\"roster\"><button type=\"button\" class=\"member memberCurrent\" disabled>\n            <span class=\"memberDot\"><svg class=\"spinner\" data-state=\"ongoing\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><g class=\"spinnerMotion\"><circle class=\"spinnerTrack\" cx=\"12\" cy=\"12\" r=\"9.5\"></circle><circle class=\"spinnerArc\" cx=\"12\" cy=\"12\" r=\"9.5\"></circle></g></svg></span>\n            <span class=\"memberText\"><span class=\"memberName\"><span class=\"memberNameText\">lead</span><span class=\"tag currentTag\" data-tone=\"info\">当前会话</span></span><small>运行中<span class=\"memberModel\"> · 模型: deepseek-chat</span></small></span>\n          </button></div>\n          </section>\n          <section><p class=\"emptyNotice\">暂无共享任务，可以通过对话创建</p></section>\n        </div>\n      </div></div>",
+     "css": "/* 静态快照：同上一例，把 fixed 面板拉回文档流。 */\n.panel.panelSnapshot { position: relative; inset: auto; }"
+    },
+    {
+     "label": "读取中：面板内的加载提示",
+     "note": "静态快照：会话或会话列表还在 loading 时只画一条 notice",
+     "html": "<div style=\"width:520px\"><div class=\"panel panelSnapshot\" role=\"dialog\" tabindex=\"-1\" aria-label=\"智能体团队\" data-team-panel>\n        <div class=\"body\"><div class=\"notice\" role=\"status\"><svg class=\"spinner\" data-state=\"ongoing\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><g class=\"spinnerMotion\"><circle class=\"spinnerTrack\" cx=\"12\" cy=\"12\" r=\"9.5\"></circle><circle class=\"spinnerArc\" cx=\"12\" cy=\"12\" r=\"9.5\"></circle></g></svg>正在加载团队…</div></div>\n      </div></div>",
+     "css": "/* 静态快照：同上一例，把 fixed 面板拉回文档流。 */\n.panel.panelSnapshot { position: relative; inset: auto; }"
+    }
+   ],
+   "props": [
+    {
+     "name": "sessionId",
+     "type": "SessionId",
+     "default": "—",
+     "desc": "当前会话 id；成员卡据此判定「当前会话」并禁用自己那一行。"
+    },
+    {
+     "name": "useSession",
+     "type": "PropsRuntime<'conversation.session.header.actions'>['useSession']",
+     "default": "—",
+     "desc": "读取当前会话快照的订阅座位：Lead 身份取自 subagent?.address.parentSessionId，openState 决定加载文案。"
+    },
+    {
+     "name": "useSessions",
+     "type": "PropsRuntime<'conversation.session.header.actions'>['useSessions']",
+     "default": "—",
+     "desc": "读取共享 Session store 的订阅座位：Team 视图、成员模型与列表 phase 都从这里取。"
+    },
+    {
+     "name": "useSessionStatus",
+     "type": "PropsRuntime<'conversation.session.header.actions'>['useSessionStatus']",
+     "default": "—",
+     "desc": "读取成员会话的实时运行状态，是「运行中 / 未运行」的首选来源，缺失时回退到列表摘要。"
+    },
+    {
+     "name": "openTeammate",
+     "type": "(sessionId: SessionId, childSessionId: SessionId) => void",
+     "default": "—",
+     "desc": "打开某个成员的会话；抛错时把消息显示在面板顶部。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'agentTeam'>",
+     "default": "—",
+     "desc": "agentTeam 命名空间的翻译座位。"
+    }
+   ],
+   "notes": "触发器的悬停开面板有 150ms 延迟、离开到关闭有 120ms 宽限；点击会钉住面板并把焦点移进去，外部指针或 Escape 关闭（焦点在面板里时 Escape 把焦点还给触发器）。窄标题栏下 <code>@container (max-width:480px)</code> 会把标签藏掉，此时只响应点击。成员行左侧的状态点由 <code>memberDotState(status)</code> 决定：<code>running</code> 与 <code>provisioning</code> 都渲染 <code>StateDot state=\"ongoing\"</code> 的 14px 旋转弧，<code>failed</code> 是红点；只有 <code>inactive</code>（「未运行」）走 <code>IconUserOutlineRegular size={14}</code> 的灰色人形。任务卡的展开按钮只在描述被截断或已展开时出现；状态点为待处理就绪 = idle、待处理被阻塞 = warning、进行中 = ongoing 弧、已完成 = done。",
+   "keywords": [
+    "智能体团队",
+    "Agent Team",
+    "花名册",
+    "共享任务",
+    "agent-team"
+   ]
+  },
+  {
+   "id": "band",
+   "name": "Band",
+   "exportName": "Band",
+   "zh": "模组条",
+   "group": "conversation",
+   "summary": "输入区上方那条来自 Claude Code 模组的绘制：<code>.band</code> 是全宽的一列 flex（6px 上下 / 10px 左右内边距、8px 圆角、<code>--dsw-alias-bg-layer-1</code> 底、等宽字体 12px/18px、<code>white-space:pre-wrap</code>），把序列化树按 <code>Box</code> → <code>.box</code>（<code>data-direction</code> 决定行列、<code>data-border</code> 画 0.5px 描边）、<code>Text</code> → <code>.text</code>（<code>data-color</code> 映射到这套主题的状态色，<code>data-bold</code>/<code>data-dim</code>/<code>data-italic</code>/<code>data-underline</code> 逐个生效）、<code>Button</code> → 一颗 6px 圆角的小按钮（标签旁 11px 三级色的 <code>.hotkey</code> 提示）递归渲染。一次按下期间所有按钮禁用、被按的那颗带 <code>aria-busy</code>；Host 拒绝时在条下补一行 11px 红色的 <code>.notice</code>。没有模组绘制时整条不渲染。",
+   "source": "packages/experimental/client-ui-claude-code-mods/src/client/Band.tsx#L104",
+   "css": [
+    "packages/experimental/client-ui-claude-code-mods/src/client/Band.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-layer-1",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-button-info-fill",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-state-error-primary",
+    "--dsw-alias-state-success-primary",
+    "--dsw-alias-state-warn-primary",
+    "--dsw-font-mono"
+   ],
+   "specimens": [
+    {
+     "label": "Token Weather：一行彩色读数 + 火花线",
+     "note": "静态快照：Box(paddingX 1) 渲染成 4px 左右内边距的 .box[data-direction=row]",
+     "bg": "layer2",
+     "html": "<div class=\"band\" role=\"group\" aria-label=\"Claude Code 模组\" data-generation=\"7\">\n      <span class=\"text\"><div class=\"box\" data-direction=\"row\" style=\"padding-left:4px;padding-right:4px\"><span class=\"text\" data-color=\"cyan\" data-bold=\"true\">☁  Cloudy</span><span class=\"text\">  47% of context</span><span class=\"text\" data-dim=\"true\">  94.2k / 200k</span><span class=\"text\" data-dim=\"true\">   last turns </span><span class=\"text\" data-color=\"cyan\">▁▁▂▂▃▃▄▅▆▇▇█</span><span class=\"text\" data-dim=\"true\">  ▲ +3.1k last turn</span></div></span>\n      \n    </div>"
+    },
+    {
+     "label": "Blast Radius：黄框告警 + Proceed / Cancel",
+     "note": "静态快照：gap 2 换算成 8px，按钮热键显示为 [1] / [2]",
+     "bg": "layer2",
+     "html": "<div class=\"band\" role=\"group\" aria-label=\"Claude Code 模组\" data-generation=\"12\">\n      <span class=\"text\"><div class=\"box\" data-direction=\"column\" data-border=\"true\" data-color=\"yellow\"><span class=\"text\" data-color=\"yellow\" data-bold=\"true\">Blast Radius: rm -rf ./build</span><span class=\"text\">Would delete 4,182 files under ./build.</span><span class=\"text\" data-dim=\"true\">  412 MB freed</span><span class=\"text\" data-dim=\"true\">  no tracked files outside ./build</span><div class=\"box\" data-direction=\"row\" style=\"gap:8px\"><button type=\"button\" class=\"button\" aria-busy=\"false\">Proceed<span class=\"hotkey\">[1]</span></button><button type=\"button\" class=\"button\" aria-busy=\"false\">Cancel<span class=\"hotkey\">[2]</span></button></div></div></span>\n      \n    </div>"
+    },
+    {
+     "label": "按下中 + 失败提示：按钮全部禁用",
+     "note": "静态快照：pending 期间每个按钮都 disabled，被按的那颗带 aria-busy",
+     "bg": "layer2",
+     "html": "<div class=\"band\" role=\"group\" aria-label=\"Claude Code 模组\" data-generation=\"12\">\n      <span class=\"text\"><div class=\"box\" data-direction=\"column\" data-border=\"true\" data-color=\"yellow\"><span class=\"text\" data-color=\"yellow\" data-bold=\"true\">Blast Radius: rm -rf ./build</span><span class=\"text\">Would delete 4,182 files under ./build.</span><div class=\"box\" data-direction=\"row\" style=\"gap:8px\"><button type=\"button\" class=\"button\" disabled aria-busy=\"true\">Proceed<span class=\"hotkey\">[1]</span></button><button type=\"button\" class=\"button\" disabled aria-busy=\"false\">Cancel<span class=\"hotkey\">[2]</span></button></div></div></span>\n      <div class=\"notice\" role=\"status\">按钮操作失败：Host 拒绝了这次操作。</div>\n    </div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "useBand",
+     "type": "<T>(select: (snapshot: SurfaceSnapshot | undefined) => T) => T",
+     "default": "—",
+     "desc": "读取当前会话的模组绘制快照（generation + 树）；快照缺失或 tree 为 null 时整条不渲染。"
+    },
+    {
+     "name": "press",
+     "type": "(generation: number, actionId: string) => Promise<void>",
+     "default": "—",
+     "desc": "把一次按钮按下发回 Host，并带回按下之后的新绘制；失败时在条下显示消息。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'claudeCodeMods'>",
+     "default": "—",
+     "desc": "claudeCodeMods 命名空间的翻译座位（分组标签与失败文案）。"
+    }
+   ],
+   "notes": "颜色只认 Claude Code 的终端色名（yellow / red / green / cyan / blue / magenta / gray / white / black），其它值不进 <code>data-color</code>；<code>grey</code> 归一成 <code>gray</code>。没有 actionId 的按钮画出来但永远禁用。它挂在 <code>conversation.input.dock</code> 上，是输入区 dock 的一条 entry，不是常驻 chrome。",
+   "keywords": [
+    "Claude Code 模组",
+    "band",
+    "claude-code-mods",
+    "Token Weather",
+    "Blast Radius"
+   ]
+  }
+ ]
+}

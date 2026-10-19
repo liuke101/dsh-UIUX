@@ -1,0 +1,824 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "id": "ask-question-card",
+      "name": "AskQuestionCard",
+      "exportName": "AskQuestionCard",
+      "zh": "提问卡片",
+      "group": "tools",
+      "summary": "ask_user_question 的只读问答记录卡，两种形态由 <code>card.kind</code> 判别。<code>answered</code> 是 <code>&lt;dl&gt;</code>：问题用三级灰的 <code>&lt;dt&gt;</code>，答案是主题色 <code>&lt;dd&gt;</code>，多选答案每条一个 <code>.answerLine</code> 独占一行，空答案显示三级灰的「未回答」；<code>unanswered</code> 是结论段加 20px 缩进的问题清单，条目同为三级灰。卡片 16px 行距分栏、内边距 16/20、0.5px <code>--dsw-alias-border-l1</code> 描边、<code>--dsw-radius-lg</code> 圆角、左侧 4px 缩进，超过 360px 高时卡片内部纵向滚动。",
+      "source": "packages/client/ui-tool/src/client/tool/components/AskQuestionCard.tsx#L11",
+      "css": [
+        "packages/client/ui-tool/src/client/tool/components/AskQuestionCard.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-base",
+        "--dsw-alias-border-l1",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-radius-lg"
+      ],
+      "specimens": [
+        {
+          "label": "answered：三问三答，含一个跳过项",
+          "note": "字号跟随 --dsh-content-font-size，行高 24px + 字体增量",
+          "html": "<div style='width:560px'><dl class=\"card\"><div class=\"item\"><dt class=\"question\">先补哪一块：工具调用卡片还是命令面板？</dt><dd class=\"answer\"><span class=\"answerLine\">先补工具调用卡片，命令面板排到下一批</span></dd></div><div class=\"item\"><dt class=\"question\">三条行的折叠摘要要不要收敛到同一套文案？</dt><dd class=\"answer\"><span class=\"answerLine\">要，折叠态都走「动词 + 路径 / 数量」的结构</span><span class=\"answerLine\">展开态各自保留自己的卡片</span></dd></div><div class=\"item\"><dt class=\"question\">退出码胶囊要不要一起改？</dt><dd class=\"answer\"><span class=\"skipped\">未回答</span></dd></div></dl></div>"
+        },
+        {
+          "label": "unanswered：结论 + 问题清单",
+          "note": "已中断的追问，问题整体降到三级灰",
+          "html": "<div style='width:560px'><div class=\"card\"><p class=\"verdict\">本轮已中断，下面两个问题没有提交回答。</p><ul class=\"questionList\"><li class=\"unansweredQuestion\">工具行的展开体要不要保留详情卡顶上那行说明？</li><li class=\"unansweredQuestion\">搜索卡被截断时，完整结果的位置放在卡片下方，还是并进展开控件？</li></ul></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "card",
+          "type": "AskQuestionCardModel",
+          "default": "—",
+          "desc": "已校验并本地化的卡片数据：<code>{ kind: 'answered', questions, skippedLabel }</code> 或 <code>{ kind: 'unanswered', questions, verdict }</code>，两种形态的问题字段互不相同。"
+        }
+      ],
+      "notes": "卡片本身没有交互也没有状态色：等待、已结束、已中断这些差别都由外层行决定，卡片只负责把记录读出来。答案数组为空时渲染 <code>.skipped</code> 标签而不是空行；问题多到超过 <code>max-height: 360px</code> 时整张卡片滚动，而不是折起中间。",
+      "keywords": [
+        "提问",
+        "问答记录",
+        "ask user question",
+        "ask_user_question",
+        "未回答"
+      ]
+    },
+    {
+      "id": "question-tool-row",
+      "name": "QuestionToolRow",
+      "exportName": "QuestionToolRow",
+      "zh": "提问工具行",
+      "group": "tools",
+      "summary": "<code>ask_user_question</code> 注册在 <code>tool.call.toolview</code> 上的行视图，复用 ToolRow 与 DisclosureRow 的 24px 摘要行：标题固定「提问」，摘要右侧挂一个 22px 高的胶囊按钮（<code>--dsw-alias-button-floating-fill</code> 填充、999px 圆角、字号 <code>calc(13px − 1px)</code>、13px 图标），点它是打开答题面板而不是展开行。展开体直接渲染 <code>AskQuestionCard</code> 的问答记录，<code>inspect</code> 存在时底部还有 hover 才显形的「查看」药丸；行内文字同样包在 <code>TextShimmer</code> 里，运行中整行扫光。",
+      "source": "packages/client/ui-tool/src/client/tool/components/QuestionToolRow.tsx#L20",
+      "css": [
+        "packages/client/ui-tool/src/client/tool/components/ToolRow.module.css",
+        "packages/client/ui-primitives/src/DisclosureRow.module.css",
+        "packages/client/ui-primitives/src/TextShimmer.module.css",
+        "packages/client/ui-tool/src/client/tool/components/AskQuestionCard.module.css",
+        "packages/client/ui-tool/src/client/tool/components/QuestionToolRow.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-base",
+        "--dsw-alias-border-l1",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-button-floating-fill",
+        "--dsw-alias-button-floating-hover",
+        "--dsw-alias-interactive-bg-hover-solid",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-shimmer",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-markdown-code-block",
+        "--dsw-alias-state-error-primary",
+        "--dsw-alias-state-success-primary",
+        "--dsw-alias-state-warn-label",
+        "--dsw-font-markdown-code-block-small",
+        "--dsw-font-xs-13",
+        "--dsw-radius-lg",
+        "--dsw-radius-sm"
+      ],
+      "specimens": [
+        {
+          "label": "折叠：已回答计数 +「查看回答」入口",
+          "note": "胶囊与摘要同排，点它开面板、不展开行",
+          "html": "<div style='width:640px'><div class=\"c0-root\" data-variant=\"others\" data-tool=\"ask_user_question\" data-state=\"ok\"><div class=\"c1-root\"><div class=\"c1-header\" data-disclosure-header='true'><div class=\"row\" data-disclosure-row='true' data-expandable='true' role='button' tabindex='0' aria-expanded='false'><span class=\"leading\"><span class=\"c1-iconIdle\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M8 14.5C11.5899 14.5 14.5 11.5899 14.5 8C14.5 4.41015 11.5899 1.5 8 1.5C4.41015 1.5 1.5 4.41015 1.5 8C1.5 11.5899 4.41015 14.5 8 14.5Z' stroke='currentColor'/><path d='M5.75 6.69646C5.75 6.29865 5.88196 5.90976 6.12919 5.57899C6.37643 5.24821 6.72783 4.99041 7.13896 4.83817C7.5501 4.68593 8.0025 4.6461 8.43895 4.72371C8.87541 4.80132 9.27632 4.99289 9.59099 5.27419C9.90566 5.55549 10.12 5.91388 10.2068 6.30406C10.2936 6.69423 10.249 7.09866 10.0787 7.4662C9.90843 7.83373 9.62004 8.14787 9.25003 8.36889C9.19476 8.4019 9.13803 8.43262 9.08004 8.46099C8.52566 8.73217 8 9.20817 8 9.82532' stroke='currentColor'/><path d='M8 10.7416V11.7416' stroke='currentColor'/></svg></span><svg class=\"c1-chevronHover\" width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></span><span class=\"c2-root\"><span class=\"c2-content\"><span class=\"c2-text c1-title c0-title\">提问</span><span class=\"c0-sep\" data-shimmer-decoration='true' aria-hidden='true'></span><span class=\"c0-summary\"><span class=\"c2-text\">2/3 已回答</span></span><button type='button' class=\"c4-panelButton\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M8 14.5C11.5899 14.5 14.5 11.5899 14.5 8C14.5 4.41015 11.5899 1.5 8 1.5C4.41015 1.5 1.5 4.41015 1.5 8C1.5 11.5899 4.41015 14.5 8 14.5Z' stroke='currentColor'/><path d='M5.75 6.69646C5.75 6.29865 5.88196 5.90976 6.12919 5.57899C6.37643 5.24821 6.72783 4.99041 7.13896 4.83817C7.5501 4.68593 8.0025 4.6461 8.43895 4.72371C8.87541 4.80132 9.27632 4.99289 9.59099 5.27419C9.90566 5.55549 10.12 5.91388 10.2068 6.30406C10.2936 6.69423 10.249 7.09866 10.0787 7.4662C9.90843 7.83373 9.62004 8.14787 9.25003 8.36889C9.19476 8.4019 9.13803 8.43262 9.08004 8.46099C8.52566 8.73217 8 9.20817 8 9.82532' stroke='currentColor'/><path d='M8 10.7416V11.7416' stroke='currentColor'/></svg>查看回答</button></span></span></div></div></div></div></div>"
+        },
+        {
+          "label": "展开：问答记录 +「查看」药丸（悬停模拟）",
+          "note": "Inspect 平时 opacity:0，此处为悬停模拟",
+          "html": "<div style='width:640px'><div class=\"c0-root forceHover\" data-variant=\"others\" data-tool=\"ask_user_question\" data-state=\"ok\"><div class=\"c1-root\" data-open='true'><div class=\"c1-header\" data-disclosure-header='true'><div class=\"row\" data-disclosure-row='true' data-expandable='true' role='button' tabindex='0' aria-expanded='true'><span class=\"leading\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10' stroke='currentColor'/></svg></span><span class=\"c2-root\"><span class=\"c2-content\"><span class=\"c2-text c1-title c0-title\">提问</span><span class=\"c0-sep\" data-shimmer-decoration='true' aria-hidden='true'></span><span class=\"c0-summary\"><span class=\"c2-text\">2/3 已回答</span></span><button type='button' class=\"c4-panelButton\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M8 14.5C11.5899 14.5 14.5 11.5899 14.5 8C14.5 4.41015 11.5899 1.5 8 1.5C4.41015 1.5 1.5 4.41015 1.5 8C1.5 11.5899 4.41015 14.5 8 14.5Z' stroke='currentColor'/><path d='M5.75 6.69646C5.75 6.29865 5.88196 5.90976 6.12919 5.57899C6.37643 5.24821 6.72783 4.99041 7.13896 4.83817C7.5501 4.68593 8.0025 4.6461 8.43895 4.72371C8.87541 4.80132 9.27632 4.99289 9.59099 5.27419C9.90566 5.55549 10.12 5.91388 10.2068 6.30406C10.2936 6.69423 10.249 7.09866 10.0787 7.4662C9.90843 7.83373 9.62004 8.14787 9.25003 8.36889C9.19476 8.4019 9.13803 8.43262 9.08004 8.46099C8.52566 8.73217 8 9.20817 8 9.82532' stroke='currentColor'/><path d='M8 10.7416V11.7416' stroke='currentColor'/></svg>查看回答</button></span></span></div></div><div class=\"c0-bodyWrap\"><dl class=\"card\"><div class=\"item\"><dt class=\"question\">先补哪一块：工具调用卡片还是命令面板？</dt><dd class=\"answer\"><span class=\"answerLine\">先补工具调用卡片，命令面板排到下一批</span></dd></div><div class=\"item\"><dt class=\"question\">三条行的折叠摘要要不要收敛到同一套文案？</dt><dd class=\"answer\"><span class=\"answerLine\">要，折叠态都走「动词 + 路径 / 数量」的结构</span><span class=\"answerLine\">展开态各自保留自己的卡片</span></dd></div><div class=\"item\"><dt class=\"question\">退出码胶囊要不要一起改？</dt><dd class=\"answer\"><span class=\"skipped\">未回答</span></dd></div></dl><button type='button' class=\"c0-inspectButton\"><svg width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4.67398 4.25061L1.36094 7.86484C1.29085 7.9413 1.29085 8.05866 1.36094 8.13513L4.67398 11.7494' stroke='currentColor'/><path d='M11.3262 4.25061L14.6392 7.86484C14.7093 7.9413 14.7093 8.05866 14.6392 8.13513L11.3262 11.7494' stroke='currentColor'/><path d='M9.56222 3.62573L6.43774 12.3743' stroke='currentColor'/></svg>查看</button></div></div></div></div>",
+          "css": "/* 状态模拟：真实规则是 .root:hover .inspectButton 与 .inspectButton:focus-visible（ToolRow.module.css），悬停无法静态触发，这里把悬停分支挂到 .forceHover 上。 */\n.root.forceHover .inspectButton { opacity: 1; }"
+        }
+      ],
+      "props": [
+        {
+          "name": "useDisclosure",
+          "type": "UseDisclosure",
+          "default": "—",
+          "desc": "行自己拥有的展开状态；每次调用独立，外层回合折叠时重置。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'conversation'>",
+          "default": "—",
+          "desc": "会话字典：行标题（<code>ask.rowTitle</code>）、运行态无障碍文案、IN/OUT 兜底与「查看」。"
+        },
+        {
+          "name": "summary",
+          "type": "string",
+          "default": "—",
+          "desc": "已作答时是「2/3 已回答」，等待中是「等待回答 / 已继续工作，仍可回答」等计数或状态句。"
+        },
+        {
+          "name": "bodyRaw",
+          "type": "string | null",
+          "default": "null",
+          "desc": "没有结构化问答记录时的参数 JSON，展开后走 IN/OUT 兜底卡。"
+        },
+        {
+          "name": "output",
+          "type": "string | null",
+          "default": "null",
+          "desc": "没有结构化问答记录时的结果文本，展开后走 IN/OUT 兜底卡。"
+        },
+        {
+          "name": "askQuestion",
+          "type": "AskQuestionCardModel | null",
+          "default": "null",
+          "desc": "结构化问答记录；非空时展开体直接渲染 <code>AskQuestionCard</code>，参数与结果文本都不再显示。"
+        },
+        {
+          "name": "state",
+          "type": "'preparing' | 'running' | 'ok' | 'error' | 'stopped'",
+          "default": "—",
+          "desc": "调用阶段与结算状态，决定行内扫光、无障碍状态文本与可展开性。"
+        },
+        {
+          "name": "inspect",
+          "type": "(() => void) | undefined",
+          "default": "undefined",
+          "desc": "提供后展开体底部出现跳到轨迹视图的「查看」药丸。"
+        },
+        {
+          "name": "openPanel",
+          "type": "() => boolean",
+          "default": "—",
+          "desc": "打开该问题的答题 / 回看面板；返回是否真的打开了面板，没打开时行自己改为展开。"
+        },
+        {
+          "name": "panelLabel",
+          "type": "string",
+          "default": "—",
+          "desc": "胶囊按钮文案：等待中是「回答」，已结束后是「查看回答」。"
+        }
+      ],
+      "notes": "胶囊按钮自带 <code>stopPropagation</code> 与 Enter / 空格的按键拦截，所以它不会顺带展开行；<code>openPanel()</code> 返回 false（面板已被顶掉）时才回退成展开。行状态只影响颜色与扫光，不改变 24px 行高；<code>data-tool=\"ask_user_question\"</code> 是固定的，与线工具名一致。",
+      "keywords": [
+        "提问",
+        "答题面板",
+        "ask_user_question",
+        "查看回答"
+      ]
+    },
+    {
+      "id": "details-row",
+      "name": "DetailsRow",
+      "exportName": "DetailsRow",
+      "zh": "详情行",
+      "group": "tools",
+      "summary": "记录型工具共用的展开行，注册在 <code>tool.call.toolview</code> 的目标、定时任务、工作流、会话检索、子智能体、终端句柄等 37 个键上：折叠时是 ToolRow 的 24px 摘要，摘要优先取 <code>detailsCardModel</code> 的 <code>summary</code>（例如「2 个定时任务」），其次第一条记录的标题。展开体是 <code>ToolDetails</code> 的紧凑卡：可带 caption，条目标题行可含状态字形与 <code>+ / −</code> 变更标记，下面是 <code>5.5em</code> 标签列加值的字段网格，多条记录之间是 0.5px 的 l2 分隔线；有 <code>inspect</code> 时卡片右侧留 88px 给「查看」药丸。",
+      "source": "packages/client/ui-tool/src/client/tool/toolviews/details-row.tsx#L46",
+      "css": [
+        "packages/client/ui-tool/src/client/tool/components/ToolDetails.module.css",
+        "packages/client/ui-primitives/src/DisclosureRow.module.css",
+        "packages/client/ui-primitives/src/TextShimmer.module.css",
+        "packages/client/ui-tool/src/client/tool/components/ToolRow.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-base",
+        "--dsw-alias-border-l1",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-interactive-bg-hover-solid",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-shimmer",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-markdown-code-block",
+        "--dsw-alias-state-business-primary",
+        "--dsw-alias-state-error-primary",
+        "--dsw-alias-state-success-primary",
+        "--dsw-alias-state-warn-label",
+        "--dsw-alias-state-warn-primary",
+        "--dsw-focus-ring-color",
+        "--dsw-focus-ring-width",
+        "--dsw-font-markdown-code-block-small",
+        "--dsw-font-xs-13",
+        "--dsw-radius-lg",
+        "--dsw-radius-sm"
+      ],
+      "specimens": [
+        {
+          "label": "折叠：update_goal 用目标文本作摘要",
+          "note": "图标按线名前缀选：*_goal 用靶心",
+          "html": "<div style='width:680px'><div class=\"c3-root\" data-variant=\"others\" data-tool=\"update_goal\" data-state=\"ok\"><div class=\"c1-root\"><div class=\"c1-header\" data-disclosure-header='true'><div class=\"row\" data-disclosure-row='true' data-expandable='true' role='button' tabindex='0' aria-expanded='false'><span class=\"leading\"><span class=\"c1-iconIdle\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M14.5001 8C14.5 9.28552 14.1188 10.5422 13.4045 11.611C12.6903 12.6799 11.6752 13.5129 10.4875 14.0049C9.29982 14.4968 7.99295 14.6255 6.73212 14.3747C5.4713 14.124 4.31314 13.505 3.4041 12.596C2.49514 11.687 1.87614 10.5288 1.62537 9.26798C1.37459 8.00716 1.50331 6.70028 1.99525 5.51261C2.48719 4.32494 3.32025 3.30981 4.3891 2.59557C5.45795 1.88134 6.71458 1.50008 8.0001 1.5' stroke='currentColor'/><path d='M11.5 8C11.5001 8.69227 11.2948 9.36901 10.9102 9.94463C10.5257 10.5202 9.97901 10.9689 9.33944 11.2338C8.69986 11.4987 7.99609 11.5681 7.31712 11.433C6.63816 11.2979 6.01449 10.9645 5.52501 10.475C5.03548 9.98552 4.70209 9.36185 4.56702 8.68289C4.43195 8.00392 4.50127 7.30015 4.76619 6.66057C5.03112 6.021 5.47976 5.47436 6.05538 5.08978C6.631 4.70519 7.30774 4.49995 8.00001 4.5' stroke='currentColor'/><path d='M8.00024 7.99976L11.2 4.80005' stroke='currentColor'/><path d='M12.4719 5.62245C12.4246 5.66972 12.3569 5.69025 12.2913 5.67715L10.7814 5.37555C10.7022 5.35972 10.6402 5.29781 10.6244 5.2186L10.3228 3.70866C10.3097 3.6431 10.3302 3.57533 10.3775 3.52806L12.1826 1.723C12.2863 1.61929 12.4627 1.65879 12.5122 1.79684L12.9271 2.95225C12.9472 3.00847 12.9915 3.05272 13.0477 3.07291L14.2031 3.48774C14.3412 3.5373 14.3807 3.71368 14.277 3.81739L12.4719 5.62245Z' stroke='currentColor'/></svg></span><svg class=\"c1-chevronHover\" width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></span><span class=\"c2-root\"><span class=\"c2-content\"><span class=\"c2-text c1-title c3-title\">更新目标</span><span class=\"c3-sep\" data-shimmer-decoration='true' aria-hidden='true'></span><span class=\"c3-summary\"><span class=\"c2-text\">把侧边栏的标签轨统一到 38px 规格</span></span></span></span></div></div></div></div></div>"
+        },
+        {
+          "label": "展开：目标字段卡 +「查看」药丸（悬停模拟）",
+          "note": "data-inspect 让条目右侧留出 88px",
+          "html": "<div style='width:680px'><div class=\"c3-root forceHover\" data-variant=\"others\" data-tool=\"update_goal\" data-state=\"ok\"><div class=\"c1-root\" data-open='true'><div class=\"c1-header\" data-disclosure-header='true'><div class=\"row\" data-disclosure-row='true' data-expandable='true' role='button' tabindex='0' aria-expanded='true'><span class=\"leading\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10' stroke='currentColor'/></svg></span><span class=\"c2-root\"><span class=\"c2-content\"><span class=\"c2-text c1-title c3-title\">更新目标</span><span class=\"c3-sep\" data-shimmer-decoration='true' aria-hidden='true'></span><span class=\"c3-summary\"><span class=\"c2-text\">把侧边栏的标签轨统一到 38px 规格</span></span></span></span></div></div><div class=\"c3-bodyWrap c3-detailsBodyWrap\"><div class=\"c0-root\" data-inspect='true'><ul class=\"c0-list\"><li class=\"c0-item\"><div class=\"c0-heading\"><span class=\"c0-text\">把侧边栏的标签轨统一到 38px 规格</span></div><dl class=\"c0-fields\"><div class=\"c0-field\"><dt>状态</dt><dd>已完成</dd></div><div class=\"c0-field\"><dt>执行轮次</dt><dd>12 / 20</dd></div></dl></li></ul></div><button type='button' class=\"c3-inspectButton\"><svg width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4.67398 4.25061L1.36094 7.86484C1.29085 7.9413 1.29085 8.05866 1.36094 8.13513L4.67398 11.7494' stroke='currentColor'/><path d='M11.3262 4.25061L14.6392 7.86484C14.7093 7.9413 14.7093 8.05866 14.6392 8.13513L11.3262 11.7494' stroke='currentColor'/><path d='M9.56222 3.62573L6.43774 12.3743' stroke='currentColor'/></svg>查看</button></div></div></div></div>",
+          "css": "/* 状态模拟：真实规则是 .root:hover .inspectButton 与 .inspectButton:focus-visible（ToolRow.module.css），悬停无法静态触发。 */\n.root.forceHover .inspectButton { opacity: 1; }"
+        },
+        {
+          "label": "展开：schedule_list 两条记录",
+          "note": "条目之间的 0.5px l2 分隔线来自 .item + .item",
+          "html": "<div style='width:680px'><div class=\"c3-root\" data-variant=\"others\" data-tool=\"schedule_list\" data-state=\"ok\"><div class=\"c1-root\" data-open='true'><div class=\"c1-header\" data-disclosure-header='true'><div class=\"row\" data-disclosure-row='true' data-expandable='true' role='button' tabindex='0' aria-expanded='true'><span class=\"leading\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10' stroke='currentColor'/></svg></span><span class=\"c2-root\"><span class=\"c2-content\"><span class=\"c2-text c1-title c3-title\">查看定时任务</span><span class=\"c3-sep\" data-shimmer-decoration='true' aria-hidden='true'></span><span class=\"c3-summary\"><span class=\"c2-text\">2 个定时任务</span></span></span></span></div></div><div class=\"c3-bodyWrap\"><div class=\"c0-root\"><ul class=\"c0-list\"><li class=\"c0-item\"><div class=\"c0-heading\"><span class=\"c0-text\">每日构建检查</span></div><dl class=\"c0-fields\"><div class=\"c0-field\"><dt>计划时间</dt><dd>2026年10月20日 09:00:00 GMT+8</dd></div><div class=\"c0-field\"><dt>重复</dt><dd>每天 09:00（Asia/Shanghai）</dd></div><div class=\"c0-field\"><dt>状态</dt><dd>等待触发</dd></div></dl></li><li class=\"c0-item\"><div class=\"c0-heading\"><span class=\"c0-text\">归档上周的构建日志</span></div><dl class=\"c0-fields\"><div class=\"c0-field\"><dt>计划时间</dt><dd>2026年10月19日 21:30:00 GMT+8</dd></div><div class=\"c0-field\"><dt>重复</dt><dd>每周 周一、周四 21:30（Asia/Shanghai）</dd></div><div class=\"c0-field\"><dt>状态</dt><dd>已到期，等待会话恢复</dd></div></dl></li></ul></div></div></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "useDisclosure",
+          "type": "UseDisclosure",
+          "default": "—",
+          "desc": "行自己拥有的展开状态；每次调用独立，外层回合折叠时重置。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'conversation'>",
+          "default": "—",
+          "desc": "会话字典：标题键、状态与字段标签、IN/OUT 兜底、无障碍状态文案。"
+        },
+        {
+          "name": "toolName",
+          "type": "string",
+          "default": "—",
+          "desc": "线工具名，决定标题键与图标：队友工具用双人、<code>schedule_*</code> 用时钟、<code>*_goal</code> 用靶心、<code>cordis_*</code> 用插件、<code>terminal_*</code> 用终端、<code>job_*</code> 用清单。"
+        },
+        {
+          "name": "block",
+          "type": "ToolCallBlock",
+          "default": "—",
+          "desc": "三个阶段之一的冻结切片；行模型与详情模型都由它纯推导，只有结算后的结果才带得出字段卡。"
+        },
+        {
+          "name": "cwd",
+          "type": "string | undefined",
+          "default": "undefined",
+          "desc": "会话工作区根，用于把记录到的绝对路径显示成相对路径。"
+        },
+        {
+          "name": "home",
+          "type": "string | undefined",
+          "default": "undefined",
+          "desc": "宿主账号主目录；POSIX 主目录下的路径缩写为 <code>~</code>。"
+        },
+        {
+          "name": "openFile",
+          "type": "(path: string, options?: OpenFileOptions) => void",
+          "default": "—",
+          "desc": "打开记录到的文件位置：带 <code>location</code> 的条目标题会渲染成可点的 <code>.path</code> 按钮。"
+        },
+        {
+          "name": "inspect",
+          "type": "(() => void) | undefined",
+          "default": "undefined",
+          "desc": "提供后展开体右下角出现跳到轨迹视图的「查看」药丸，卡片同时预留 88px 内边距。"
+        }
+      ],
+      "notes": "图标由工具名前缀 / 后缀挑选，不是按包分组：<code>spawn_teammate</code>、<code>list_agents</code>、<code>send_message</code>、<code>interrupt_agent</code>、<code>wait_agent</code> 合成一组双人图标，<code>lsp</code> 的标题还会按 <code>operation</code> 从「查询代码符号」细分成查找定义 / 引用 / 实现 / 符号信息。详情卡只在调用成功且有可解析 JSON 结果时出现，否则退回参数与结果的 IN/OUT 兜底卡；失败的行摘要直接换成红色首行错误，展开体仍可看参数。",
+      "keywords": [
+        "目标",
+        "定时任务",
+        "工作流",
+        "详情行",
+        "详情卡",
+        "details row"
+      ]
+    },
+    {
+      "id": "file-mutation-row",
+      "name": "FileMutationRow",
+      "exportName": "FileMutationRow",
+      "zh": "文件变更行",
+      "group": "tools",
+      "summary": "<code>edit</code> / <code>write</code> 的行视图：折叠时是「编辑 / 写入」标题加可点开的相对路径（1px 虚线下划线），路径后跟解码后的输入体积（<code>2KB</code>）与 <code>+2 −1</code> 差异统计，统计只在悬停或展开时上色（成功 / 失败状态色）。展开体是 <code>DiffBlock</code> 的代码卡：顶部语言条加自动换行与复制按钮，正文按 <code>path / context / del / add</code> 行类型着色，左右各 22px 内边距；失败或中断的行不再显示体积与统计，摘要整条换成红色首行错误。",
+      "source": "packages/client/ui-tool/src/client/tool/toolviews/file-mutation-row.tsx#L33",
+      "css": [
+        "packages/client/ui-primitives/src/CodeCard.module.css",
+        "packages/client/ui-primitives/src/DiffBlock.module.css",
+        "packages/client/ui-primitives/src/DisclosureRow.module.css",
+        "packages/client/ui-primitives/src/TextShimmer.module.css",
+        "packages/client/ui-tool/src/client/tool/components/ToolRow.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-base",
+        "--dsw-alias-border-l1",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-code-diff-added",
+        "--dsw-alias-code-diff-deleted",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-interactive-bg-hover-solid",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-shimmer",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-markdown-code-block",
+        "--dsw-alias-state-business-primary",
+        "--dsw-alias-state-error-primary",
+        "--dsw-alias-state-success-primary",
+        "--dsw-alias-state-warn-label",
+        "--dsw-focus-ring-color",
+        "--dsw-font-family",
+        "--dsw-font-markdown-code-block",
+        "--dsw-font-markdown-code-block-small",
+        "--dsw-font-xs-13",
+        "--dsw-radius-lg",
+        "--dsw-radius-sm"
+      ],
+      "specimens": [
+        {
+          "label": "折叠：edit 行 + 体积与差异统计（悬停模拟）",
+          "note": "+2 −1 只在悬停 / 展开时上色",
+          "html": "<div style='width:760px'><div class=\"c4-root\" data-variant=\"edit\" data-tool=\"edit\" data-state=\"ok\"><div class=\"c2-root\"><div class=\"c2-header\" data-disclosure-header='true'><div class=\"row forceHover\" data-disclosure-row='true' data-expandable='true' role='button' tabindex='0' aria-expanded='false'><span class=\"leading\"><span class=\"c2-iconIdle\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M8.85596 2.69971H4.19971C3.37141 2.69971 2.69992 3.37146 2.69971 4.19971V11.8003C2.69992 12.6285 3.37141 13.3003 4.19971 13.3003H11.8003C12.6283 13.2999 13.3001 12.6283 13.3003 11.8003V7.89893H14.3003V11.8003C14.3001 13.1806 13.1806 14.2999 11.8003 14.3003H4.19971C2.81913 14.3003 1.69992 13.1808 1.69971 11.8003V4.19971C1.69992 2.81918 2.81913 1.69971 4.19971 1.69971H8.85596V2.69971Z' fill='currentColor'/><path d='M7.7849 8.23878L13.888 2.13574' stroke='currentColor'/></svg></span><svg class=\"c2-chevronHover\" width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></span><span class=\"c3-root\"><span class=\"c3-content\"><span class=\"c3-text c2-title c4-title\">编辑</span><span class=\"c4-sep\" data-shimmer-decoration='true' aria-hidden='true'></span><button type='button' class=\"c4-fileLink\"><span class=\"c3-text\">packages/client/ui-tool/src/client/tool/toolviews/file-mutation-row.tsx</span></button><span class=\"c3-text c4-summarySuffix\">2KB</span><span class=\"c3-text c4-summarySuffix c4-diffStat\"><span class=\"c4-diffAdded\">+2</span> <span class=\"c4-diffRemoved\">-1</span></span></span></span></div></div></div></div></div>",
+          "css": "/* 状态模拟：真实规则是 .row:is(:hover, [aria-expanded='true']) .diffAdded / .diffRemoved（ToolRow.module.css），悬停无法静态触发。 */\n.row.forceHover .diffAdded { color: var(--dsw-alias-state-success-primary); }\n.row.forceHover .diffRemoved { color: var(--dsw-alias-state-error-primary); }"
+        },
+        {
+          "label": "展开：DiffBlock 差异卡",
+          "note": "语言取自文件扩展名（.tsx → typescript）",
+          "html": "<div style='width:760px'><div class=\"c4-root\" data-variant=\"edit\" data-tool=\"edit\" data-state=\"ok\"><div class=\"c2-root\" data-open='true'><div class=\"c2-header\" data-disclosure-header='true'><div class=\"row\" data-disclosure-row='true' data-expandable='true' role='button' tabindex='0' aria-expanded='true'><span class=\"leading\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10' stroke='currentColor'/></svg></span><span class=\"c3-root\"><span class=\"c3-content\"><span class=\"c3-text c2-title c4-title\">编辑</span><span class=\"c4-sep\" data-shimmer-decoration='true' aria-hidden='true'></span><button type='button' class=\"c4-fileLink\"><span class=\"c3-text\">packages/client/ui-tool/src/client/tool/toolviews/file-mutation-row.tsx</span></button><span class=\"c3-text c4-summarySuffix\">2KB</span><span class=\"c3-text c4-summarySuffix c4-diffStat\"><span class=\"c4-diffAdded\">+2</span> <span class=\"c4-diffRemoved\">-1</span></span></span></span></div></div><div class=\"c4-bodyWrap\"><div class=\"card block c4-diffBody\" data-diff='' data-code-wrap='false'><div class=\"c0-header\" data-code-block-banner='true'><div class=\"c0-heading\"><span class=\"c0-language\">typescript</span></div><div class=\"c0-actions\"><button type='button' class=\"c0-action\" aria-label='自动换行' aria-pressed='false'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M10.9999 8C10.9999 6.89543 10.1046 6 9 6H4.5V5H9C10.6568 5 11.9999 6.34315 11.9999 8C11.9999 9.65685 10.6568 11 9 11H6.20703L6.85351 11.6465L6.14648 12.3535L4.64652 10.8536C4.45126 10.6583 4.45126 10.3417 4.64652 10.1464L6.14648 8.64648L6.85351 9.35352L6.20703 10H9C10.1046 10 10.9999 9.10457 10.9999 8Z' fill='currentColor'/><path d='M2 15H1V1H2V15Z' fill='currentColor'/><path d='M15 15H14V1H15V15Z' fill='currentColor'/></svg></button><button type='button' class=\"c0-action\" aria-label='复制'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><rect x='1.52075' y='4.07373' width='10.3932' height='10.3932' rx='2' stroke='currentColor'/><path d='M11.9792 1.53296C13.36 1.53296 14.4792 2.65225 14.4792 4.03296V9.42847C14.4792 10.3756 13.9521 11.1987 13.1755 11.6228V10.3298C13.3652 10.0787 13.4792 9.7674 13.4792 9.42847V4.03296C13.4792 3.20453 12.8077 2.53296 11.9792 2.53296H6.58374C6.27966 2.53301 5.99684 2.6235 5.7605 2.77905H4.42358C4.85652 2.03463 5.66056 1.53304 6.58374 1.53296H11.9792Z' fill='currentColor'/></svg></button></div></div><div class=\"c1-body\"><div class=\"c1-line c1-path\">packages/client/ui-tool/src/client/tool/toolviews/file-mutation-row.tsx</div><div class=\"c1-line c1-context\">const CONTENT_FIELDS = ['content', 'old_string', 'new_string']</div><div class=\"c1-line c1-add\">const CONTENT_FIELDS = ['content', 'old_string', 'new_string', 'new_str'] as const</div><div class=\"c1-line c1-context\">/** Kilobytes of decoded input at every stage; null before any content field arrives. */</div><div class=\"c1-line c1-del\">const size = kilobytes === null ? null : t('tool.preparing.content', { kilobytes })</div><div class=\"c1-line c1-add\">const size = kilobytes === null ? null : t('tool.preparing.content', { kilobytes, preview: PREVIEW_KILOBYTES })</div></div></div></div></div></div></div>"
+        },
+        {
+          "label": "失败：write 被拒绝，摘要换成红色首行",
+          "note": "失败行不再显示体积与 +/− 统计",
+          "html": "<div style='width:760px'><div class=\"c4-root\" data-variant=\"write\" data-tool=\"write\" data-state=\"error\"><span class=\"c4-visuallyHidden\">失败</span><div class=\"c2-root\"><div class=\"c2-header\" data-disclosure-header='true'><div class=\"row\" data-disclosure-row='true' data-expandable='true' role='button' tabindex='0' aria-expanded='false'><span class=\"leading\"><span class=\"c2-iconIdle\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M8.85596 2.69971H4.19971C3.37141 2.69971 2.69992 3.37146 2.69971 4.19971V11.8003C2.69992 12.6285 3.37141 13.3003 4.19971 13.3003H11.8003C12.6283 13.2999 13.3001 12.6283 13.3003 11.8003V7.89893H14.3003V11.8003C14.3001 13.1806 13.1806 14.2999 11.8003 14.3003H4.19971C2.81913 14.3003 1.69992 13.1808 1.69971 11.8003V4.19971C1.69992 2.81918 2.81913 1.69971 4.19971 1.69971H8.85596V2.69971Z' fill='currentColor'/><path d='M7.7849 8.23878L13.888 2.13574' stroke='currentColor'/></svg></span><svg class=\"c2-chevronHover\" width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></span><span class=\"c3-root\"><span class=\"c3-content\"><span class=\"c3-text c2-title c4-title\">写入</span><span class=\"c4-sep\" data-shimmer-decoration='true' aria-hidden='true'></span><span class=\"c4-summary c4-errorSummary\"><span class=\"c3-text\">Error: 目标路径不在会话工作区内，write 未执行</span></span></span></span></div></div></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "useDisclosure",
+          "type": "UseDisclosure",
+          "default": "—",
+          "desc": "行自己拥有的展开状态；每次调用独立，外层回合折叠时重置。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'conversation'>",
+          "default": "—",
+          "desc": "会话字典：标题、体积文案（<code>{kilobytes}KB</code>）、差异展开 / 复制与无障碍状态。"
+        },
+        {
+          "name": "toolName",
+          "type": "string",
+          "default": "—",
+          "desc": "线工具名，只有 <code>edit</code> 与 <code>write</code> 注册到这个视图。"
+        },
+        {
+          "name": "block",
+          "type": "ToolCallBlock",
+          "default": "—",
+          "desc": "三个阶段之一的冻结切片：参数视图给出路径与内容字段，结果节点给出应用后的 diff。"
+        },
+        {
+          "name": "cwd",
+          "type": "string | undefined",
+          "default": "undefined",
+          "desc": "会话工作区根，路径摘要相对它显示。"
+        },
+        {
+          "name": "home",
+          "type": "string | undefined",
+          "default": "undefined",
+          "desc": "宿主账号主目录；主目录下的路径缩写为 <code>~</code>。"
+        },
+        {
+          "name": "openFile",
+          "type": "(path: string, options?: OpenFileOptions) => void",
+          "default": "—",
+          "desc": "点路径摘要时打开该文件；失败与中断的行不再提供这个入口。"
+        },
+        {
+          "name": "inspect",
+          "type": "(() => void) | undefined",
+          "default": "undefined",
+          "desc": "提供后展开体底部出现跳到轨迹视图的「查看」药丸。"
+        }
+      ],
+      "notes": "体积按 <code>content / old_string / new_string</code> 三个字段的解码字符数向上取整到 KB，字段还没流完时也照样给出当前值，所以准备阶段就能看到「2KB」；结算后它与 <code>+n −n</code> 统计同时出现在路径右侧。<code>DiffBlock</code> 的统计只在行悬停或 <code>aria-expanded='true'</code> 时上色，平时是继承的三级灰。差异行左右各 22px 内边距、正文用代码字体，开启换行后改为 <code>pre-wrap</code>。",
+      "keywords": [
+        "编辑",
+        "写入",
+        "文件变更",
+        "diff",
+        "差异",
+        "file mutation"
+      ]
+    },
+    {
+      "id": "generic-tool-card",
+      "name": "GenericToolCard",
+      "exportName": "GenericToolCard",
+      "zh": "通用工具卡",
+      "group": "tools",
+      "summary": "没有专属 toolview 的工具走这张通用卡：<code>variant</code> 决定 16px 图形槽里的字形（search 放大镜、read 文档、bash 提示符、write/edit 铅笔、code 花括号、others 四角星），标题取行模型的标题键，展开体按 <code>terminal → diff → read → image → search → web → details</code> 的优先级选结构化卡片，都没有才落回 IN/OUT 文本卡。单文件工具（<code>read</code>、<code>read_image</code>）不暴露参数体，路径本身就是可点链接；命令以非零退出码结束时会被抬成 <code>error</code> 状态，摘要换成红色首行。",
+      "source": "packages/client/ui-tool/src/client/tool/toolviews/GenericToolCard.tsx#L33",
+      "css": [
+        "packages/client/ui-primitives/src/CodeCard.module.css",
+        "packages/client/ui-primitives/src/ReadBlock.module.css",
+        "packages/client/ui-primitives/src/DisclosureRow.module.css",
+        "packages/client/ui-primitives/src/TextShimmer.module.css",
+        "packages/client/ui-tool/src/client/tool/components/ToolRow.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-base",
+        "--dsw-alias-border-l1",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-interactive-bg-hover-solid",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-shimmer",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-markdown-code-block",
+        "--dsw-alias-state-business-primary",
+        "--dsw-alias-state-error-primary",
+        "--dsw-alias-state-success-primary",
+        "--dsw-alias-state-warn-label",
+        "--dsw-focus-ring-color",
+        "--dsw-font-family",
+        "--dsw-font-markdown-code-block",
+        "--dsw-font-markdown-code-block-small",
+        "--dsw-font-xs-13",
+        "--dsw-radius-lg",
+        "--dsw-radius-sm"
+      ],
+      "specimens": [
+        {
+          "label": "折叠：read 行，路径即入口",
+          "note": "单文件工具不暴露参数体，摘要是可点路径",
+          "html": "<div style='width:760px'><div class=\"c4-root\" data-variant=\"read\" data-tool=\"read\" data-state=\"ok\"><div class=\"c2-root\"><div class=\"c2-header\" data-disclosure-header='true'><div class=\"row\" data-disclosure-row='true' data-expandable='true' role='button' tabindex='0' aria-expanded='false'><span class=\"leading\"><span class=\"c2-iconIdle\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4.9375 5.90295H11.0625' stroke='currentColor'/><path d='M4.9375 9.02991H8.27841' stroke='currentColor'/><path d='M12.5 1.32617C13.3039 1.32617 14 1.95171 14 2.77637V13.2246C13.9996 14.0489 13.3036 14.6738 12.5 14.6738H3.5C2.69637 14.6738 2.00042 14.0489 2 13.2246V2.77637C2 1.95171 2.69613 1.32617 3.5 1.32617H12.5ZM3.5 2.32617C3.1993 2.32617 3 2.55186 3 2.77637V13.2246C3.00044 13.4489 3.19963 13.6738 3.5 13.6738H12.5C12.8004 13.6738 12.9996 13.4489 13 13.2246V2.77637C13 2.55186 12.8007 2.32617 12.5 2.32617H3.5Z' fill='currentColor'/></svg></span><svg class=\"c2-chevronHover\" width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></span><span class=\"c3-root\"><span class=\"c3-content\"><span class=\"c3-text c2-title c4-title\">读取</span><span class=\"c4-sep\" data-shimmer-decoration='true' aria-hidden='true'></span><button type='button' class=\"c4-fileLink\"><span class=\"c3-text\">packages/client/ui-tool/src/client/tool/components/ToolRow.tsx</span></button></span></span></div></div></div></div></div>"
+        },
+        {
+          "label": "展开：ReadBlock 行号窗口 +「查看」药丸（悬停模拟）",
+          "note": "显示 8 / 394 行的窗口提示来自 totalLines，Inspect 为悬停模拟",
+          "html": "<div style='width:760px'><div class=\"c4-root forceHover\" data-variant=\"read\" data-tool=\"read\" data-state=\"ok\"><div class=\"c2-root\" data-open='true'><div class=\"c2-header\" data-disclosure-header='true'><div class=\"row\" data-disclosure-row='true' data-expandable='true' role='button' tabindex='0' aria-expanded='true'><span class=\"leading\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10' stroke='currentColor'/></svg></span><span class=\"c3-root\"><span class=\"c3-content\"><span class=\"c3-text c2-title c4-title\">读取</span><span class=\"c4-sep\" data-shimmer-decoration='true' aria-hidden='true'></span><button type='button' class=\"c4-fileLink\"><span class=\"c3-text\">packages/client/ui-tool/src/client/tool/components/ToolRow.tsx</span></button></span></span></div></div><div class=\"c4-bodyWrap\"><div class=\"card block c4-readBody\" data-read='' data-code-wrap='false' style='--dsl-read-gutter:3ch'><div class=\"c0-header\" data-code-block-banner='true'><div class=\"c0-heading\"><span class=\"c0-language\">typescript</span><span class=\"c0-title\" title='packages/client/ui-tool/src/client/tool/components/ToolRow.tsx'>packages/client/ui-tool/src/client/tool/components/ToolRow.tsx</span></div><div class=\"c0-actions\"><span class=\"c0-status\">显示 8 / 394 行</span><button type='button' class=\"c0-action\" aria-label='自动换行' aria-pressed='false'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M10.9999 8C10.9999 6.89543 10.1046 6 9 6H4.5V5H9C10.6568 5 11.9999 6.34315 11.9999 8C11.9999 9.65685 10.6568 11 9 11H6.20703L6.85351 11.6465L6.14648 12.3535L4.64652 10.8536C4.45126 10.6583 4.45126 10.3417 4.64652 10.1464L6.14648 8.64648L6.85351 9.35352L6.20703 10H9C10.1046 10 10.9999 9.10457 10.9999 8Z' fill='currentColor'/><path d='M2 15H1V1H2V15Z' fill='currentColor'/><path d='M15 15H14V1H15V15Z' fill='currentColor'/></svg></button><button type='button' class=\"c0-action\" aria-label='复制'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><rect x='1.52075' y='4.07373' width='10.3932' height='10.3932' rx='2' stroke='currentColor'/><path d='M11.9792 1.53296C13.36 1.53296 14.4792 2.65225 14.4792 4.03296V9.42847C14.4792 10.3756 13.9521 11.1987 13.1755 11.6228V10.3298C13.3652 10.0787 13.4792 9.7674 13.4792 9.42847V4.03296C13.4792 3.20453 12.8077 2.53296 11.9792 2.53296H6.58374C6.27966 2.53301 5.99684 2.6235 5.7605 2.77905H4.42358C4.85652 2.03463 5.66056 1.53304 6.58374 1.53296H11.9792Z' fill='currentColor'/></svg></button></div></div><div class=\"c0-body\"><div class=\"c1-line\"><span class=\"c1-gutter\" aria-hidden='true'>1</span><span class=\"c1-content\">import { memo, useCallback, useMemo, type KeyboardEvent, type MouseEvent, type ReactNode } from 'react'</span></div><div class=\"c1-line\"><span class=\"c1-gutter\" aria-hidden='true'>2</span><span class=\"c1-content\">import clsx from 'clsx'</span></div><div class=\"c1-line\"><span class=\"c1-gutter\" aria-hidden='true'>3</span><span class=\"c1-content\">import {</span></div><div class=\"c1-line\"><span class=\"c1-gutter\" aria-hidden='true'>4</span><span class=\"c1-content\">  CodeBlock, DiffBlock, DisclosureRow, IconInspectOutlineRegular, ReadBlock, SearchBlock,</span></div><div class=\"c1-line\"><span class=\"c1-gutter\" aria-hidden='true'>5</span><span class=\"c1-content\">  TerminalBlock, TextShimmer, WebBlock,</span></div><div class=\"c1-line\"><span class=\"c1-gutter\" aria-hidden='true'>6</span><span class=\"c1-content\">  diffTotals,</span></div><div class=\"c1-line\"><span class=\"c1-gutter\" aria-hidden='true'>7</span><span class=\"c1-content\">} from '@deepseek-ai/dsh-client-ui-primitives'</span></div><div class=\"c1-line\"><span class=\"c1-gutter\" aria-hidden='true'>8</span><span class=\"c1-content\">import type { PropsRenderSlots, TranslateNS } from '@deepseek-ai/dsh-client-ui-slots'</span></div></div></div><button type='button' class=\"c4-inspectButton\"><svg width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4.67398 4.25061L1.36094 7.86484C1.29085 7.9413 1.29085 8.05866 1.36094 8.13513L4.67398 11.7494' stroke='currentColor'/><path d='M11.3262 4.25061L14.6392 7.86484C14.7093 7.9413 14.7093 8.05866 14.6392 8.13513L11.3262 11.7494' stroke='currentColor'/><path d='M9.56222 3.62573L6.43774 12.3743' stroke='currentColor'/></svg>查看</button></div></div></div></div>",
+          "css": "/* 状态模拟：真实规则是 .root:hover .inspectButton 与 .inspectButton:focus-visible（ToolRow.module.css），悬停无法静态触发。 */\n.root.forceHover .inspectButton { opacity: 1; }"
+        },
+        {
+          "label": "失败：run_code 抛出异常，摘要变红",
+          "note": "没有结构化卡片时展开体是参数 / 结果文本",
+          "html": "<div style='width:760px'><div class=\"c4-root\" data-variant=\"code\" data-tool=\"run_code\" data-state=\"error\"><span class=\"c4-visuallyHidden\">失败</span><div class=\"c2-root\"><div class=\"c2-header\" data-disclosure-header='true'><div class=\"row\" data-disclosure-row='true' data-expandable='true' role='button' tabindex='0' aria-expanded='false'><span class=\"leading\"><span class=\"c2-iconIdle\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M6.27612 1.5L4.52612 14.5' stroke='currentColor'/><path d='M11.4739 1.5L9.72388 14.5' stroke='currentColor'/><path d='M2.39868 5.5H14.0681' stroke='currentColor'/><path d='M1.93188 10.5H13.6013' stroke='currentColor'/></svg></span><svg class=\"c2-chevronHover\" width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></span><span class=\"c3-root\"><span class=\"c3-content\"><span class=\"c3-text c2-title c4-title\">代码</span><span class=\"c4-sep\" data-shimmer-decoration='true' aria-hidden='true'></span><span class=\"c4-summary c4-errorSummary\"><span class=\"c3-text\">ReferenceError: stagedFiles is not defined</span></span></span></span></div></div></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "useDisclosure",
+          "type": "UseDisclosure",
+          "default": "—",
+          "desc": "行自己拥有的展开状态；每次调用独立，外层回合折叠时重置。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'conversation'>",
+          "default": "—",
+          "desc": "会话字典：变体标题（读取 / 运行命令 / 编辑 / 代码 / 工具调用）、IN/OUT、复制与状态文案。"
+        },
+        {
+          "name": "toolName",
+          "type": "string",
+          "default": "—",
+          "desc": "线工具名；<code>classifyTool</code> 把它映射成 <code>search / read / bash / write / edit / code / others</code> 七个变体之一。"
+        },
+        {
+          "name": "block",
+          "type": "ToolCallBlock",
+          "default": "—",
+          "desc": "三个阶段之一的冻结切片；终端、读取、diff、搜索、网页与详情六种卡片模型都从它推导。"
+        },
+        {
+          "name": "cwd",
+          "type": "string | undefined",
+          "default": "undefined",
+          "desc": "会话工作区根，路径摘要与终端提示符都用它相对化。"
+        },
+        {
+          "name": "home",
+          "type": "string | undefined",
+          "default": "undefined",
+          "desc": "宿主账号主目录；主目录下的路径缩写为 <code>~</code>。"
+        },
+        {
+          "name": "openFile",
+          "type": "(path: string, options?: OpenFileOptions) => void",
+          "default": "—",
+          "desc": "单文件工具的路径入口；只有 <code>filePath</code> 存在时才会接到行上。"
+        },
+        {
+          "name": "inspect",
+          "type": "(() => void) | undefined",
+          "default": "undefined",
+          "desc": "提供后展开体底部出现跳到轨迹视图的「查看」药丸。"
+        }
+      ],
+      "notes": "通用卡的判定是「这个线工具名没有注册 keyed toolview」，不是「工具没有结果卡片」：同一个组件既画 <code>read</code> 的行也画 <code>bash</code>、<code>run_code</code> 的行，观感差异全部来自 <code>variant</code>、卡片模型与行状态。Auto review 拒绝会用拒绝原因替换摘要与输出；命令非零退出（<code>isError</code> 仍为 false）只把状态抬成 <code>error</code>，退出码由终端卡的胶囊承担。",
+      "keywords": [
+        "通用工具卡",
+        "读取",
+        "运行命令",
+        "generic tool card",
+        "fallback"
+      ]
+    },
+    {
+      "id": "search-row",
+      "name": "SearchRow",
+      "exportName": "SearchRow",
+      "zh": "搜索行",
+      "group": "tools",
+      "summary": "<code>grep</code> / <code>glob</code> 的行视图：折叠时是 24px 摘要行，标题「搜索文件内容 / 查找文件」，摘要取 <code>pattern</code>。展开体是 <code>SearchBlock</code> 卡：9/14 内边距的 banner 给出「12 处匹配 · 3 个文件」与「复制」，正文按文件分组，文件头是加粗路径加匹配数（整行可折叠该组），匹配行前置三级灰行号，glob 形态则是每行一个路径；超过 8 行时中间折起并给「… 其余 n 行」。结果被截断时卡片下方另起一行三级灰的 <code>.searchRecovery</code>，保留完整结果的位置。",
+      "source": "packages/client/ui-tool/src/client/tool/toolviews/search-row.tsx#L18",
+      "css": [
+        "packages/client/ui-primitives/src/SearchBlock.module.css",
+        "packages/client/ui-primitives/src/DisclosureRow.module.css",
+        "packages/client/ui-primitives/src/TextShimmer.module.css",
+        "packages/client/ui-tool/src/client/tool/components/ToolRow.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-base",
+        "--dsw-alias-border-l1",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-interactive-bg-hover-solid",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-shimmer",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-markdown-code-block",
+        "--dsw-alias-markdown-code-block-banner",
+        "--dsw-alias-state-error-primary",
+        "--dsw-alias-state-success-primary",
+        "--dsw-alias-state-warn-label",
+        "--dsw-font-markdown-code-block",
+        "--dsw-font-markdown-code-block-small",
+        "--dsw-font-xs-13",
+        "--dsw-radius-lg",
+        "--dsw-radius-sm"
+      ],
+      "specimens": [
+        {
+          "label": "折叠：grep 行，摘要取 pattern",
+          "note": "标题按线名切换：grep → 搜索文件内容",
+          "html": "<div style='width:760px'><div class=\"c3-root\" data-variant=\"search\" data-tool=\"grep\" data-state=\"ok\"><div class=\"c1-root\"><div class=\"c1-header\" data-disclosure-header='true'><div class=\"row\" data-disclosure-row='true' data-expandable='true' role='button' tabindex='0' aria-expanded='false'><span class=\"leading\"><span class=\"c1-iconIdle\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M6.58727 11.8586C9.55061 11.8586 11.9529 9.45637 11.9529 6.49304C11.9529 3.5297 9.55061 1.12744 6.58727 1.12744C3.62394 1.12744 1.22168 3.5297 1.22168 6.49304C1.22168 9.45637 3.62394 11.8586 6.58727 11.8586Z' stroke='currentColor'/><path d='M10.2991 10.3933L14.7783 14.8725' stroke='currentColor'/></svg></span><svg class=\"c1-chevronHover\" width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></span><span class=\"c2-root\"><span class=\"c2-content\"><span class=\"c2-text c1-title c3-title\">搜索文件内容</span><span class=\"c3-sep\" data-shimmer-decoration='true' aria-hidden='true'></span><span class=\"c3-summary\"><span class=\"c2-text\">inspectButton</span></span></span></span></div></div></div></div></div>"
+        },
+        {
+          "label": "展开：按文件分组的匹配行 +「查看」药丸（悬停模拟）",
+          "note": "文件头整行是分组折叠控件，Inspect 为悬停模拟",
+          "html": "<div style='width:760px'><div class=\"c3-root forceHover\" data-variant=\"search\" data-tool=\"grep\" data-state=\"ok\"><div class=\"c1-root\" data-open='true'><div class=\"c1-header\" data-disclosure-header='true'><div class=\"row\" data-disclosure-row='true' data-expandable='true' role='button' tabindex='0' aria-expanded='true'><span class=\"leading\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10' stroke='currentColor'/></svg></span><span class=\"c2-root\"><span class=\"c2-content\"><span class=\"c2-text c1-title c3-title\">搜索文件内容</span><span class=\"c3-sep\" data-shimmer-decoration='true' aria-hidden='true'></span><span class=\"c3-summary\"><span class=\"c2-text\">inspectButton</span></span></span></span></div></div><div class=\"c3-bodyWrap\"><div class=\"block c3-searchBody\" data-search='matches'><div class=\"c0-header\"><span class=\"c0-summary\">4 处匹配 · 2 个文件</span><button type='button' class=\"copyButton\">复制</button></div><div class=\"body\"><div><button type='button' class=\"fileHeader\" aria-expanded='true'><span class=\"filePath\">packages/client/ui-tool/src/client/tool/components/ToolRow.tsx</span><span class=\"fileCount\">1</span></button></div><div><div class=\"line\"><span class=\"lineNumber\">360: </span>          className={css.inspectButton}</div></div><div><button type='button' class=\"fileHeader\" aria-expanded='true'><span class=\"filePath\">packages/client/ui-tool/src/client/tool/components/ToolRow.module.css</span><span class=\"fileCount\">3</span></button></div><div><div class=\"line\"><span class=\"lineNumber\">126: </span>.inspectButton {</div></div><div><div class=\"line\"><span class=\"lineNumber\">147: </span>.root:hover .inspectButton,</div></div><div><div class=\"line\"><span class=\"lineNumber\">148: </span>.inspectButton:focus-visible {</div></div></div></div><button type='button' class=\"c3-inspectButton\"><svg width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4.67398 4.25061L1.36094 7.86484C1.29085 7.9413 1.29085 8.05866 1.36094 8.13513L4.67398 11.7494' stroke='currentColor'/><path d='M11.3262 4.25061L14.6392 7.86484C14.7093 7.9413 14.7093 8.05866 14.6392 8.13513L11.3262 11.7494' stroke='currentColor'/><path d='M9.56222 3.62573L6.43774 12.3743' stroke='currentColor'/></svg>查看</button></div></div></div></div>",
+          "css": "/* 状态模拟：真实规则是 .root:hover .inspectButton 与 .inspectButton:focus-visible（ToolRow.module.css），悬停无法静态触发。 */\n.root.forceHover .inspectButton { opacity: 1; }"
+        },
+        {
+          "label": "截断：中间折起 + 卡片下方的恢复定位",
+          "note": "13 行结果按头 4 尾 4 折起，hidden = 5",
+          "html": "<div style='width:760px'><div class=\"c3-root\" data-variant=\"search\" data-tool=\"grep\" data-state=\"ok\"><div class=\"c1-root\" data-open='true'><div class=\"c1-header\" data-disclosure-header='true'><div class=\"row\" data-disclosure-row='true' data-expandable='true' role='button' tabindex='0' aria-expanded='true'><span class=\"leading\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10' stroke='currentColor'/></svg></span><span class=\"c2-root\"><span class=\"c2-content\"><span class=\"c2-text c1-title c3-title\">搜索文件内容</span><span class=\"c3-sep\" data-shimmer-decoration='true' aria-hidden='true'></span><span class=\"c3-summary\"><span class=\"c2-text\">--dsw-alias-label-tertiary</span></span></span></span></div></div><div class=\"c3-bodyWrap\"><div class=\"block c3-searchBody\" data-search='matches'><div class=\"c0-header\"><span class=\"c0-summary\">显示 10 / 共 412 处匹配 · 3 个文件</span><button type='button' class=\"copyButton\">复制</button></div><div class=\"body\"><div><button type='button' class=\"fileHeader\" aria-expanded='true'><span class=\"filePath\">packages/client/ui-primitives/src/SearchBlock.module.css</span><span class=\"fileCount\">3</span></button></div><div><div class=\"line\"><span class=\"lineNumber\">28: </span>  color: var(--dsw-alias-label-secondary);</div></div><div><div class=\"line\"><span class=\"lineNumber\">61: </span>  color: var(--dsw-alias-label-tertiary);</div></div><div><div class=\"line\"><span class=\"lineNumber\">89: </span>  color: var(--dsw-alias-label-tertiary);</div></div><button type='button' class=\"expand\" aria-expanded='false' aria-label='展开其余 5 行结果'>… 其余 5 行</button><div><button type='button' class=\"fileHeader\" aria-expanded='true'><span class=\"filePath\">packages/client/ui-primitives/src/TerminalBlock.module.css</span><span class=\"fileCount\">3</span></button></div><div><div class=\"line\"><span class=\"lineNumber\">110: </span>  color: var(--dsw-alias-label-tertiary);</div></div><div><div class=\"line\"><span class=\"lineNumber\">191: </span>  color: var(--dsw-alias-label-tertiary);</div></div><div><div class=\"line\"><span class=\"lineNumber\">204: </span>  color: var(--dsw-alias-label-tertiary);</div></div></div></div><div class=\"c3-searchRecovery\">(Full grep result stored at: /tmp/dsh-spill-k2m8Qp/session-3f9a2c1b8d47/9c1e4a7b2d05-grep-results.txt. Use read with offset/limit, or grep this path to search within it.)</div></div></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "useDisclosure",
+          "type": "UseDisclosure",
+          "default": "—",
+          "desc": "行自己拥有的展开状态；每次调用独立，外层回合折叠时重置。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'conversation'>",
+          "default": "—",
+          "desc": "会话字典：标题、匹配计数（含截断形态）、无结果、复制与展开文案。"
+        },
+        {
+          "name": "toolName",
+          "type": "string",
+          "default": "—",
+          "desc": "线工具名；<code>grep</code> 与 <code>glob</code> 共用这个视图，标题与结果形态（匹配 / 路径）都由它区分。"
+        },
+        {
+          "name": "block",
+          "type": "ToolCallBlock",
+          "default": "—",
+          "desc": "三个阶段之一的冻结切片；结果元数据里的 <code>shape / files / paths / total / truncated</code> 决定卡片内容。"
+        },
+        {
+          "name": "inspect",
+          "type": "(() => void) | undefined",
+          "default": "undefined",
+          "desc": "提供后展开体底部出现跳到轨迹视图的「查看」药丸。"
+        }
+      ],
+      "notes": "卡片只在结算成功且结果元数据合法时出现；失败与旧格式结果退回通用文本。搜索行只展开卡片本身，行内的「其余 n 行」是 <code>SearchBlock</code> 自己的折起控件（<code>maxLines</code> 固定为 8），与行的展开不是一回事。结果被工具截断时，卡片只保留截断后的行，完整结果的位置写在卡片外的 <code>.searchRecovery</code> 里。",
+      "keywords": [
+        "搜索",
+        "grep",
+        "glob",
+        "匹配",
+        "查找文件"
+      ]
+    },
+    {
+      "id": "todo-row",
+      "name": "TodoRow",
+      "exportName": "TodoRow",
+      "zh": "待办行",
+      "group": "tools",
+      "summary": "<code>todo_write</code> 的行视图：折叠摘要把「3/5 已完成」和第一个进行中的任务名拼在一起，并把并行进行的其余任务数拆到不参与省略的 <code>.summarySuffix</code>（形如 <code>+2</code>），后缀同时带上与上一次清单相比的差异统计（新增 / 更新 / 移除）。展开体是 <code>ToolDetails</code>：caption 写「首次记录」或「与上次清单相比」，每条任务是状态字形加任务名加右侧状态文案，新增 / 移除 / 状态变化分别用 <code>+</code>、<code>−</code> 与删除线表达，未变化的条目折进底部的「n 项未变化」。",
+      "source": "packages/client/ui-tool/src/client/tool/toolviews/todo-row.tsx#L53",
+      "css": [
+        "packages/client/ui-tool/src/client/tool/components/ToolDetails.module.css",
+        "packages/client/ui-primitives/src/DisclosureRow.module.css",
+        "packages/client/ui-primitives/src/TextShimmer.module.css",
+        "packages/client/ui-tool/src/client/tool/components/ToolRow.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-base",
+        "--dsw-alias-border-l1",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-interactive-bg-hover-solid",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-shimmer",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-markdown-code-block",
+        "--dsw-alias-state-business-primary",
+        "--dsw-alias-state-error-primary",
+        "--dsw-alias-state-success-primary",
+        "--dsw-alias-state-warn-label",
+        "--dsw-alias-state-warn-primary",
+        "--dsw-focus-ring-color",
+        "--dsw-focus-ring-width",
+        "--dsw-font-markdown-code-block-small",
+        "--dsw-font-xs-13",
+        "--dsw-radius-lg",
+        "--dsw-radius-sm"
+      ],
+      "specimens": [
+        {
+          "label": "运行中：3/5 已完成 + 并行计数后缀（扫光暂停）",
+          "note": "状态模拟：扫光暂停在扫过中段",
+          "html": "<div style='width:720px'><div class=\"c3-root\" data-variant=\"others\" data-tool=\"todo_write\" data-state=\"running\"><span class=\"c3-visuallyHidden\">运行中</span><div class=\"c1-root\"><div class=\"c1-header\" data-disclosure-header='true'><div class=\"row\" data-disclosure-row='true' data-expandable='true' role='button' tabindex='0' aria-expanded='false'><span class=\"leading\"><span class=\"c1-iconIdle\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M3.75 6.25C4.7165 6.25 5.5 5.4665 5.5 4.5C5.5 3.5335 4.7165 2.75 3.75 2.75C2.7835 2.75 2 3.5335 2 4.5C2 5.4665 2.7835 6.25 3.75 6.25Z' stroke='currentColor'/><path d='M7.5 4.5H13.5' stroke='currentColor'/><path d='M3.75 13.25C4.7165 13.25 5.5 12.4665 5.5 11.5C5.5 10.5335 4.7165 9.75 3.75 9.75C2.7835 9.75 2 10.5335 2 11.5C2 12.4665 2.7835 13.25 3.75 13.25Z' stroke='currentColor'/><path d='M7.5 11.5H13.5' stroke='currentColor'/></svg></span><svg class=\"c1-chevronHover\" width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></span><span class=\"c2-root\" data-shimmer='true'><span class=\"c2-content\"><span class=\"c2-text c1-title c3-title\">更新任务清单</span><span class=\"c3-sep\" data-shimmer-decoration='true' aria-hidden='true'></span><span class=\"c3-summary\"><span class=\"c2-text\">3/5 已完成 · 校对侧边栏的空态文案</span></span><span class=\"c2-text c3-summarySuffix\">新增 2 · +2</span></span><span class=\"c2-decoration\" aria-hidden='true' inert=''><span class=\"c2-sweep\"><span class=\"c2-content c2-highlight\"><span class=\"c2-text c1-title c3-title\" data-shimmer-text='更新任务清单'></span><span class=\"c3-sep\" data-shimmer-decoration='true' aria-hidden='true'></span><span class=\"c3-summary\"><span class=\"c2-text\" data-shimmer-text='3/5 已完成 · 校对侧边栏的空态文案'></span></span><span class=\"c2-text c3-summarySuffix\" data-shimmer-text='新增 2 · +2'></span></span></span></span></span></div></div></div></div></div>",
+          "css": "/* 状态模拟：真实动画是 1.5s 无限循环的扫光（dsh-row-shimmer-sweep / dsh-row-shimmer-highlight），这里暂停在扫过中段静态呈现。 */\n.sweep, .content.highlight { animation-play-state: paused; animation-delay: -0.75s; }"
+        },
+        {
+          "label": "展开：与上次清单相比的新增 / 更新 / 移除",
+          "note": "未变化的条目折进底部 details，箭头默认朝右",
+          "html": "<div style='width:720px'><div class=\"c3-root forceHover\" data-variant=\"others\" data-tool=\"todo_write\" data-state=\"ok\"><div class=\"c1-root\" data-open='true'><div class=\"c1-header\" data-disclosure-header='true'><div class=\"row\" data-disclosure-row='true' data-expandable='true' role='button' tabindex='0' aria-expanded='true'><span class=\"leading\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10' stroke='currentColor'/></svg></span><span class=\"c2-root\"><span class=\"c2-content\"><span class=\"c2-text c1-title c3-title\">更新任务清单</span><span class=\"c3-sep\" data-shimmer-decoration='true' aria-hidden='true'></span><span class=\"c3-summary\"><span class=\"c2-text\">3/5 已完成 · 校对侧边栏的空态文案</span></span><span class=\"c2-text c3-summarySuffix\">新增 2 · 更新 1 · 移除 1 · +2</span></span></span></div></div><div class=\"c3-bodyWrap c3-detailsBodyWrap\"><div class=\"c0-root\" data-inspect='true' data-caption='true'><div class=\"c0-caption\">与上次清单相比</div><ul class=\"c0-list\"><li class=\"c0-item\" data-change='added'><div class=\"c0-heading\"><span class=\"c0-status\" role='img' aria-label='新增'>+</span><span class=\"c0-text\">给搜索卡补截断提示行</span><span class=\"c0-statusText\"><span>已完成</span></span></div></li><li class=\"c0-item\" data-change='added'><div class=\"c0-heading\"><span class=\"c0-status\" role='img' aria-label='新增'>+</span><span class=\"c0-text\">校对侧边栏的空态文案</span><span class=\"c0-statusText\"><span>进行中</span></span></div></li><li class=\"c0-item\" data-change='updated'><div class=\"c0-heading\"><span class=\"c0-status\" role='img' aria-label='状态变化'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M8 14.5C11.5899 14.5 14.5 11.5899 14.5 8C14.5 4.41015 11.5899 1.5 8 1.5C4.41015 1.5 1.5 4.41015 1.5 8C1.5 11.5899 4.41015 14.5 8 14.5Z' stroke='currentColor'/><path d='M10.3329 7.91346C10.3996 7.95195 10.3996 8.04818 10.3329 8.08667L6.78304 10.1362C6.71638 10.1747 6.63304 10.1266 6.63304 10.0496L6.63304 5.95055C6.63304 5.87357 6.71638 5.82546 6.78304 5.86395L10.3329 7.91346Z' stroke='currentColor'/></svg></span><span class=\"c0-text\">核对标签轨的滚动渐隐</span><span class=\"c0-statusText\"><span class=\"c0-previous\">待处理</span><span> → </span><span>进行中</span></span></div></li><li class=\"c0-item\" data-change='removed'><div class=\"c0-heading\"><span class=\"c0-status\" role='img' aria-label='移除'>−</span><span class=\"c0-text\">补命令面板的快捷键提示</span><span class=\"c0-statusText\"><span>待处理</span></span></div></li></ul><details class=\"c0-unchanged\"><summary><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4' stroke='currentColor'/></svg>1 项未变化</summary><ul class=\"c0-list\"><li class=\"c0-item\"><div class=\"c0-heading\"><span class=\"c0-status\" role='img' aria-label='待处理'><span class=\"c0-pending\"></span></span><span class=\"c0-text\">整理侧边栏用到的设计变量</span><span class=\"c0-statusText\"><span>待处理</span></span></div></li></ul></details></div><button type='button' class=\"c3-inspectButton\"><svg width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4.67398 4.25061L1.36094 7.86484C1.29085 7.9413 1.29085 8.05866 1.36094 8.13513L4.67398 11.7494' stroke='currentColor'/><path d='M11.3262 4.25061L14.6392 7.86484C14.7093 7.9413 14.7093 8.05866 14.6392 8.13513L11.3262 11.7494' stroke='currentColor'/><path d='M9.56222 3.62573L6.43774 12.3743' stroke='currentColor'/></svg>查看</button></div></div></div></div>",
+          "css": "/* 状态模拟：真实规则是 .root:hover .inspectButton 与 .inspectButton:focus-visible（ToolRow.module.css），悬停无法静态触发。 */\n.root.forceHover .inspectButton { opacity: 1; }"
+        },
+        {
+          "label": "失败：参数不是合法 JSON，摘要变红",
+          "note": "取消的调用不会被画成已完成",
+          "html": "<div style='width:720px'><div class=\"c3-root\" data-variant=\"others\" data-tool=\"todo_write\" data-state=\"error\"><span class=\"c3-visuallyHidden\">失败</span><div class=\"c1-root\"><div class=\"c1-header\" data-disclosure-header='true'><div class=\"row\" data-disclosure-row='true' data-expandable='true' role='button' tabindex='0' aria-expanded='false'><span class=\"leading\"><span class=\"c1-iconIdle\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M3.75 6.25C4.7165 6.25 5.5 5.4665 5.5 4.5C5.5 3.5335 4.7165 2.75 3.75 2.75C2.7835 2.75 2 3.5335 2 4.5C2 5.4665 2.7835 6.25 3.75 6.25Z' stroke='currentColor'/><path d='M7.5 4.5H13.5' stroke='currentColor'/><path d='M3.75 13.25C4.7165 13.25 5.5 12.4665 5.5 11.5C5.5 10.5335 4.7165 9.75 3.75 9.75C2.7835 9.75 2 10.5335 2 11.5C2 12.4665 2.7835 13.25 3.75 13.25Z' stroke='currentColor'/><path d='M7.5 11.5H13.5' stroke='currentColor'/></svg></span><svg class=\"c1-chevronHover\" width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></span><span class=\"c2-root\"><span class=\"c2-content\"><span class=\"c2-text c1-title c3-title\">更新任务清单</span><span class=\"c3-sep\" data-shimmer-decoration='true' aria-hidden='true'></span><span class=\"c3-summary c3-errorSummary\"><span class=\"c2-text\">Error: 参数不是合法 JSON，Expecting ',' delimiter</span></span></span></span></div></div></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "useDisclosure",
+          "type": "UseDisclosure",
+          "default": "—",
+          "desc": "行自己拥有的展开状态；每次调用独立，外层回合折叠时重置。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'conversation'>",
+          "default": "—",
+          "desc": "会话字典：待办标题、<code>{done}/{total} 已完成</code>、状态标签与差异统计文案。"
+        },
+        {
+          "name": "toolName",
+          "type": "string",
+          "default": "—",
+          "desc": "线工具名，固定为 <code>todo_write</code>。"
+        },
+        {
+          "name": "block",
+          "type": "ToolCallBlock",
+          "default": "—",
+          "desc": "三个阶段之一的冻结切片；参数里的 <code>todos</code> 数组同时喂给折叠摘要与展开清单，只有结算成功才拿得到差异卡。"
+        },
+        {
+          "name": "useTodoHistory",
+          "type": "(selector: (snapshot: Map<string, TodoBaseline> | undefined) => T) => T",
+          "default": "—",
+          "desc": "注入的历史 hook：按 <code>callId</code> 取上一次记录下来的清单，用作差异基线。"
+        },
+        {
+          "name": "useSession",
+          "type": "(selector: (snapshot: SessionSnapshot) => T) => T",
+          "default": "—",
+          "desc": "会话快照 hook，这里只读 <code>hasMore</code>：为真时旧清单可能还在未加载的历史里，caption 改说「旧清单不可用」。"
+        },
+        {
+          "name": "inspect",
+          "type": "(() => void) | undefined",
+          "default": "undefined",
+          "desc": "提供后展开体底部出现跳到轨迹视图的「查看」药丸。"
+        }
+      ],
+      "notes": "并行执行是常态，所以摘要只报第一个进行中的任务名，其余数量走 <code>.summarySuffix</code> 的 <code>+n</code>——<code>flex: none</code> 让它在窄行里不被省略号吃掉。参数不是合法 JSON、或者 <code>todos</code> 不是数组时，折叠摘要退回通用文案，展开体也不出差异卡；失败的行摘要换成红色首行错误，不会把取消的调用画成完成。差异卡的 caption 有三种：<code>首次记录</code>、<code>与上次清单相比</code>、<code>旧清单不可用</code>。",
+      "keywords": [
+        "待办",
+        "任务清单",
+        "todo_write",
+        "计划",
+        "todo"
+      ]
+    },
+    {
+      "id": "web-row",
+      "name": "WebRow",
+      "exportName": "WebRow",
+      "zh": "网页行",
+      "group": "tools",
+      "summary": "<code>web_search</code> / <code>web_fetch</code> 的行视图：摘要来自查询词或 URL，<code>web_fetch</code> 的摘要是可点击的外链（虚线下划线）。展开体是 <code>WebBlock</code> 卡——搜索卡把模型答案放在引用列表上方，来源按 1 起的编号列出，每条是链接加摘要加时间，列表最高 320px 内部滚动，截断时补一行「来源列表已截断」；获取卡则是等宽 URL 加 <code>HTTP 200</code> 与「内容已截断」的状态行，两种情况都用 <code>--dsw-alias-markdown-code-block</code> 底与 <code>--dsw-radius-lg</code> 圆角。",
+      "source": "packages/client/ui-tool/src/client/tool/toolviews/web-row.tsx#L18",
+      "css": [
+        "packages/client/ui-primitives/src/WebBlock.module.css",
+        "packages/client/ui-primitives/src/DisclosureRow.module.css",
+        "packages/client/ui-primitives/src/TextShimmer.module.css",
+        "packages/client/ui-tool/src/client/tool/components/ToolRow.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-base",
+        "--dsw-alias-border-l1",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-interactive-bg-hover-solid",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-shimmer",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-link",
+        "--dsw-alias-markdown-code-block",
+        "--dsw-alias-state-error-primary",
+        "--dsw-alias-state-success-primary",
+        "--dsw-alias-state-warn-label",
+        "--dsw-font-markdown-code-block-small",
+        "--dsw-font-xs-13",
+        "--dsw-radius-lg",
+        "--dsw-radius-sm"
+      ],
+      "specimens": [
+        {
+          "label": "折叠：web_search 的查询词摘要",
+          "note": "标题按线名切换：web_search → 网页搜索",
+          "html": "<div style='width:760px'><div class=\"c3-root\" data-variant=\"search\" data-tool=\"web_search\" data-state=\"ok\"><div class=\"c1-root\"><div class=\"c1-header\" data-disclosure-header='true'><div class=\"row\" data-disclosure-row='true' data-expandable='true' role='button' tabindex='0' aria-expanded='false'><span class=\"leading\"><span class=\"c1-iconIdle\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M7.99986 14.0887C11.3626 14.0887 14.0886 11.3627 14.0886 7.99998C14.0886 4.63727 11.3626 1.91125 7.99986 1.91125C4.63715 1.91125 1.91113 4.63727 1.91113 7.99998C1.91113 11.3627 4.63715 14.0887 7.99986 14.0887Z' stroke='currentColor'/><path d='M2.34619 8H13.6538' stroke='currentColor' stroke-linecap='square'/><path d='M7.99976 14.0889C9.23509 14.0889 10.1743 11.3629 10.1743 8.00006C10.1743 4.63739 9.23509 1.91138 7.99976 1.91138' stroke='currentColor'/><path d='M7.99973 14.0889C6.76445 14.0889 5.8252 11.3629 5.8252 8.00006C5.8252 4.63739 6.76445 1.91138 7.99973 1.91138' stroke='currentColor'/></svg></span><svg class=\"c1-chevronHover\" width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></span><span class=\"c2-root\"><span class=\"c2-content\"><span class=\"c2-text c1-title c3-title\">网页搜索</span><span class=\"c3-sep\" data-shimmer-decoration='true' aria-hidden='true'></span><span class=\"c3-summary\"><span class=\"c2-text\">DeepSeek Harness 工具调用卡片 设计规范</span></span></span></span></div></div></div></div></div>"
+        },
+        {
+          "label": "展开：搜索卡（答案 + 编号来源 + 截断提示）",
+          "note": "答案区按纯文本呈现，真实渲染走 MarkdownText",
+          "html": "<div style='width:760px'><div class=\"c3-root\" data-variant=\"search\" data-tool=\"web_search\" data-state=\"ok\"><div class=\"c1-root\" data-open='true'><div class=\"c1-header\" data-disclosure-header='true'><div class=\"row\" data-disclosure-row='true' data-expandable='true' role='button' tabindex='0' aria-expanded='true'><span class=\"leading\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10' stroke='currentColor'/></svg></span><span class=\"c2-root\"><span class=\"c2-content\"><span class=\"c2-text c1-title c3-title\">网页搜索</span><span class=\"c3-sep\" data-shimmer-decoration='true' aria-hidden='true'></span><span class=\"c3-summary\"><span class=\"c2-text\">DeepSeek Harness 工具调用卡片 设计规范</span></span></span></span></div></div><div class=\"c3-bodyWrap\"><div class=\"block c3-webBody\" data-web='search'><div class=\"answer\">工具行统一 24px 高，摘要用 13px 二级字号并省略；展开体按 terminal、diff、read、search、web 的优先级选一张结构化卡片，都没有才落回 IN/OUT 文本卡。</div><ol class=\"sources\"><li class=\"source\" value='1'><a class=\"sourceLink\" href='https://www.deepseek.com/research/harness-tool-cards' target='_blank' rel='noopener noreferrer'><svg width='14' height='14' class=\"linkIcon\" viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1.3'><path d='M7.99986 14.0887C11.3626 14.0887 14.0886 11.3627 14.0886 7.99998C14.0886 4.63727 11.3626 1.91125 7.99986 1.91125C4.63715 1.91125 1.91113 4.63727 1.91113 7.99998C1.91113 11.3627 4.63715 14.0887 7.99986 14.0887Z' stroke='currentColor'/><path d='M2.34619 8H13.6538' stroke='currentColor' stroke-linecap='square'/><path d='M7.99976 14.0889C9.23509 14.0889 10.1743 11.3629 10.1743 8.00006C10.1743 4.63739 9.23509 1.91138 7.99976 1.91138' stroke='currentColor'/><path d='M7.99973 14.0889C6.76445 14.0889 5.8252 11.3629 5.8252 8.00006C5.8252 4.63739 6.76445 1.91138 7.99973 1.91138' stroke='currentColor'/></svg>DeepSeek Harness 工具调用卡片设计说明</a><div class=\"snippet\">24px 摘要行、16px 图形槽与 13px 标题；展开体按卡片优先级渲染。</div><div class=\"published\">2026-10-12</div></li><li class=\"source\" value='2'><a class=\"sourceLink\" href='https://deepseek-harness.github.io/deepseek-harness/guide/quickstart' target='_blank' rel='noopener noreferrer'><svg width='14' height='14' class=\"linkIcon\" viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1.3'><path d='M7.99986 14.0887C11.3626 14.0887 14.0886 11.3627 14.0886 7.99998C14.0886 4.63727 11.3626 1.91125 7.99986 1.91125C4.63715 1.91125 1.91113 4.63727 1.91113 7.99998C1.91113 11.3627 4.63715 14.0887 7.99986 14.0887Z' stroke='currentColor'/><path d='M2.34619 8H13.6538' stroke='currentColor' stroke-linecap='square'/><path d='M7.99976 14.0889C9.23509 14.0889 10.1743 11.3629 10.1743 8.00006C10.1743 4.63739 9.23509 1.91138 7.99976 1.91138' stroke='currentColor'/><path d='M7.99973 14.0889C6.76445 14.0889 5.8252 11.3629 5.8252 8.00006C5.8252 4.63739 6.76445 1.91138 7.99973 1.91138' stroke='currentColor'/></svg>使用 Web UI</a><div class=\"snippet\">Agent 可以读取和编辑工作区文件、运行命令、委派工作并维护计划；需要审批的操作会先询问。</div><div class=\"published\">2026-09-28</div></li><li class=\"source\" value='3'><a class=\"sourceLink\" href='https://www.deepseek.com/docs/uiux/tokens' target='_blank' rel='noopener noreferrer'><svg width='14' height='14' class=\"linkIcon\" viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1.3'><path d='M7.99986 14.0887C11.3626 14.0887 14.0886 11.3627 14.0886 7.99998C14.0886 4.63727 11.3626 1.91125 7.99986 1.91125C4.63715 1.91125 1.91113 4.63727 1.91113 7.99998C1.91113 11.3627 4.63715 14.0887 7.99986 14.0887Z' stroke='currentColor'/><path d='M2.34619 8H13.6538' stroke='currentColor' stroke-linecap='square'/><path d='M7.99976 14.0889C9.23509 14.0889 10.1743 11.3629 10.1743 8.00006C10.1743 4.63739 9.23509 1.91138 7.99976 1.91138' stroke='currentColor'/><path d='M7.99973 14.0889C6.76445 14.0889 5.8252 11.3629 5.8252 8.00006C5.8252 4.63739 6.76445 1.91138 7.99973 1.91138' stroke='currentColor'/></svg>设计变量速查</a><div class=\"snippet\">--dsw-alias-markdown-code-block 等卡片底色与 --dsw-alias-link 的取值。</div><div class=\"published\">2026-09-15</div></li></ol><div class=\"truncated\">来源列表已截断</div></div></div></div></div></div>"
+        },
+        {
+          "label": "展开：获取卡（等宽 URL + HTTP 状态）",
+          "note": "web_fetch 的折叠摘要是同一 URL 的外链",
+          "html": "<div style='width:760px'><div class=\"c3-root\" data-variant=\"read\" data-tool=\"web_fetch\" data-state=\"ok\"><div class=\"c1-root\" data-open='true'><div class=\"c1-header\" data-disclosure-header='true'><div class=\"row\" data-disclosure-row='true' data-expandable='true' role='button' tabindex='0' aria-expanded='true'><span class=\"leading\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10' stroke='currentColor'/></svg></span><span class=\"c2-root\"><span class=\"c2-content\"><span class=\"c2-text c1-title c3-title\">网页获取</span><span class=\"c3-sep\" data-shimmer-decoration='true' aria-hidden='true'></span><a class=\"c3-fileLink\" href='https://platform.deepseek.com/api-docs/tool-calls' target='_blank' rel='noopener noreferrer'><span class=\"c2-text\">https://platform.deepseek.com/api-docs/tool-calls</span></a></span></span></div></div><div class=\"c3-bodyWrap\"><div class=\"block fetch c3-webBody\" data-web='fetch'><a class=\"fetchUrl\" href='https://platform.deepseek.com/api-docs/tool-calls' target='_blank' rel='noopener noreferrer'><svg width='14' height='14' class=\"linkIcon\" viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1.3'><path d='M7.99986 14.0887C11.3626 14.0887 14.0886 11.3627 14.0886 7.99998C14.0886 4.63727 11.3626 1.91125 7.99986 1.91125C4.63715 1.91125 1.91113 4.63727 1.91113 7.99998C1.91113 11.3627 4.63715 14.0887 7.99986 14.0887Z' stroke='currentColor'/><path d='M2.34619 8H13.6538' stroke='currentColor' stroke-linecap='square'/><path d='M7.99976 14.0889C9.23509 14.0889 10.1743 11.3629 10.1743 8.00006C10.1743 4.63739 9.23509 1.91138 7.99976 1.91138' stroke='currentColor'/><path d='M7.99973 14.0889C6.76445 14.0889 5.8252 11.3629 5.8252 8.00006C5.8252 4.63739 6.76445 1.91138 7.99973 1.91138' stroke='currentColor'/></svg>https://platform.deepseek.com/api-docs/tool-calls</a><div class=\"fetchMeta\"><span class=\"status\">HTTP 200</span><span class=\"truncated\">内容已截断</span></div></div></div></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "useDisclosure",
+          "type": "UseDisclosure",
+          "default": "—",
+          "desc": "行自己拥有的展开状态；每次调用独立，外层回合折叠时重置。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'conversation'>",
+          "default": "—",
+          "desc": "会话字典：标题、无结果、来源截断、HTTP 与内容截断文案。"
+        },
+        {
+          "name": "toolName",
+          "type": "string",
+          "default": "—",
+          "desc": "线工具名；<code>web_search</code> 用地球图标，<code>web_fetch</code> 用文档图标并额外接上 URL 外链。"
+        },
+        {
+          "name": "block",
+          "type": "ToolCallBlock",
+          "default": "—",
+          "desc": "三个阶段之一的冻结切片；结果元数据里的 <code>answer / sources / url / statusCode / truncated</code> 决定卡片形态。"
+        },
+        {
+          "name": "inspect",
+          "type": "(() => void) | undefined",
+          "default": "undefined",
+          "desc": "提供后展开体底部出现跳到轨迹视图的「查看」药丸。"
+        }
+      ],
+      "notes": "只有 http(s) URL 会变成可点的外链：<code>json</code>/<code>data</code>/<code>file</code> 协议或解析失败的 URL 一律按纯文本渲染，所以折叠摘要既可能是链接也可能是普通摘要。答案与来源都来自结果元数据而不是扁平化的结果文本；元数据缺失时这一行退回通用文本卡。来源列表最高 320px 内部滚动，编号用 <code>&lt;li value&gt;</code> 固定，滚动后仍然对得上引用序号。",
+      "keywords": [
+        "网页搜索",
+        "网页获取",
+        "web_search",
+        "web_fetch",
+        "来源",
+        "引用"
+      ]
+    }
+  ]
+}

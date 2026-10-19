@@ -1,0 +1,796 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "id": "system-prompt-row",
+      "name": "SystemPromptRow",
+      "exportName": "SystemPromptRow",
+      "zh": "系统提示词行",
+      "group": "conversation",
+      "summary": "会话流里的「系统提示词」折叠行：24px 行高，16px 图标盒 + 6px 间距 + 13px 标题，整行 tertiary 墨色、悬停转 secondary，悬停时前置的浏览图标淡出换成 14px 箭头。展开后正文缩进 22px，放进 <code>max-height:141px</code> 的代码块滚动区——<code>--dsw-alias-markdown-code-block</code> 底色、<code>--dsw-radius-md</code> 圆角、11px/16px 等宽字，按模型收到的原文保留换行。历史里替换过提示词的位置用同一行，只把标题换成「系统提示词更新」。",
+      "source": "packages/client/ui-chat/src/client/chat/SystemPromptRow.tsx#L25",
+      "css": [
+        "packages/client/ui-primitives/src/DisclosureRow.module.css",
+        "packages/client/ui-chat/src/client/chat/ContextInjectionRow.module.css",
+        "packages/client/ui-chat/src/client/chat/ContextBody.module.css",
+        "packages/client/ui-primitives/src/TextShimmer.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-markdown-code-block",
+        "--dsw-radius-md"
+      ],
+      "specimens": [
+        {
+          "label": "折叠：系统提示词",
+          "note": "16px 图标盒 / 6px 间距 / 13px 标题；箭头 <code>.chevronHover</code> 平时 <code>opacity:0</code>，悬停才与图标互换",
+          "pad": "lg",
+          "html": "<div style='width:640px'><div class=\"c0-root c1-root\"><div class=\"header\" data-disclosure-header><div class=\"row\" data-disclosure-row data-expandable='true' role='button' tabindex='0' aria-expanded='false'><span class=\"leading\"><span class=\"iconIdle\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4.9375 5.90295H11.0625' stroke='currentColor'/><path d='M4.9375 9.02991H8.27841' stroke='currentColor'/><path d='M12.5 1.32617C13.3039 1.32617 14 1.95171 14 2.77637V13.2246C13.9996 14.0489 13.3036 14.6738 12.5 14.6738H3.5C2.69637 14.6738 2.00042 14.0489 2 13.2246V2.77637C2 1.95171 2.69613 1.32617 3.5 1.32617H12.5ZM3.5 2.32617C3.1993 2.32617 3 2.55186 3 2.77637V13.2246C3.00044 13.4489 3.19963 13.6738 3.5 13.6738H12.5C12.8004 13.6738 12.9996 13.4489 13 13.2246V2.77637C13 2.55186 12.8007 2.32617 12.5 2.32617H3.5Z' fill='currentColor'/></svg></span><svg class=\"c1-chevron c0-chevronHover\" width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></span><span class=\"c3-root\"><span class=\"c3-content\"><span class=\"c3-text title\">系统提示词</span></span></span></div></div></div></div>"
+        },
+        {
+          "label": "展开：模型看到的提示词原文",
+          "note": "正文缩进 22px，滚动区上限 141px，等宽字 11px/16px，换行按原文保留",
+          "pad": "lg",
+          "html": "<div style='width:640px'><div class=\"c0-root c1-root\" data-open='true'><div class=\"header\" data-disclosure-header><div class=\"row\" data-disclosure-row data-expandable='true' role='button' tabindex='0' aria-expanded='true'><span class=\"leading\"><svg class=\"c1-chevron\" width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10' stroke='currentColor'/></svg></span><span class=\"c3-root\"><span class=\"c3-content\"><span class=\"c3-text title\">系统提示词</span></span></span></div></div><div class=\"body\" data-system-prompt-body><pre class=\"c2-text\" data-context-text>你是 DeepSeek Harness 的编码智能体，在一个真实仓库里工作。\n工作目录：/home/lk/deepseek-harness\n先读文件再改代码；改完跑 pnpm run lint 与 pnpm run test:gui。</pre></div></div></div>"
+        },
+        {
+          "label": "历史里的更新行",
+          "note": "同一个组件：<code>update</code> 为真时标题换成「系统提示词更新」，观感其余部分不变",
+          "pad": "lg",
+          "html": "<div style='width:640px'><div class=\"c0-root c1-root\"><div class=\"header\" data-disclosure-header><div class=\"row\" data-disclosure-row data-expandable='true' role='button' tabindex='0' aria-expanded='false'><span class=\"leading\"><span class=\"iconIdle\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4.9375 5.90295H11.0625' stroke='currentColor'/><path d='M4.9375 9.02991H8.27841' stroke='currentColor'/><path d='M12.5 1.32617C13.3039 1.32617 14 1.95171 14 2.77637V13.2246C13.9996 14.0489 13.3036 14.6738 12.5 14.6738H3.5C2.69637 14.6738 2.00042 14.0489 2 13.2246V2.77637C2 1.95171 2.69613 1.32617 3.5 1.32617H12.5ZM3.5 2.32617C3.1993 2.32617 3 2.55186 3 2.77637V13.2246C3.00044 13.4489 3.19963 13.6738 3.5 13.6738H12.5C12.8004 13.6738 12.9996 13.4489 13 13.2246V2.77637C13 2.55186 12.8007 2.32617 12.5 2.32617H3.5Z' fill='currentColor'/></svg></span><svg class=\"c1-chevron c0-chevronHover\" width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></span><span class=\"c3-root\"><span class=\"c3-content\"><span class=\"c3-text title\">系统提示词更新</span></span></span></div></div></div></div>"
+        },
+        {
+          "label": "悬停模拟：图标换成箭头",
+          "note": "悬停模拟：把 <code>.row:hover</code> 的两条规则搬到静态类 <code>.forceHover</code> 上",
+          "pad": "lg",
+          "html": "<div style='width:640px'><div class=\"c0-root c1-root\"><div class=\"header\" data-disclosure-header><div class=\"row forceHover\" data-disclosure-row data-expandable='true' role='button' tabindex='0' aria-expanded='false'><span class=\"leading\"><span class=\"iconIdle\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4.9375 5.90295H11.0625' stroke='currentColor'/><path d='M4.9375 9.02991H8.27841' stroke='currentColor'/><path d='M12.5 1.32617C13.3039 1.32617 14 1.95171 14 2.77637V13.2246C13.9996 14.0489 13.3036 14.6738 12.5 14.6738H3.5C2.69637 14.6738 2.00042 14.0489 2 13.2246V2.77637C2 1.95171 2.69613 1.32617 3.5 1.32617H12.5ZM3.5 2.32617C3.1993 2.32617 3 2.55186 3 2.77637V13.2246C3.00044 13.4489 3.19963 13.6738 3.5 13.6738H12.5C12.8004 13.6738 12.9996 13.4489 13 13.2246V2.77637C13 2.55186 12.8007 2.32617 12.5 2.32617H3.5Z' fill='currentColor'/></svg></span><svg class=\"c1-chevron c0-chevronHover\" width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></span><span class=\"c3-root\"><span class=\"c3-content\"><span class=\"c3-text title\">系统提示词</span></span></span></div></div></div></div>",
+          "css": "/* 状态模拟：DisclosureRow 的 :hover 无法静态触发，把 .row:hover 的两条规则原样搬到 .forceHover 上（图标淡出、箭头淡入），行色也一并取 :hover 的 secondary。 */\n.row.forceHover { color: var(--dsw-alias-label-secondary); }\n.row.forceHover .iconIdle { opacity: 0; }\n.row.forceHover .chevronHover { opacity: 1; }"
+        }
+      ],
+      "props": [
+        {
+          "name": "text",
+          "type": "string",
+          "default": "—",
+          "desc": "完整的模型可见提示词原文；展开后原样放进那个 141px 的代码块滚动区，超过 20000 字符会截断并追加「已截断 N 字符」。"
+        },
+        {
+          "name": "update",
+          "type": "boolean",
+          "default": "false",
+          "desc": "为真表示这个位置的提示词替换了更早的一份，标题改用「系统提示词更新」，其余外观不变。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'chat'>",
+          "default": "—",
+          "desc": "chat 词典座位：两个标题与截断提示都走它。"
+        }
+      ],
+      "notes": "复用 <code>ContextInjectionRow.module.css</code>：<code>.root</code> 负责 <code>data-open</code> 时的 4px 下边距，<code>.body</code> 就是那个 141px 的滚动区；行结构本身来自 primitives 的 <code>DisclosureRow</code>（24px 行高、<code>expandOnRowClick</code>，整行可点、回车与空格也能展开）。折叠态的箭头是 <code>DisclosureRow</code> 的 <code>.chevronHover</code> 叠上本组件的 <code>.chevron</code>，展开态则换成只带 <code>.chevron</code> 的上箭头。正文由 <code>OpaqueBody</code> 渲染——提示词的 source 为 null，所以只有正文、没有来源字段表。",
+      "keywords": [
+        "系统提示词",
+        "system prompt",
+        "提示词更新",
+        "disclosure",
+        "上下文"
+      ]
+    },
+    {
+      "id": "system-prompt-node-view",
+      "name": "SystemPromptNodeView",
+      "exportName": "SystemPromptNodeView",
+      "zh": "提示词节点",
+      "group": "conversation",
+      "source": "packages/client/ui-chat/src/client/chat/SystemPromptRow.tsx#L46",
+      "summary": "把 <code>system-prompt</code> 这类 Chat 节点接到 <code>SystemPromptRow</code> 上的渲染器：自己只有一层 <code>memo</code>，不产生任何 DOM，读 <code>node.data.text</code> 与 <code>node.data.update</code> 交给行组件。因此它的观感就是那一行折叠行——24px 行高、13px 标题，展开后 141px 的等宽字滚动区；<code>update</code> 为真的节点标题是「系统提示词更新」。",
+      "css": [
+        "packages/client/ui-primitives/src/DisclosureRow.module.css",
+        "packages/client/ui-chat/src/client/chat/ContextInjectionRow.module.css",
+        "packages/client/ui-chat/src/client/chat/ContextBody.module.css",
+        "packages/client/ui-primitives/src/TextShimmer.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-markdown-code-block",
+        "--dsw-radius-md"
+      ],
+      "specimens": [
+        {
+          "label": "它渲染的内容：一个提示词节点",
+          "note": "该组件本身无独立外观，这里展示它渲染出来的那一行（<code>node.data.text</code> 交给 <code>SystemPromptRow</code>）",
+          "pad": "lg",
+          "html": "<div style='width:640px'><div class=\"c0-root c1-root\"><div class=\"header\" data-disclosure-header><div class=\"row\" data-disclosure-row data-expandable='true' role='button' tabindex='0' aria-expanded='false'><span class=\"leading\"><span class=\"iconIdle\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4.9375 5.90295H11.0625' stroke='currentColor'/><path d='M4.9375 9.02991H8.27841' stroke='currentColor'/><path d='M12.5 1.32617C13.3039 1.32617 14 1.95171 14 2.77637V13.2246C13.9996 14.0489 13.3036 14.6738 12.5 14.6738H3.5C2.69637 14.6738 2.00042 14.0489 2 13.2246V2.77637C2 1.95171 2.69613 1.32617 3.5 1.32617H12.5ZM3.5 2.32617C3.1993 2.32617 3 2.55186 3 2.77637V13.2246C3.00044 13.4489 3.19963 13.6738 3.5 13.6738H12.5C12.8004 13.6738 12.9996 13.4489 13 13.2246V2.77637C13 2.55186 12.8007 2.32617 12.5 2.32617H3.5Z' fill='currentColor'/></svg></span><svg class=\"c1-chevron c0-chevronHover\" width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></span><span class=\"c3-root\"><span class=\"c3-content\"><span class=\"c3-text title\">系统提示词</span></span></span></div></div></div></div>"
+        },
+        {
+          "label": "它渲染的内容：展开的提示词正文",
+          "note": "该组件本身无独立外观，这里展示它渲染的内容；展开态由行组件的 <code>data-open</code> 与 <code>.body</code> 决定",
+          "pad": "lg",
+          "html": "<div style='width:640px'><div class=\"c0-root c1-root\" data-open='true'><div class=\"header\" data-disclosure-header><div class=\"row\" data-disclosure-row data-expandable='true' role='button' tabindex='0' aria-expanded='true'><span class=\"leading\"><svg class=\"c1-chevron\" width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10' stroke='currentColor'/></svg></span><span class=\"c3-root\"><span class=\"c3-content\"><span class=\"c3-text title\">系统提示词</span></span></span></div></div><div class=\"body\" data-system-prompt-body><pre class=\"c2-text\" data-context-text>你是 DeepSeek Harness 的编码智能体，在一个真实仓库里工作。\n工作目录：/home/lk/deepseek-harness\n先读文件再改代码；改完跑 pnpm run lint 与 pnpm run test:gui。</pre></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "node",
+          "type": "ChatNode<'system-prompt'>",
+          "default": "—",
+          "desc": "系统提示词节点：<code>data.text</code> 是完整原文，<code>data.update</code> 标记这一份是否替换了更早的一份。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'chat'>",
+          "default": "—",
+          "desc": "chat 词典座位，原样转交给行组件。"
+        }
+      ],
+      "notes": "注册在 <code>conversation.chat.node</code> 的 <code>system-prompt</code> key 上，用 <code>memo</code> 包住以免同一节点重渲染；没有自己的样式表，样式全部来自被渲染的行组件与其内部件。不产生 DOM、也不读除 <code>node</code> 与 <code>t</code> 之外的座位，是这一个 key 的唯一出口。",
+      "keywords": [
+        "system-prompt",
+        "节点渲染器",
+        "chat node",
+        "system prompt"
+      ]
+    },
+    {
+      "id": "turn-process-node-view",
+      "name": "TurnProcessNodeView",
+      "exportName": "TurnProcessNodeView",
+      "zh": "回合过程行",
+      "group": "conversation",
+      "source": "packages/client/ui-chat/src/client/chat/TurnProcessNodeView.tsx#L10",
+      "summary": "已结算回合顶上的「用时」折叠条：整宽按钮，高 33px（随字号偏好再加 delta）、底部 0.5px <code>--dsw-alias-border-l2</code> 发丝线，14px tertiary 文字、悬停转 secondary；时长数字用等宽 tabular 字形（<code>.durationNumber</code>）。文案随结束原因切换：正常结束是「已完成，用时 1分12秒」（不足 1 秒按 1 秒起算，满 60 秒才带「分」），被停止是「已停止」，失败是「处理失败」——后两者不再显示时长。可折叠时右侧挂 14px 箭头，<code>data-open</code> 时旋转 180°；停止或失败的回合按钮禁用且不下发 <code>aria-expanded</code>。",
+      "css": [
+        "packages/client/ui-chat/src/client/chat/TurnProcessNodeView.module.css",
+        "packages/client/ui-chat/src/client/chat/accessibility.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l2",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-label-secondary"
+      ],
+      "specimens": [
+        {
+          "label": "已完成（折叠）：用时 1分12秒",
+          "note": "33px 高 + 底部 0.5px 发丝线；数字走 <code>.durationNumber</code> 的等宽 tabular 字形",
+          "pad": "lg",
+          "html": "<div style='width:640px'><span class=\"visuallyHidden\" role='status' aria-live='polite' aria-atomic='true'>已完成</span><button type='button' class=\"root\" data-turn-process='3' data-turn-process-messages='4' data-turn-process-tool-calls='6' data-turn-process-subagents='1' aria-expanded='false'><span class=\"label\">已完成，用时 <span class=\"durationNumber\">1</span>分<span class=\"durationNumber\">12</span>秒</span><svg class=\"chevron\" width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button></div>"
+        },
+        {
+          "label": "展开：箭头旋转 180°",
+          "note": "打开态由 <code>.root[data-open] .chevron</code> 的 <code>rotate(180deg)</code> 表达，工作步骤在它下方展开",
+          "pad": "lg",
+          "html": "<div style='width:640px'><span class=\"visuallyHidden\" role='status' aria-live='polite' aria-atomic='true'>已完成</span><button type='button' class=\"root\" data-open='true' data-turn-process='3' data-turn-process-messages='4' data-turn-process-tool-calls='6' data-turn-process-subagents='1' aria-expanded='true'><span class=\"label\">已完成，用时 <span class=\"durationNumber\">48</span>秒</span><svg class=\"chevron\" width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button></div>"
+        },
+        {
+          "label": "已停止 / 处理失败：不可折叠、无箭头",
+          "note": "停止与失败的回合不显示时长、按钮 <code>disabled</code>、没有箭头，读屏仍从 1px 隐藏行听到结果",
+          "pad": "lg",
+          "html": "<div style='width:640px;display:flex;flex-direction:column'><span class=\"visuallyHidden\" role='status' aria-live='polite' aria-atomic='true'>已停止</span><button type='button' class=\"root\" data-turn-process='4' data-turn-process-messages='2' data-turn-process-tool-calls='1' data-turn-process-subagents='0' disabled><span class=\"label\">已停止</span></button><span class=\"visuallyHidden\" role='status' aria-live='polite' aria-atomic='true'>处理失败</span><button type='button' class=\"root\" data-turn-process='5' data-turn-process-messages='1' data-turn-process-tool-calls='0' data-turn-process-subagents='0' disabled><span class=\"label\">处理失败</span></button></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "node",
+          "type": "ChatNode<'turn-process'>",
+          "default": "—",
+          "desc": "回合过程节点：<code>data.turn</code> 是回合序号，另带 <code>messageCount</code> / <code>toolCallCount</code> / <code>subagentCount</code> 三个计数（原样落到 <code>data-turn-process-*</code> 属性上）。"
+        },
+        {
+          "name": "turnProcess",
+          "type": "TurnProcessOwnerProps",
+          "default": "—",
+          "desc": "拥有者的折叠状态：<code>foldable</code> / <code>hasContent</code> / <code>open</code> 与 <code>setOpen</code>，决定这一条是只剩标题还是可点开。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'chat'>",
+          "default": "—",
+          "desc": "chat 词典：已完成 / 已停止 / 处理失败三种结果与时分秒单位。"
+        }
+      ],
+      "notes": "回合还没结束（<code>turn.status !== 'closed'</code>）时整个组件返回 null，不占位。按钮是否可点由 <code>canCollapse = foldable &amp;&amp; hasContent &amp;&amp; !turnProcessAlwaysOpen(node)</code> 决定：进行中、被停止或被中断、失败的回合都算「始终展开」，此时只当标题用。旁边那条 <code>role=\"status\"</code> 的 1px 视觉隐藏文本只在读屏里播报与文案一致的三种结果，视觉上不可见。",
+      "keywords": [
+        "回合用时",
+        "turn process",
+        "已完成，用时",
+        "过程折叠",
+        "已停止"
+      ]
+    },
+    {
+      "id": "turn-tail-node-view",
+      "name": "TurnTailNodeView",
+      "exportName": "TurnTailNodeView",
+      "zh": "回合收尾",
+      "group": "conversation",
+      "source": "packages/client/ui-chat/src/client/chat/TurnTailNodeView.tsx#L28",
+      "summary": "回合收尾处的竖排容器（16px 行距），把 <code>conversation.chat.turnTail</code> 插槽里的功能卡片和消息动作行叠在一起，因此它出现在助手回答之后、与 Assistant 的位置无关。动作行来自 <code>MessageIconActions</code>：28px 高图标按钮（15px 字形，<code>data-clock=\"end\"</code> 时 17px），依次是复制、分支，末尾 <code>.endInfo</code> 放用量胶囊与 12px 时刻；再叠上容器自己的 <code>.actions</code>（左移 6px、上移 4px）。分支按钮可置灰（<code>data-unavailable</code>，透明度 0.4）但仍可聚焦，读屏经 <code>aria-describedby</code> 得到原因。",
+      "css": [
+        "packages/client/ui-chat/src/client/chat/TurnTailNodeView.module.css",
+        "packages/client/ui-chat/src/client/chat/MessageIconActions.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-radius-sm"
+      ],
+      "specimens": [
+        {
+          "label": "收尾动作行：复制 / 分支 / 时刻（常显）",
+          "note": "28px 图标按钮 + 8px 间距；<code>data-actions-reveal=\"always\"</code> 表示回合后没有新内容，始终可见",
+          "pad": "lg",
+          "html": "<div style='width:640px'><div class=\"root\" data-turn-tail='3' data-actions-reveal='always'><div class=\"actions\" data-clock='end'><button type='button' class=\"action\" aria-label='复制'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'><rect x='1.52075' y='4.07373' width='10.3932' height='10.3932' rx='2' stroke='currentColor'/><path d='M11.9792 1.53296C13.36 1.53296 14.4792 2.65225 14.4792 4.03296V9.42847C14.4792 10.3756 13.9521 11.1987 13.1755 11.6228V10.3298C13.3652 10.0787 13.4792 9.7674 13.4792 9.42847V4.03296C13.4792 3.20453 12.8077 2.53296 11.9792 2.53296H6.58374C6.27966 2.53301 5.99684 2.6235 5.7605 2.77905H4.42358C4.85652 2.03463 5.66056 1.53304 6.58374 1.53296H11.9792Z' fill='currentColor'/></svg></button><button type='button' class=\"action\" aria-label='在新对话中分支'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'><path d='M1.01503 8.0001L5.6964 8.0001C6.41913 8.0001 6.78049 8.0001 7.12115 7.91951C7.4232 7.84804 7.71233 7.73014 7.97821 7.57C8.27809 7.38939 8.5364 7.13669 9.05303 6.63129L11.3281 4.40564' stroke='currentColor'/><path d='M1.01221 7.9999L5.6964 7.9999C6.41913 7.9999 6.78049 7.9999 7.12115 8.08049C7.4232 8.15196 7.71233 8.26986 7.97821 8.43C8.27809 8.61061 8.5364 8.86331 9.05303 9.36871L11.3281 11.5944' stroke='currentColor'/><circle cx='12.4502' cy='3.3079' r='1.56962' stroke='currentColor'/><circle cx='12.4502' cy='12.6921' r='1.56962' stroke='currentColor'/></svg></button><span class=\"endInfo\"><span class=\"timeEnd\">14:32</span></span></div></div></div>"
+        },
+        {
+          "label": "悬停才显形：回合后已有新内容",
+          "note": "悬停模拟：真实规则是 <code>[data-actions-reveal='hover']:hover .actions</code>，这里把 <code>opacity:1</code> 直接搬成静态规则",
+          "pad": "lg",
+          "html": "<div style='width:640px'><div class=\"root\" data-turn-tail='3' data-actions-reveal='hover'><div class=\"actions\" data-clock='end'><button type='button' class=\"action\" aria-label='复制'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'><rect x='1.52075' y='4.07373' width='10.3932' height='10.3932' rx='2' stroke='currentColor'/><path d='M11.9792 1.53296C13.36 1.53296 14.4792 2.65225 14.4792 4.03296V9.42847C14.4792 10.3756 13.9521 11.1987 13.1755 11.6228V10.3298C13.3652 10.0787 13.4792 9.7674 13.4792 9.42847V4.03296C13.4792 3.20453 12.8077 2.53296 11.9792 2.53296H6.58374C6.27966 2.53301 5.99684 2.6235 5.7605 2.77905H4.42358C4.85652 2.03463 5.66056 1.53304 6.58374 1.53296H11.9792Z' fill='currentColor'/></svg></button><button type='button' class=\"action\" aria-label='在新对话中分支'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'><path d='M1.01503 8.0001L5.6964 8.0001C6.41913 8.0001 6.78049 8.0001 7.12115 7.91951C7.4232 7.84804 7.71233 7.73014 7.97821 7.57C8.27809 7.38939 8.5364 7.13669 9.05303 6.63129L11.3281 4.40564' stroke='currentColor'/><path d='M1.01221 7.9999L5.6964 7.9999C6.41913 7.9999 6.78049 7.9999 7.12115 8.08049C7.4232 8.15196 7.71233 8.26986 7.97821 8.43C8.27809 8.61061 8.5364 8.86331 9.05303 9.36871L11.3281 11.5944' stroke='currentColor'/><circle cx='12.4502' cy='3.3079' r='1.56962' stroke='currentColor'/><circle cx='12.4502' cy='12.6921' r='1.56962' stroke='currentColor'/></svg></button><span class=\"endInfo\"><span class=\"timeEnd\">14:32</span></span></div></div></div>",
+          "css": "/* 状态模拟：data-actions-reveal=\"hover\" 时动作行默认 opacity:0，指针悬停或行内聚焦才淡入；这里把 :hover 那条 opacity:1 原样搬成静态规则呈现显形态。 */\n[data-actions-reveal='hover'] .actions { opacity: 1; }"
+        },
+        {
+          "label": "分支不可用：置灰但仍可聚焦",
+          "note": "回合之后还有别的节点（<code>branchUnavailable</code>）时分支按钮转 0.4 透明度并带 <code>data-unavailable</code>；原因走 <code>aria-describedby</code> 的 1px 隐藏文本",
+          "pad": "lg",
+          "html": "<div style='width:640px'><div class=\"root\" data-turn-tail='3' data-actions-reveal='always'><div class=\"actions\" data-clock='end'><button type='button' class=\"action\" aria-label='复制'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'><rect x='1.52075' y='4.07373' width='10.3932' height='10.3932' rx='2' stroke='currentColor'/><path d='M11.9792 1.53296C13.36 1.53296 14.4792 2.65225 14.4792 4.03296V9.42847C14.4792 10.3756 13.9521 11.1987 13.1755 11.6228V10.3298C13.3652 10.0787 13.4792 9.7674 13.4792 9.42847V4.03296C13.4792 3.20453 12.8077 2.53296 11.9792 2.53296H6.58374C6.27966 2.53301 5.99684 2.6235 5.7605 2.77905H4.42358C4.85652 2.03463 5.66056 1.53304 6.58374 1.53296H11.9792Z' fill='currentColor'/></svg></button><button type='button' class=\"action\" aria-label='在新对话中分支' aria-disabled='true' data-unavailable='true' aria-describedby='branch-reason'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'><path d='M1.01503 8.0001L5.6964 8.0001C6.41913 8.0001 6.78049 8.0001 7.12115 7.91951C7.4232 7.84804 7.71233 7.73014 7.97821 7.57C8.27809 7.38939 8.5364 7.13669 9.05303 6.63129L11.3281 4.40564' stroke='currentColor'/><path d='M1.01221 7.9999L5.6964 7.9999C6.41913 7.9999 6.78049 7.9999 7.12115 8.08049C7.4232 8.15196 7.71233 8.26986 7.97821 8.43C8.27809 8.61061 8.5364 8.86331 9.05303 9.36871L11.3281 11.5944' stroke='currentColor'/><circle cx='12.4502' cy='3.3079' r='1.56962' stroke='currentColor'/><circle cx='12.4502' cy='12.6921' r='1.56962' stroke='currentColor'/></svg></button><span id='branch-reason' class=\"visuallyHidden\">仅可从已完成轮次的最后一条消息分支</span><span class=\"endInfo\"><span class=\"timeEnd\">14:32</span></span></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "node",
+          "type": "ChatNode<'turn-tail'>",
+          "default": "—",
+          "desc": "回合收尾节点：<code>data.turn</code>、<code>data.closing</code>（最后一条助手消息与时刻）、<code>tokenUsage</code> 与 <code>branchUnavailable</code>。"
+        },
+        {
+          "name": "openFile",
+          "type": "(path: string, options?: OpenFileOptions) => void",
+          "default": "—",
+          "desc": "行内提到的文件在侧栏打开；随 <code>conversation.chat.turnTail</code> 的 owner 一起发给插件卡。"
+        },
+        {
+          "name": "forkAt",
+          "type": "(seq: number) => void",
+          "default": "—",
+          "desc": "在回合边界处分叉会话；只有在 <code>useAccess('session/fork')</code> 放行时分支按钮才接线。"
+        },
+        {
+          "name": "useAccess",
+          "type": "(action: RemoteEndpoint) => boolean",
+          "default": "—",
+          "desc": "会话能力判定（session 标准座位）；此处问的是 <code>session/fork</code>。"
+        },
+        {
+          "name": "useChat",
+          "type": "(select: (s: ChatSnapshot) => T) => T",
+          "default": "—",
+          "desc": "Chat 快照选择器：判断回合之后是否还有内容节点、以及本轮是否以回答收尾，决定动作行的显形策略。"
+        },
+        {
+          "name": "usePerformanceUsage",
+          "type": "(select: (m: PerformanceUsageMode) => T) => T",
+          "default": "—",
+          "desc": "性能与用量偏好；为 detailed 且回合带 tokenUsage 时才把用量胶囊插进 <code>.endInfo</code>。"
+        },
+        {
+          "name": "renderSlot",
+          "type": "(name, props) => ReactNode",
+          "default": "—",
+          "desc": "取 <code>conversation.chat.turnTail</code> 与 <code>conversation.chat.assistant-actions</code> 两个插槽；前者无内容时容器只剩动作行。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'chat'>",
+          "default": "—",
+          "desc": "chat 词典：复制 / 分支 / 分支不可用的原因等。"
+        }
+      ],
+      "notes": "<code>data-actions-reveal</code> 决定显形策略：回合之后没有新节点时是 <code>always</code>，否则为 <code>hover</code>——桌面端平时 <code>opacity:0</code>，指针悬停或行内聚焦才淡入（<code>@media (hover: hover)</code> 之外始终可见）。收尾消息还没有 <code>messageId</code>（被中断的半截回答）时不给每消息动作——插件动作槽为空，但复制 / 分支 / 时刻那一行仍在；<code>closing</code> 为 null（回合还没收尾）时整个容器只渲染插槽内容，插槽也为空则什么都不渲染。分支动作送的是真实的回合 <code>seq</code>，由 Host 在那里切分。",
+      "keywords": [
+        "回合收尾",
+        "turn tail",
+        "复制分支",
+        "消息动作",
+        "用量胶囊"
+      ]
+    },
+    {
+      "id": "turn-trigger-node-view",
+      "name": "TurnTriggerNodeView",
+      "exportName": "TurnTriggerNodeView",
+      "zh": "回合触发卡",
+      "group": "conversation",
+      "source": "packages/client/ui-chat/src/client/chat/TurnTriggerNodeView.tsx#L29",
+      "summary": "非人类触发的回合顶上那张可展开通知卡：整宽、0.5px <code>--dsw-alias-border-l1</code> 描边、<code>--dsw-radius-xl</code> 圆角，底色 <code>--dsw-alias-turn-trigger-bg</code>（缺省回退到 <code>--dsw-alias-markdown-code-block</code>），整卡悬停换 <code>--dsw-alias-turn-trigger-bg-hover</code>。头部 <code>12px 16px</code> 内边距、10px 间距：14px 来源图标 + 14px 标题 + 右对齐的 12px 时刻，悬停时文字转 secondary；展开后箭头转 180°，正文左缩进 40px，先一行 12px secondary 的说明「这条通知触发了本轮回复。」，再是最高 240px 可滚动的模型实际收到的通知原文（保留换行、长串可断）。",
+      "css": [
+        "packages/client/ui-chat/src/client/chat/TurnTriggerNodeView.module.css",
+        "packages/client/ui-chat/src/client/chat/ContextBody.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l1",
+        "--dsw-radius-xl",
+        "--dsw-alias-turn-trigger-bg",
+        "--dsw-alias-turn-trigger-bg-hover",
+        "--dsw-alias-markdown-code-block",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-label-secondary",
+        "--dsw-font-xxs-12"
+      ],
+      "specimens": [
+        {
+          "label": "收起：自动化任务触发",
+          "note": "0.5px 描边 + 16px 圆角；时刻右对齐，箭头 12px",
+          "pad": "lg",
+          "html": "<div style='width:640px'><section class=\"root\" data-turn-trigger><button class=\"header\" type='button' aria-expanded='false' aria-controls='trigger-body'><span class=\"icon\" aria-hidden='true'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z' stroke='currentColor'/><path d='M8 4.31V8.46L11 10.08' stroke='currentColor'/></svg></span><span class=\"title\">自动化任务</span><time class=\"time\" datetime='2026-10-19T01:30:00.000Z'>09:30</time><svg class=\"chevron\" width='12' height='12' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button></section></div>"
+        },
+        {
+          "label": "展开：说明行 + 通知原文",
+          "note": "正文左缩进 40px，原文区最高 240px、超出滚动",
+          "pad": "lg",
+          "html": "<div style='width:640px'><section class=\"root\" data-turn-trigger><button class=\"header\" type='button' aria-expanded='true' aria-controls='trigger-body'><span class=\"icon\" aria-hidden='true'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M5 2.5H3.5C3.23478 2.5 2.98043 2.60536 2.79289 2.79289C2.60536 2.98043 2.5 3.23478 2.5 3.5V13.5C2.5 13.7652 2.60536 14.0196 2.79289 14.2071C2.98043 14.3946 3.23478 14.5 3.5 14.5H12.5C12.7652 14.5 13.0196 14.3946 13.2071 14.2071C13.3946 14.0196 13.5 13.7652 13.5 13.5V3.5C13.5 3.23478 13.3946 2.98043 13.2071 2.79289C13.0196 2.60536 12.7652 2.5 12.5 2.5H11' stroke='currentColor'/><path d='M8 0.5V7.5' stroke='currentColor'/><path d='M5.5 5L8 7.5L10.5 5' stroke='currentColor'/><path d='M5.5 11H10.5' stroke='currentColor'/></svg></span><span class=\"title\">收到执行请求</span><time class=\"time\" datetime='2026-10-19T03:12:00.000Z'>11:12</time><svg class=\"openChevron\" width='12' height='12' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button><div id='trigger-body' class=\"body\"><p class=\"explanation\">这条通知触发了本轮回复。</p><div class=\"content\"><pre class=\"c1-text\" data-context-text>后台任务 pnpm run test:gui 已结束，退出码 1。\n失败用例：task-manager-page &gt; 状态筛选「已结束」。\n请在 /home/lk/deepseek-harness 里复现并修复，再回到这个任务里汇报。</pre></div></div></section></div>"
+        },
+        {
+          "label": "悬停模拟：整卡底色与头部文字提亮",
+          "note": "悬停模拟：把 <code>.root:hover</code> 与 <code>.header:hover</code> 的原规则搬到 <code>.forceHover</code> 上；这一张换成「继续执行目标」的来源图标",
+          "pad": "lg",
+          "html": "<div style='width:640px'><section class=\"root forceHover\" data-turn-trigger><button class=\"header\" type='button' aria-expanded='false' aria-controls='trigger-body'><span class=\"icon\" aria-hidden='true'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M14.5001 8C14.5 9.28552 14.1188 10.5422 13.4045 11.611C12.6903 12.6799 11.6752 13.5129 10.4875 14.0049C9.29982 14.4968 7.99295 14.6255 6.73212 14.3747C5.4713 14.124 4.31314 13.505 3.4041 12.596C2.49514 11.687 1.87614 10.5288 1.62537 9.26798C1.37459 8.00716 1.50331 6.70028 1.99525 5.51261C2.48719 4.32494 3.32025 3.30981 4.3891 2.59557C5.45795 1.88134 6.71458 1.50008 8.0001 1.5' stroke='currentColor'/><path d='M11.5 8C11.5001 8.69227 11.2948 9.36901 10.9102 9.94463C10.5257 10.5202 9.97901 10.9689 9.33944 11.2338C8.69986 11.4987 7.99609 11.5681 7.31712 11.433C6.63816 11.2979 6.01449 10.9645 5.52501 10.475C5.03548 9.98552 4.70209 9.36185 4.56702 8.68289C4.43195 8.00392 4.50127 7.30015 4.76619 6.66057C5.03112 6.021 5.47976 5.47436 6.05538 5.08978C6.631 4.70519 7.30774 4.49995 8.00001 4.5' stroke='currentColor'/><path d='M8.00024 7.99976L11.2 4.80005' stroke='currentColor'/><path d='M12.4719 5.62245C12.4246 5.66972 12.3569 5.69025 12.2913 5.67715L10.7814 5.37555C10.7022 5.35972 10.6402 5.29781 10.6244 5.2186L10.3228 3.70866C10.3097 3.6431 10.3302 3.57533 10.3775 3.52806L12.1826 1.723C12.2863 1.61929 12.4627 1.65879 12.5122 1.79684L12.9271 2.95225C12.9472 3.00847 12.9915 3.05272 13.0477 3.07291L14.2031 3.48774C14.3412 3.5373 14.3807 3.71368 14.277 3.81739L12.4719 5.62245Z' stroke='currentColor'/></svg></span><span class=\"title\">继续执行目标</span><time class=\"time\" datetime='2026-10-19T04:05:00.000Z'>12:05</time><svg class=\"chevron\" width='12' height='12' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button></section></div>",
+          "css": "/* 状态模拟：:hover 无法静态触发，把 .root:hover 与 .header:hover 两条规则原样搬到静态类 .forceHover 上。 */\n.root.forceHover { background: var(--dsw-alias-turn-trigger-bg-hover, var(--dsw-alias-interactive-bg-hover)); }\n.forceHover .header { color: var(--dsw-alias-label-secondary); }"
+        }
+      ],
+      "props": [
+        {
+          "name": "node",
+          "type": "ChatNode<'turn-trigger'>",
+          "default": "—",
+          "desc": "触发通知节点：<code>data.time</code> 是触发时刻，<code>data.content</code> 是模型收到的正文，<code>data.source.kind</code>（可带 <code>provider</code>）决定标题与图标。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'chat'>",
+          "default": "—",
+          "desc": "chat 词典：十种触发标题、说明行与时钟格式。"
+        }
+      ],
+      "notes": "十种 <code>source.kind</code> 各有标题与图标：goal→「继续执行目标」，agent-message / team-message / subagent-settled→任务、团队、子任务三条文案，webhook 且 <code>provider === 'github'</code> 走分支图标与「收到 GitHub 事件」，schedule→时钟、tool-jobs→队列、cordis-host-runner→插件；认不出的 kind 落到「收到执行请求」+ 请求图标，不臆测身份或成功。时刻用 <code>&lt;time datetime&gt;</code> 带出机器可读的 ISO 值，展开态用 <code>aria-expanded</code> + <code>aria-controls</code> 指向正文。正文只渲染模型可见的内容块（<code>NoticeBody</code>），不列 source 字段。",
+      "keywords": [
+        "触发来源",
+        "turn trigger",
+        "收到执行请求",
+        "webhook",
+        "自动化任务触发"
+      ]
+    },
+    {
+      "id": "user-content",
+      "name": "UserContent",
+      "exportName": "UserContent",
+      "zh": "用户内容",
+      "group": "conversation",
+      "source": "packages/client/ui-chat/src/client/chat/UserContent.tsx#L15",
+      "summary": "用户消息里那段可复用的内容栈：右对齐、8px 行距，宽度上限 <code>min(聊天列宽 × 0.702, 82%)</code>（默认列宽下约 525px）。自上而下是附件行（240px 宽、最小 64px 高的文件卡：0.5px <code>--dsw-alias-border-l2</code> 描边、<code>--dsw-radius-lg</code> 圆角、28px 类型字形 + 14px/22px 文件名 + 12px「DOCX 180KB」大小行；多张图片改用紧凑排布）、文本气泡（<code>--dsw-specific-bubble</code> 底色、<code>--dsw-radius-xl</code> 圆角、<code>10px 16px</code> 内边距、<code>pre-wrap</code> 换行）与引用摘要行（13px tertiary，「引用会话 · …」）。行身份、时间与动作都不归它管。",
+      "css": [
+        "packages/client/ui-chat/src/client/chat/MessageItem.module.css",
+        "packages/client/ui-primitives/src/FileTypeIcon.module.css",
+        "packages/client/ui-conversation/src/client/user-text/UserText.module.css",
+        "packages/client/ui-primitives/src/user-text.module.css"
+      ],
+      "tokens": [
+        "--dsw-specific-bubble",
+        "--dsw-radius-xl",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-border-l2",
+        "--dsw-radius-lg",
+        "--dsw-specific-input-major",
+        "--dsw-static-deepseek-450",
+        "--dsw-static-neutral-00"
+      ],
+      "specimens": [
+        {
+          "label": "文本气泡 + 引用摘要",
+          "note": "气泡 10×16 内边距、圆角 16px；引用摘要跟在气泡下方，13px tertiary",
+          "pad": "lg",
+          "html": "<div style='width:640px;display:flex;flex-direction:column;align-items:flex-end'><div class=\"userStack\"><div class=\"bubble\"><span class=\"root\"><span class=\"plainRun\">帮我把 packages/client/ui-chat 里 TurnTriggerNodeView 的圆角统一成 --dsw-radius-xl</span></span></div><div class=\"referenceSummary\">引用会话 · 回合触发器、ui-chat 组件目录</div></div></div>"
+        },
+        {
+          "label": "多行文本 + 一个 Word 附件",
+          "note": "文件卡固定 240px 宽、最小 64px 高；文件名 500 字重 14px/22px，下一行是「扩展名 + 大小」",
+          "pad": "lg",
+          "html": "<div style='width:640px;display:flex;flex-direction:column;align-items:flex-end'><div class=\"userStack\"><div class=\"attachmentRow\" data-message-attachments><span class=\"fileCard\" title='回合触发器需求说明.docx'><svg class=\"icon word fileIcon\" width='28' height='28' viewBox='0 0 28 28' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'><path d='M8.48924 28H19.5108C21.6479 28 22.7165 28 23.5594 27.6509C24.6833 27.1853 25.5762 26.2924 26.0417 25.1685C26.3909 24.3256 26.3909 23.257 26.3909 21.1199V8.79443C26.3909 8.32877 26.3909 8.09593 26.3471 7.87507C26.2887 7.58058 26.173 7.30042 26.0067 7.05048C25.882 6.86303 25.7177 6.69799 25.3893 6.36792L20.0611 1.01354C19.7304 0.681235 19.5651 0.515081 19.3769 0.38885C19.126 0.220541 18.8443 0.103463 18.5481 0.0443412C18.3259 0 18.0915 0 17.6226 0H8.48924C6.35209 0 5.28351 0 4.4406 0.349145C3.31672 0.814671 2.4238 1.70759 1.95828 2.83147C1.60913 3.67438 1.60913 4.74296 1.60913 6.88011V21.1199C1.60913 23.257 1.60913 24.3256 1.95828 25.1685C2.4238 26.2924 3.31672 27.1853 4.4406 27.6509C5.28351 28 6.35209 28 8.48924 28Z' fill='currentColor'/><path d='M26.3909 7.37445L19.0525 0V3.77445C19.0525 4.89271 19.0525 5.45184 19.2352 5.89289C19.4788 6.48096 19.946 6.94818 20.5341 7.19176C20.9751 7.37445 21.5342 7.37445 22.6525 7.37445H26.3909Z' fill='var(--dsw-static-neutral-00)' fill-opacity='0.7'/><g color='var(--dsw-static-neutral-00)' data-file-type-mark transform='translate(14 16) scale(1.22) translate(-14 -16)'><path d='M10.5118 20.5L8.24179 13.5H10.2818L12.1918 19.56H11.1618L13.1718 13.5H14.9918L16.8918 19.56H15.9018L17.8718 13.5H19.7618L17.4918 20.5H15.3718L13.7518 15.35H14.3218L12.6318 20.5H10.5118Z' fill='currentColor'/></g></svg><span class=\"fileContent\"><span class=\"fileName\">回合触发器需求说明.docx</span><span class=\"fileMeta\">DOCX 180KB</span></span></span></div><div class=\"bubble\"><span class=\"root\"><span class=\"plainRun\">这一版把触发来源的说明补进正文了，麻烦按文档里的三种来源核对一遍图标与标题。</span></span></div></div></div>"
+        },
+        {
+          "label": "只有附件：没有文本气泡",
+          "note": "<code>showBubble</code> 为假（文本为空且没有额外内容块）时只渲染附件行",
+          "pad": "lg",
+          "html": "<div style='width:640px;display:flex;flex-direction:column;align-items:flex-end'><div class=\"userStack\"><div class=\"attachmentRow\" data-message-attachments><span class=\"fileCard\" title='回合触发器需求说明.docx'><svg class=\"icon word fileIcon\" width='28' height='28' viewBox='0 0 28 28' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'><path d='M8.48924 28H19.5108C21.6479 28 22.7165 28 23.5594 27.6509C24.6833 27.1853 25.5762 26.2924 26.0417 25.1685C26.3909 24.3256 26.3909 23.257 26.3909 21.1199V8.79443C26.3909 8.32877 26.3909 8.09593 26.3471 7.87507C26.2887 7.58058 26.173 7.30042 26.0067 7.05048C25.882 6.86303 25.7177 6.69799 25.3893 6.36792L20.0611 1.01354C19.7304 0.681235 19.5651 0.515081 19.3769 0.38885C19.126 0.220541 18.8443 0.103463 18.5481 0.0443412C18.3259 0 18.0915 0 17.6226 0H8.48924C6.35209 0 5.28351 0 4.4406 0.349145C3.31672 0.814671 2.4238 1.70759 1.95828 2.83147C1.60913 3.67438 1.60913 4.74296 1.60913 6.88011V21.1199C1.60913 23.257 1.60913 24.3256 1.95828 25.1685C2.4238 26.2924 3.31672 27.1853 4.4406 27.6509C5.28351 28 6.35209 28 8.48924 28Z' fill='currentColor'/><path d='M26.3909 7.37445L19.0525 0V3.77445C19.0525 4.89271 19.0525 5.45184 19.2352 5.89289C19.4788 6.48096 19.946 6.94818 20.5341 7.19176C20.9751 7.37445 21.5342 7.37445 22.6525 7.37445H26.3909Z' fill='var(--dsw-static-neutral-00)' fill-opacity='0.7'/><g color='var(--dsw-static-neutral-00)' data-file-type-mark transform='translate(14 16) scale(1.22) translate(-14 -16)'><path d='M10.5118 20.5L8.24179 13.5H10.2818L12.1918 19.56H11.1618L13.1718 13.5H14.9918L16.8918 19.56H15.9018L17.8718 13.5H19.7618L17.4918 20.5H15.3718L13.7518 15.35H14.3218L12.6318 20.5H10.5118Z' fill='currentColor'/></g></svg><span class=\"fileContent\"><span class=\"fileName\">回合触发器需求说明.docx</span><span class=\"fileMeta\">DOCX 180KB</span></span></span></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "content",
+          "type": "UserContentData",
+          "default": "—",
+          "desc": "已备好的内容：<code>text</code>、按上传顺序排列的 <code>attachments</code>、<code>extraBlocks</code> 与可选的 <code>referenceLabels</code>。"
+        },
+        {
+          "name": "loadImage",
+          "type": "MessageImageLoader",
+          "default": "—",
+          "desc": "已授权的图片加载器，原样交给 <code>conversation.chat.user.images</code> 插槽；附件为空时不使用。"
+        },
+        {
+          "name": "facts",
+          "type": "Readonly<Partial<UserTextFacts>>",
+          "default": "—",
+          "desc": "用户文本变换的事实输入（例如已确认的会话引用），原样传给 <code>conversation.user.text</code> 工厂。"
+        },
+        {
+          "name": "interactive",
+          "type": "boolean",
+          "default": "false",
+          "desc": "文本里的引用胶囊等是否可交互；原样落给文本工厂，只影响槽内渲染。"
+        },
+        {
+          "name": "ellipsis",
+          "type": "boolean",
+          "default": "false",
+          "desc": "文本是否截断省略（队列预览等紧凑场景用），同样只透传给文本工厂。"
+        },
+        {
+          "name": "renderSlot / renderFactorySlot",
+          "type": "(name, props, opts?) => ReactNode",
+          "default": "—",
+          "desc": "取图片插槽与用户文本工厂；文本渲染完全交给工厂，本组件只提供气泡。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'chat'>",
+          "default": "—",
+          "desc": "chat 词典：引用摘要模板、分隔符与额外内容块标签。"
+        }
+      ],
+      "notes": "附件顺序就是用户上传顺序：图片交给 <code>conversation.chat.user.images</code>（多于一张时请求紧凑排布并右对齐），文件走内置的 240px 卡片，扩展名取 <code>fileExtension(name).toUpperCase().slice(0, 8)</code>、大小走 <code>fileSizeText</code>（180KB、1.5MB 这种一位小数规则）。<code>extraBlocks</code> 每一项追加一个 <code>JsonBlock</code>，带「附加内容块」标签与截断提示。它刻意不渲染行身份、待发/回显状态、时间与消息动作——那些属于调用方 <code>UserMessageNodeView</code> 的 <code>.userRow</code>；示例里那层无 class 的右对齐容器只为静态呈现补位。",
+      "keywords": [
+        "用户消息",
+        "附件卡片",
+        "引用摘要",
+        "user content",
+        "气泡"
+      ]
+    },
+    {
+      "id": "link-opening-row",
+      "name": "LinkOpeningRow",
+      "exportName": "LinkOpeningRow",
+      "zh": "链接打开方式",
+      "group": "conversation",
+      "source": "packages/client/ui-chat/src/client/settings/LinkOpeningRow.tsx#L30",
+      "summary": "通用设置里的「网页链接默认打开方式」行：左侧 14px/22px 标题与 12px/18px 说明，右侧是 36px 高、<code>--dsw-alias-bg-module-platform</code> 底色、<code>--dsw-radius-md</code> 圆角的胶囊选择器（当前值 + 12px 箭头，悬停转 <code>--dsw-alias-interactive-bg-hover</code>），行底 0.5px <code>--dsw-alias-border-l2</code> 发丝线。点开是一张右对齐的 Menu 卡，两个选项「应用内侧边栏 / 默认浏览器」，当前项带 14px 勾。它只写普通点击的默认去处，不改变已经打开的面板。",
+      "css": [
+        "packages/client/ui-chat/src/client/settings/PreferenceRow.module.css",
+        "packages/client/ui-primitives/src/Menu.module.css",
+        "packages/client/ui-primitives/src/MenuSurface.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-module-platform",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l1",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-radius-md",
+        "--dsw-radius-lg",
+        "--dsw-elevation-prominent",
+        "--dsw-menu-surface-fill",
+        "--dsw-menu-backdrop-filter"
+      ],
+      "specimens": [
+        {
+          "label": "设置行：默认「应用内侧边栏」",
+          "note": "36px 选择器 / 12px 箭头 / 行底 0.5px 发丝线",
+          "pad": "lg",
+          "html": "<div style='width:460px'><div class=\"row\"><div class=\"rowText\"><div class=\"title\">网页链接默认打开方式</div><div class=\"desc\">对话中网页链接的打开位置</div></div><span class=\"root\"><button type='button' class=\"selector\" aria-haspopup='menu' aria-expanded='false'>应用内侧边栏<svg class=\"chevron\" width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button></span></div></div>"
+        },
+        {
+          "label": "打开菜单：两个目的地",
+          "note": "静态快照：门户卡片从 <code>document.body</code> 拉回文档流，宽度按实际的 <code>min-width:144px</code> 给",
+          "pad": "lg",
+          "html": "<div style='width:460px;display:flex;flex-direction:column'><div class=\"row\"><div class=\"rowText\"><div class=\"title\">网页链接默认打开方式</div><div class=\"desc\">对话中网页链接的打开位置</div></div><span class=\"root\"><button type='button' class=\"selector\" aria-haspopup='menu' aria-expanded='true'>应用内侧边栏<svg class=\"chevron\" width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button></span></div><div class=\"surface list scrollable portal openMenuStatic\" role='menu' style='width:144px;align-self:flex-end;margin-top:4px'><div aria-hidden='true' class=\"material\"></div><div class=\"viewport\" role='presentation'><div class=\"itemWrap\"><button type='button' role='menuitem' class=\"item selected\"><span class=\"itemLabel\">应用内侧边栏</span><svg class=\"check\" width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'><path d='M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4' stroke='currentColor'/></svg></button></div><div class=\"itemWrap\"><button type='button' role='menuitem' class=\"item\"><span class=\"itemLabel\">默认浏览器</span></button></div></div></div></div>",
+          "css": "/* 静态快照：Menu 的 portal 卡片真实挂在 document.body 上、position:fixed；这里拉回文档流并保留 relative 作为包含块（.material 的 inset:0 仍以卡片为父级）。 */\n.list.portal.openMenuStatic { position: relative; inset: auto; }"
+        }
+      ],
+      "props": [
+        {
+          "name": "useLinkOpening",
+          "type": "(select: (v: LinkOpening) => T) => T",
+          "default": "—",
+          "desc": "当前默认去处（<code>'sidebar' | 'new-tab'</code>）的选择器 hook，注入面里的 <code>hooks.linkOpening</code> 绑定而来。"
+        },
+        {
+          "name": "useBrowserAvailable",
+          "type": "(select: (v: boolean) => T) => T",
+          "default": "—",
+          "desc": "内置浏览器是否已注册；为假时整行返回 null。"
+        },
+        {
+          "name": "setLinkOpening",
+          "type": "(destination: LinkOpening) => void",
+          "default": "—",
+          "desc": "把选择写进 Host 用户设置；只影响以后点击链接的去处。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'chat'>",
+          "default": "—",
+          "desc": "chat 词典：标题、说明与两个选项文案（应用内侧边栏 / 默认浏览器）。"
+        }
+      ],
+      "notes": "内置浏览器没注册时整行返回 null，所以这道设置项在某些部署里根本不出现——目录里看到它，说明当前客户端带侧栏浏览器。注册元数据由 apply 侧给出——以 <code>link-opening</code>（order 17）注册进 <code>settings.general.item</code>，组件本身不接收位置参数。选择后面板先把焦点还给选择器、再发布新值，因此键盘选完仍停在原处。",
+      "keywords": [
+        "链接打开方式",
+        "侧边栏打开",
+        "默认浏览器",
+        "设置行",
+        "link opening"
+      ]
+    },
+    {
+      "id": "performance-usage-row",
+      "name": "PerformanceUsageRow",
+      "exportName": "PerformanceUsageRow",
+      "zh": "性能与用量行",
+      "group": "conversation",
+      "source": "packages/client/ui-chat/src/client/settings/PerformanceUsageRow.tsx#L31",
+      "summary": "通用设置里的「性能与用量」行：与同组设置行同一副骨架——左侧 14px 标题加 12px 说明，右侧 36px 高、<code>--dsw-radius-md</code> 圆角、<code>--dsw-alias-bg-module-platform</code> 底的胶囊选择器，行底 0.5px 发丝线。菜单两项「简洁 / 详细」，默认「详细」（没有显式偏好时保留完整口径）。它决定输入框统计与回合收尾用量是紧凑显示还是完整显示。",
+      "css": [
+        "packages/client/ui-chat/src/client/settings/PreferenceRow.module.css",
+        "packages/client/ui-primitives/src/Menu.module.css",
+        "packages/client/ui-primitives/src/MenuSurface.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-module-platform",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l1",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-radius-md",
+        "--dsw-radius-lg",
+        "--dsw-elevation-prominent",
+        "--dsw-menu-surface-fill",
+        "--dsw-menu-backdrop-filter"
+      ],
+      "specimens": [
+        {
+          "label": "设置行：默认「详细」",
+          "note": "选择器高 36px、<code>0 14px</code> 内边距，文案 14px/22px",
+          "pad": "lg",
+          "html": "<div style='width:460px'><div class=\"row\"><div class=\"rowText\"><div class=\"title\">性能与用量</div><div class=\"desc\">选择性能与用量信息展示的详细程度</div></div><span class=\"root\"><button type='button' class=\"selector\" aria-haspopup='menu' aria-expanded='false'>详细<svg class=\"chevron\" width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button></span></div></div>"
+        },
+        {
+          "label": "打开菜单：简洁 / 详细",
+          "note": "静态快照：门户卡片拉回文档流；选中项在行尾带 14px 勾",
+          "pad": "lg",
+          "html": "<div style='width:460px;display:flex;flex-direction:column'><div class=\"row\"><div class=\"rowText\"><div class=\"title\">性能与用量</div><div class=\"desc\">选择性能与用量信息展示的详细程度</div></div><span class=\"root\"><button type='button' class=\"selector\" aria-haspopup='menu' aria-expanded='true'>详细<svg class=\"chevron\" width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button></span></div><div class=\"surface list scrollable portal openMenuStatic\" role='menu' style='width:144px;align-self:flex-end;margin-top:4px'><div aria-hidden='true' class=\"material\"></div><div class=\"viewport\" role='presentation'><div class=\"itemWrap\"><button type='button' role='menuitem' class=\"item\"><span class=\"itemLabel\">简洁</span></button></div><div class=\"itemWrap\"><button type='button' role='menuitem' class=\"item selected\"><span class=\"itemLabel\">详细</span><svg class=\"check\" width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'><path d='M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4' stroke='currentColor'/></svg></button></div></div></div></div>",
+          "css": "/* 静态快照：Menu 的 portal 卡片真实挂在 document.body 上、position:fixed；这里拉回文档流并保留 relative 作为包含块。 */\n.list.portal.openMenuStatic { position: relative; inset: auto; }"
+        }
+      ],
+      "props": [
+        {
+          "name": "usePerformanceUsage",
+          "type": "(select: (m: PerformanceUsageMode) => T) => T",
+          "default": "—",
+          "desc": "已接受的性能与用量偏好（<code>'compact' | 'detailed'</code>），也同时被输入框统计与回合收尾消费。"
+        },
+        {
+          "name": "setPerformanceUsage",
+          "type": "(mode: PerformanceUsageMode) => void",
+          "default": "—",
+          "desc": "把选择写进 Host 用户设置；组件自身不持有该值。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'chat'>",
+          "default": "—",
+          "desc": "chat 词典：标题、说明与「简洁 / 详细」两项文案。"
+        }
+      ],
+      "notes": "以 <code>performance-usage</code>（order 30）注册进 <code>settings.general.item</code>。两个选项的 id 是稳定的 <code>compact</code> / <code>detailed</code>，标签走词典，因此选项顺序与 id 不随语言变化。写入后 Chat 的展示策略会重新计算：detailed 时回合收尾才出现用量胶囊。与「工作步骤展示」是两件独立的事——后者管工具调用细节，这一项管 token 与耗时的口径。",
+      "keywords": [
+        "性能与用量",
+        "compact",
+        "detailed",
+        "设置行",
+        "performance usage"
+      ]
+    },
+    {
+      "id": "preference-row",
+      "name": "PreferenceRow",
+      "exportName": "PreferenceRow",
+      "zh": "偏好设置行",
+      "group": "conversation",
+      "source": "packages/client/ui-chat/src/client/settings/PreferenceRow.tsx#L11",
+      "summary": "Chat 偏好设置行的通用骨架：左右两栏、<code>16px 0</code> 内边距、行底 0.5px <code>--dsw-alias-border-l2</code> 发丝线；左侧标题 14px/22px <code>--dsw-alias-label-primary</code>、说明 12px/18px tertiary，且文本区右侧留出 48px 空档。右边是 36px 高、<code>0 14px</code> 内边距、<code>--dsw-radius-md</code> 圆角、<code>--dsw-alias-bg-module-platform</code> 底的胶囊选择器（当前值 + 12px 箭头），悬停换 <code>--dsw-alias-interactive-bg-hover</code>。点开渲染一张右对齐的门户 Menu 卡，选项当前值带 14px 勾。",
+      "css": [
+        "packages/client/ui-chat/src/client/settings/PreferenceRow.module.css",
+        "packages/client/ui-primitives/src/Menu.module.css",
+        "packages/client/ui-primitives/src/MenuSurface.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-module-platform",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l1",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-radius-md",
+        "--dsw-radius-lg",
+        "--dsw-elevation-prominent",
+        "--dsw-menu-surface-fill",
+        "--dsw-menu-backdrop-filter"
+      ],
+      "specimens": [
+        {
+          "label": "默认：标签 + 说明 + 选择器",
+          "note": "两栏布局：左栏文本右侧留 48px，右栏选择器 36px 高",
+          "pad": "lg",
+          "html": "<div style='width:460px'><div class=\"row\"><div class=\"rowText\"><div class=\"title\">工作步骤展示</div><div class=\"desc\">选择希望看到多少工具调用细节</div></div><span class=\"root\"><button type='button' class=\"selector\" aria-haspopup='menu' aria-expanded='false'>详细<svg class=\"chevron\" width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button></span></div></div>"
+        },
+        {
+          "label": "打开菜单：四档展示粒度",
+          "note": "静态快照：门户卡片（<code>align=\"end\"</code>）拉回文档流，宽度按实际的 144px 给",
+          "pad": "lg",
+          "html": "<div style='width:460px;display:flex;flex-direction:column'><div class=\"row\"><div class=\"rowText\"><div class=\"title\">工作步骤展示</div><div class=\"desc\">选择希望看到多少工具调用细节</div></div><span class=\"root\"><button type='button' class=\"selector\" aria-haspopup='menu' aria-expanded='true'>详细<svg class=\"chevron\" width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button></span></div><div class=\"surface list scrollable portal openMenuStatic\" role='menu' style='width:144px;align-self:flex-end;margin-top:4px'><div aria-hidden='true' class=\"material\"></div><div class=\"viewport\" role='presentation'><div class=\"itemWrap\"><button type='button' role='menuitem' class=\"item\"><span class=\"itemLabel\">简洁</span></button></div><div class=\"itemWrap\"><button type='button' role='menuitem' class=\"item\"><span class=\"itemLabel\">标准</span></button></div><div class=\"itemWrap\"><button type='button' role='menuitem' class=\"item selected\"><span class=\"itemLabel\">详细</span><svg class=\"check\" width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'><path d='M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4' stroke='currentColor'/></svg></button></div><div class=\"itemWrap\"><button type='button' role='menuitem' class=\"item\"><span class=\"itemLabel\">完全展开</span></button></div></div></div></div>",
+          "css": "/* 静态快照：Menu 的 portal 卡片真实挂在 document.body 上、position:fixed；这里拉回文档流并保留 relative 作为包含块。 */\n.list.portal.openMenuStatic { position: relative; inset: auto; }"
+        },
+        {
+          "label": "悬停模拟：选择器底色变化",
+          "note": "悬停模拟：把 <code>.selector:hover</code> 的底色规则搬到静态类 <code>.forceHover</code> 上",
+          "pad": "lg",
+          "html": "<div style='width:460px'><div class=\"row\"><div class=\"rowText\"><div class=\"title\">工作步骤展示</div><div class=\"desc\">选择希望看到多少工具调用细节</div></div><span class=\"root\"><button type='button' class=\"selector forceHover\" aria-haspopup='menu' aria-expanded='false'>详细<svg class=\"chevron\" width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button></span></div></div>",
+          "css": "/* 状态模拟：.selector:hover 无法静态触发，把它的悬停底色规则原样搬到 .forceHover 上。 */\n.selector.forceHover { background: var(--dsw-alias-interactive-bg-hover); }"
+        }
+      ],
+      "props": [
+        {
+          "name": "title",
+          "type": "string",
+          "default": "—",
+          "desc": "左栏标题，14px/22px <code>--dsw-alias-label-primary</code>。"
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "default": "—",
+          "desc": "标题下的说明，12px/18px tertiary。"
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "default": "—",
+          "desc": "当前选中项的 id，用来在菜单里给对应行加勾并标 <code>aria-expanded</code>。"
+        },
+        {
+          "name": "selectedLabel",
+          "type": "string",
+          "default": "—",
+          "desc": "选择器上显示的当前值文案；由调用方从词典里取，组件不翻译。"
+        },
+        {
+          "name": "options",
+          "type": "readonly { id: string; label: string }[]",
+          "default": "—",
+          "desc": "菜单选项；id 是写回值，label 是显示文案。"
+        },
+        {
+          "name": "onSelect",
+          "type": "(value: string) => void",
+          "default": "—",
+          "desc": "选中回调：先 <code>focus({ preventScroll: true })</code> 把焦点还给选择器、再关菜单、最后发布新值。"
+        }
+      ],
+      "notes": "它自己不持有偏好：<code>value</code> / <code>selectedLabel</code> 由调用方给，<code>onSelect</code> 只回传选项 id，所以同一个骨架能接任意 Host 字段。Menu 以 <code>portal + align=\"end\"</code> 打开，卡片挂在 <code>document.body</code> 上、fixed 定位跟随锚点（示例把它拉回文档流，并按实际的 <code>min-width:144px</code> 固定宽度）。Chat 的设置项都渲染它——链接打开方式、性能与用量各一行，工作步骤展示与收起时机两行。",
+      "keywords": [
+        "偏好行",
+        "设置行",
+        "PreferenceRow",
+        "选择器",
+        "下拉菜单"
+      ]
+    },
+    {
+      "id": "transcript-view-row",
+      "name": "TranscriptViewRow",
+      "exportName": "TranscriptViewRow",
+      "zh": "工作步骤行",
+      "group": "conversation",
+      "source": "packages/client/ui-chat/src/client/settings/TranscriptViewRow.tsx#L47",
+      "summary": "通用设置里连排的两行偏好：第一行「工作步骤展示」四档（简洁 / 标准 / 详细 / 完全展开，没有偏好时默认「详细」），第二行「工作步骤收起时机」两档（回答结束后 / 下次有新消息时）。两行共用 PreferenceRow 的两栏骨架——14px 标题加 12px 说明在左，36px 高、<code>--dsw-radius-md</code> 圆角、<code>--dsw-alias-bg-module-platform</code> 底的胶囊选择器在右，行底 0.5px 发丝线；每一行各自开一张右对齐的门户 Menu 卡，当前项带 14px 勾。",
+      "css": [
+        "packages/client/ui-chat/src/client/settings/PreferenceRow.module.css",
+        "packages/client/ui-primitives/src/Menu.module.css",
+        "packages/client/ui-primitives/src/MenuSurface.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-module-platform",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l1",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-radius-md",
+        "--dsw-radius-lg",
+        "--dsw-elevation-prominent",
+        "--dsw-menu-surface-fill",
+        "--dsw-menu-backdrop-filter"
+      ],
+      "specimens": [
+        {
+          "label": "两行连排：展示粒度 + 收起时机",
+          "note": "两行是兄弟节点、各自带行底发丝线；第二行的值属于另一个 Host 字段",
+          "pad": "lg",
+          "html": "<div style='width:460px'><div class=\"row\"><div class=\"rowText\"><div class=\"title\">工作步骤展示</div><div class=\"desc\">选择希望看到多少工具调用细节</div></div><span class=\"root\"><button type='button' class=\"selector\" aria-haspopup='menu' aria-expanded='false'>详细<svg class=\"chevron\" width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button></span></div><div class=\"row\"><div class=\"rowText\"><div class=\"title\">工作步骤收起时机</div><div class=\"desc\">选择何时自动收起工作步骤</div></div><span class=\"root\"><button type='button' class=\"selector\" aria-haspopup='menu' aria-expanded='false'>回答结束后<svg class=\"chevron\" width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button></span></div></div>"
+        },
+        {
+          "label": "第一行的菜单：四档展示粒度",
+          "note": "静态快照：门户卡片拉回文档流；「详细」是默认档，也是这里被勾中的一项",
+          "pad": "lg",
+          "html": "<div style='width:460px;display:flex;flex-direction:column'><div class=\"row\"><div class=\"rowText\"><div class=\"title\">工作步骤展示</div><div class=\"desc\">选择希望看到多少工具调用细节</div></div><span class=\"root\"><button type='button' class=\"selector\" aria-haspopup='menu' aria-expanded='true'>详细<svg class=\"chevron\" width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button></span></div><div class=\"surface list scrollable portal openMenuStatic\" role='menu' style='width:144px;align-self:flex-end;margin-top:4px'><div aria-hidden='true' class=\"material\"></div><div class=\"viewport\" role='presentation'><div class=\"itemWrap\"><button type='button' role='menuitem' class=\"item\"><span class=\"itemLabel\">简洁</span></button></div><div class=\"itemWrap\"><button type='button' role='menuitem' class=\"item\"><span class=\"itemLabel\">标准</span></button></div><div class=\"itemWrap\"><button type='button' role='menuitem' class=\"item selected\"><span class=\"itemLabel\">详细</span><svg class=\"check\" width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'><path d='M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4' stroke='currentColor'/></svg></button></div><div class=\"itemWrap\"><button type='button' role='menuitem' class=\"item\"><span class=\"itemLabel\">完全展开</span></button></div></div></div></div>",
+          "css": "/* 静态快照：Menu 的 portal 卡片真实挂在 document.body 上、position:fixed；这里拉回文档流并保留 relative 作为包含块。 */\n.list.portal.openMenuStatic { position: relative; inset: auto; }"
+        },
+        {
+          "label": "第二行的菜单：收起时机",
+          "note": "静态快照：收起时机与展示粒度写在两个独立字段里，改这一个不动另一个",
+          "pad": "lg",
+          "html": "<div style='width:460px;display:flex;flex-direction:column'><div class=\"row\"><div class=\"rowText\"><div class=\"title\">工作步骤收起时机</div><div class=\"desc\">选择何时自动收起工作步骤</div></div><span class=\"root\"><button type='button' class=\"selector\" aria-haspopup='menu' aria-expanded='true'>回答结束后<svg class=\"chevron\" width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button></span></div><div class=\"surface list scrollable portal openMenuStatic\" role='menu' style='width:144px;align-self:flex-end;margin-top:4px'><div aria-hidden='true' class=\"material\"></div><div class=\"viewport\" role='presentation'><div class=\"itemWrap\"><button type='button' role='menuitem' class=\"item selected\"><span class=\"itemLabel\">回答结束后</span><svg class=\"check\" width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'><path d='M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4' stroke='currentColor'/></svg></button></div><div class=\"itemWrap\"><button type='button' role='menuitem' class=\"item\"><span class=\"itemLabel\">下次有新消息时</span></button></div></div></div></div>",
+          "css": "/* 静态快照：Menu 的 portal 卡片真实挂在 document.body 上、position:fixed；这里拉回文档流并保留相对定位作为包含块。 */\n.list.portal.openMenuStatic { position: relative; inset: auto; }"
+        }
+      ],
+      "props": [
+        {
+          "name": "useTranscriptView",
+          "type": "(select: (m: TranscriptViewMode) => T) => T",
+          "default": "—",
+          "desc": "工作步骤展示档位（compact / standard / detailed / verbose）；没有保存值时用客户端默认档。"
+        },
+        {
+          "name": "setTranscriptView",
+          "type": "(mode: TranscriptViewMode) => void",
+          "default": "—",
+          "desc": "写 <code>transcriptView</code> 字段；同一个 Store 也驱动 Chat 的折叠策略。"
+        },
+        {
+          "name": "useCollapseTiming",
+          "type": "(select: (t: CollapseTiming) => T) => T",
+          "default": "—",
+          "desc": "收起时机（completion / next-input），缺省保留「回答结束后」立即折叠。"
+        },
+        {
+          "name": "setCollapseTiming",
+          "type": "(timing: CollapseTiming) => void",
+          "default": "—",
+          "desc": "写 <code>collapseTiming</code> 字段；与展示档位互不影响。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'chat'>",
+          "default": "—",
+          "desc": "chat 词典：两行标题、说明与六个选项文案。"
+        }
+      ],
+      "notes": "一次注册（<code>transcript-view</code>，order 12）渲染出这两行。渲染的是一个 fragment——两个 <code>.row</code> 兄弟节点，没有自己的容器样式，所以行距完全由行本身的内边距与发丝线形成。两个偏好各写一个 Host 字段（<code>transcriptView</code> 与 <code>collapseTiming</code>）：前者决定工具调用细节与分组策略，后者只决定结果落地后多久收起；历史遗留的 <code>normal</code> / <code>expanded</code> 读作 detailed，但不再出现在选项里。",
+      "keywords": [
+        "工作步骤展示",
+        "收起时机",
+        "transcript view",
+        "collapse timing",
+        "设置行"
+      ]
+    }
+  ]
+}

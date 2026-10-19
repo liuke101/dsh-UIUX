@@ -1,0 +1,882 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "id": "onboarding-confirmation",
+      "name": "OnboardingConfirmation",
+      "exportName": "OnboardingConfirmation",
+      "zh": "引导确认",
+      "group": "settings",
+      "summary": "引导流程里的两种确认弹窗，用 <code>Modal headless</code> + <code>backdropBlur=false</code> 渲染：遮罩、380px 卡片、<code>--dsw-radius-panel</code> 圆角与 prominent 阴影都由 Modal 提供，内部是 <code>.confirmation</code> 的 22/24 内边距。标题行右侧是 28×28 的圆形关闭按钮，正文 14/22，按钮行右对齐、间距 8px、圆角 12px；credit 种别是「我知道了 / 前往充值」（不能充值则主按钮禁用），skip 种别是「继续设置 / 进入应用」。<code>busy</code> 时两个按钮都禁用。",
+      "source": "packages/client/ui-settings-account/src/client/OnboardingConfirmation.tsx#L10",
+      "css": [
+        "packages/client/ui-primitives/src/Modal.module.css",
+        "packages/client/ui-settings-account/src/client/DesktopOnboarding.module.css",
+        "packages/client/ui-primitives/src/Button.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-layer-2",
+        "--dsw-alias-bg-mask-1",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-border-l4",
+        "--dsw-alias-brand-primary",
+        "--dsw-alias-button-primary-fill",
+        "--dsw-alias-button-primary-hover",
+        "--dsw-alias-button-tool-bar-fill",
+        "--dsw-alias-button-tool-bar-hover",
+        "--dsw-alias-interactive-bg-active",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-primary-foreground",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-onboarding-accent",
+        "--dsw-alias-onboarding-card-fill",
+        "--dsw-alias-onboarding-checkbox-border",
+        "--dsw-alias-onboarding-secondary-fill",
+        "--dsw-alias-state-business-primary",
+        "--dsw-elevation-prominent",
+        "--dsw-focus-ring-color",
+        "--dsw-font-family",
+        "--dsw-font-family-brand",
+        "--dsw-gradient-onboarding-blue-stops",
+        "--dsw-gradient-onboarding-cyan-stops",
+        "--dsw-gradient-onboarding-violet-stops",
+        "--dsw-mask-blur",
+        "--dsw-radius-md",
+        "--dsw-radius-panel",
+        "--dsw-radius-sm"
+      ],
+      "specimens": [
+        {
+          "label": "跳过充值：我知道了 / 前往充值",
+          "note": "静态快照：Modal 拉回文档流",
+          "html": "<div style=\"width:460px\"><div class=\"root\" role=\"presentation\"><div class=\"mask\" style=\"backdrop-filter:none\" aria-hidden=\"true\"></div><div class=\"dialog\" role=\"dialog\" aria-modal=\"true\" aria-label=\"暂时跳过充值？\"><div class=\"confirmation\"><div class=\"confirmationHeading\"><h2>暂时跳过充值？</h2><button type=\"button\" class=\"confirmationClose\" aria-label=\"关闭\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></div><p>没有可用额度时，DeepSeek Harness 将无法开始新的任务。你可以稍后前往 设置 → 账号与余额 进行充值。</p><div class=\"confirmationActions\"><button type=\"button\" class=\"button outline md dialogButton\">我知道了</button><button type=\"button\" class=\"button primary md dialogButton\">前往充值</button></div></div></div></div></div>",
+          "css": "/* 静态快照：Modal 的 .root 在真实产品里是 body 上 position: fixed; inset: 0 的\n   全屏遮罩层，这里拉回文档流，同时保留它作为 .mask 绝对定位的包含块。\n   .confirmation* 归 DesktopOnboarding(c1)，.dialog 归 Modal(c0)，两表无同名类。 */\n.root { position: relative; }\n.dialog { max-width: 100%; }"
+        },
+        {
+          "label": "跳过设置：继续设置 / 进入应用",
+          "note": "静态快照：标题与正文随 kind 切换",
+          "html": "<div style=\"width:460px\"><div class=\"root\" role=\"presentation\"><div class=\"mask\" style=\"backdrop-filter:none\" aria-hidden=\"true\"></div><div class=\"dialog\" role=\"dialog\" aria-modal=\"true\" aria-label=\"跳过设置？\"><div class=\"confirmation\"><div class=\"confirmationHeading\"><h2>跳过设置？</h2><button type=\"button\" class=\"confirmationClose\" aria-label=\"关闭\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></div><p>你可以随时前往 设置 → 通用设置 中调整工作过程、性能与用量展示方式或开启代码工作工具。</p><div class=\"confirmationActions\"><button type=\"button\" class=\"button outline md dialogButton\">继续设置</button><button type=\"button\" class=\"button primary md dialogButton\">进入应用</button></div></div></div></div></div>",
+          "css": "/* 静态快照：Modal 的 .root 在真实产品里是 body 上 position: fixed; inset: 0 的\n   全屏遮罩层，这里拉回文档流，同时保留它作为 .mask 绝对定位的包含块。\n   .confirmation* 归 DesktopOnboarding(c1)，.dialog 归 Modal(c0)，两表无同名类。 */\n.root { position: relative; }\n.dialog { max-width: 100%; }"
+        }
+      ],
+      "props": [
+        {
+          "name": "kind",
+          "type": "'credit' | 'credit-skip' | 'skip'",
+          "default": "—",
+          "desc": "确认种别；credit/credit-skip 用「无额度」文案，skip 用「跳过设置」文案。"
+        },
+        {
+          "name": "t",
+          "type": "(key: AccountKey) => string",
+          "default": "—",
+          "desc": "账号命名空间的翻译座位。"
+        },
+        {
+          "name": "busy",
+          "type": "boolean",
+          "default": "—",
+          "desc": "流程正在保存或退出时禁用两个按钮。"
+        },
+        {
+          "name": "canRecharge",
+          "type": "boolean",
+          "default": "—",
+          "desc": "是否存在原生充值页；false 时「前往充值」禁用。"
+        },
+        {
+          "name": "onClose",
+          "type": "() => void",
+          "default": "—",
+          "desc": "点关闭按钮或遮罩时收起弹窗。"
+        },
+        {
+          "name": "onContinueSetup",
+          "type": "() => void",
+          "default": "—",
+          "desc": "skip 种别下「继续设置」的执行体。"
+        },
+        {
+          "name": "onContinue",
+          "type": "() => void",
+          "default": "—",
+          "desc": "credit 种别下「我知道了」直接进入用途页。"
+        },
+        {
+          "name": "onRecharge",
+          "type": "() => void",
+          "default": "—",
+          "desc": "「前往充值」打开共用的原生 Platform 充值页。"
+        },
+        {
+          "name": "onSkip",
+          "type": "() => void",
+          "default": "—",
+          "desc": "credit-skip 的「我知道了」与 skip 的「进入应用」都以跳过收尾。"
+        }
+      ],
+      "notes": "标题同时作为 Modal 的 <code>aria-label</code> 与可视 <code>&lt;h2&gt;</code>；<code>headless</code> 模式不渲染 Modal 自带的标题行与关闭按钮，所以关闭键由本组件自己画。",
+      "keywords": [
+        "引导确认",
+        "confirm",
+        "onboarding",
+        "跳过设置",
+        "充值弹窗"
+      ]
+    },
+    {
+      "id": "onboarding-credit-step",
+      "name": "OnboardingCreditStep",
+      "exportName": "OnboardingCreditStep",
+      "zh": "额度引导",
+      "group": "settings",
+      "summary": "引导的额度页：<code>.credit</code> 是两列网格——左列插图 <code>minmax(0,594px)</code>、右列文案 <code>minmax(0,400px)</code>，列间距 <code>clamp(32px, (100vw - 994px)/3, 164px)</code>，整块在 <code>.content</code> 里 50/50 居中再上移 5px。右列是 28/48 的细体标题、16/28 三级色说明，按钮行 <code>.creditActions</code> 间距 24px、每个按钮最宽 160px、高 44px R12。未充值主按钮是「去充值」、次按钮「下一步」（<code>--dsw-alias-onboarding-secondary-fill</code> 底色）；已有余额时换成「继续 / 去充值」。",
+      "source": "packages/client/ui-settings-account/src/client/OnboardingCreditStep.tsx#L13",
+      "css": [
+        "packages/client/ui-settings-account/src/client/DesktopOnboarding.module.css",
+        "packages/client/ui-primitives/src/Button.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-border-l4",
+        "--dsw-alias-brand-primary",
+        "--dsw-alias-button-primary-fill",
+        "--dsw-alias-button-primary-hover",
+        "--dsw-alias-button-tool-bar-fill",
+        "--dsw-alias-button-tool-bar-hover",
+        "--dsw-alias-interactive-bg-active",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-primary-foreground",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-onboarding-accent",
+        "--dsw-alias-onboarding-card-fill",
+        "--dsw-alias-onboarding-checkbox-border",
+        "--dsw-alias-onboarding-secondary-fill",
+        "--dsw-alias-state-business-primary",
+        "--dsw-focus-ring-color",
+        "--dsw-font-family",
+        "--dsw-font-family-brand",
+        "--dsw-gradient-onboarding-blue-stops",
+        "--dsw-gradient-onboarding-cyan-stops",
+        "--dsw-gradient-onboarding-violet-stops",
+        "--dsw-mask-blur",
+        "--dsw-radius-md",
+        "--dsw-radius-sm"
+      ],
+      "specimens": [
+        {
+          "label": "未充值：去充值 / 下一步",
+          "note": "静态快照：插图以同比例占位图代替 webp",
+          "html": "<div class=\"page\" data-desktop-onboarding=\"credit\" lang=\"zh\" aria-labelledby=\"desktop-onboarding-title\" aria-busy=\"false\" style=\"width:1100px;height:600px\"><div class=\"content credit\"><div class=\"illustration creditIllustration\" aria-hidden=\"true\"><img class=\"lightIllustration\" src=\"data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22594%22%20height%3D%22509%22%20viewBox%3D%220%200%20594%20509%22%3E%3Crect%20width%3D%22594%22%20height%3D%22509%22%20rx%3D%2248%22%20fill%3D%22%23EEF2FB%22%2F%3E%3Crect%20x%3D%2270%22%20y%3D%2276%22%20width%3D%22454%22%20height%3D%22272%22%20rx%3D%2232%22%20fill%3D%22%23FFFFFF%22%2F%3E%3Crect%20x%3D%22112%22%20y%3D%22120%22%20width%3D%22120%22%20height%3D%2216%22%20rx%3D%228%22%20fill%3D%22%23DCE3F5%22%2F%3E%3Crect%20x%3D%22112%22%20y%3D%22156%22%20width%3D%22220%22%20height%3D%2234%22%20rx%3D%2212%22%20fill%3D%22%233964FE%22%2F%3E%3Crect%20x%3D%22112%22%20y%3D%22228%22%20width%3D%22360%22%20height%3D%2214%22%20rx%3D%227%22%20fill%3D%22%23DCE3F5%22%2F%3E%3Crect%20x%3D%22112%22%20y%3D%22258%22%20width%3D%22270%22%20height%3D%2214%22%20rx%3D%227%22%20fill%3D%22%23DCE3F5%22%2F%3E%3Ccircle%20cx%3D%22440%22%20cy%3D%22386%22%20r%3D%2284%22%20fill%3D%22%233964FE%22%2F%3E%3Cpath%20d%3D%22M406%20386h68M440%20352v68%22%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%2210%22%20stroke-linecap%3D%22round%22%2F%3E%3Crect%20x%3D%2270%22%20y%3D%22404%22%20width%3D%22150%22%20height%3D%2214%22%20rx%3D%227%22%20fill%3D%22%23C9D6FF%22%2F%3E%3C%2Fsvg%3E\" alt=\"\"><img class=\"darkIllustration\" src=\"data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22594%22%20height%3D%22509%22%20viewBox%3D%220%200%20594%20509%22%3E%3Crect%20width%3D%22594%22%20height%3D%22509%22%20rx%3D%2248%22%20fill%3D%22%23232733%22%2F%3E%3Crect%20x%3D%2270%22%20y%3D%2276%22%20width%3D%22454%22%20height%3D%22272%22%20rx%3D%2232%22%20fill%3D%22%232C313C%22%2F%3E%3Crect%20x%3D%22112%22%20y%3D%22120%22%20width%3D%22120%22%20height%3D%2216%22%20rx%3D%228%22%20fill%3D%22%23333A48%22%2F%3E%3Crect%20x%3D%22112%22%20y%3D%22156%22%20width%3D%22220%22%20height%3D%2234%22%20rx%3D%2212%22%20fill%3D%22%236D8BFF%22%2F%3E%3Crect%20x%3D%22112%22%20y%3D%22228%22%20width%3D%22360%22%20height%3D%2214%22%20rx%3D%227%22%20fill%3D%22%23333A48%22%2F%3E%3Crect%20x%3D%22112%22%20y%3D%22258%22%20width%3D%22270%22%20height%3D%2214%22%20rx%3D%227%22%20fill%3D%22%23333A48%22%2F%3E%3Ccircle%20cx%3D%22440%22%20cy%3D%22386%22%20r%3D%2284%22%20fill%3D%22%236D8BFF%22%2F%3E%3Cpath%20d%3D%22M406%20386h68M440%20352v68%22%20stroke%3D%22%232C313C%22%20stroke-width%3D%2210%22%20stroke-linecap%3D%22round%22%2F%3E%3Crect%20x%3D%2270%22%20y%3D%22404%22%20width%3D%22150%22%20height%3D%2214%22%20rx%3D%227%22%20fill%3D%22%233A4A7A%22%2F%3E%3C%2Fsvg%3E\" alt=\"\"></div><div class=\"copy\"><h1 id=\"desktop-onboarding-title\" tabindex=\"-1\">准备可用额度</h1><p class=\"heroDescription\">DeepSeek Harness 执行任务时，会根据模型与工具使用的 token 量扣除额度。请提前添加额度，避免任务在执行过程中被迫中断。你的余额只会在 Agent 实际执行任务时消耗。</p><div class=\"creditActions\"><button type=\"button\" class=\"button primary md action\">去充值</button><button type=\"button\" class=\"button outline md action laterAction\">下一步</button></div></div></div></div>"
+        },
+        {
+          "label": "已有余额：继续 / 去充值",
+          "note": "静态快照：funded 决定文案与次按钮底色",
+          "html": "<div class=\"page\" data-desktop-onboarding=\"credit\" lang=\"zh\" aria-labelledby=\"desktop-onboarding-title\" aria-busy=\"false\" style=\"width:1100px;height:600px\"><div class=\"content credit\"><div class=\"illustration creditIllustration\" aria-hidden=\"true\"><img class=\"lightIllustration\" src=\"data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22594%22%20height%3D%22509%22%20viewBox%3D%220%200%20594%20509%22%3E%3Crect%20width%3D%22594%22%20height%3D%22509%22%20rx%3D%2248%22%20fill%3D%22%23EEF2FB%22%2F%3E%3Crect%20x%3D%2270%22%20y%3D%2276%22%20width%3D%22454%22%20height%3D%22272%22%20rx%3D%2232%22%20fill%3D%22%23FFFFFF%22%2F%3E%3Crect%20x%3D%22112%22%20y%3D%22120%22%20width%3D%22120%22%20height%3D%2216%22%20rx%3D%228%22%20fill%3D%22%23DCE3F5%22%2F%3E%3Crect%20x%3D%22112%22%20y%3D%22156%22%20width%3D%22220%22%20height%3D%2234%22%20rx%3D%2212%22%20fill%3D%22%233964FE%22%2F%3E%3Crect%20x%3D%22112%22%20y%3D%22228%22%20width%3D%22360%22%20height%3D%2214%22%20rx%3D%227%22%20fill%3D%22%23DCE3F5%22%2F%3E%3Crect%20x%3D%22112%22%20y%3D%22258%22%20width%3D%22270%22%20height%3D%2214%22%20rx%3D%227%22%20fill%3D%22%23DCE3F5%22%2F%3E%3Ccircle%20cx%3D%22440%22%20cy%3D%22386%22%20r%3D%2284%22%20fill%3D%22%233964FE%22%2F%3E%3Cpath%20d%3D%22M406%20386h68M440%20352v68%22%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%2210%22%20stroke-linecap%3D%22round%22%2F%3E%3Crect%20x%3D%2270%22%20y%3D%22404%22%20width%3D%22150%22%20height%3D%2214%22%20rx%3D%227%22%20fill%3D%22%23C9D6FF%22%2F%3E%3C%2Fsvg%3E\" alt=\"\"><img class=\"darkIllustration\" src=\"data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22594%22%20height%3D%22509%22%20viewBox%3D%220%200%20594%20509%22%3E%3Crect%20width%3D%22594%22%20height%3D%22509%22%20rx%3D%2248%22%20fill%3D%22%23232733%22%2F%3E%3Crect%20x%3D%2270%22%20y%3D%2276%22%20width%3D%22454%22%20height%3D%22272%22%20rx%3D%2232%22%20fill%3D%22%232C313C%22%2F%3E%3Crect%20x%3D%22112%22%20y%3D%22120%22%20width%3D%22120%22%20height%3D%2216%22%20rx%3D%228%22%20fill%3D%22%23333A48%22%2F%3E%3Crect%20x%3D%22112%22%20y%3D%22156%22%20width%3D%22220%22%20height%3D%2234%22%20rx%3D%2212%22%20fill%3D%22%236D8BFF%22%2F%3E%3Crect%20x%3D%22112%22%20y%3D%22228%22%20width%3D%22360%22%20height%3D%2214%22%20rx%3D%227%22%20fill%3D%22%23333A48%22%2F%3E%3Crect%20x%3D%22112%22%20y%3D%22258%22%20width%3D%22270%22%20height%3D%2214%22%20rx%3D%227%22%20fill%3D%22%23333A48%22%2F%3E%3Ccircle%20cx%3D%22440%22%20cy%3D%22386%22%20r%3D%2284%22%20fill%3D%22%236D8BFF%22%2F%3E%3Cpath%20d%3D%22M406%20386h68M440%20352v68%22%20stroke%3D%22%232C313C%22%20stroke-width%3D%2210%22%20stroke-linecap%3D%22round%22%2F%3E%3Crect%20x%3D%2270%22%20y%3D%22404%22%20width%3D%22150%22%20height%3D%2214%22%20rx%3D%227%22%20fill%3D%22%233A4A7A%22%2F%3E%3C%2Fsvg%3E\" alt=\"\"></div><div class=\"copy\"><h1 id=\"desktop-onboarding-title\" tabindex=\"-1\">准备可用额度</h1><p class=\"heroDescription\">DeepSeek Harness 执行任务时，会根据模型与工具使用的 token 量扣除额度。请提前添加额度，避免任务在执行过程中被迫中断。你的余额只会在 Agent 实际执行任务时消耗。</p><div class=\"creditActions\"><button type=\"button\" class=\"button primary md action\">继续</button><button type=\"button\" class=\"button outline md action laterAction\">去充值</button></div></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "t",
+          "type": "(key: AccountKey) => string",
+          "default": "—",
+          "desc": "账号命名空间的翻译座位。"
+        },
+        {
+          "name": "locale",
+          "type": "string",
+          "default": "—",
+          "desc": "'zh' 时选中文插图，其余走英文插图。"
+        },
+        {
+          "name": "heading",
+          "type": "RefObject<HTMLHeadingElement>",
+          "default": "—",
+          "desc": "标题 ref；步骤切换后 DesktopOnboarding 把焦点交给它。"
+        },
+        {
+          "name": "busy",
+          "type": "boolean",
+          "default": "—",
+          "desc": "加载/保存/退场中禁用两个按钮。"
+        },
+        {
+          "name": "funded",
+          "type": "boolean",
+          "default": "—",
+          "desc": "首次进入该页时是否已有正余额，决定按钮文案与顺序。"
+        },
+        {
+          "name": "canRecharge",
+          "type": "boolean",
+          "default": "—",
+          "desc": "能否打开原生充值页；无此能力时对应按钮禁用。"
+        },
+        {
+          "name": "onContinue",
+          "type": "() => void",
+          "default": "—",
+          "desc": "已有余额时进入用途页。"
+        },
+        {
+          "name": "onRecharge",
+          "type": "() => void",
+          "default": "—",
+          "desc": "打开共用的原生充值页。"
+        },
+        {
+          "name": "onLater",
+          "type": "() => void",
+          "default": "—",
+          "desc": "未充值时跳过本页：余额可读且为零则弹「跳过充值」确认。"
+        }
+      ],
+      "notes": "插图由 <code>OnboardingIllustration</code> 叠放浅/深两张 webp，深色版只在 <code>body[data-ds-dark-theme]</code> 下显示。主按钮在 <code>busy || (!funded &amp;&amp; !canRecharge)</code> 时禁用，次按钮在 <code>busy || (funded &amp;&amp; !canRecharge)</code> 时禁用。",
+      "keywords": [
+        "额度",
+        "充值",
+        "余额",
+        "credit",
+        "onboarding"
+      ]
+    },
+    {
+      "id": "onboarding-illustration",
+      "name": "OnboardingIllustration",
+      "exportName": "OnboardingIllustration",
+      "zh": "引导插图",
+      "group": "settings",
+      "summary": "欢迎页与额度页共用的浅/深色插图对：外层 <code>.illustration</code> 自身不带尺寸，几何由使用方通过 <code>className</code> 注入——欢迎页传 <code>.welcomeArtwork</code>（1331px 宽、绝对定位在 <code>.welcomeIllustration</code> 里，左/上各偏移 -67px/-40px），额度页传 <code>.creditIllustration</code>（100% 宽、<code>aspect-ratio: 594/509</code>、object-fit contain）。两张 <code>&lt;img&gt;</code> 叠在一起，<code>.darkIllustration</code> 默认 <code>display: none</code>。整块 <code>aria-hidden</code>，alt 为空。",
+      "source": "packages/client/ui-settings-account/src/client/OnboardingIllustration.tsx#L5",
+      "css": [
+        "packages/client/ui-settings-account/src/client/DesktopOnboarding.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l4",
+        "--dsw-alias-brand-primary",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-primary-foreground",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-onboarding-accent",
+        "--dsw-alias-onboarding-card-fill",
+        "--dsw-alias-onboarding-checkbox-border",
+        "--dsw-alias-onboarding-secondary-fill",
+        "--dsw-alias-state-business-primary",
+        "--dsw-focus-ring-color",
+        "--dsw-font-family",
+        "--dsw-font-family-brand",
+        "--dsw-gradient-onboarding-blue-stops",
+        "--dsw-gradient-onboarding-cyan-stops",
+        "--dsw-gradient-onboarding-violet-stops",
+        "--dsw-mask-blur"
+      ],
+      "specimens": [
+        {
+          "label": "两种几何：creditIllustration 与 welcomeArtwork",
+          "note": "静态快照：右侧只露出插图画布左缘；占位图代替 webp",
+          "html": "<div style=\"display:flex;gap:32px;align-items:flex-start;width:760px\"><div style=\"width:300px\"><div style=\"display:flex;flex-direction:column;gap:8px\"><div class=\"illustration creditIllustration\" aria-hidden=\"true\"><img class=\"lightIllustration\" src=\"data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22594%22%20height%3D%22509%22%20viewBox%3D%220%200%20594%20509%22%3E%3Crect%20width%3D%22594%22%20height%3D%22509%22%20rx%3D%2248%22%20fill%3D%22%23EEF2FB%22%2F%3E%3Crect%20x%3D%2270%22%20y%3D%2276%22%20width%3D%22454%22%20height%3D%22272%22%20rx%3D%2232%22%20fill%3D%22%23FFFFFF%22%2F%3E%3Crect%20x%3D%22112%22%20y%3D%22120%22%20width%3D%22120%22%20height%3D%2216%22%20rx%3D%228%22%20fill%3D%22%23DCE3F5%22%2F%3E%3Crect%20x%3D%22112%22%20y%3D%22156%22%20width%3D%22220%22%20height%3D%2234%22%20rx%3D%2212%22%20fill%3D%22%233964FE%22%2F%3E%3Crect%20x%3D%22112%22%20y%3D%22228%22%20width%3D%22360%22%20height%3D%2214%22%20rx%3D%227%22%20fill%3D%22%23DCE3F5%22%2F%3E%3Crect%20x%3D%22112%22%20y%3D%22258%22%20width%3D%22270%22%20height%3D%2214%22%20rx%3D%227%22%20fill%3D%22%23DCE3F5%22%2F%3E%3Ccircle%20cx%3D%22440%22%20cy%3D%22386%22%20r%3D%2284%22%20fill%3D%22%233964FE%22%2F%3E%3Cpath%20d%3D%22M406%20386h68M440%20352v68%22%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%2210%22%20stroke-linecap%3D%22round%22%2F%3E%3Crect%20x%3D%2270%22%20y%3D%22404%22%20width%3D%22150%22%20height%3D%2214%22%20rx%3D%227%22%20fill%3D%22%23C9D6FF%22%2F%3E%3C%2Fsvg%3E\" alt=\"\"><img class=\"darkIllustration\" src=\"data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22594%22%20height%3D%22509%22%20viewBox%3D%220%200%20594%20509%22%3E%3Crect%20width%3D%22594%22%20height%3D%22509%22%20rx%3D%2248%22%20fill%3D%22%23232733%22%2F%3E%3Crect%20x%3D%2270%22%20y%3D%2276%22%20width%3D%22454%22%20height%3D%22272%22%20rx%3D%2232%22%20fill%3D%22%232C313C%22%2F%3E%3Crect%20x%3D%22112%22%20y%3D%22120%22%20width%3D%22120%22%20height%3D%2216%22%20rx%3D%228%22%20fill%3D%22%23333A48%22%2F%3E%3Crect%20x%3D%22112%22%20y%3D%22156%22%20width%3D%22220%22%20height%3D%2234%22%20rx%3D%2212%22%20fill%3D%22%236D8BFF%22%2F%3E%3Crect%20x%3D%22112%22%20y%3D%22228%22%20width%3D%22360%22%20height%3D%2214%22%20rx%3D%227%22%20fill%3D%22%23333A48%22%2F%3E%3Crect%20x%3D%22112%22%20y%3D%22258%22%20width%3D%22270%22%20height%3D%2214%22%20rx%3D%227%22%20fill%3D%22%23333A48%22%2F%3E%3Ccircle%20cx%3D%22440%22%20cy%3D%22386%22%20r%3D%2284%22%20fill%3D%22%236D8BFF%22%2F%3E%3Cpath%20d%3D%22M406%20386h68M440%20352v68%22%20stroke%3D%22%232C313C%22%20stroke-width%3D%2210%22%20stroke-linecap%3D%22round%22%2F%3E%3Crect%20x%3D%2270%22%20y%3D%22404%22%20width%3D%22150%22%20height%3D%2214%22%20rx%3D%227%22%20fill%3D%22%233A4A7A%22%2F%3E%3C%2Fsvg%3E\" alt=\"\"></div><span style=\"font-size:11px\">creditIllustration：定比 594/509</span></div></div><div style=\"position:relative;width:380px;height:257px;overflow:hidden\"><div style=\"display:flex;flex-direction:column;gap:8px\"><div class=\"illustration welcomeArtwork\" aria-hidden=\"true\"><img class=\"lightIllustration\" src=\"data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%221331%22%20height%3D%22900%22%20viewBox%3D%220%200%201331%20900%22%3E%3Crect%20x%3D%2290%22%20y%3D%2240%22%20width%3D%221180%22%20height%3D%22820%22%20rx%3D%2248%22%20fill%3D%22%23EEF2FB%22%2F%3E%3Crect%20x%3D%22150%22%20y%3D%22110%22%20width%3D%22300%22%20height%3D%2230%22%20rx%3D%2215%22%20fill%3D%22%23C9D6FF%22%2F%3E%3Crect%20x%3D%22150%22%20y%3D%22170%22%20width%3D%22620%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%23DCE3F5%22%2F%3E%3Crect%20x%3D%22150%22%20y%3D%22206%22%20width%3D%22520%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%23DCE3F5%22%2F%3E%3Crect%20x%3D%22150%22%20y%3D%22280%22%20width%3D%221060%22%20height%3D%22230%22%20rx%3D%2228%22%20fill%3D%22%23FFFFFF%22%2F%3E%3Crect%20x%3D%22196%22%20y%3D%22326%22%20width%3D%22300%22%20height%3D%2222%22%20rx%3D%2211%22%20fill%3D%22%233964FE%22%2F%3E%3Crect%20x%3D%22196%22%20y%3D%22372%22%20width%3D%22760%22%20height%3D%2216%22%20rx%3D%228%22%20fill%3D%22%23DCE3F5%22%2F%3E%3Crect%20x%3D%22196%22%20y%3D%22404%22%20width%3D%22640%22%20height%3D%2216%22%20rx%3D%228%22%20fill%3D%22%23DCE3F5%22%2F%3E%3Crect%20x%3D%22150%22%20y%3D%22560%22%20width%3D%22510%22%20height%3D%22260%22%20rx%3D%2228%22%20fill%3D%22%23FFFFFF%22%2F%3E%3Crect%20x%3D%22700%22%20y%3D%22560%22%20width%3D%22510%22%20height%3D%22260%22%20rx%3D%2228%22%20fill%3D%22%23FFFFFF%22%2F%3E%3Ccircle%20cx%3D%221120%22%20cy%3D%22660%22%20r%3D%2280%22%20fill%3D%22%23C9D6FF%22%2F%3E%3C%2Fsvg%3E\" alt=\"\"><img class=\"darkIllustration\" src=\"data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%221331%22%20height%3D%22900%22%20viewBox%3D%220%200%201331%20900%22%3E%3Crect%20x%3D%2290%22%20y%3D%2240%22%20width%3D%221180%22%20height%3D%22820%22%20rx%3D%2248%22%20fill%3D%22%23232733%22%2F%3E%3Crect%20x%3D%22150%22%20y%3D%22110%22%20width%3D%22300%22%20height%3D%2230%22%20rx%3D%2215%22%20fill%3D%22%233A4A7A%22%2F%3E%3Crect%20x%3D%22150%22%20y%3D%22170%22%20width%3D%22620%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%23333A48%22%2F%3E%3Crect%20x%3D%22150%22%20y%3D%22206%22%20width%3D%22520%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%23333A48%22%2F%3E%3Crect%20x%3D%22150%22%20y%3D%22280%22%20width%3D%221060%22%20height%3D%22230%22%20rx%3D%2228%22%20fill%3D%22%232C313C%22%2F%3E%3Crect%20x%3D%22196%22%20y%3D%22326%22%20width%3D%22300%22%20height%3D%2222%22%20rx%3D%2211%22%20fill%3D%22%236D8BFF%22%2F%3E%3Crect%20x%3D%22196%22%20y%3D%22372%22%20width%3D%22760%22%20height%3D%2216%22%20rx%3D%228%22%20fill%3D%22%23333A48%22%2F%3E%3Crect%20x%3D%22196%22%20y%3D%22404%22%20width%3D%22640%22%20height%3D%2216%22%20rx%3D%228%22%20fill%3D%22%23333A48%22%2F%3E%3Crect%20x%3D%22150%22%20y%3D%22560%22%20width%3D%22510%22%20height%3D%22260%22%20rx%3D%2228%22%20fill%3D%22%232C313C%22%2F%3E%3Crect%20x%3D%22700%22%20y%3D%22560%22%20width%3D%22510%22%20height%3D%22260%22%20rx%3D%2228%22%20fill%3D%22%232C313C%22%2F%3E%3Ccircle%20cx%3D%221120%22%20cy%3D%22660%22%20r%3D%2280%22%20fill%3D%22%233A4A7A%22%2F%3E%3C%2Fsvg%3E\" alt=\"\"></div><span style=\"font-size:11px\">welcomeArtwork：1331px 绝对定位</span></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "className",
+          "type": "string",
+          "default": "''",
+          "desc": "使用方给的几何类，接到 <code>.illustration</code> 后面。"
+        },
+        {
+          "name": "src",
+          "type": "string",
+          "default": "—",
+          "desc": "浅色插图地址（webp）。"
+        },
+        {
+          "name": "darkSrc",
+          "type": "string",
+          "default": "—",
+          "desc": "深色插图地址，仅深色主题下显示。"
+        }
+      ],
+      "notes": "切主题的规则写在 <code>:global(body[data-ds-dark-theme])</code> 上，所以目录的暗色预览（把属性加在示例框上）看不到深色版。图片只作装饰，不参与无障碍树。",
+      "keywords": [
+        "插图",
+        "装饰图",
+        "illustration",
+        "深浅色",
+        "onboarding"
+      ]
+    },
+    {
+      "id": "onboarding-process-step",
+      "name": "OnboardingProcessStep",
+      "exportName": "OnboardingProcessStep",
+      "zh": "过程选择",
+      "group": "settings",
+      "summary": "引导的过程页：<code>.processCards</code> 三列等宽玻璃卡（<code>.processCards</code> 最小高 225px，单张 <code>.card</code> 最小高 222px、32px 圆角、内边距 48.5/32.5/64.5），依次是 40px 图标、20/28 标题与 15/21 三级色描述；选中卡加 <code>.selected</code>，用 <code>::after</code> 的 2px 锥形渐变描边并 14s 循环扫光，三档分别取蓝/紫/青三组 <code>--dsw-gradient-onboarding-*-stops</code>（紧凑档走 <code>[data-process='compact']</code>）。作为 radiogroup，方向键在三个 <code>role=\"radio\"</code> 之间循环并移动焦点；选中后底部才出现「进入应用」主按钮。",
+      "source": "packages/client/ui-settings-account/src/client/OnboardingProcessStep.tsx#L18",
+      "css": [
+        "packages/client/ui-settings-account/src/client/DesktopOnboarding.module.css",
+        "packages/client/ui-primitives/src/Button.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-border-l4",
+        "--dsw-alias-brand-primary",
+        "--dsw-alias-button-primary-fill",
+        "--dsw-alias-button-primary-hover",
+        "--dsw-alias-button-tool-bar-fill",
+        "--dsw-alias-button-tool-bar-hover",
+        "--dsw-alias-interactive-bg-active",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-primary-foreground",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-onboarding-accent",
+        "--dsw-alias-onboarding-card-fill",
+        "--dsw-alias-onboarding-checkbox-border",
+        "--dsw-alias-onboarding-secondary-fill",
+        "--dsw-alias-state-business-primary",
+        "--dsw-focus-ring-color",
+        "--dsw-font-family",
+        "--dsw-font-family-brand",
+        "--dsw-gradient-onboarding-blue-stops",
+        "--dsw-gradient-onboarding-cyan-stops",
+        "--dsw-gradient-onboarding-violet-stops",
+        "--dsw-mask-blur",
+        "--dsw-radius-md",
+        "--dsw-radius-sm"
+      ],
+      "specimens": [
+        {
+          "label": "未选择：三张卡 + 空动作区",
+          "note": "静态快照：process 为 null 时不渲染主按钮",
+          "html": "<div class=\"page\" data-desktop-onboarding=\"process\" lang=\"zh\" aria-labelledby=\"desktop-onboarding-title\" aria-busy=\"false\" style=\"width:1040px;height:680px\"><div class=\"content process\"><div class=\"copy\"><h1 id=\"desktop-onboarding-title\" tabindex=\"-1\">你希望看到多少工作过程？</h1><p class=\"subtitle\">这只会影响工作过程的展示方式，不会影响 DeepSeek Harness 的工作能力。</p></div><div class=\"processCards\" role=\"radiogroup\" aria-labelledby=\"desktop-onboarding-title\"><button type=\"button\" role=\"radio\" data-process=\"compact\" aria-checked=\"false\" aria-disabled=\"false\" tabindex=\"0\" class=\"card\"><span class=\"processIcon\"><img src=\"data:image/svg+xml;utf8,%3Csvg%20preserveAspectRatio%3D%22none%22%20overflow%3D%22visible%22%20style%3D%22display%3A%20block%3B%22%20width%3D%2240%22%20height%3D%2240%22%20viewBox%3D%220%200%2040%2040%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Cg%20id%3D%22ExitFullscreenGlyph%201%22%3E%0A%3Cpath%20id%3D%22Vector%22%20d%3D%22M22.5%206.25V15C22.5%2015.663%2022.7634%2016.2989%2023.2322%2016.7678C23.7011%2017.2366%2024.337%2017.5%2025%2017.5H33.75%22%20stroke%3D%22%238370F1%22%20stroke-width%3D%222%22%2F%3E%0A%3Cpath%20id%3D%22Vector_2%22%20d%3D%22M17.5%2033.75V25C17.5%2024.337%2017.2366%2023.7011%2016.7678%2023.2322C16.2989%2022.7634%2015.663%2022.5%2015%2022.5H6.25%22%20stroke%3D%22%238370F1%22%20stroke-width%3D%222%22%2F%3E%0A%3C%2Fg%3E%0A%3C%2Fsvg%3E%0A\" width=\"40\" height=\"40\" alt=\"\"></span><span class=\"cardTitle\">聚焦结果</span><span class=\"cardDescription\">只看结果，保持界面简洁明了</span></button><button type=\"button\" role=\"radio\" data-process=\"standard\" aria-checked=\"false\" aria-disabled=\"false\" tabindex=\"-1\" class=\"card\"><span class=\"processIcon\"><img src=\"data:image/svg+xml;utf8,%3Csvg%20preserveAspectRatio%3D%22none%22%20overflow%3D%22visible%22%20style%3D%22display%3A%20block%3B%22%20width%3D%2236%22%20height%3D%2236%22%20viewBox%3D%220%200%2036%2036%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Cg%20id%3D%22IconChecklistOutline14%201%22%3E%0A%3Cpath%20id%3D%22Vector%22%20d%3D%22M8.4375%2014.0625C10.6121%2014.0625%2012.375%2012.2996%2012.375%2010.125C12.375%207.95038%2010.6121%206.1875%208.4375%206.1875C6.26288%206.1875%204.5%207.95038%204.5%2010.125C4.5%2012.2996%206.26288%2014.0625%208.4375%2014.0625Z%22%20stroke%3D%22%233B86FF%22%20stroke-width%3D%222%22%2F%3E%0A%3Cpath%20id%3D%22Vector_2%22%20d%3D%22M16.875%2010.125H30.375%22%20stroke%3D%22%233B86FF%22%20stroke-width%3D%222%22%2F%3E%0A%3Cpath%20id%3D%22Vector_3%22%20d%3D%22M8.4375%2029.8125C10.6121%2029.8125%2012.375%2028.0496%2012.375%2025.875C12.375%2023.7004%2010.6121%2021.9375%208.4375%2021.9375C6.26288%2021.9375%204.5%2023.7004%204.5%2025.875C4.5%2028.0496%206.26288%2029.8125%208.4375%2029.8125Z%22%20stroke%3D%22%233B86FF%22%20stroke-width%3D%222%22%2F%3E%0A%3Cpath%20id%3D%22Vector_4%22%20d%3D%22M16.875%2025.875H30.375%22%20stroke%3D%22%233B86FF%22%20stroke-width%3D%222%22%2F%3E%0A%3C%2Fg%3E%0A%3C%2Fsvg%3E%0A\" width=\"36\" height=\"36\" alt=\"\"></span><span class=\"cardTitle\">关键细节</span><span class=\"cardDescription\">结果优先，仅展示重要步骤和关键操作</span></button><button type=\"button\" role=\"radio\" data-process=\"detailed\" aria-checked=\"false\" aria-disabled=\"false\" tabindex=\"-1\" class=\"card\"><span class=\"processIcon\"><img src=\"data:image/svg+xml;utf8,%3Csvg%20preserveAspectRatio%3D%22none%22%20overflow%3D%22visible%22%20style%3D%22display%3A%20block%3B%22%20width%3D%2236%22%20height%3D%2236%22%20viewBox%3D%220%200%2036%2036%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Cg%20id%3D%22IconBrowseOutline16%201%22%3E%0A%3Cpath%20id%3D%22Vector%22%20d%3D%22M28.125%203.375H7.875C6.63236%203.375%205.625%204.38236%205.625%205.625V30.375C5.625%2031.6176%206.63236%2032.625%207.875%2032.625H28.125C29.3676%2032.625%2030.375%2031.6176%2030.375%2030.375V5.625C30.375%204.38236%2029.3676%203.375%2028.125%203.375Z%22%20stroke%3D%22%2300A4C9%22%20stroke-width%3D%222%22%2F%3E%0A%3Cpath%20id%3D%22Vector_2%22%20d%3D%22M12.375%2012.375H23.625%22%20stroke%3D%22%2300A4C9%22%20stroke-width%3D%222%22%2F%3E%0A%3Cpath%20id%3D%22Vector_3%22%20d%3D%22M12.375%2021.375H19.125%22%20stroke%3D%22%2300A4C9%22%20stroke-width%3D%222%22%2F%3E%0A%3C%2Fg%3E%0A%3C%2Fsvg%3E%0A\" width=\"36\" height=\"36\" alt=\"\"></span><span class=\"cardTitle\">完整过程</span><span class=\"cardDescription\">查看完整工作过程，方便调试和排查问题</span></button></div><div class=\"primaryAction\"></div></div></div>"
+        },
+        {
+          "label": "选中「关键细节」：渐变描边 + 进入应用",
+          "note": "静态快照：扫光停在起始角，未模拟悬停",
+          "html": "<div class=\"page\" data-desktop-onboarding=\"process\" lang=\"zh\" aria-labelledby=\"desktop-onboarding-title\" aria-busy=\"false\" style=\"width:1040px;height:680px\"><div class=\"content process\"><div class=\"copy\"><h1 id=\"desktop-onboarding-title\" tabindex=\"-1\">你希望看到多少工作过程？</h1><p class=\"subtitle\">这只会影响工作过程的展示方式，不会影响 DeepSeek Harness 的工作能力。</p></div><div class=\"processCards\" role=\"radiogroup\" aria-labelledby=\"desktop-onboarding-title\"><button type=\"button\" role=\"radio\" data-process=\"compact\" aria-checked=\"false\" aria-disabled=\"false\" tabindex=\"-1\" class=\"card\"><span class=\"processIcon\"><img src=\"data:image/svg+xml;utf8,%3Csvg%20preserveAspectRatio%3D%22none%22%20overflow%3D%22visible%22%20style%3D%22display%3A%20block%3B%22%20width%3D%2240%22%20height%3D%2240%22%20viewBox%3D%220%200%2040%2040%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Cg%20id%3D%22ExitFullscreenGlyph%201%22%3E%0A%3Cpath%20id%3D%22Vector%22%20d%3D%22M22.5%206.25V15C22.5%2015.663%2022.7634%2016.2989%2023.2322%2016.7678C23.7011%2017.2366%2024.337%2017.5%2025%2017.5H33.75%22%20stroke%3D%22%238370F1%22%20stroke-width%3D%222%22%2F%3E%0A%3Cpath%20id%3D%22Vector_2%22%20d%3D%22M17.5%2033.75V25C17.5%2024.337%2017.2366%2023.7011%2016.7678%2023.2322C16.2989%2022.7634%2015.663%2022.5%2015%2022.5H6.25%22%20stroke%3D%22%238370F1%22%20stroke-width%3D%222%22%2F%3E%0A%3C%2Fg%3E%0A%3C%2Fsvg%3E%0A\" width=\"40\" height=\"40\" alt=\"\"></span><span class=\"cardTitle\">聚焦结果</span><span class=\"cardDescription\">只看结果，保持界面简洁明了</span></button><button type=\"button\" role=\"radio\" data-process=\"standard\" aria-checked=\"true\" aria-disabled=\"false\" tabindex=\"0\" class=\"card selected\"><span class=\"processIcon\"><img src=\"data:image/svg+xml;utf8,%3Csvg%20preserveAspectRatio%3D%22none%22%20overflow%3D%22visible%22%20style%3D%22display%3A%20block%3B%22%20width%3D%2236%22%20height%3D%2236%22%20viewBox%3D%220%200%2036%2036%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Cg%20id%3D%22IconChecklistOutline14%201%22%3E%0A%3Cpath%20id%3D%22Vector%22%20d%3D%22M8.4375%2014.0625C10.6121%2014.0625%2012.375%2012.2996%2012.375%2010.125C12.375%207.95038%2010.6121%206.1875%208.4375%206.1875C6.26288%206.1875%204.5%207.95038%204.5%2010.125C4.5%2012.2996%206.26288%2014.0625%208.4375%2014.0625Z%22%20stroke%3D%22%233B86FF%22%20stroke-width%3D%222%22%2F%3E%0A%3Cpath%20id%3D%22Vector_2%22%20d%3D%22M16.875%2010.125H30.375%22%20stroke%3D%22%233B86FF%22%20stroke-width%3D%222%22%2F%3E%0A%3Cpath%20id%3D%22Vector_3%22%20d%3D%22M8.4375%2029.8125C10.6121%2029.8125%2012.375%2028.0496%2012.375%2025.875C12.375%2023.7004%2010.6121%2021.9375%208.4375%2021.9375C6.26288%2021.9375%204.5%2023.7004%204.5%2025.875C4.5%2028.0496%206.26288%2029.8125%208.4375%2029.8125Z%22%20stroke%3D%22%233B86FF%22%20stroke-width%3D%222%22%2F%3E%0A%3Cpath%20id%3D%22Vector_4%22%20d%3D%22M16.875%2025.875H30.375%22%20stroke%3D%22%233B86FF%22%20stroke-width%3D%222%22%2F%3E%0A%3C%2Fg%3E%0A%3C%2Fsvg%3E%0A\" width=\"36\" height=\"36\" alt=\"\"></span><span class=\"cardTitle\">关键细节</span><span class=\"cardDescription\">结果优先，仅展示重要步骤和关键操作</span></button><button type=\"button\" role=\"radio\" data-process=\"detailed\" aria-checked=\"false\" aria-disabled=\"false\" tabindex=\"-1\" class=\"card\"><span class=\"processIcon\"><img src=\"data:image/svg+xml;utf8,%3Csvg%20preserveAspectRatio%3D%22none%22%20overflow%3D%22visible%22%20style%3D%22display%3A%20block%3B%22%20width%3D%2236%22%20height%3D%2236%22%20viewBox%3D%220%200%2036%2036%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Cg%20id%3D%22IconBrowseOutline16%201%22%3E%0A%3Cpath%20id%3D%22Vector%22%20d%3D%22M28.125%203.375H7.875C6.63236%203.375%205.625%204.38236%205.625%205.625V30.375C5.625%2031.6176%206.63236%2032.625%207.875%2032.625H28.125C29.3676%2032.625%2030.375%2031.6176%2030.375%2030.375V5.625C30.375%204.38236%2029.3676%203.375%2028.125%203.375Z%22%20stroke%3D%22%2300A4C9%22%20stroke-width%3D%222%22%2F%3E%0A%3Cpath%20id%3D%22Vector_2%22%20d%3D%22M12.375%2012.375H23.625%22%20stroke%3D%22%2300A4C9%22%20stroke-width%3D%222%22%2F%3E%0A%3Cpath%20id%3D%22Vector_3%22%20d%3D%22M12.375%2021.375H19.125%22%20stroke%3D%22%2300A4C9%22%20stroke-width%3D%222%22%2F%3E%0A%3C%2Fg%3E%0A%3C%2Fsvg%3E%0A\" width=\"36\" height=\"36\" alt=\"\"></span><span class=\"cardTitle\">完整过程</span><span class=\"cardDescription\">查看完整工作过程，方便调试和排查问题</span></button></div><div class=\"primaryAction\"><button type=\"button\" class=\"button primary md action\">进入应用</button></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "t",
+          "type": "(key: AccountKey) => string",
+          "default": "—",
+          "desc": "账号命名空间的翻译座位。"
+        },
+        {
+          "name": "heading",
+          "type": "RefObject<HTMLHeadingElement>",
+          "default": "—",
+          "desc": "标题 ref，步骤切换后接收焦点。"
+        },
+        {
+          "name": "busy",
+          "type": "boolean",
+          "default": "—",
+          "desc": "保存中：挡住点击并给卡片 aria-disabled，但不禁用键盘。"
+        },
+        {
+          "name": "process",
+          "type": "'compact' | 'standard' | 'detailed' | null",
+          "default": "—",
+          "desc": "当前选择；null 时 roving tabindex 落在「聚焦结果」上。"
+        },
+        {
+          "name": "onSelect",
+          "type": "(value: OnboardingProcess) => void",
+          "default": "—",
+          "desc": "点卡或方向键切换选择并持久化。"
+        },
+        {
+          "name": "onComplete",
+          "type": "() => void",
+          "default": "—",
+          "desc": "「进入应用」：以 completed 收尾引导。"
+        }
+      ],
+      "notes": "键盘：左右/上下方向键循环切换并把焦点移到下一张卡，仅 <code>Arrow*</code> 被拦截。卡片用 <code>aria-checked</code> 表达选中，当前卡 tabindex 0、其余 -1；<code>busy</code> 时不响应选择。",
+      "keywords": [
+        "过程",
+        "工作过程",
+        "process",
+        "radiogroup",
+        "onboarding"
+      ]
+    },
+    {
+      "id": "onboarding-purpose-step",
+      "name": "OnboardingPurposeStep",
+      "exportName": "OnboardingPurposeStep",
+      "zh": "用途选择",
+      "group": "settings",
+      "summary": "引导的用途页：居中标题 = 前缀 + 品牌名（<code>.brand</code> 用品牌字体、500 字重）+ 后缀，下面 <code>.subtitle</code> 16/22 三级色说明，再往下是 <code>.purposeCards</code> 两列、间距 17px 的选卡。卡片最小高 222px、圆角 32px、<code>--dsw-alias-onboarding-card-fill</code> 半透明底加 32.6px backdrop blur；右上角是 24×24 勾选框（原生 input 透明铺 24px，靠 <code>input:checked + .indicator</code> 变蓝），左上角未选时是 40px 场景图标。选中后 <code>.selected</code> 描出锥形渐变边框（办公卡走紫色系），图标位换成 5 个 28px 文件类型图标。",
+      "source": "packages/client/ui-settings-account/src/client/OnboardingPurposeStep.tsx#L12",
+      "css": [
+        "packages/client/ui-settings-account/src/client/DesktopOnboarding.module.css",
+        "packages/client/ui-primitives/src/Button.module.css",
+        "packages/client/ui-primitives/src/FileTypeIcon.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-border-l4",
+        "--dsw-alias-brand-primary",
+        "--dsw-alias-button-primary-fill",
+        "--dsw-alias-button-primary-hover",
+        "--dsw-alias-button-tool-bar-fill",
+        "--dsw-alias-button-tool-bar-hover",
+        "--dsw-alias-interactive-bg-active",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-primary-foreground",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-onboarding-accent",
+        "--dsw-alias-onboarding-card-fill",
+        "--dsw-alias-onboarding-checkbox-border",
+        "--dsw-alias-onboarding-secondary-fill",
+        "--dsw-alias-state-business-primary",
+        "--dsw-focus-ring-color",
+        "--dsw-font-family",
+        "--dsw-font-family-brand",
+        "--dsw-gradient-onboarding-blue-stops",
+        "--dsw-gradient-onboarding-cyan-stops",
+        "--dsw-gradient-onboarding-violet-stops",
+        "--dsw-mask-blur",
+        "--dsw-radius-md",
+        "--dsw-radius-sm",
+        "--dsw-static-amber-400",
+        "--dsw-static-amber-500",
+        "--dsw-static-deepseek-450",
+        "--dsw-static-deepseek-500",
+        "--dsw-static-green-500",
+        "--dsw-static-neutral-bluish-300",
+        "--dsw-static-red-600"
+      ],
+      "specimens": [
+        {
+          "label": "初始态：两张未勾选的场景卡",
+          "note": "静态快照：未勾选时卡片显示 40px 场景图标",
+          "html": "<div class=\"page\" data-desktop-onboarding=\"purpose\" lang=\"zh\" aria-labelledby=\"desktop-onboarding-title\" aria-busy=\"false\" style=\"width:1000px;height:660px\"><div class=\"content purpose\"><div class=\"copy\"><h1 id=\"desktop-onboarding-title\" tabindex=\"-1\">你希望 <em class=\"brand\">DeepSeek Harness</em> 帮你做什么？</h1><p class=\"subtitle\">我们会根据你的选择调整界面和工具，以更适合你的工作方式。</p></div><div class=\"purposeCards\"><div class=\"card officeCard\"><div class=\"cardTop\"><img src=\"data:image/svg+xml;utf8,%3Csvg%20preserveAspectRatio%3D%22none%22%20overflow%3D%22visible%22%20style%3D%22display%3A%20block%3B%22%20width%3D%2240%22%20height%3D%2240%22%20viewBox%3D%220%200%2040%2040%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Cg%20id%3D%22Frame%202117131378%22%3E%0A%3Cpath%20id%3D%22Vector%22%20d%3D%22M10.5156%2033.7727H29.4816C30.7242%2033.7727%2031.7316%2032.7654%2031.7316%2031.5227V15.716C31.7316%2015.1089%2031.4863%2014.5277%2031.0516%2014.1042L23.623%206.86866C23.2029%206.45945%2022.6395%206.23047%2022.0532%206.23047H10.5156C9.273%206.23047%208.26562%207.23782%208.26562%208.48047V31.5227C8.26562%2032.7654%209.27297%2033.7727%2010.5156%2033.7727Z%22%20stroke%3D%22%238370F1%22%20stroke-width%3D%222%22%2F%3E%0A%3Cpath%20id%3D%22Vector_2%22%20d%3D%22M21.916%206.47656V13.3789C21.916%2014.6216%2022.9233%2015.6289%2024.166%2015.6289H31.6317%22%20stroke%3D%22%238370F1%22%20stroke-width%3D%222%22%2F%3E%0A%3Cpath%20id%3D%22Vector_3%22%20d%3D%22M12.1953%2021.6016H19.6427%22%20stroke%3D%22%238370F1%22%20stroke-width%3D%222%22%2F%3E%0A%3Cpath%20id%3D%22Vector_4%22%20d%3D%22M12.1953%2027.1172H22.8924%22%20stroke%3D%22%238370F1%22%20stroke-width%3D%222%22%2F%3E%0A%3C%2Fg%3E%0A%3C%2Fsvg%3E%0A\" width=\"40\" height=\"40\" alt=\"\"><label class=\"cardCheckbox\"><input type=\"checkbox\" aria-label=\"办公与创作\"><span class=\"indicator\" aria-hidden=\"true\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4\" stroke=\"currentColor\"/></svg></span></label></div><span class=\"cardTitle\">办公与创作</span><span class=\"cardDescription\">编辑文档、整理数据和制作演示文稿等</span></div><div class=\"card\"><div class=\"cardTop\"><img src=\"data:image/svg+xml;utf8,%3Csvg%20preserveAspectRatio%3D%22none%22%20overflow%3D%22visible%22%20style%3D%22display%3A%20block%3B%22%20width%3D%2240%22%20height%3D%2240%22%20viewBox%3D%220%200%2040%2040%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Cg%20id%3D%22LinkIcon--code%201%22%3E%0A%3Cpath%20id%3D%22Vector%22%20d%3D%22M10.625%2012.5L3.75%2020L10.625%2027.5%22%20stroke%3D%22%233B86FF%22%20stroke-width%3D%222%22%2F%3E%0A%3Cpath%20id%3D%22Vector_2%22%20d%3D%22M29.375%2012.5L36.25%2020L29.375%2027.5%22%20stroke%3D%22%233B86FF%22%20stroke-width%3D%222%22%2F%3E%0A%3Cpath%20id%3D%22Vector_3%22%20d%3D%22M23.125%2011.25L16.875%2028.75%22%20stroke%3D%22%233B86FF%22%20stroke-width%3D%222%22%2F%3E%0A%3C%2Fg%3E%0A%3C%2Fsvg%3E%0A\" width=\"40\" height=\"40\" alt=\"\"><label class=\"cardCheckbox\"><input type=\"checkbox\" aria-label=\"代码与开发\"><span class=\"indicator\" aria-hidden=\"true\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4\" stroke=\"currentColor\"/></svg></span></label></div><span class=\"cardTitle\">代码与开发</span><span class=\"cardDescription\">修改代码、调试问题、运行命令和管理项目文件等</span></div></div><div class=\"primaryAction\"></div></div></div>"
+        },
+        {
+          "label": "勾选「办公与创作」：渐变描边 + 5 个文件图标",
+          "note": "静态快照：checked 直接写死，未模拟图标进入动画",
+          "html": "<div class=\"page\" data-desktop-onboarding=\"purpose\" lang=\"zh\" aria-labelledby=\"desktop-onboarding-title\" aria-busy=\"false\" style=\"width:1000px;height:660px\"><div class=\"content purpose\"><div class=\"copy\"><h1 id=\"desktop-onboarding-title\" tabindex=\"-1\">你希望 <em class=\"brand\">DeepSeek Harness</em> 帮你做什么？</h1><p class=\"subtitle\">我们会根据你的选择调整界面和工具，以更适合你的工作方式。</p></div><div class=\"purposeCards\"><div class=\"card officeCard selected\"><div class=\"cardTop\"><span class=\"fileIcons\" aria-hidden=\"true\"><svg width=\"28\" height=\"28\" class=\"c2-icon word\" viewBox=\"0 0 28 28\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M8.48924 28H19.5108C21.6479 28 22.7165 28 23.5594 27.6509C24.6833 27.1853 25.5762 26.2924 26.0417 25.1685C26.3909 24.3256 26.3909 23.257 26.3909 21.1199V8.79443C26.3909 8.32877 26.3909 8.09593 26.3471 7.87507C26.2887 7.58058 26.173 7.30042 26.0067 7.05048C25.882 6.86303 25.7177 6.69799 25.3893 6.36792L20.0611 1.01354C19.7304 0.681235 19.5651 0.515081 19.3769 0.38885C19.126 0.220541 18.8443 0.103463 18.5481 0.0443412C18.3259 0 18.0915 0 17.6226 0H8.48924C6.35209 0 5.28351 0 4.4406 0.349145C3.31672 0.814671 2.4238 1.70759 1.95828 2.83147C1.60913 3.67438 1.60913 4.74296 1.60913 6.88011V21.1199C1.60913 23.257 1.60913 24.3256 1.95828 25.1685C2.4238 26.2924 3.31672 27.1853 4.4406 27.6509C5.28351 28 6.35209 28 8.48924 28Z\" fill=\"currentColor\"/><path d=\"M26.3909 7.37445L19.0525 0V3.77445C19.0525 4.89271 19.0525 5.45184 19.2352 5.89289C19.4788 6.48096 19.946 6.94818 20.5341 7.19176C20.9751 7.37445 21.5342 7.37445 22.6525 7.37445H26.3909Z\" fill=\"var(--dsw-static-neutral-00)\" fill-opacity=\".7\"/><g color=\"var(--dsw-static-neutral-00)\" data-file-type-mark transform=\"translate(14 16) scale(1.22) translate(-14 -16)\"><path d=\"M10.5118 20.5L8.24179 13.5H10.2818L12.1918 19.56H11.1618L13.1718 13.5H14.9918L16.8918 19.56H15.9018L17.8718 13.5H19.7618L17.4918 20.5H15.3718L13.7518 15.35H14.3218L12.6318 20.5H10.5118Z\" fill=\"currentColor\"/></g></svg><svg width=\"28\" height=\"28\" class=\"c2-icon ppt\" viewBox=\"0 0 28 28\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M8.48924 28H19.5108C21.6479 28 22.7165 28 23.5594 27.6509C24.6833 27.1853 25.5762 26.2924 26.0417 25.1685C26.3909 24.3256 26.3909 23.257 26.3909 21.1199V8.79443C26.3909 8.32877 26.3909 8.09593 26.3471 7.87507C26.2887 7.58058 26.173 7.30042 26.0067 7.05048C25.882 6.86303 25.7177 6.69799 25.3893 6.36792L20.0611 1.01354C19.7304 0.681235 19.5651 0.515081 19.3769 0.38885C19.126 0.220541 18.8443 0.103463 18.5481 0.0443412C18.3259 0 18.0915 0 17.6226 0H8.48924C6.35209 0 5.28351 0 4.4406 0.349145C3.31672 0.814671 2.4238 1.70759 1.95828 2.83147C1.60913 3.67438 1.60913 4.74296 1.60913 6.88011V21.1199C1.60913 23.257 1.60913 24.3256 1.95828 25.1685C2.4238 26.2924 3.31672 27.1853 4.4406 27.6509C5.28351 28 6.35209 28 8.48924 28Z\" fill=\"currentColor\"/><path d=\"M26.3909 7.37445L19.0525 0V3.77445C19.0525 4.89271 19.0525 5.45184 19.2352 5.89289C19.4788 6.48096 19.946 6.94818 20.5341 7.19176C20.9751 7.37445 21.5342 7.37445 22.6525 7.37445H26.3909Z\" fill=\"var(--dsw-static-neutral-00)\" fill-opacity=\".7\"/><g color=\"var(--dsw-static-neutral-00)\" data-file-type-mark transform=\"translate(14 16) scale(1.22) translate(-14 -16)\"><path d=\"M11.0132 20.5V13.5H14.2132C14.8532 13.5 15.4032 13.6033 15.8632 13.81C16.3299 14.0167 16.6899 14.3167 16.9432 14.71C17.1966 15.0967 17.3232 15.5567 17.3232 16.09C17.3232 16.6167 17.1966 17.0733 16.9432 17.46C16.6899 17.8467 16.3299 18.1467 15.8632 18.36C15.4032 18.5667 14.8532 18.67 14.2132 18.67H12.1132L12.9932 17.81V20.5H11.0132ZM12.9932 18.02L12.1132 17.11H14.0932C14.5066 17.11 14.8132 17.02 15.0132 16.84C15.2199 16.66 15.3232 16.41 15.3232 16.09C15.3232 15.7633 15.2199 15.51 15.0132 15.33C14.8132 15.15 14.5066 15.06 14.0932 15.06H12.1132L12.9932 14.15V18.02Z\" fill=\"currentColor\"/></g></svg><svg width=\"28\" height=\"28\" class=\"c2-icon excel\" viewBox=\"0 0 28 28\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M8.48924 28H19.5108C21.6479 28 22.7165 28 23.5594 27.6509C24.6833 27.1853 25.5762 26.2924 26.0417 25.1685C26.3909 24.3256 26.3909 23.257 26.3909 21.1199V8.79443C26.3909 8.32877 26.3909 8.09593 26.3471 7.87507C26.2887 7.58058 26.173 7.30042 26.0067 7.05048C25.882 6.86303 25.7177 6.69799 25.3893 6.36792L20.0611 1.01354C19.7304 0.681235 19.5651 0.515081 19.3769 0.38885C19.126 0.220541 18.8443 0.103463 18.5481 0.0443412C18.3259 0 18.0915 0 17.6226 0H8.48924C6.35209 0 5.28351 0 4.4406 0.349145C3.31672 0.814671 2.4238 1.70759 1.95828 2.83147C1.60913 3.67438 1.60913 4.74296 1.60913 6.88011V21.1199C1.60913 23.257 1.60913 24.3256 1.95828 25.1685C2.4238 26.2924 3.31672 27.1853 4.4406 27.6509C5.28351 28 6.35209 28 8.48924 28Z\" fill=\"currentColor\"/><path d=\"M26.3909 7.37445L19.0525 0V3.77445C19.0525 4.89271 19.0525 5.45184 19.2352 5.89289C19.4788 6.48096 19.946 6.94818 20.5341 7.19176C20.9751 7.37445 21.5342 7.37445 22.6525 7.37445H26.3909Z\" fill=\"var(--dsw-static-neutral-00)\" fill-opacity=\".7\"/><g color=\"var(--dsw-static-neutral-00)\" data-file-type-mark><path d=\"M14 11.5H11.4C10.5599 11.5 10.1399 11.5 9.81901 11.6635C9.53677 11.8073 9.3073 12.0368 9.16349 12.319C9 12.6399 9 13.0599 9 13.9V16.5M14 11.5H16.6C17.4401 11.5 17.8601 11.5 18.181 11.6635C18.4632 11.8073 18.6927 12.0368 18.8365 12.319C19 12.6399 19 13.0599 19 13.9V16.5M14 11.5V21.5M14 21.5H16.6C17.4401 21.5 17.8601 21.5 18.181 21.3365C18.4632 21.1927 18.6927 20.9632 18.8365 20.681C19 20.3601 19 19.9401 19 19.1V16.5M14 21.5H11.4C10.5599 21.5 10.1399 21.5 9.81901 21.3365C9.53677 21.1927 9.3073 20.9632 9.16349 20.681C9 20.3601 9 19.9401 9 19.1V16.5M19 16.5H9\" stroke=\"currentColor\" stroke-width=\"1.2\"/></g></svg><svg width=\"28\" height=\"28\" class=\"c2-icon pdf\" viewBox=\"0 0 28 28\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M8.48924 28H19.5108C21.6479 28 22.7165 28 23.5594 27.6509C24.6833 27.1853 25.5762 26.2924 26.0417 25.1685C26.3909 24.3256 26.3909 23.257 26.3909 21.1199V8.79443C26.3909 8.32877 26.3909 8.09593 26.3471 7.87507C26.2887 7.58058 26.173 7.30042 26.0067 7.05048C25.882 6.86303 25.7177 6.69799 25.3893 6.36792L20.0611 1.01354C19.7304 0.681235 19.5651 0.515081 19.3769 0.38885C19.126 0.220541 18.8443 0.103463 18.5481 0.0443412C18.3259 0 18.0915 0 17.6226 0H8.48924C6.35209 0 5.28351 0 4.4406 0.349145C3.31672 0.814671 2.4238 1.70759 1.95828 2.83147C1.60913 3.67438 1.60913 4.74296 1.60913 6.88011V21.1199C1.60913 23.257 1.60913 24.3256 1.95828 25.1685C2.4238 26.2924 3.31672 27.1853 4.4406 27.6509C5.28351 28 6.35209 28 8.48924 28Z\" fill=\"currentColor\"/><path d=\"M26.3909 7.37445L19.0525 0V3.77445C19.0525 4.89271 19.0525 5.45184 19.2352 5.89289C19.4788 6.48096 19.946 6.94818 20.5341 7.19176C20.9751 7.37445 21.5342 7.37445 22.6525 7.37445H26.3909Z\" fill=\"var(--dsw-static-neutral-00)\" fill-opacity=\".7\"/><g color=\"var(--dsw-static-neutral-00)\" data-file-type-mark transform=\"translate(14 16) scale(1.22) translate(-14 -16)\"><path d=\"M6.80616 19.5V14.6H9.04616C9.49416 14.6 9.87916 14.6723 10.2012 14.817C10.5278 14.9617 10.7798 15.1717 10.9572 15.447C11.1345 15.7177 11.2232 16.0397 11.2232 16.413C11.2232 16.7817 11.1345 17.1013 10.9572 17.372C10.7798 17.6427 10.5278 17.8527 10.2012 18.002C9.87916 18.1467 9.49416 18.219 9.04616 18.219H7.57616L8.19216 17.617V19.5H6.80616ZM8.19216 17.764L7.57616 17.127H8.96216C9.2515 17.127 9.46616 17.064 9.60616 16.938C9.75083 16.812 9.82316 16.637 9.82316 16.413C9.82316 16.1843 9.75083 16.007 9.60616 15.881C9.46616 15.755 9.2515 15.692 8.96216 15.692H7.57616L8.19216 15.055V17.764ZM11.8989 19.5V14.6H14.2159C14.7573 14.6 15.2333 14.7003 15.6439 14.901C16.0546 15.1017 16.3743 15.384 16.6029 15.748C16.8363 16.112 16.9529 16.546 16.9529 17.05C16.9529 17.5493 16.8363 17.9833 16.6029 18.352C16.3743 18.716 16.0546 18.9983 15.6439 19.199C15.2333 19.3997 14.7573 19.5 14.2159 19.5H11.8989ZM13.2849 18.394H14.1599C14.4399 18.394 14.6826 18.3427 14.8879 18.24C15.0979 18.1327 15.2613 17.9787 15.3779 17.778C15.4946 17.5727 15.5529 17.33 15.5529 17.05C15.5529 16.7653 15.4946 16.5227 15.3779 16.322C15.2613 16.1213 15.0979 15.9697 14.8879 15.867C14.6826 15.7597 14.4399 15.706 14.1599 15.706H13.2849V18.394ZM17.6821 19.5V14.6H21.5251V15.671H19.0681V19.5H17.6821ZM18.9701 17.82V16.749H21.2311V17.82H18.9701Z\" fill=\"currentColor\"/></g></svg><svg width=\"28\" height=\"28\" class=\"c2-icon image\" viewBox=\"0 0 28 28\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M8.48924 28H19.5108C21.6479 28 22.7165 28 23.5594 27.6509C24.6833 27.1853 25.5762 26.2924 26.0417 25.1685C26.3909 24.3256 26.3909 23.257 26.3909 21.1199V8.79443C26.3909 8.32877 26.3909 8.09593 26.3471 7.87507C26.2887 7.58058 26.173 7.30042 26.0067 7.05048C25.882 6.86303 25.7177 6.69799 25.3893 6.36792L20.0611 1.01354C19.7304 0.681235 19.5651 0.515081 19.3769 0.38885C19.126 0.220541 18.8443 0.103463 18.5481 0.0443412C18.3259 0 18.0915 0 17.6226 0H8.48924C6.35209 0 5.28351 0 4.4406 0.349145C3.31672 0.814671 2.4238 1.70759 1.95828 2.83147C1.60913 3.67438 1.60913 4.74296 1.60913 6.88011V21.1199C1.60913 23.257 1.60913 24.3256 1.95828 25.1685C2.4238 26.2924 3.31672 27.1853 4.4406 27.6509C5.28351 28 6.35209 28 8.48924 28Z\" fill=\"currentColor\"/><path d=\"M26.3909 7.37445L19.0525 0V3.77445C19.0525 4.89271 19.0525 5.45184 19.2352 5.89289C19.4788 6.48096 19.946 6.94818 20.5341 7.19176C20.9751 7.37445 21.5342 7.37445 22.6525 7.37445H26.3909Z\" fill=\"var(--dsw-static-neutral-00)\" fill-opacity=\".7\"/><g color=\"var(--dsw-static-neutral-00)\" data-file-type-mark transform=\"translate(14 16) scale(1.12) translate(-14 -16)\"><path d=\"M10.4212 15.9204C10.5756 15.6558 10.9579 15.6558 11.1123 15.9204L13.6493 20.2696C13.8048 20.5362 13.6125 20.8711 13.3037 20.8711H8.22974C7.92102 20.8711 7.72868 20.5362 7.88423 20.2696L10.4212 15.9204Z\" fill=\"currentColor\"/><path d=\"M15.4981 13.186C15.6505 12.9117 16.0451 12.9117 16.1975 13.186L20.1368 20.2769C20.2849 20.5435 20.0922 20.8711 19.7872 20.8711H11.9084C11.6034 20.8711 11.4107 20.5435 11.5588 20.2769L15.4981 13.186Z\" fill=\"currentColor\"/><path d=\"M11.8603 11.3997C11.8603 12.286 11.1418 13.0045 10.2555 13.0045C9.36924 13.0045 8.65076 12.286 8.65076 11.3997C8.65076 10.5134 9.36924 9.79492 10.2555 9.79492C11.1418 9.79492 11.8603 10.5134 11.8603 11.3997Z\" fill=\"currentColor\"/></g></svg></span><label class=\"cardCheckbox\"><input type=\"checkbox\" aria-label=\"办公与创作\" checked><span class=\"indicator\" aria-hidden=\"true\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4\" stroke=\"currentColor\"/></svg></span></label></div><span class=\"cardTitle\">办公与创作</span><span class=\"cardDescription\">编辑文档、整理数据和制作演示文稿等</span></div><div class=\"card\"><div class=\"cardTop\"><img src=\"data:image/svg+xml;utf8,%3Csvg%20preserveAspectRatio%3D%22none%22%20overflow%3D%22visible%22%20style%3D%22display%3A%20block%3B%22%20width%3D%2240%22%20height%3D%2240%22%20viewBox%3D%220%200%2040%2040%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Cg%20id%3D%22LinkIcon--code%201%22%3E%0A%3Cpath%20id%3D%22Vector%22%20d%3D%22M10.625%2012.5L3.75%2020L10.625%2027.5%22%20stroke%3D%22%233B86FF%22%20stroke-width%3D%222%22%2F%3E%0A%3Cpath%20id%3D%22Vector_2%22%20d%3D%22M29.375%2012.5L36.25%2020L29.375%2027.5%22%20stroke%3D%22%233B86FF%22%20stroke-width%3D%222%22%2F%3E%0A%3Cpath%20id%3D%22Vector_3%22%20d%3D%22M23.125%2011.25L16.875%2028.75%22%20stroke%3D%22%233B86FF%22%20stroke-width%3D%222%22%2F%3E%0A%3C%2Fg%3E%0A%3C%2Fsvg%3E%0A\" width=\"40\" height=\"40\" alt=\"\"><label class=\"cardCheckbox\"><input type=\"checkbox\" aria-label=\"代码与开发\"><span class=\"indicator\" aria-hidden=\"true\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4\" stroke=\"currentColor\"/></svg></span></label></div><span class=\"cardTitle\">代码与开发</span><span class=\"cardDescription\">修改代码、调试问题、运行命令和管理项目文件等</span></div></div><div class=\"primaryAction\"><button type=\"button\" class=\"button primary md action\">继续</button></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "t",
+          "type": "(key: AccountKey) => string",
+          "default": "—",
+          "desc": "账号命名空间的翻译座位。"
+        },
+        {
+          "name": "heading",
+          "type": "RefObject<HTMLHeadingElement>",
+          "default": "—",
+          "desc": "标题 ref，步骤切换后接收焦点。"
+        },
+        {
+          "name": "busy",
+          "type": "boolean",
+          "default": "—",
+          "desc": "保存中：勾选与「继续」都不响应。"
+        },
+        {
+          "name": "purpose",
+          "type": "'office' | 'development' | 'both' | null",
+          "default": "—",
+          "desc": "当前用途；both 让两张卡同时呈选中样式。"
+        },
+        {
+          "name": "onSelect",
+          "type": "(value: OnboardingPurpose | null) => void",
+          "default": "—",
+          "desc": "两张卡独立开合后归一成 office/development/both/null。"
+        },
+        {
+          "name": "onContinue",
+          "type": "() => void",
+          "default": "—",
+          "desc": "选了用途才出现的「继续」：办公直接完成，开发再进过程页。"
+        }
+      ],
+      "notes": "两张卡可同时勾选（<code>purpose='both'</code>）；取消到都未选时 <code>.primaryAction</code> 里的按钮消失。图标进入动画 <code>.iconsEntering</code> 只在「未选 → 选中」的上升沿挂载，静态快照按稳态渲染。",
+      "keywords": [
+        "用途",
+        "场景",
+        "purpose",
+        "办公",
+        "代码",
+        "onboarding"
+      ]
+    },
+    {
+      "id": "onboarding-surface",
+      "name": "OnboardingSurface",
+      "exportName": "OnboardingSurface",
+      "zh": "引导浮层",
+      "group": "settings",
+      "summary": "首启引导的全窗口底座：组件用 <code>createPortal</code> 挂到 <code>document.body</code>，<code>.onboardingOverlay</code> 以 <code>position: fixed; inset: 0</code> 铺满视口并涂 <code>--dsw-alias-bg-base</code>；挂载期间给 <code>#root</code> 加 inert 并把透明度压到 0。中间的 <code>.onboardingStage</code> 是 <code>flex: 1; min-height: 0; overflow: auto</code> 的行容器，步骤页在其中水平居中。<code>exiting</code> 时整层播 180ms 的 <code>onboardingExit</code> 渐隐，同时把应用根的不透明度还原，露出下面的工作区。",
+      "source": "packages/client/ui-settings-account/src/client/OnboardingSurface.tsx#L16",
+      "css": [
+        "packages/client/ui-settings-account/src/client/OnboardingSurface.module.css",
+        "packages/client/ui-settings-account/src/client/DesktopOnboarding.module.css",
+        "packages/client/ui-primitives/src/Button.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-base",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-border-l4",
+        "--dsw-alias-brand-primary",
+        "--dsw-alias-button-primary-fill",
+        "--dsw-alias-button-primary-hover",
+        "--dsw-alias-button-tool-bar-fill",
+        "--dsw-alias-button-tool-bar-hover",
+        "--dsw-alias-interactive-bg-active",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-primary-foreground",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-onboarding-accent",
+        "--dsw-alias-onboarding-card-fill",
+        "--dsw-alias-onboarding-checkbox-border",
+        "--dsw-alias-onboarding-secondary-fill",
+        "--dsw-alias-state-business-primary",
+        "--dsw-focus-ring-color",
+        "--dsw-font-family",
+        "--dsw-font-family-brand",
+        "--dsw-gradient-onboarding-blue-stops",
+        "--dsw-gradient-onboarding-cyan-stops",
+        "--dsw-gradient-onboarding-violet-stops",
+        "--dsw-mask-blur",
+        "--dsw-radius-md",
+        "--dsw-radius-sm"
+      ],
+      "specimens": [
+        {
+          "label": "加载态：整屏底座 + 居中状态位",
+          "note": "该组件只提供层与舞台，内容由步骤页决定；静态快照",
+          "html": "<div class=\"onboardingOverlay\" role=\"presentation\" style=\"width:900px;height:380px\"><div class=\"dragBand\" data-window-drag aria-hidden=\"true\"></div><div class=\"onboardingStage\"><div class=\"loading\" role=\"status\">正在加载设置…</div></div></div>",
+          "css": "/* 静态快照：真实组件的 .onboardingOverlay 由 createPortal 挂到 body，且\n   position: fixed; inset: 0 铺满视口；这里拉回文档流，保留它作为 .dragBand\n   绝对定位的包含块。 */\n.onboardingOverlay { position: relative; inset: auto; }"
+        },
+        {
+          "label": "承载欢迎页：舞台里放 1040px 步骤页",
+          "note": "该组件本身没有卡片外观，这里展示它托起的步骤页；静态快照",
+          "html": "<div class=\"onboardingOverlay\" role=\"presentation\" style=\"width:1040px;height:480px\"><div class=\"dragBand\" data-window-drag aria-hidden=\"true\"></div><div class=\"onboardingStage\"><div class=\"page\" data-desktop-onboarding=\"welcome\" lang=\"zh\" aria-labelledby=\"desktop-onboarding-title\" aria-busy=\"false\" style=\"width:1040px;height:480px\"><div class=\"content welcome\"><div class=\"copy\"><h1 id=\"desktop-onboarding-title\" tabindex=\"-1\">欢迎使用 <em class=\"brand\">DeepSeek Harness</em></h1><p class=\"heroDescription\">DeepSeek Harness 会以本地文件夹作为工作区，通过调用各种工具，读写本机文件，完成搜索整理资料、制作文档表格、编写代码、排查问题等各种任务。</p><button type=\"button\" class=\"button primary md action start\">开始设置</button></div><div class=\"welcomeIllustration\" aria-hidden=\"true\"><div class=\"illustration welcomeArtwork\" aria-hidden=\"true\"><img class=\"lightIllustration\" src=\"data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%221331%22%20height%3D%22900%22%20viewBox%3D%220%200%201331%20900%22%3E%3Crect%20x%3D%2290%22%20y%3D%2240%22%20width%3D%221180%22%20height%3D%22820%22%20rx%3D%2248%22%20fill%3D%22%23EEF2FB%22%2F%3E%3Crect%20x%3D%22150%22%20y%3D%22110%22%20width%3D%22300%22%20height%3D%2230%22%20rx%3D%2215%22%20fill%3D%22%23C9D6FF%22%2F%3E%3Crect%20x%3D%22150%22%20y%3D%22170%22%20width%3D%22620%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%23DCE3F5%22%2F%3E%3Crect%20x%3D%22150%22%20y%3D%22206%22%20width%3D%22520%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%23DCE3F5%22%2F%3E%3Crect%20x%3D%22150%22%20y%3D%22280%22%20width%3D%221060%22%20height%3D%22230%22%20rx%3D%2228%22%20fill%3D%22%23FFFFFF%22%2F%3E%3Crect%20x%3D%22196%22%20y%3D%22326%22%20width%3D%22300%22%20height%3D%2222%22%20rx%3D%2211%22%20fill%3D%22%233964FE%22%2F%3E%3Crect%20x%3D%22196%22%20y%3D%22372%22%20width%3D%22760%22%20height%3D%2216%22%20rx%3D%228%22%20fill%3D%22%23DCE3F5%22%2F%3E%3Crect%20x%3D%22196%22%20y%3D%22404%22%20width%3D%22640%22%20height%3D%2216%22%20rx%3D%228%22%20fill%3D%22%23DCE3F5%22%2F%3E%3Crect%20x%3D%22150%22%20y%3D%22560%22%20width%3D%22510%22%20height%3D%22260%22%20rx%3D%2228%22%20fill%3D%22%23FFFFFF%22%2F%3E%3Crect%20x%3D%22700%22%20y%3D%22560%22%20width%3D%22510%22%20height%3D%22260%22%20rx%3D%2228%22%20fill%3D%22%23FFFFFF%22%2F%3E%3Ccircle%20cx%3D%221120%22%20cy%3D%22660%22%20r%3D%2280%22%20fill%3D%22%23C9D6FF%22%2F%3E%3C%2Fsvg%3E\" alt=\"\"><img class=\"darkIllustration\" src=\"data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%221331%22%20height%3D%22900%22%20viewBox%3D%220%200%201331%20900%22%3E%3Crect%20x%3D%2290%22%20y%3D%2240%22%20width%3D%221180%22%20height%3D%22820%22%20rx%3D%2248%22%20fill%3D%22%23232733%22%2F%3E%3Crect%20x%3D%22150%22%20y%3D%22110%22%20width%3D%22300%22%20height%3D%2230%22%20rx%3D%2215%22%20fill%3D%22%233A4A7A%22%2F%3E%3Crect%20x%3D%22150%22%20y%3D%22170%22%20width%3D%22620%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%23333A48%22%2F%3E%3Crect%20x%3D%22150%22%20y%3D%22206%22%20width%3D%22520%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%23333A48%22%2F%3E%3Crect%20x%3D%22150%22%20y%3D%22280%22%20width%3D%221060%22%20height%3D%22230%22%20rx%3D%2228%22%20fill%3D%22%232C313C%22%2F%3E%3Crect%20x%3D%22196%22%20y%3D%22326%22%20width%3D%22300%22%20height%3D%2222%22%20rx%3D%2211%22%20fill%3D%22%236D8BFF%22%2F%3E%3Crect%20x%3D%22196%22%20y%3D%22372%22%20width%3D%22760%22%20height%3D%2216%22%20rx%3D%228%22%20fill%3D%22%23333A48%22%2F%3E%3Crect%20x%3D%22196%22%20y%3D%22404%22%20width%3D%22640%22%20height%3D%2216%22%20rx%3D%228%22%20fill%3D%22%23333A48%22%2F%3E%3Crect%20x%3D%22150%22%20y%3D%22560%22%20width%3D%22510%22%20height%3D%22260%22%20rx%3D%2228%22%20fill%3D%22%232C313C%22%2F%3E%3Crect%20x%3D%22700%22%20y%3D%22560%22%20width%3D%22510%22%20height%3D%22260%22%20rx%3D%2228%22%20fill%3D%22%232C313C%22%2F%3E%3Ccircle%20cx%3D%221120%22%20cy%3D%22660%22%20r%3D%2280%22%20fill%3D%22%233A4A7A%22%2F%3E%3C%2Fsvg%3E\" alt=\"\"></div></div></div></div></div></div>",
+          "css": "/* 静态快照：真实组件的 .onboardingOverlay 由 createPortal 挂到 body，且\n   position: fixed; inset: 0 铺满视口；这里拉回文档流，保留它作为 .dragBand\n   绝对定位的包含块。 */\n.onboardingOverlay { position: relative; inset: auto; }"
+        }
+      ],
+      "props": [
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "default": "—",
+          "desc": "步骤页内容，在 <code>.onboardingStage</code> 里居中。"
+        },
+        {
+          "name": "exiting",
+          "type": "boolean",
+          "default": "false",
+          "desc": "完成引导后的退场：恢复应用根不透明度并让本层渐隐 180ms。"
+        }
+      ],
+      "notes": "层本身不处理 Esc 与焦点，焦点由各步骤标题和 Modal 自己管；<code>html[data-platform='darwin']</code> 下背景改为 transparent（用系统窗口材质），<code>.dragBand</code> 只在那时提供 8px 的拖拽带。<code>prefers-reduced-motion</code> 时退场不做动画。",
+      "keywords": [
+        "引导",
+        "全屏层",
+        "portal",
+        "surface",
+        "onboarding"
+      ]
+    },
+    {
+      "id": "onboarding-welcome-step",
+      "name": "OnboardingWelcomeStep",
+      "exportName": "OnboardingWelcomeStep",
+      "zh": "欢迎引导",
+      "group": "settings",
+      "summary": "引导第一屏：<code>.welcome .copy</code> 绝对定位（宽 520px），里面是 28/48 的 300 字重标题（品牌名 <code>.brand</code> 换品牌字体、500 字重）、16/28 三级色的介绍文案，再往下 60px 是 240×44、R12 的「开始设置」主按钮；右侧 <code>.welcomeIllustration</code> 固定 1247×822，插图再向左上偏移 67/40px，按 <code>locale</code> 取中/英、浅/深四张 webp。整页装在 <code>.page</code> 里，左右留白 <code>clamp(40px, 8.333vw, 120px)</code>。",
+      "source": "packages/client/ui-settings-account/src/client/OnboardingWelcomeStep.tsx#L13",
+      "css": [
+        "packages/client/ui-settings-account/src/client/DesktopOnboarding.module.css",
+        "packages/client/ui-primitives/src/Button.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-border-l4",
+        "--dsw-alias-brand-primary",
+        "--dsw-alias-button-primary-fill",
+        "--dsw-alias-button-primary-hover",
+        "--dsw-alias-button-tool-bar-fill",
+        "--dsw-alias-button-tool-bar-hover",
+        "--dsw-alias-interactive-bg-active",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-primary-foreground",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-onboarding-accent",
+        "--dsw-alias-onboarding-card-fill",
+        "--dsw-alias-onboarding-checkbox-border",
+        "--dsw-alias-onboarding-secondary-fill",
+        "--dsw-alias-state-business-primary",
+        "--dsw-focus-ring-color",
+        "--dsw-font-family",
+        "--dsw-font-family-brand",
+        "--dsw-gradient-onboarding-blue-stops",
+        "--dsw-gradient-onboarding-cyan-stops",
+        "--dsw-gradient-onboarding-violet-stops",
+        "--dsw-mask-blur",
+        "--dsw-radius-md",
+        "--dsw-radius-sm"
+      ],
+      "specimens": [
+        {
+          "label": "欢迎页：标题 + 说明 + 240px 主按钮",
+          "note": "静态快照：插图只露出左缘，用同比例占位图代替 webp",
+          "html": "<div class=\"page\" data-desktop-onboarding=\"welcome\" lang=\"zh\" aria-labelledby=\"desktop-onboarding-title\" aria-busy=\"false\" style=\"width:1040px;height:560px\"><div class=\"content welcome\"><div class=\"copy\"><h1 id=\"desktop-onboarding-title\" tabindex=\"-1\">欢迎使用 <em class=\"brand\">DeepSeek Harness</em></h1><p class=\"heroDescription\">DeepSeek Harness 会以本地文件夹作为工作区，通过调用各种工具，读写本机文件，完成搜索整理资料、制作文档表格、编写代码、排查问题等各种任务。</p><button type=\"button\" class=\"button primary md action start\">开始设置</button></div><div class=\"welcomeIllustration\" aria-hidden=\"true\"><div class=\"illustration welcomeArtwork\" aria-hidden=\"true\"><img class=\"lightIllustration\" src=\"data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%221331%22%20height%3D%22900%22%20viewBox%3D%220%200%201331%20900%22%3E%3Crect%20x%3D%2290%22%20y%3D%2240%22%20width%3D%221180%22%20height%3D%22820%22%20rx%3D%2248%22%20fill%3D%22%23EEF2FB%22%2F%3E%3Crect%20x%3D%22150%22%20y%3D%22110%22%20width%3D%22300%22%20height%3D%2230%22%20rx%3D%2215%22%20fill%3D%22%23C9D6FF%22%2F%3E%3Crect%20x%3D%22150%22%20y%3D%22170%22%20width%3D%22620%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%23DCE3F5%22%2F%3E%3Crect%20x%3D%22150%22%20y%3D%22206%22%20width%3D%22520%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%23DCE3F5%22%2F%3E%3Crect%20x%3D%22150%22%20y%3D%22280%22%20width%3D%221060%22%20height%3D%22230%22%20rx%3D%2228%22%20fill%3D%22%23FFFFFF%22%2F%3E%3Crect%20x%3D%22196%22%20y%3D%22326%22%20width%3D%22300%22%20height%3D%2222%22%20rx%3D%2211%22%20fill%3D%22%233964FE%22%2F%3E%3Crect%20x%3D%22196%22%20y%3D%22372%22%20width%3D%22760%22%20height%3D%2216%22%20rx%3D%228%22%20fill%3D%22%23DCE3F5%22%2F%3E%3Crect%20x%3D%22196%22%20y%3D%22404%22%20width%3D%22640%22%20height%3D%2216%22%20rx%3D%228%22%20fill%3D%22%23DCE3F5%22%2F%3E%3Crect%20x%3D%22150%22%20y%3D%22560%22%20width%3D%22510%22%20height%3D%22260%22%20rx%3D%2228%22%20fill%3D%22%23FFFFFF%22%2F%3E%3Crect%20x%3D%22700%22%20y%3D%22560%22%20width%3D%22510%22%20height%3D%22260%22%20rx%3D%2228%22%20fill%3D%22%23FFFFFF%22%2F%3E%3Ccircle%20cx%3D%221120%22%20cy%3D%22660%22%20r%3D%2280%22%20fill%3D%22%23C9D6FF%22%2F%3E%3C%2Fsvg%3E\" alt=\"\"><img class=\"darkIllustration\" src=\"data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%221331%22%20height%3D%22900%22%20viewBox%3D%220%200%201331%20900%22%3E%3Crect%20x%3D%2290%22%20y%3D%2240%22%20width%3D%221180%22%20height%3D%22820%22%20rx%3D%2248%22%20fill%3D%22%23232733%22%2F%3E%3Crect%20x%3D%22150%22%20y%3D%22110%22%20width%3D%22300%22%20height%3D%2230%22%20rx%3D%2215%22%20fill%3D%22%233A4A7A%22%2F%3E%3Crect%20x%3D%22150%22%20y%3D%22170%22%20width%3D%22620%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%23333A48%22%2F%3E%3Crect%20x%3D%22150%22%20y%3D%22206%22%20width%3D%22520%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%23333A48%22%2F%3E%3Crect%20x%3D%22150%22%20y%3D%22280%22%20width%3D%221060%22%20height%3D%22230%22%20rx%3D%2228%22%20fill%3D%22%232C313C%22%2F%3E%3Crect%20x%3D%22196%22%20y%3D%22326%22%20width%3D%22300%22%20height%3D%2222%22%20rx%3D%2211%22%20fill%3D%22%236D8BFF%22%2F%3E%3Crect%20x%3D%22196%22%20y%3D%22372%22%20width%3D%22760%22%20height%3D%2216%22%20rx%3D%228%22%20fill%3D%22%23333A48%22%2F%3E%3Crect%20x%3D%22196%22%20y%3D%22404%22%20width%3D%22640%22%20height%3D%2216%22%20rx%3D%228%22%20fill%3D%22%23333A48%22%2F%3E%3Crect%20x%3D%22150%22%20y%3D%22560%22%20width%3D%22510%22%20height%3D%22260%22%20rx%3D%2228%22%20fill%3D%22%232C313C%22%2F%3E%3Crect%20x%3D%22700%22%20y%3D%22560%22%20width%3D%22510%22%20height%3D%22260%22%20rx%3D%2228%22%20fill%3D%22%232C313C%22%2F%3E%3Ccircle%20cx%3D%221120%22%20cy%3D%22660%22%20r%3D%2280%22%20fill%3D%22%233A4A7A%22%2F%3E%3C%2Fsvg%3E\" alt=\"\"></div></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "t",
+          "type": "(key: AccountKey) => string",
+          "default": "—",
+          "desc": "账号命名空间的翻译座位。"
+        },
+        {
+          "name": "locale",
+          "type": "string",
+          "default": "—",
+          "desc": "'zh' 取中文插图，其余取英文插图。"
+        },
+        {
+          "name": "heading",
+          "type": "RefObject<HTMLHeadingElement>",
+          "default": "—",
+          "desc": "标题 ref，进入本步时接收焦点。"
+        },
+        {
+          "name": "busy",
+          "type": "boolean",
+          "default": "—",
+          "desc": "引导正在加载/保存/退场时禁用「开始设置」。"
+        },
+        {
+          "name": "onStart",
+          "type": "() => void",
+          "default": "—",
+          "desc": "唯一出口：进入额度页。"
+        }
+      ],
+      "notes": "第一屏没有「上一步 / 跳过」——那两条由 DesktopOnboarding 的 <code>.navigation</code> 渲染，且只在 <code>step !== 'welcome'</code> 时出现。标题上的 <code>tabindex=\"-1\"</code> 只服务程序化聚焦。",
+      "keywords": [
+        "欢迎",
+        "首启",
+        "welcome",
+        "onboarding",
+        "开始设置"
+      ]
+    },
+    {
+      "id": "platform-overlay",
+      "name": "PlatformOverlay",
+      "exportName": "PlatformOverlay",
+      "zh": "平台视图",
+      "group": "settings",
+      "summary": "桌面端原生 Platform 页的全窗口容器（<code>createPortal</code> 到 body，<code>z-index: 1001</code>）：<code>.overlay</code> 固定铺满并涂 <code>--dsw-alias-bg-base</code>，顶部是 48px 的 <code>.header</code>（0.5px 下边框、内边距 6/16），左边 28px 高的「返回 DeepSeek Harness」按钮带 16px 左箭头，macOS 还会显示 60.667×14 的红绿灯占位。下面 <code>.viewport</code> 是 <code>flex: 1</code> 的原生视图矩形，加载中显示 24px 旋转圈，失败时换成 14/22 三级色提示 + 32px 高的「重试」按钮。",
+      "source": "packages/client/ui-settings-account/src/client/PlatformOverlay.tsx#L20",
+      "css": [
+        "packages/client/ui-settings-account/src/client/PlatformOverlay.module.css",
+        "packages/client/ui-primitives/src/Button.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-base",
+        "--dsw-alias-border-l1",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-button-primary-fill",
+        "--dsw-alias-button-primary-hover",
+        "--dsw-alias-button-tool-bar-fill",
+        "--dsw-alias-button-tool-bar-hover",
+        "--dsw-alias-interactive-bg-active",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-primary-foreground",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-radius-md",
+        "--dsw-radius-sm"
+      ],
+      "specimens": [
+        {
+          "label": "加载中：返回条 + 24px 旋转圈",
+          "note": "静态快照：原生视图区域留空，仅状态位可见",
+          "html": "<div class=\"overlay\" role=\"dialog\" aria-modal=\"true\" aria-label=\"返回 DeepSeek Harness\"><header class=\"header\" data-window-drag><div class=\"controls\"><span class=\"trafficLights\" aria-hidden=\"true\"></span><button type=\"button\" class=\"back\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M10 4L6.70711 7.29289C6.31658 7.68342 6.31658 8.31658 6.70711 8.70711L10 12\" stroke=\"currentColor\"/></svg>返回 DeepSeek Harness</button></div></header><div class=\"viewport\"><div class=\"status\" role=\"status\" aria-label=\"加载中…\"><span class=\"spinner\" aria-hidden=\"true\"></span></div></div></div>",
+          "css": "/* 静态快照：.overlay 在真实产品里是 portal 到 body 的 position: fixed; inset: 0\n   全窗口层（z-index 1001），这里拉回文档流并给出固定尺寸；原生视图矩形靠\n   .viewport 的 flex: 1 撑开。 */\n.overlay { position: relative; inset: auto; }"
+        },
+        {
+          "label": "加载失败：提示 + 重试",
+          "note": "静态快照：重试按钮走 Button outline 变体",
+          "html": "<div class=\"overlay\" role=\"dialog\" aria-modal=\"true\" aria-label=\"返回 DeepSeek Harness\"><header class=\"header\" data-window-drag><div class=\"controls\"><span class=\"trafficLights\" aria-hidden=\"true\"></span><button type=\"button\" class=\"back\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M10 4L6.70711 7.29289C6.31658 7.68342 6.31658 8.31658 6.70711 8.70711L10 12\" stroke=\"currentColor\"/></svg>返回 DeepSeek Harness</button></div></header><div class=\"viewport\"><div class=\"status\" role=\"status\"><span class=\"failure\">操作未完成，请重试</span><button type=\"button\" class=\"button outline md retry\">重试</button></div></div></div>",
+          "css": "/* 静态快照：.overlay 在真实产品里是 portal 到 body 的 position: fixed; inset: 0\n   全窗口层（z-index 1001），这里拉回文档流并给出固定尺寸；原生视图矩形靠\n   .viewport 的 flex: 1 撑开。 */\n.overlay { position: relative; inset: auto; }"
+        }
+      ],
+      "props": [
+        {
+          "name": "bridge",
+          "type": "PlatformBridge",
+          "default": "—",
+          "desc": "preload 给的非敏感命令：<code>open(page, bounds)</code> / <code>setBounds(bounds)</code> / <code>close()</code>。"
+        },
+        {
+          "name": "page",
+          "type": "'usage' | 'top-up'",
+          "default": "—",
+          "desc": "要展示的原生页面：用量页或充值页。"
+        },
+        {
+          "name": "backLabel",
+          "type": "string",
+          "default": "—",
+          "desc": "返回按钮文案，同时作为整层的 <code>aria-label</code>。"
+        },
+        {
+          "name": "loadingLabel",
+          "type": "string",
+          "default": "—",
+          "desc": "加载中状态位的无障碍标签。"
+        },
+        {
+          "name": "failureLabel",
+          "type": "string",
+          "default": "—",
+          "desc": "失败提示文案。"
+        },
+        {
+          "name": "retryLabel",
+          "type": "string",
+          "default": "—",
+          "desc": "重试按钮文案。"
+        },
+        {
+          "name": "onClose",
+          "type": "() => void",
+          "default": "—",
+          "desc": "返回：关掉原生页并通知请求方。"
+        }
+      ],
+      "notes": "<code>.viewport</code> 用 ResizeObserver 把实测矩形同步给原生子视图；挂载时把 body 除本层外的子节点设为 inert 并把焦点交给返回按钮，页面切换或重试后再交一次。Windows 上 <code>[data-windows-titlebar]</code> 命中时整层下移 <code>--dsh-windows-titlebar-height</code>，macOS 的红绿灯占位只在 <code>html[data-platform='darwin']</code> 下显示。",
+      "keywords": [
+        "平台",
+        "原生页",
+        "充值页",
+        "usage",
+        "top-up",
+        "WebContentsView"
+      ]
+    },
+    {
+      "id": "sign-out-dialog",
+      "name": "SignOutDialog",
+      "exportName": "SignOutDialog",
+      "zh": "退出登录",
+      "group": "settings",
+      "summary": "退出登录的确认弹窗，同样走 <code>Modal headless</code>：卡片 380px 宽、flex 列、gap 20 与 24px 底边距，描边 0.5px <code>--dsw-alias-border-inverted</code>。头部 22/24/12 内边距里是 16/24 的标题和 28×28 的关闭按钮（R-sm），正文 14/22 按任务状态换三种文案，失败时在正文下追加一条 <code>role=\"alert\"</code> 的错误行。底部按钮右对齐、间距 8px：「取消」是 0.5px 描边的 72×36 次按钮，「退出登录」是 72×36 主按钮，提交中两个都禁用。",
+      "source": "packages/client/ui-settings-account/src/client/SignOutDialog.tsx#L8",
+      "css": [
+        "packages/client/ui-primitives/src/Modal.module.css",
+        "packages/client/ui-settings-account/src/client/SignInDialog.module.css",
+        "packages/client/ui-primitives/src/Button.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-layer-2",
+        "--dsw-alias-bg-mask-1",
+        "--dsw-alias-border-inverted",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-button-primary-fill",
+        "--dsw-alias-button-primary-hover",
+        "--dsw-alias-button-tool-bar-fill",
+        "--dsw-alias-button-tool-bar-hover",
+        "--dsw-alias-interactive-bg-active",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-primary-foreground",
+        "--dsw-alias-label-secondary",
+        "--dsw-elevation-prominent",
+        "--dsw-mask-blur",
+        "--dsw-radius-md",
+        "--dsw-radius-panel",
+        "--dsw-radius-sm"
+      ],
+      "specimens": [
+        {
+          "label": "空闲态：不会丢数据的提示 + 取消 / 退出登录",
+          "note": "静态快照：Modal 拉回文档流",
+          "html": "<div style=\"width:460px\"><div class=\"root\" role=\"presentation\"><div class=\"mask\" aria-hidden=\"true\"></div><div class=\"c0-dialog c1-dialog\" role=\"dialog\" aria-modal=\"true\" aria-label=\"退出登录\"><div class=\"c1-content\"><div class=\"c1-header\"><h2 class=\"c1-title\">退出登录</h2><button type=\"button\" class=\"c1-close\" aria-label=\"关闭\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></div><p class=\"c1-description\">退出登录不会丢失任何数据，你仍可以登录此账号。</p></div><div class=\"actions\"><button type=\"button\" class=\"button outline md secondaryButton\">取消</button><button type=\"button\" class=\"button primary md primaryButton\">退出登录</button></div></div></div></div>",
+          "css": "/* 静态快照：Modal 的 .root 是 body 上 position: fixed; inset: 0 的全屏遮罩，\n   这里拉回文档流并保留为 .mask 的包含块；卡片同时承载 Modal(c0) 与\n   SignInDialog(c1) 两个模块的 .dialog。.content/.header/.title/.close/.description\n   在两表同名，正文部分用显式前缀 c1- 指回 SignInDialog 自己的那份。 */\n.root { position: relative; }\n.c0-dialog.c1-dialog { max-width: 100%; }"
+        },
+        {
+          "label": "有任务在跑 + 提交失败",
+          "note": "静态快照：失败行由 role=alert 追加",
+          "html": "<div style=\"width:460px\"><div class=\"root\" role=\"presentation\"><div class=\"mask\" aria-hidden=\"true\"></div><div class=\"c0-dialog c1-dialog\" role=\"dialog\" aria-modal=\"true\" aria-label=\"退出登录\"><div class=\"c1-content\"><div class=\"c1-header\"><h2 class=\"c1-title\">退出登录</h2><button type=\"button\" class=\"c1-close\" aria-label=\"关闭\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></div><p class=\"c1-description\">当前有进程正在执行中，点击“退出登录”，将会打断进程，是否即刻退出登录？</p><p class=\"c1-description\" role=\"alert\">操作未完成，请重试。</p></div><div class=\"actions\"><button type=\"button\" class=\"button outline md secondaryButton\">取消</button><button type=\"button\" class=\"button primary md primaryButton\">退出登录</button></div></div></div></div>",
+          "css": "/* 静态快照：Modal 的 .root 是 body 上 position: fixed; inset: 0 的全屏遮罩，\n   这里拉回文档流并保留为 .mask 的包含块；卡片同时承载 Modal(c0) 与\n   SignInDialog(c1) 两个模块的 .dialog。.content/.header/.title/.close/.description\n   在两表同名，正文部分用显式前缀 c1- 指回 SignInDialog 自己的那份。 */\n.root { position: relative; }\n.c0-dialog.c1-dialog { max-width: 100%; }"
+        }
+      ],
+      "props": [
+        {
+          "name": "running",
+          "type": "boolean | 'unknown'",
+          "default": "—",
+          "desc": "打开时是否有任务在跑；unknown 表示查不到状态。"
+        },
+        {
+          "name": "signOut",
+          "type": "() => Promise<void>",
+          "default": "—",
+          "desc": "执行退出；resolve 后自动关闭，reject 则停在弹窗里显示错误行。"
+        },
+        {
+          "name": "close",
+          "type": "() => void",
+          "default": "—",
+          "desc": "关闭弹窗；提交中会被拒绝。"
+        },
+        {
+          "name": "t",
+          "type": "(key: AccountKey) => string",
+          "default": "—",
+          "desc": "账号命名空间的翻译座位。"
+        }
+      ],
+      "notes": "正文三选一：<code>running === 'unknown'</code> 用「暂时无法确认任务状态」，<code>running</code> 用「当前有进程正在执行中」，否则用「退出登录不会丢失任何数据」。失败文案复用 <code>failed</code> 键，且只有 <code>signOut</code> 抛错时才出现。",
+      "keywords": [
+        "退出登录",
+        "登出",
+        "sign out",
+        "账号",
+        "确认弹窗"
+      ]
+    }
+  ]
+}

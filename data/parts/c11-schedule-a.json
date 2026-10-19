@@ -1,0 +1,794 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "id": "catalog-feedback",
+      "name": "CatalogFeedback",
+      "exportName": "CatalogFeedback",
+      "zh": "目录反馈",
+      "group": "panels",
+      "summary": "任务目录的查询状态，任务列表、任务详情与任务标签页共用：空面板加载时在 <code>.empty</code>（<code>padding:48px 20px</code>、14px、居中列）里放一个 14px 的 <code>StateDot state=\"ongoing\"</code> 转圈；空面板读取失败时换成 24px 警告字形 + 14px 标题 + 描边「重试」按钮（按钮上方 16px 间距）；面板已经有内容时降级为 12px/20px 的紧凑 <code>.notice</code> 横条（底色 <code>--dsw-specific-sidebar-fill</code>，文案占满一行、按钮靠右）。刷新加载中且已有内容时它什么都不渲染，让保留的行继续可读；删除结果不在这里播报，由全局 Toast 负责。",
+      "source": "packages/client/ui-schedule/src/client/CatalogFeedback.tsx#L31",
+      "css": [
+        "packages/client/ui-schedule/src/client/TaskManagerPage.module.css",
+        "packages/client/ui-primitives/src/StateDot.module.css",
+        "packages/client/ui-primitives/src/Button.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-label-caption",
+        "--dsw-specific-sidebar-fill",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-radius-md",
+        "--dsw-radius-sm",
+        "--dsw-focus-ring-color"
+      ],
+      "specimens": [
+        {
+          "label": "空面板：目录加载中",
+          "note": "只有这一种状态是裸转圈，没有文案；动画来自 StateDot 自己的 keyframes",
+          "html": "<div style=\"width:420px;height:200px;display:flex;flex-direction:column\"><div class=\"empty\" style=\"flex:1\" role='status' aria-label='正在加载任务'><svg class=\"spinner\" data-state='ongoing' width='14' height='14' viewBox='0 0 24 24' aria-hidden='true'><g class=\"spinnerMotion\"><circle class=\"spinnerTrack\" cx='12' cy='12' r='9.5'></circle><circle class=\"spinnerArc\" cx='12' cy='12' r='9.5'></circle></g></svg></div></div>"
+        },
+        {
+          "label": "空面板：目录读取失败（居中警告 + 重试）",
+          "note": "status='error' 且 populated=false；按钮是 <code>Button variant=\"outline\"</code> 的默认 36px 尺寸",
+          "html": "<div style=\"width:420px;height:220px;display:flex;flex-direction:column\"><div class=\"empty\" style=\"flex:1\"><svg class=\"emptyGlyph\" width='24' height='24' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M8 14.5C11.5899 14.5 14.5 11.5899 14.5 8C14.5 4.41015 11.5899 1.5 8 1.5C4.41015 1.5 1.5 4.41015 1.5 8C1.5 11.5899 4.41015 14.5 8 14.5Z' stroke='currentColor'/><path d='M8 4.29199V9.79199' stroke='currentColor'/><path d='M8 10.708V11.708' stroke='currentColor'/></svg><p role='alert' class=\"emptyTitle\">无法加载任务</p><button type='button' class=\"button outline md emptyAction\">重试</button></div></div>"
+        },
+        {
+          "label": "已有内容时刷新失败：12px 紧凑横条",
+          "note": "status='error' 且 populated=true；保留的行仍在下面，横条只是叠在上面的一条通知",
+          "html": "<div style=\"width:420px\"><div class=\"notice\"><p role='alert'>无法加载任务</p><button type='button' class=\"button outline sm\">重试</button></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "status",
+          "type": "'loading' | 'ready' | 'error'",
+          "default": "—",
+          "desc": "目录的查询状态：loading 与 error 各渲染自己的状态，ready 不渲染任何东西。"
+        },
+        {
+          "name": "populated",
+          "type": "boolean",
+          "default": "—",
+          "desc": "面板上是否已经有目录内容：true 时失败降级为紧凑横条、刷新加载静默；false 时状态在整块高度里居中。"
+        },
+        {
+          "name": "onRetry",
+          "type": "() => Promise<void>",
+          "default": "—",
+          "desc": "重新读取目录；两个「重试」按钮都调用它，返回值被 void 掉。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'schedule.manager'>",
+          "default": "—",
+          "desc": "schedule.manager 词典：list.loading / list.error / list.retry。"
+        }
+      ],
+      "notes": "状态矩阵：loading + 未填充 → 居中转圈；error + 未填充 → 居中失败块；error + 已填充 → 紧凑横条；loading + 已填充 或 ready → 返回空 fragment。组件自身没有外壳、没有最小高度，尺寸完全由父级决定（任务页列表栏、任务详情、标签页的 <code>.tabBody</code>）。这条与 <code>DeliveryHistory</code> 的内部状态是同一套写法，区别是投递记录把「空」也画成自己的空态，而任务目录把「空」交给列表页。",
+      "keywords": [
+        "目录状态",
+        "加载失败",
+        "空态",
+        "catalog loading",
+        "retry",
+        "任务目录"
+      ]
+    },
+    {
+      "id": "date-picker",
+      "name": "DatePicker",
+      "exportName": "DatePicker",
+      "zh": "日期选择",
+      "group": "panels",
+      "summary": "一次性日期的月历面板，由共享 <code>PickerPopover</code> 门户渲染：面板 <code>position:fixed</code>、16px 圆角、菜单材质，内容 <code>.calendar</code> 宽 232px、8px 内边距、4px 行距。标题行是 26×26 的两个翻月按钮夹一个 13px 居中的月份名；下面是 7 列网格（行内 <code>gap:2px</code>），星期表头 22px 高、11px tertiary，日期格 28px 高、8px 圆角、13px 等宽数字。今天用 0.5px 内发丝环标记（<code>[aria-current='date']</code>），已暂存的那天用 <code>--dsw-alias-button-ghost-active-fill</code> 填充 + 1px 内描边，悬停换 <code>--dsw-alias-interactive-bg-hover</code>，<code>:focus-visible</code> 是 2px 品牌色内描边。",
+      "source": "packages/client/ui-schedule/src/client/DatePicker.tsx#L118",
+      "css": [
+        "packages/client/ui-schedule/src/client/DatePicker.module.css",
+        "packages/client/ui-schedule/src/client/PickerPopover.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-button-ghost-active-fill",
+        "--dsw-alias-button-ghost-active-border",
+        "--dsw-alias-state-business-primary",
+        "--dsw-focus-ring-color",
+        "--dsw-specific-menu",
+        "--dsw-menu-backdrop-filter",
+        "--dsw-alias-border-l1",
+        "--dsw-elevation-prominent",
+        "--dsw-alias-scrollbar-bg-l2",
+        "--dsw-alias-scrollbar-hover-l2"
+      ],
+      "specimens": [
+        {
+          "label": "2026 年 10 月：今天（19 日）与暂存日（20 日）",
+          "note": "静态快照：今天只有 0.5px 发丝环，暂存日是填充 + 1px 内描边",
+          "bg": "platform",
+          "pad": "lg",
+          "css": "/* 静态快照：面板真实由 PickerPopover 用 createPortal 挂到 body，position:fixed 且坐标由 useAnchoredPosition 写入；这里把 .panel 拉回文档流（relative + inset:auto 仍留作 .mask 类子层的包含块），16px 圆角、菜单材质、232px 宽度与网格尺寸都走真实样式表。 */\n.panel.snapshotStatic { position: relative; inset: auto; }",
+          "html": "<div class=\"panel calendar snapshotStatic\" role='dialog' aria-label='日期'><div class=\"head\"><button type='button' class=\"nav\" aria-label='上个月'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M10 4L6.70711 7.29289C6.31658 7.68342 6.31658 8.31658 6.70711 8.70711L10 12' stroke='currentColor'/></svg></button><span class=\"title\" aria-live='polite'>2026年10月</span><button type='button' class=\"nav\" aria-label='下个月'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4' stroke='currentColor'/></svg></button></div><div class=\"grid\" role='grid' aria-label='2026年10月'><div role='row' class=\"week\"><div role='columnheader' class=\"weekday\">一</div><div role='columnheader' class=\"weekday\">二</div><div role='columnheader' class=\"weekday\">三</div><div role='columnheader' class=\"weekday\">四</div><div role='columnheader' class=\"weekday\">五</div><div role='columnheader' class=\"weekday\">六</div><div role='columnheader' class=\"weekday\">日</div></div><div role='row' class=\"week\"><div role='gridcell' aria-hidden='true' class=\"blank\"></div><div role='gridcell' aria-hidden='true' class=\"blank\"></div><div role='gridcell' aria-hidden='true' class=\"blank\"></div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">1</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">2</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">3</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">4</div></div><div role='row' class=\"week\"><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">5</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">6</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">7</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">8</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">9</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">10</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">11</div></div><div role='row' class=\"week\"><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">12</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">13</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">14</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">15</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">16</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">17</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">18</div></div><div role='row' class=\"week\"><div role='gridcell' aria-selected='false' aria-current='date' tabindex='-1' class=\"cell\">19</div><div role='gridcell' aria-selected='true' tabindex='0' class=\"cell selected\">20</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">21</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">22</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">23</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">24</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">25</div></div><div role='row' class=\"week\"><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">26</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">27</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">28</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">29</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">30</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">31</div><div role='gridcell' aria-hidden='true' class=\"blank\"></div></div></div></div>"
+        },
+        {
+          "label": "悬停与键盘焦点",
+          "note": "悬停模拟 / 焦点模拟：打开时键盘落在暂存日（tabIndex=0），所以焦点格就是 20 日",
+          "bg": "platform",
+          "pad": "lg",
+          "css": "/* 状态模拟：:hover 与 :focus-visible 无法静态触发，这里把 DatePicker.module.css 里 .cell:hover / .cell:focus-visible / .nav:hover 的规则原样搬到 .forceHover / .forceFocus 上；面板仍按上面的静态快照拉回文档流。 */\n.panel.snapshotStatic { position: relative; inset: auto; }\n.cell.forceHover { background: var(--dsw-alias-interactive-bg-hover); }\n.cell.forceFocus { outline: 2px solid var(--dsw-focus-ring-color, var(--dsw-alias-state-business-primary)); outline-offset: -2px; }\n.nav.forceHover { background: var(--dsw-alias-interactive-bg-hover); }",
+          "html": "<div class=\"panel calendar snapshotStatic\" role='dialog' aria-label='日期'><div class=\"head\"><button type='button' class=\"nav\" aria-label='上个月'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M10 4L6.70711 7.29289C6.31658 7.68342 6.31658 8.31658 6.70711 8.70711L10 12' stroke='currentColor'/></svg></button><span class=\"title\" aria-live='polite'>2026年10月</span><button type='button' class=\"nav forceHover\" aria-label='下个月'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4' stroke='currentColor'/></svg></button></div><div class=\"grid\" role='grid' aria-label='2026年10月'><div role='row' class=\"week\"><div role='columnheader' class=\"weekday\">一</div><div role='columnheader' class=\"weekday\">二</div><div role='columnheader' class=\"weekday\">三</div><div role='columnheader' class=\"weekday\">四</div><div role='columnheader' class=\"weekday\">五</div><div role='columnheader' class=\"weekday\">六</div><div role='columnheader' class=\"weekday\">日</div></div><div role='row' class=\"week\"><div role='gridcell' aria-hidden='true' class=\"blank\"></div><div role='gridcell' aria-hidden='true' class=\"blank\"></div><div role='gridcell' aria-hidden='true' class=\"blank\"></div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">1</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">2</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">3</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">4</div></div><div role='row' class=\"week\"><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">5</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">6</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">7</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">8</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">9</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">10</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">11</div></div><div role='row' class=\"week\"><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">12</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">13</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">14</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">15</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">16</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">17</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">18</div></div><div role='row' class=\"week\"><div role='gridcell' aria-selected='false' aria-current='date' tabindex='-1' class=\"cell\">19</div><div role='gridcell' aria-selected='true' tabindex='0' class=\"cell selected forceFocus\">20</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">21</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">22</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell forceHover\">23</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">24</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">25</div></div><div role='row' class=\"week\"><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">26</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">27</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">28</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">29</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">30</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">31</div><div role='gridcell' aria-hidden='true' class=\"blank\"></div></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "open",
+          "type": "boolean",
+          "default": "—",
+          "desc": "面板是否显示；关闭时返回 null，不渲染门户。"
+        },
+        {
+          "name": "anchorRef",
+          "type": "RefObject<HTMLButtonElement | null>",
+          "default": "—",
+          "desc": "行的只读日期按钮：既是面板的锚点，也算面板的内侧（点它不触发外部点击关闭）。"
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "default": "—",
+          "desc": "暂存的 ISO 日期 <code>YYYY-MM-DD</code>；不成形时视图回到今天，选中标记也随之落空。"
+        },
+        {
+          "name": "onPick",
+          "type": "(date: string) => void",
+          "default": "—",
+          "desc": "拾取一天，回写 ISO 文本；只改暂存草稿，落库仍由行上的保存决定。"
+        },
+        {
+          "name": "onClose",
+          "type": "() => void",
+          "default": "—",
+          "desc": "关闭面板；行的 Escape 守卫负责把焦点还给那一行。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'schedule.manager'>",
+          "default": "—",
+          "desc": "schedule.manager 词典：面板名（timing.date）、上/下个月、七个星期名与 <code>time.locale</code>。"
+        }
+      ],
+      "notes": "面板只画月历：行的只读触发器显示 <code>YYYY/MM/DD</code>，暂存草稿存 ISO 文本。打开时视图回到暂存日，并把键盘焦点放到那天（唯一 <code>tabIndex=0</code> 的格子）；方向键在月内走位（左右 ±1 天、上下 ±7 天，越界夹到本月边界），Enter / 空格拾取，翻月时同日夹到月末。月名用 <code>Intl.DateTimeFormat</code> 的 UTC 时区生成，所以面板不会随浏览器时区漂移；网格补白格是 <code>aria-hidden</code> 的 <code>.blank</code>，只有 28px 高、没有圆角与指针。",
+      "keywords": [
+        "月历",
+        "日期选择",
+        "calendar",
+        "month grid",
+        "date picker",
+        "翻月"
+      ]
+    },
+    {
+      "id": "schedule-delete-toast",
+      "name": "ScheduleDeleteToast",
+      "exportName": "ScheduleDeleteToast",
+      "zh": "删除提示",
+      "group": "panels",
+      "summary": "删除任务的全局结果横幅，注册在 <code>shell.overlay</code>：成功走 <code>Toast tone=\"success\"</code>（自带 16px 绿色对勾），失败传 <code>IconWarningOutlineRegular</code> 走默认的警告色图标槽。横幅是 12px 16px 内边距、<code>--dsw-radius-lg</code> 圆角、浅深色主题都一样的深色 <code>--dsw-alias-toast-bg</code> 表面，14px/22px 文字，<code>top:40px</code> 居中、<code>z-index:1100</code>，且不吃指针事件。默认满透明度保持 3 秒后淡出 1 秒，淡出结束由 <code>onDone</code> 调 <code>dismiss</code> 卸载。",
+      "source": "packages/client/ui-schedule/src/client/DeleteToast.tsx#L77",
+      "css": [
+        "packages/client/ui-primitives/src/Toast.module.css"
+      ],
+      "tokens": [
+        "--dsw-radius-lg",
+        "--dsw-alias-toast-bg",
+        "--dsw-alias-toast-label",
+        "--dsw-shadow-lv3",
+        "--dsw-alias-state-warn-label",
+        "--dsw-alias-state-success-primary"
+      ],
+      "specimens": [
+        {
+          "label": "删除成功：tone=\"success\"",
+          "note": "静态快照：取消 fixed 定位与自动淡出；成功态的图标由 Toast 自己给，不走 icon 槽",
+          "html": "<div style=\"width:520px\"><div class=\"toast snapshotStatic\" role='alert' style=\"--dsh-toast-hold:3000ms\"><span class=\"icon success\" aria-hidden='true'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M12.5303 6.53027L8.80273 10.2578C8.54967 10.5109 8.31796 10.7439 8.10645 10.9141C7.88375 11.0932 7.616 11.2602 7.27344 11.3145C7.09229 11.3431 6.90771 11.3431 6.72656 11.3145C6.384 11.2602 6.11625 11.0932 5.89355 10.9141C5.68204 10.7439 5.45033 10.5109 5.19727 10.2578L3.46973 8.53027L4.53027 7.46973L6.25781 9.19727C6.53457 9.47402 6.70036 9.63859 6.83398 9.74609C6.95637 9.84453 6.98241 9.83644 6.96094 9.83301C6.98679 9.83709 7.01321 9.83709 7.03906 9.83301C7.01759 9.83644 7.04363 9.84453 7.16602 9.74609C7.29964 9.63859 7.46543 9.47402 7.74219 9.19727L11.4697 5.46973L12.5303 6.53027Z' fill='currentColor'/><path d='M14.5996 8C14.5996 4.35492 11.6451 1.40039 8 1.40039C4.35492 1.40039 1.40039 4.35492 1.40039 8C1.40039 11.6451 4.35492 14.5996 8 14.5996C11.6451 14.5996 14.5996 11.6451 14.5996 8ZM15.9004 8C15.9004 12.363 12.363 15.9004 8 15.9004C3.63695 15.9004 0.0996094 12.363 0.0996094 8C0.0996094 3.63695 3.63695 0.0996094 8 0.0996094C12.363 0.0996094 15.9004 3.63695 15.9004 8Z' fill='currentColor'/></svg></span><span class=\"text\">任务已删除</span></div></div>",
+          "css": "/* 静态快照：横幅真实由 Toast 用 createPortal 挂到 body，position:fixed 居中，并带 160ms 滑入 + 保持后 1s 淡出的动画；这里把定位拉回文档流并停掉动画，让它在示例框里保持可见，尺寸与配色仍走真实样式。 */\n.toast.snapshotStatic { position: relative; inset: auto; transform: none; animation: none; }"
+        },
+        {
+          "label": "删除失败：默认警告图标",
+          "note": "静态快照：不带 tone，图标槽换成 16px 警告字形，颜色取 --dsw-alias-state-warn-label",
+          "html": "<div style=\"width:520px\"><div class=\"toast snapshotStatic\" role='alert'><span class=\"icon\" aria-hidden='true'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M8 14.5C11.5899 14.5 14.5 11.5899 14.5 8C14.5 4.41015 11.5899 1.5 8 1.5C4.41015 1.5 1.5 4.41015 1.5 8C1.5 11.5899 4.41015 14.5 8 14.5Z' stroke='currentColor'/><path d='M8 4.29199V9.79199' stroke='currentColor'/><path d='M8 10.708V11.708' stroke='currentColor'/></svg></span><span class=\"text\">无法删除任务</span></div></div>",
+          "css": "/* 静态快照：同上一例，取消 fixed 定位与自动淡出。 */\n.toast.snapshotStatic { position: relative; inset: auto; transform: none; animation: none; }"
+        }
+      ],
+      "props": [
+        {
+          "name": "useToast",
+          "type": "HostObservable<DeleteToastState | null>",
+          "default": "—",
+          "desc": "注入的 hooks 舱位，渲染器绑定为 useToast：当前要显示的删除结果与它的 <code>seq</code>；为 null 时整条不渲染。"
+        },
+        {
+          "name": "dismiss",
+          "type": "() => void",
+          "default": "—",
+          "desc": "淡出结束后清空这条通知（由 Toast 的 onDone 调用）。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'schedule.manager'>",
+          "default": "—",
+          "desc": "schedule.manager 词典：toast.deleted / toast.deleteFailed。"
+        }
+      ],
+      "notes": "这个文件导出三样东西：状态类型、<code>createDeleteToastSource()</code>（一个 observable store，带 <code>report</code> / <code>dismiss</code>），以及注册在 <code>shell.overlay</code> 的渲染组件。三个删除入口（任务页、会话任务标签页、会话头部提醒浮层）都往同一个 store 里 <code>report</code>，所以结果不会随请求它的面板或标签页卸载而消失；<code>outcome === 'pending'</code> 不播报（在途的那次删除会报自己的结果）。每次显示都把 <code>seq</code> 递增并作为 <code>key</code>，重放同一条文案也会重新计时。<code>tone=\"success\"</code> 时传进来的 <code>icon</code> 会被忽略。",
+      "keywords": [
+        "删除结果",
+        "toast",
+        "横幅",
+        "shell overlay",
+        "删除提示"
+      ]
+    },
+    {
+      "id": "delivery-history",
+      "name": "DeliveryHistory",
+      "exportName": "DeliveryHistory",
+      "zh": "运行记录",
+      "group": "panels",
+      "summary": "任务的历史运行记录列表，挂在任务详情栏里：外层 <code>.deliveryHistory</code> 是 flex 列，主体 <code>.detailScroll</code> 自己滚动（<code>24px var(--detail-gutter) 28px</code> 内边距、9px 滚动条）。一条记录是 14px/22px 的一行：左侧 16px 时钟字形，右侧第一行是 500 字重的时间戳（月、日、时:分，不在今年才补年份），下面是 13px/22px 的指令原文，超过两行折叠并给一个 12px 的「展开 / 收起」小按钮；多条记录之间用 0.5px 竖线串成时间轴（首条不留上段、末条不留末段）。「加载更多」是 36px 高的描边按钮；全部翻完且更早记录被清理时，页脚换成 12px 的清理说明加一个 24×24 的「保留规则」信息按钮，点开是 12px 14px 内边距的规则卡片。",
+      "source": "packages/client/ui-schedule/src/client/DeliveryHistory.tsx#L70",
+      "css": [
+        "packages/client/ui-schedule/src/client/TaskManagerPage.module.css",
+        "packages/client/ui-primitives/src/Button.module.css",
+        "packages/client/ui-primitives/src/StateDot.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-bg-layer-1",
+        "--dsw-specific-sidebar-fill",
+        "--dsw-alias-scrollbar-bg-l2",
+        "--dsw-alias-scrollbar-hover-l2",
+        "--dsw-radius-sm",
+        "--dsw-radius-md",
+        "--dsw-focus-ring-color"
+      ],
+      "specimens": [
+        {
+          "label": "还有更早的页：折叠 / 已展开的指令 + 「加载更多」",
+          "note": "折叠态才会出现「展开」按钮：它只在文本真的被两行截断时渲染",
+          "html": "<div class=\"detail\" style=\"width:520px;height:400px\"><div class=\"deliveryHistory\"><div class=\"detailScroll\"><section class=\"delivery\" aria-label='已保存的任务运行记录'><svg class=\"deliveryGlyph\" width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z' stroke='currentColor'/><path d='M8 4.31V8.46L11 10.08' stroke='currentColor'/></svg><div class=\"deliveryBody\"><div class=\"deliveryHead\"><time class=\"deliveryTime\" datetime='2026-10-19T09:30:00+08:00'>10月19日 09:30</time></div><p class=\"savedPrompt\" id='delivery-prompt-collapsed'>检查 packages/client/ui-schedule 下的回归用例，把失败的用例名与错误摘要贴回会话，并附上 pnpm test 输出的末尾 40 行；如果失败来自浏览器插件用例，再补一份 playwright 的 trace 摘要。</p><button type='button' class=\"savedPromptToggle\" aria-expanded='false' aria-controls='delivery-prompt-collapsed'>展开 <svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button></div></section><section class=\"delivery\" aria-label='已保存的任务运行记录'><svg class=\"deliveryGlyph\" width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z' stroke='currentColor'/><path d='M8 4.31V8.46L11 10.08' stroke='currentColor'/></svg><div class=\"deliveryBody\"><div class=\"deliveryHead\"><time class=\"deliveryTime\" datetime='2026-10-18T21:00:00+08:00'>10月18日 21:00</time></div><p class=\"savedPrompt\" id='delivery-prompt-expanded' data-expanded>运行 pnpm test --filter ui-schedule，把失败的用例按文件分组整理成一份清单，标注每条失败的首个错误堆栈，并把终端输出的最后 20 行一并贴出来。</p><button type='button' class=\"savedPromptToggle\" aria-expanded='true' aria-controls='delivery-prompt-expanded'>收起 <svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10' stroke='currentColor'/></svg></button></div></section><button type='button' class=\"button outline md\">加载更多</button></div></div></div>"
+        },
+        {
+          "label": "已翻到底：更早记录被清理 + 展开的保留规则",
+          "note": "页脚只在「还有记录、已无更早的页、不在加载、也没失败」时出现，所以它和「加载更多」不同时存在",
+          "html": "<div class=\"detail\" style=\"width:520px;height:360px\"><div class=\"deliveryHistory\"><div class=\"detailScroll\"><section class=\"delivery\" aria-label='已保存的任务运行记录'><svg class=\"deliveryGlyph\" width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z' stroke='currentColor'/><path d='M8 4.31V8.46L11 10.08' stroke='currentColor'/></svg><div class=\"deliveryBody\"><div class=\"deliveryHead\"><time class=\"deliveryTime\" datetime='2026-10-19T09:30:00+08:00'>10月19日 09:30</time></div><p class=\"savedPrompt\" id='delivery-prompt-single'>运行 pnpm test --filter ui-schedule，把失败的用例名整理成一份清单。</p></div></section></div><footer class=\"retentionEnd\"><div class=\"retentionLine\"><span>更早的运行记录已清理</span><button type='button' class=\"retentionInfo\" aria-label='保留规则' aria-expanded='true' aria-controls='delivery-retention'><svg width='14' height='14' viewBox='0 0 14 14' fill='none' aria-hidden='true'><path d='M12.5757 7.00012C12.5757 3.92085 10.0794 1.42463 7.00012 1.42456C3.9208 1.42456 1.42456 3.9208 1.42456 7.00012C1.42463 10.0794 3.92085 12.5757 7.00012 12.5757C10.0793 12.5756 12.5756 10.0793 12.5757 7.00012ZM13.8002 7.00012C13.8001 10.7559 10.7559 13.8001 7.00012 13.8002C3.2443 13.8002 0.199291 10.7559 0.199219 7.00012C0.199219 3.24426 3.24426 0.199219 7.00012 0.199219C10.7559 0.199291 13.8002 3.2443 13.8002 7.00012Z' fill='currentColor'/><path d='M7.6127 3.18921V4.55986H6.38735V3.18921H7.6127Z' fill='currentColor'/><path d='M7.6127 5.68921V10.8109H6.38735V5.68921H7.6127Z' fill='currentColor'/></svg></button></div><div id='delivery-retention' class=\"retentionRule\"><p>每个任务最多保留近 30 天内的 200 条运行记录。</p><p>产生新记录时，超出范围的旧记录会自动清理。清理记录不影响任务继续运行。</p></div></footer></div></div>"
+        },
+        {
+          "label": "空态：还没有运行记录",
+          "note": "加载中用的是同一个 .empty，内容换成 14px 的 StateDot 转圈",
+          "html": "<div class=\"detail\" style=\"width:520px;height:260px\"><div class=\"deliveryHistory\"><div class=\"detailScroll\"><div class=\"empty\" role='status'><svg class=\"emptyGlyph\" width='24' height='24' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z' stroke='currentColor'/><path d='M8 4.31V8.46L11 10.08' stroke='currentColor'/></svg><h3>暂无任务运行记录</h3></div></div></div></div>"
+        },
+        {
+          "label": "已有记录时刷新失败：紧凑横条，保留旧记录",
+          "note": "游标失效（delivery.cursorError）时按钮文案是「刷新」，普通失败是「重试」",
+          "html": "<div class=\"detail\" style=\"width:520px;height:320px\"><div class=\"deliveryHistory\"><div class=\"detailScroll\"><div class=\"notice\"><p role='alert'>无法加载任务运行记录</p><button type='button' class=\"button outline sm\">重试</button></div><section class=\"delivery\" aria-label='已保存的任务运行记录'><svg class=\"deliveryGlyph\" width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z' stroke='currentColor'/><path d='M8 4.31V8.46L11 10.08' stroke='currentColor'/></svg><div class=\"deliveryBody\"><div class=\"deliveryHead\"><time class=\"deliveryTime\" datetime='2026-10-19T09:30:00+08:00'>10月19日 09:30</time></div><p class=\"savedPrompt\" id='delivery-prompt-retained'>运行 pnpm test --filter ui-schedule，把失败的用例名整理成一份清单。</p></div></section></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "id",
+          "type": "ScheduleDeliveryHistoryRequest['id']",
+          "default": "—",
+          "desc": "任务 id；每次读取都带上它，所以永远不会误开或激活原会话。"
+        },
+        {
+          "name": "sessionId",
+          "type": "ScheduleDeliveryHistoryRequest['sessionId']",
+          "default": "—",
+          "desc": "任务绑定会话 id，与 id 一起构成精确读取的键。"
+        },
+        {
+          "name": "latestMessageId",
+          "type": "ScheduleDeliveryHistoryRequest['before']",
+          "default": "—",
+          "desc": "最新一条投递的消息 id：它一变就重读第一页（旧的在途结果按 epoch 作废）。"
+        },
+        {
+          "name": "timeZone",
+          "type": "string | undefined",
+          "default": "undefined",
+          "desc": "任务规则自己的 IANA 时区；单次或间隔任务不传，时间戳就按浏览器时区显示。"
+        },
+        {
+          "name": "loadHistory",
+          "type": "(request: ScheduleDeliveryHistoryRequest) => Promise<RemoteResult<ScheduleDeliveryHistoryResult>>",
+          "default": "—",
+          "desc": "读取一页最新优先的记录（父级固定 <code>limit:20</code>，翻页带 <code>before</code> 游标）。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'schedule.manager'>",
+          "default": "—",
+          "desc": "schedule.manager 词典：delivery.* 的加载、失败、空态、展开/收起、保留规则文案。"
+        }
+      ],
+      "notes": "每页固定 20 条，用 <code>before</code> 游标往后翻，结果按 <code>messageId</code> 去重后再追加；一次只允许一个在途请求，刷新会把更早的页作废（<code>epoch</code> 序号），卸载时两个迟到结果都被忽略。失败且有记录 → 12px 紧凑横条，失败且没有记录 → 居中的 24px 警告 + 「重试」（那一段是 <code>CatalogFeedback</code> 的同款写法，本条目只演示前一种）。「展开 / 收起」只在文本真的被两行截断时才渲染，用 <code>ResizeObserver</code> 量 <code>scrollHeight &gt; clientHeight</code>，展开后不再量，折叠回去才恢复。页脚的信息按钮本身由 <code>Tooltip</code> 门户渲染气泡，静态快照里展示的是点开后的规则文本。",
+      "keywords": [
+        "投递记录",
+        "运行历史",
+        "delivery history",
+        "分页",
+        "保留规则",
+        "加载更多"
+      ]
+    },
+    {
+      "id": "picker-popover",
+      "name": "PickerPopover",
+      "exportName": "PickerPopover",
+      "zh": "选择浮层",
+      "group": "panels",
+      "summary": "所有时间选择器共用的浮层外壳：<code>createPortal</code> 到 <code>document.body</code>，<code>position:fixed</code>、<code>z-index:1100</code>、16px 圆角、<code>--dsw-specific-menu</code> 菜单材质配 <code>--dsw-menu-backdrop-filter</code> 与 <code>--dsw-elevation-prominent</code> 阴影，滚动条也换成菜单用的 l2 滑槽。它只画这一层卡片：卡片内部的排布由调用方通过 <code>className</code> 传进来的布局类决定（<code>DatePicker</code> 传 <code>.calendar</code>、<code>ClockPicker</code> 传 <code>.clock</code>），内容就是 <code>children</code>。锚定与关闭也归它：未测量前用 <code>visibility:hidden</code> 挂在视口原点，测量后把坐标写进 <code>top/left</code>。",
+      "source": "packages/client/ui-schedule/src/client/PickerPopover.tsx#L37",
+      "css": [
+        "packages/client/ui-schedule/src/client/PickerPopover.module.css",
+        "packages/client/ui-schedule/src/client/DatePicker.module.css",
+        "packages/client/ui-schedule/src/client/ClockPicker.module.css"
+      ],
+      "tokens": [
+        "--dsw-specific-menu",
+        "--dsw-menu-backdrop-filter",
+        "--dsw-alias-border-l1",
+        "--dsw-elevation-prominent",
+        "--dsw-alias-scrollbar-bg-l2",
+        "--dsw-alias-scrollbar-hover-l2",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-button-ghost-active-fill",
+        "--dsw-alias-button-ghost-active-border",
+        "--dsw-alias-state-business-primary",
+        "--dsw-focus-ring-color"
+      ],
+      "specimens": [
+        {
+          "label": "装日期面板：className=.calendar",
+          "note": "静态快照：门户卡片拉回文档流；日期格的选中态用 c1-selected 钉到 DatePicker 那张表",
+          "bg": "platform",
+          "pad": "lg",
+          "css": "/* 静态快照：面板真实由 createPortal 挂到 body，position:fixed 且坐标由 useAnchoredPosition 写入；这里把它拉回文档流（relative + inset:auto 仍然留住包含块），菜单材质、16px 圆角与内部布局都走真实样式表。 */\n.panel.snapshotStatic { position: relative; inset: auto; }",
+          "html": "<div class=\"panel calendar snapshotStatic\" role='dialog' aria-label='日期'><div class=\"head\"><button type='button' class=\"nav\" aria-label='上个月'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M10 4L6.70711 7.29289C6.31658 7.68342 6.31658 8.31658 6.70711 8.70711L10 12' stroke='currentColor'/></svg></button><span class=\"title\" aria-live='polite'>2026年10月</span><button type='button' class=\"nav\" aria-label='下个月'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4' stroke='currentColor'/></svg></button></div><div class=\"grid\" role='grid' aria-label='2026年10月'><div role='row' class=\"week\"><div role='columnheader' class=\"weekday\">一</div><div role='columnheader' class=\"weekday\">二</div><div role='columnheader' class=\"weekday\">三</div><div role='columnheader' class=\"weekday\">四</div><div role='columnheader' class=\"weekday\">五</div><div role='columnheader' class=\"weekday\">六</div><div role='columnheader' class=\"weekday\">日</div></div><div role='row' class=\"week\"><div role='gridcell' aria-hidden='true' class=\"blank\"></div><div role='gridcell' aria-hidden='true' class=\"blank\"></div><div role='gridcell' aria-hidden='true' class=\"blank\"></div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">1</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">2</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">3</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">4</div></div><div role='row' class=\"week\"><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">5</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">6</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">7</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">8</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">9</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">10</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">11</div></div><div role='row' class=\"week\"><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">12</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">13</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">14</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">15</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">16</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">17</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">18</div></div><div role='row' class=\"week\"><div role='gridcell' aria-selected='false' aria-current='date' tabindex='-1' class=\"cell\">19</div><div role='gridcell' aria-selected='true' tabindex='0' class=\"cell c1-selected\">20</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">21</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">22</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">23</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">24</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">25</div></div><div role='row' class=\"week\"><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">26</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">27</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">28</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">29</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">30</div><div role='gridcell' aria-selected='false' tabindex='-1' class=\"cell\">31</div><div role='gridcell' aria-hidden='true' class=\"blank\"></div></div></div></div>"
+        },
+        {
+          "label": "装时钟列：className=.clock",
+          "note": "同一个外壳换成三列滚动时钟；列里的选中态用 c2-selected 钉到 ClockPicker 那张表",
+          "bg": "platform",
+          "pad": "lg",
+          "css": "/* 静态快照：门户卡片拉回文档流，同上一例；两处 .selected 分属 DatePicker 与 ClockPicker，示例用显式前缀把它们钉到各自的样式表。 */\n.panel.snapshotStatic { position: relative; inset: auto; }",
+          "html": "<div class=\"panel clock snapshotStatic\" role='dialog' aria-label='时间'><div class=\"column\" role='listbox' aria-label='时'><div class=\"option\" role='option' aria-selected='false' tabindex='-1'>08</div><div class=\"option c2-selected\" role='option' aria-selected='true' tabindex='0'>09</div><div class=\"option\" role='option' aria-selected='false' tabindex='-1'>10</div><div class=\"option\" role='option' aria-selected='false' tabindex='-1'>11</div><div class=\"option\" role='option' aria-selected='false' tabindex='-1'>12</div><div class=\"option\" role='option' aria-selected='false' tabindex='-1'>13</div></div><div class=\"column\" role='listbox' aria-label='分'><div class=\"option\" role='option' aria-selected='false' tabindex='-1'>28</div><div class=\"option\" role='option' aria-selected='false' tabindex='-1'>29</div><div class=\"option c2-selected\" role='option' aria-selected='true' tabindex='0'>30</div><div class=\"option\" role='option' aria-selected='false' tabindex='-1'>31</div><div class=\"option\" role='option' aria-selected='false' tabindex='-1'>32</div><div class=\"option\" role='option' aria-selected='false' tabindex='-1'>33</div></div><div class=\"column\" role='listbox' aria-label='秒'><div class=\"option c2-selected\" role='option' aria-selected='true' tabindex='0'>00</div><div class=\"option\" role='option' aria-selected='false' tabindex='-1'>01</div><div class=\"option\" role='option' aria-selected='false' tabindex='-1'>02</div><div class=\"option\" role='option' aria-selected='false' tabindex='-1'>03</div><div class=\"option\" role='option' aria-selected='false' tabindex='-1'>04</div><div class=\"option\" role='option' aria-selected='false' tabindex='-1'>05</div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "open",
+          "type": "boolean",
+          "default": "—",
+          "desc": "面板是否挂载；关闭时返回 null，连门户一起撤掉。"
+        },
+        {
+          "name": "anchorRef",
+          "type": "RefObject<HTMLElement | null>",
+          "default": "—",
+          "desc": "锚点元素（行的只读触发器）：面板贴在它下面，同时它也算面板的内侧。"
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "default": "—",
+          "desc": "面板的无障碍名，写在 <code>role=\"dialog\"</code> 的 <code>aria-label</code> 上（例如「日期」「时间」）。"
+        },
+        {
+          "name": "className",
+          "type": "string | undefined",
+          "default": "—",
+          "desc": "调用方自己的布局类，与 <code>.panel</code> 拼在一起：<code>.calendar</code> 是 232px 的月历列，<code>.clock</code> 是三列横向时钟。"
+        },
+        {
+          "name": "onClose",
+          "type": "() => void",
+          "default": "—",
+          "desc": "外部 pointerdown 触发的关闭回调；Escape 由打开它的那一行自己处理。"
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "default": "—",
+          "desc": "选择器的列或月网格；面板只提供卡片与定位，不参与内容排版。"
+        }
+      ],
+      "notes": "面板是 <code>role=\"dialog\"</code>，打开它的行声明 <code>aria-haspopup=\"dialog\"</code>；<code>useDismissOnOutsidePointer</code> 把触发器和面板都算作内侧，所以点触发器不会被当成外部点击，而面板内部的点击还会 <code>stopPropagation</code>，避免事件冒泡回那一行（门户里的 React 事件仍沿 React 树冒泡）。定位参数是 <code>gap:4</code>、<code>margin:12</code>，由 <code>useAnchoredPosition</code> 计算；测量前用 <code>visibility:hidden;left:0;top:0</code> 先布局一次，避免闪一帧。面板自身不滚动——滚动条由内部列自己承担，比如时/分/秒列各 216px 高、自带滚动。",
+      "keywords": [
+        "浮层",
+        "popover",
+        "portal",
+        "锚定面板",
+        "picker shell"
+      ]
+    },
+    {
+      "id": "schedule-catalog-action",
+      "name": "ScheduleCatalogAction",
+      "exportName": "ScheduleCatalogAction",
+      "zh": "提醒入口",
+      "group": "panels",
+      "summary": "会话头部的提醒入口与它的提醒目录浮层：收起时只有一个 28×28、28px 圆角的图标按钮，图标 16px 取 tertiary 色；<code>:hover</code> / <code>:focus-visible</code> 时转 secondary 并加一层 <code>--dsw-alias-interactive-bg-hover</code>，展开态（<code>[aria-expanded='true']</code>）只加同款底色、颜色仍是 tertiary。点开后是门户到 body 的 <code>&lt;ul&gt;</code> 菜单：宽 336px、<code>max-height:min(420px, calc(100vh - 140px))</code>、3px 内边距配 1px 行距、16px 圆角；一行至少 48px 高、<code>10px 12px</code> 内边距、10px 圆角，整行是一颗打开按钮（<code>.openButton::after</code> 铺满整行），右侧 20×20 的删除按钮单独收回指针事件。逾期行整行铺 <code>--dsw-alias-state-warn-tertiary</code>，并把频率行与「下次运行」都换成 warn 文字色。",
+      "source": "packages/client/ui-schedule/src/client/ScheduleCatalogAction.tsx#L35",
+      "css": [
+        "packages/client/ui-schedule/src/client/ScheduleCatalogAction.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-specific-menu",
+        "--dsw-menu-backdrop-filter",
+        "--dsw-alias-border-l1",
+        "--dsw-elevation-prominent",
+        "--dsw-alias-scrollbar-bg-l2",
+        "--dsw-alias-scrollbar-hover-l2",
+        "--dsw-alias-state-warn-tertiary",
+        "--dsw-alias-state-warn-label",
+        "--dsw-alias-state-business-primary",
+        "--dsw-focus-ring-color"
+      ],
+      "specimens": [
+        {
+          "label": "收起态：28px 图标入口",
+          "note": "悬停模拟：展开态用的是真实属性选择器，悬停则把 :hover 规则搬到 .forceHover",
+          "html": "<div style=\"width:200px;padding:16px\"><div class=\"root\"><button type='button' class=\"trigger forceHover\" data-schedule-reminder-entry aria-expanded='false' aria-label='2 个提醒'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z' stroke='currentColor'/><path d='M8 4.31V8.46L11 10.08' stroke='currentColor'/></svg></button></div></div>",
+          "css": "/* 状态模拟：:hover / :focus-visible 无法静态触发，这里把 ScheduleCatalogAction.module.css 里 .trigger:hover 的颜色与底色原样搬到 .forceHover 上。 */\n.trigger.forceHover { color: var(--dsw-alias-label-secondary); background: var(--dsw-alias-interactive-bg-hover); }"
+        },
+        {
+          "label": "打开态：刷新中，加载行叠在保留的提醒行之上",
+          "note": "静态快照：菜单真实是 body portal + position:fixed，这里拉回文档流；Escape 关闭并把焦点还给入口",
+          "bg": "platform",
+          "pad": "lg",
+          "html": "<div style=\"width:376px\"><div style=\"display:flex;flex-direction:column;gap:5px\"><div class=\"root\"><button type='button' class=\"trigger\" data-schedule-reminder-entry aria-expanded='true' aria-label='2 个提醒'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z' stroke='currentColor'/><path d='M8 4.31V8.46L11 10.08' stroke='currentColor'/></svg></button></div><ul class=\"menu snapshotStatic\" aria-label='活动提醒'><li class=\"row\" role='status'>正在加载提醒…</li><li class=\"row rowTask\"><span class=\"body\"><button type='button' class=\"openButton\" aria-label='打开提醒详情：每天 09:30 运行 pnpm run test:gui'><span class=\"title\">每天 09:30 运行 pnpm run test:gui</span></button><span class=\"metadata\"><span>每天 09:30</span></span><span class=\"nextRun\"><span>下次运行 </span><time datetime='2026-10-20T01:30:00.000Z'>10月20日 09:30</time><span class=\"nextRunRelative\">(14小时后)</span></span></span><button type='button' class=\"deleteButton\" aria-label='删除提醒：每天 09:30 运行 pnpm run test:gui' title='删除'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M1.28149 3.88831H14.7187' stroke='currentColor'/><path d='M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833' stroke='currentColor'/><path d='M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831' stroke='currentColor'/><path d='M6.44946 6.98926V11.1238' stroke='currentColor'/><path d='M9.55054 6.98926V11.1238' stroke='currentColor'/></svg></button></li><li class=\"row rowTask rowOverdue\"><span class=\"body\"><button type='button' class=\"openButton\" aria-label='打开提醒详情：今天 10:00 提交发布说明的草稿'><span class=\"title\">今天 10:00 提交发布说明的草稿</span></button><span class=\"metadata metadataOverdue\"><span>单次</span></span><span class=\"nextRun metadataOverdue\"><span>下次运行 </span><time datetime='2026-10-19T02:00:00.000Z'>10月19日 10:00</time><span class=\"nextRunRelative\">(已逾期 3小时)</span></span></span><button type='button' class=\"deleteButton\" aria-label='删除提醒：今天 10:00 提交发布说明的草稿' title='删除'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M1.28149 3.88831H14.7187' stroke='currentColor'/><path d='M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833' stroke='currentColor'/><path d='M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831' stroke='currentColor'/><path d='M6.44946 6.98926V11.1238' stroke='currentColor'/><path d='M9.55054 6.98926V11.1238' stroke='currentColor'/></svg></button></li></ul></div></div>",
+          "css": "/* 静态快照：菜单真实由 createPortal 挂到 body，position:fixed 且坐标由 useAnchoredPosition 写入；这里拉回文档流（relative + inset:auto 保留包含块），菜单材质、336px 宽度、行距与逾期底色都走真实样式表。 */\n.menu.snapshotStatic { position: relative; inset: auto; }"
+        },
+        {
+          "label": "打开态：读取失败行 + 仍然保留的提醒行",
+          "note": "状态行不带 .rowTask，所以没有整行悬停面；失败行的「重试」是菜单里唯一的裸按钮",
+          "bg": "platform",
+          "pad": "lg",
+          "html": "<div style=\"width:376px\"><div style=\"display:flex;flex-direction:column;gap:5px\"><div class=\"root\"><button type='button' class=\"trigger\" data-schedule-reminder-entry aria-expanded='true' aria-label='1 个提醒'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z' stroke='currentColor'/><path d='M8 4.31V8.46L11 10.08' stroke='currentColor'/></svg></button></div><ul class=\"menu snapshotStatic\" aria-label='活动提醒'><li class=\"row\"><span role='alert'>无法加载提醒。</span><button type='button'>重试</button></li><li class=\"row rowTask\"><span class=\"body\"><button type='button' class=\"openButton\" aria-label='打开提醒详情：每周一、三 10:00 运行 pnpm run verify-translation-pairing'><span class=\"title\">每周一、三 10:00 运行 pnpm run verify-translation-pairing</span></button><span class=\"metadata\"><span>每周一、三 10:00</span></span><span class=\"nextRun\"><span>下次运行 </span><time datetime='2026-10-21T02:00:00.000Z'>10月21日 10:00</time><span class=\"nextRunRelative\">(1天后)</span></span></span><button type='button' class=\"deleteButton\" aria-label='删除提醒：每周一、三 10:00 运行 pnpm run verify-translation-pairing' title='删除'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M1.28149 3.88831H14.7187' stroke='currentColor'/><path d='M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833' stroke='currentColor'/><path d='M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831' stroke='currentColor'/><path d='M6.44946 6.98926V11.1238' stroke='currentColor'/><path d='M9.55054 6.98926V11.1238' stroke='currentColor'/></svg></button></li></ul></div></div>",
+          "css": "/* 静态快照：门户菜单拉回文档流，同上一例。 */\n.menu.snapshotStatic { position: relative; inset: auto; }"
+        }
+      ],
+      "props": [
+        {
+          "name": "useSession",
+          "type": "HostObservable<SessionSnapshot>",
+          "default": "—",
+          "desc": "注入的会话 hooks：只读 <code>openState</code>，会话不是 <code>open</code> 时整条入口不渲染。"
+        },
+        {
+          "name": "useCatalog",
+          "type": "HostObservable<CatalogSnapshot<ScheduleCatalogEntry>>",
+          "default": "—",
+          "desc": "共享的 Host 提醒目录：records / status / deleting，菜单与行都从这里来。"
+        },
+        {
+          "name": "onDelete",
+          "type": "(id: ScheduleId) => Promise<void>",
+          "default": "—",
+          "desc": "删除一条提醒（结果由全局 Toast 播报，本组件不留就地提示）。"
+        },
+        {
+          "name": "onRetry",
+          "type": "(request?: number) => Promise<void>",
+          "default": "—",
+          "desc": "重新读取目录；失败行里的「重试」调用它。"
+        },
+        {
+          "name": "openTaskDetail",
+          "type": "(id: ScheduleId) => void",
+          "default": "—",
+          "desc": "在右 Sidebar 打开该任务详情；只有一个任务时点击入口直接走这里。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'schedule.catalog'>",
+          "default": "—",
+          "desc": "schedule.catalog 词典：trigger.*、list.*、delete.* 与频率文案。"
+        }
+      ],
+      "notes": "入口只在会话打开、且（目录已有记录 或 读取失败）时出现；首读为空时返回 null，避免在头部闪一个随后又被撤掉的 chip。图标按钮没有可见文字，提醒数量只落在 <code>aria-label</code> 上（1 条用 <code>trigger.one</code>、其余 <code>trigger.other</code>；数量为 0 时才退回 <code>trigger.label</code>）。正好只有 1 条且读取成功时 <code>aria-expanded</code> 不写，点击直接打开那张任务的详情。菜单里的「正在加载」行只在刷新时叠加在保留的行之上，行内的时间每秒重算一次，所以旁边的相对距离会走。删除进行中只把删除按钮的指针换成 wait（<code>:disabled</code> 只写 <code>cursor: wait</code>，不改墨色），整行仍可打开。",
+      "keywords": [
+        "提醒入口",
+        "日程目录",
+        "reminder",
+        "session header",
+        "删除任务",
+        "逾期"
+      ]
+    },
+    {
+      "id": "schedule-task-tab",
+      "name": "ScheduleTaskTab",
+      "exportName": "ScheduleTaskTab",
+      "zh": "任务标签页",
+      "group": "panels",
+      "summary": "右栏「任务」标签页的正文：整体是一个 <code>.tabBody</code>（flex 列、<code>height:100%</code>、<code>min-height:0</code>）。能按导航参数或上次写下的绑定找到任务时，整个正文交给 <code>TaskDetail</code>（与任务页同一个详情组件，读、改、删都带着原会话的绑定，不激活会话）。找不到任务时才是它自己的三种状态：等待目录读取时由 <code>CatalogFeedback</code> 接管居中转圈；读取失败是居中的 24px 警告 + 36px 描边「重试」；读成功仍没有这个任务，就是居中的 24px 时钟 + <code>detail.missing</code> 文案——<code>.tabBody &gt; .empty</code> 会把空态在整块高度里居中。",
+      "source": "packages/client/ui-schedule/src/client/ScheduleTaskTab.tsx#L61",
+      "css": [
+        "packages/client/ui-schedule/src/client/TaskManagerPage.module.css",
+        "packages/client/ui-primitives/src/Button.module.css",
+        "packages/client/ui-primitives/src/StateDot.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-specific-sidebar-fill",
+        "--dsw-radius-md",
+        "--dsw-radius-sm",
+        "--dsw-focus-ring-color"
+      ],
+      "specimens": [
+        {
+          "label": "目录已答复，但没有这个任务",
+          "note": "导航到的任务已被删除、或恢复的标签页没有绑定，都落到这一屏",
+          "html": "<div style=\"width:380px;height:320px;display:flex\"><div class=\"tabBody\"><div class=\"empty\" role='status'><svg class=\"emptyGlyph\" width='24' height='24' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z' stroke='currentColor'/><path d='M8 4.31V8.46L11 10.08' stroke='currentColor'/></svg><h3>任务已不可用，可能已被删除</h3></div></div></div>"
+        },
+        {
+          "label": "等待目录读取：转交 CatalogFeedback",
+          "note": "目录 ready 但读到的不是本次导航该用的那一次时，也停在这一屏继续报加载",
+          "html": "<div style=\"width:380px;height:320px;display:flex\"><div class=\"tabBody\"><div class=\"empty\" role='status' aria-label='正在加载任务'><svg class=\"spinner\" data-state='ongoing' width='14' height='14' viewBox='0 0 24 24' aria-hidden='true'><g class=\"spinnerMotion\"><circle class=\"spinnerTrack\" cx='12' cy='12' r='9.5'></circle><circle class=\"spinnerArc\" cx='12' cy='12' r='9.5'></circle></g></svg></div></div></div>"
+        },
+        {
+          "label": "目录读取失败：居中警告 + 重试",
+          "note": "重试会带上本标签的基线读取序号，避免用一次更早发出的读来回答",
+          "html": "<div style=\"width:380px;height:320px;display:flex\"><div class=\"tabBody\"><div class=\"empty\"><svg class=\"emptyGlyph\" width='24' height='24' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M8 14.5C11.5899 14.5 14.5 11.5899 14.5 8C14.5 4.41015 11.5899 1.5 8 1.5C4.41015 1.5 1.5 4.41015 1.5 8C1.5 11.5899 4.41015 14.5 8 14.5Z' stroke='currentColor'/><path d='M8 4.29199V9.79199' stroke='currentColor'/><path d='M8 10.708V11.708' stroke='currentColor'/></svg><p role='alert' class=\"emptyTitle\">无法加载任务</p><button type='button' class=\"button outline md emptyAction\">重试</button></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "sessionId",
+          "type": "SessionId",
+          "default": "—",
+          "desc": "这个标签页所属的会话：绑定的读写都以它为键。"
+        },
+        {
+          "name": "useTabInfo",
+          "type": "HostObservable<{ tab: SidebarTabInfo }>",
+          "default": "—",
+          "desc": "本标签页自己的信息：导航参数与 revision，决定从哪张票取任务、基线何时重设。"
+        },
+        {
+          "name": "useCatalog",
+          "type": "HostObservable<CatalogSnapshot<ScheduleCatalogEntry>>",
+          "default": "—",
+          "desc": "共享的 Host 任务目录：records / status / readRequest / readSettled，用来判定「已答复」并把目录行交给 TaskDetail。"
+        },
+        {
+          "name": "onRetry",
+          "type": "(request?: number) => Promise<void>",
+          "default": "—",
+          "desc": "请求一次目录读取；带上基线序号，只有晚于它的读才算本标签的答复。"
+        },
+        {
+          "name": "taskBindings",
+          "type": "TaskTabBindings",
+          "default": "—",
+          "desc": "provider 持有的标签页↔任务绑定：导航写入，恢复时读回，确认任务消失时 forget。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'schedule.manager'>",
+          "default": "—",
+          "desc": "schedule.manager 词典：detail.missing / detail.label 与转交出去的 list.* 文案。"
+        }
+      ],
+      "notes": "「已答复」不等于「目录 ready」，而是「本次导航基线之后发出的那次读已经成功」——基线是导航 revision 变化时记下的 <code>readRequest</code>，判据是 <code>readSettled &gt; baseline.request</code>，所以刚创建、目录还没读到的任务不会被误判成已删除。读成功而绑定仍对不上时，effect 会 <code>forget</code> 掉绑定，让恢复的标签页回到同一屏反馈；带编辑草稿的详情在目录行消失后仍留在屏幕上。它注册在 <code>sidebar.right.pane.tab</code>，样式表与 <code>TaskDetail</code>、任务页共用同一张 <code>TaskManagerPage.module.css</code>（有任务时的详情外观见 task-detail 条目）。",
+      "keywords": [
+        "任务标签页",
+        "sidebar tab",
+        "任务详情",
+        "missing task",
+        "目录基线"
+      ]
+    },
+    {
+      "id": "schedule-task-tab-title",
+      "name": "ScheduleTaskTabTitle",
+      "exportName": "ScheduleTaskTabTitle",
+      "zh": "任务标签名",
+      "group": "panels",
+      "summary": "任务标签页的标签文字：一个 16px 时钟字形（<code>.tabTitleIcon</code>，secondary 色、<code>flex:none</code>）加任务标题。字形与文字之间没有自己的间距——芯片里那 5px 来自 dockkit 的 <code>.tabTitle</code>（flex 行）；芯片本身 28px 高、80–170px 宽、<code>0 10px</code> 内边距、<code>--dsw-radius-sm</code> 圆角，激活态底色是 <code>--dsw-alias-markdown-tag</code>，末端 20×20 的关闭按钮只在激活、悬停或聚焦时出现。目录里还没有这一行时，文字退到 <code>detail.label</code>（「任务详情」），字形照旧。",
+      "source": "packages/client/ui-schedule/src/client/ScheduleTaskTabTitle.tsx#L28",
+      "css": [
+        "packages/client/ui-schedule/src/client/TaskManagerPage.module.css",
+        "packages/client/ui-dockkit/src/components/dockkit.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-markdown-tag",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-radius-sm",
+        "--dsh-content-font-size-secondary"
+      ],
+      "specimens": [
+        {
+          "label": "激活的任务标签：时钟字形 + 任务标题",
+          "note": "芯片与标签轨由 ui-dockkit 绘制；左边那颗未激活的「会话」芯片只有文字",
+          "bg": "platform",
+          "pad": "lg",
+          "html": "<div style=\"width:380px\"><div class=\"tabStrip\" role='tablist' aria-label='右栏标签'><div class=\"stripTabs\"><div class=\"c1-tab\" role='tab' aria-selected='false' tabindex='-1' data-dockkit-tab='session'><span class=\"tabTitle\" data-dockkit-tab-title>会话</span></div><div class=\"slot\"></div><div class=\"c1-tab tabActive\" role='tab' aria-selected='true' tabindex='0' data-dockkit-tab='schedule-task'><span class=\"tabTitle\" data-dockkit-tab-title><svg class=\"tabTitleIcon\" width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z' stroke='currentColor'/><path d='M8 4.31V8.46L11 10.08' stroke='currentColor'/></svg>每天 09:30 运行 pnpm run test:gui</span><button type='button' class=\"tabClose\" aria-label='关闭任务详情'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M3.5 3.5L12.5 12.5' stroke='currentColor'/><path d='M12.5 3.5L3.5 12.5' stroke='currentColor'/></svg></button></div></div><div class=\"stripFill\"></div></div></div>"
+        },
+        {
+          "label": "目录里还没有这一行：退回「任务详情」",
+          "note": "文字取 detail.label，标签仍带着同一个时钟字形，宽度由内容决定、超过 170px 才裁切",
+          "bg": "platform",
+          "pad": "lg",
+          "html": "<div style=\"width:380px\"><div class=\"tabStrip\" role='tablist' aria-label='右栏标签'><div class=\"stripTabs\"><div class=\"c1-tab\" role='tab' aria-selected='false' tabindex='-1' data-dockkit-tab='session'><span class=\"tabTitle\" data-dockkit-tab-title>会话</span></div><div class=\"slot\"></div><div class=\"c1-tab tabActive\" role='tab' aria-selected='true' tabindex='0' data-dockkit-tab='schedule-task'><span class=\"tabTitle\" data-dockkit-tab-title><svg class=\"tabTitleIcon\" width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z' stroke='currentColor'/><path d='M8 4.31V8.46L11 10.08' stroke='currentColor'/></svg>任务详情</span><button type='button' class=\"tabClose\" aria-label='关闭任务详情'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M3.5 3.5L12.5 12.5' stroke='currentColor'/><path d='M12.5 3.5L3.5 12.5' stroke='currentColor'/></svg></button></div></div><div class=\"stripFill\"></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "sessionId",
+          "type": "SessionId",
+          "default": "—",
+          "desc": "标签页所属会话；解析任务绑定时用它做键。"
+        },
+        {
+          "name": "useTabInfo",
+          "type": "HostObservable<{ tab: SidebarTabInfo }>",
+          "default": "—",
+          "desc": "本标签页的导航参数与 revision；参数缺失时回落到 provider 写下的绑定。"
+        },
+        {
+          "name": "useCatalog",
+          "type": "HostObservable<CatalogSnapshot<ScheduleCatalogEntry>>",
+          "default": "—",
+          "desc": "共享的 Host 任务目录：只在 records 里按 id 找这一行，找不到就用兜底文案。"
+        },
+        {
+          "name": "taskBindings",
+          "type": "TaskTabBindings",
+          "default": "—",
+          "desc": "标签页↔任务绑定；重载恢复的记录没有参数，标签名靠它才不丢。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'schedule.manager'>",
+          "default": "—",
+          "desc": "schedule.manager 词典：没有目录行时用 detail.label（「任务详情」）。"
+        }
+      ],
+      "notes": "这个组件本身只产生「字形 + 文本」这段片段，芯片、标签轨与裁切都由 ui-dockkit 绘制（示例一并给出，尺寸才成立）。标题超宽时不打省略号，而是由 dockkit 的 <code>TabTitle</code> 给 <code>.tabTitle</code> 打上 <code>data-dockkit-tab-clipped</code>，在末端 16px 用蒙版淡出。它注册在 <code>sidebar.right.pane.tab.title</code>；没有这个注册者时，芯片只会显示打开时捕获的常量文本，叫不出具体任务。",
+      "keywords": [
+        "标签标题",
+        "tab title",
+        "时钟字形",
+        "任务名",
+        "chip"
+      ]
+    },
+    {
+      "id": "schedule-turn-card",
+      "name": "ScheduleTurnCard",
+      "exportName": "ScheduleTurnCard",
+      "zh": "回合任务卡",
+      "group": "panels",
+      "summary": "回合收尾处的「已创建任务」卡座：一个 <code>.list</code>（flex 列、卡片间距 10px、上下 4px 外边距）包住本回合 <code>schedule_create</code> 落定的每一张 <code>ScheduleCreateCard</code>。卡片是整宽的浅色文件卡——<code>8px 10px</code> 内边距、0.5px <code>--dsw-alias-border-l1</code> 描边、<code>--dsw-radius-lg</code> 圆角，左侧 40×40 的时钟砖、中间 13px/20px/500 标题与 10px/16px tertiary 频率行，右侧一颗 28px 高的描边「打开」按钮；整卡可点时铺一层透明覆盖按钮，悬停才换底色。目录里已经没有这张任务时，卡片只留标题与「已删除」一行，撤掉覆盖层与「打开」。",
+      "source": "packages/client/ui-schedule/src/client/ScheduleTurnCard.tsx#L103",
+      "css": [
+        "packages/client/ui-schedule/src/client/ScheduleTurnCard.module.css",
+        "packages/client/ui-schedule/src/client/ScheduleCreateCard.module.css",
+        "packages/client/ui-primitives/src/Button.module.css"
+      ],
+      "tokens": [
+        "--dsw-static-neutral-50",
+        "--dsw-static-neutral-100",
+        "--dsw-static-neutral-850",
+        "--dsw-static-neutral-800",
+        "--dsw-static-neutral-00",
+        "--dsw-alias-border-l1",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-radius-lg",
+        "--dsw-radius-sm",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-focus-ring-color",
+        "--dsw-alias-state-business-primary"
+      ],
+      "specimens": [
+        {
+          "label": "本回合创建了一个任务",
+          "note": "整卡可点，尾部「打开」按钮在右 Sidebar 打开该任务详情；卡片独立于工具组的折叠状态",
+          "html": "<div style=\"width:520px\"><div class=\"list\"><div class=\"card\" data-tool='schedule_create'><button type='button' class=\"cardOpen\" aria-label='打开任务详情：每天 09:30 运行 pnpm run test:gui'></button><div class=\"row\"><span class=\"leading\"><svg width='18' height='18' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z' stroke='currentColor'/><path d='M8 4.31V8.46L11 10.08' stroke='currentColor'/></svg></span><span class=\"body\"><span class=\"title\">每天 09:30 运行 pnpm run test:gui</span><span class=\"frequency\">每天 09:30</span></span><button type='button' class=\"button outline sm openButton\">打开</button></div></div></div></div>"
+        },
+        {
+          "label": "一个回合创建了两张，其中一张已被删除",
+          "note": "两张卡之间 10px；已删除的卡用 currentTask === null 渲染，不再给身份也不给「打开」",
+          "html": "<div style=\"width:520px\"><div class=\"list\"><div class=\"card\" data-tool='schedule_create'><button type='button' class=\"cardOpen\" aria-label='打开任务详情：每天 09:30 运行 pnpm run test:gui'></button><div class=\"row\"><span class=\"leading\"><svg width='18' height='18' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z' stroke='currentColor'/><path d='M8 4.31V8.46L11 10.08' stroke='currentColor'/></svg></span><span class=\"body\"><span class=\"title\">每天 09:30 运行 pnpm run test:gui</span><span class=\"frequency\">每天 09:30</span></span><button type='button' class=\"button outline sm openButton\">打开</button></div></div><div class=\"card\" data-tool='schedule_create'><div class=\"row\"><span class=\"leading\"><svg width='18' height='18' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z' stroke='currentColor'/><path d='M8 4.31V8.46L11 10.08' stroke='currentColor'/></svg></span><span class=\"body\"><span class=\"title\">明天 18:00 提醒我提交 PR</span><span class=\"frequency\">已删除</span></span></div></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "turn",
+          "type": "TurnLocation",
+          "default": "—",
+          "desc": "收尾回合的位置对象：本回合的 <code>schedule-created</code> 数据与结束序号都挂在它身上。"
+        },
+        {
+          "name": "seq",
+          "type": "number",
+          "default": "—",
+          "desc": "这条列表条目绑定的序号；回合没有记录结束序号时用它兜底，避免把收尾后才落定的创建算进来。"
+        },
+        {
+          "name": "openFile",
+          "type": "(path: string) => void",
+          "default": "—",
+          "desc": "Turn-tail 坐席的 owner currency 一并带来的文件打开器；本卡片不读它，保留是为了与坐席的 owner 类型一致。"
+        },
+        {
+          "name": "useCatalog",
+          "type": "HostObservable<CatalogSnapshot<ScheduleCatalogEntry>>",
+          "default": "—",
+          "desc": "共享的 Host 任务目录：用它在卡片出现后的读里核对任务是否还在。"
+        },
+        {
+          "name": "onRetry",
+          "type": "(request?: number) => Promise<void>",
+          "default": "—",
+          "desc": "挂载时请求一次目录读取（带上当时的读取序号），把「已删除」的判据限定在这次读之后。"
+        },
+        {
+          "name": "openTaskDetail",
+          "type": "(id: ScheduleId) => void",
+          "default": "—",
+          "desc": "在右 Sidebar 打开创建出来的任务详情。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'schedule.manager'>",
+          "default": "—",
+          "desc": "schedule.manager 词典：card.open / card.openLabel / card.deleted 与频率文案。"
+        }
+      ],
+      "notes": "卡座挂在 <code>conversation.chat.turnTail</code>（回合收尾的列表坐席，独立于工具组的折叠面板，所以工具组收起时卡片仍可见）。列表里每个条目都会为每个回合渲染一次，因此这个条目自己把 turn 收窄：<code>selectScheduleTasks</code> 用 <code>turn.data.get('schedule-created')</code> 配 <code>turn.end?.seq ?? seq</code> 筛出本回合创建的任务，为空就返回 null，整块不渲染。挂载时那次目录请求带着当时的读取序号，只有「在卡座出现之后发出且成功」的读才被采信，避免更早读到的旧目录把任务说成已删除；失败的读不改变卡片，仍按创建时的规则显示。",
+      "keywords": [
+        "创建任务",
+        "turn tail",
+        "schedule_create",
+        "回合卡片",
+        "已删除"
+      ]
+    }
+  ]
+}

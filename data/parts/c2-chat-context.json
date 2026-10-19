@@ -1,0 +1,622 @@
+{
+  "schemaVersion": 1,
+  "note": "上下文注入体批次：ContextBody 的六个 form 专用正文（外加兜底的 opaque 正文）、把它们装进 DisclosureRow 的 ContextInjectionRow，以及指令生命周期用的 GenericCommandCard。css 数组按真实渲染路径列出样式表——正文条目额外列 ContextInjectionRow.module.css，因为 141px 代码块滚动区（.body）由它提供；行条目再列 DisclosureRow / TextShimmer，命令卡再列 accessibility。构建时按文件加 c<下标>- 前缀逐字内联。",
+  "entries": [
+    {
+      "id": "opaque-body",
+      "name": "OpaqueBody",
+      "exportName": "OpaqueBody",
+      "zh": "兜底正文",
+      "group": "conversation",
+      "summary": "上下文展开行的默认正文，也是本 UI 版本不认识任何 <code>form</code> 时的落点：模型可见文本按真实换行排成 <code>pre.text</code>（相邻文本块之间不插分隔符，与 provider 展平正文的方式一致），下面用 <code>dl.fields</code> 列出来源字段，并恒隐去 <code>kind</code>——行头已经写了生产者。字段键列固定 <code>min-width:96px</code>、值列 tertiary 且 <code>overflow-wrap:anywhere</code>，嵌套值走紧凑 JSON。自身不渲染外层容器：它渲染进 ContextInjectionRow 的 141px 代码块滚动区（11px/16px 等宽、<code>--dsw-alias-markdown-code-block</code> 底、<code>--dsw-radius-md</code> 圆角、内边距 <code>10px 16px 12px 12px</code>）。",
+      "source": "packages/client/ui-chat/src/client/chat/ContextBody.tsx#L168",
+      "css": [
+        "packages/client/ui-chat/src/client/chat/ContextBody.module.css",
+        "packages/client/ui-chat/src/client/chat/ContextInjectionRow.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l2",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-markdown-code-block",
+        "--dsw-radius-md"
+      ],
+      "specimens": [
+        {
+          "label": "未知 form：正文 + 来源字段（kind 被隐去）",
+          "note": "<code>form</code> 不在已知六种里时仍保留 <code>form</code> 字段本身，让读者知道这条是怎么被声明的",
+          "pad": "lg",
+          "html": "<div style=\"width:620px\"><div class=\"c1-body\" data-context-injection-body><pre class=\"c0-text\" data-context-text>MCP server filesystem reported 3 changed resources:\n- /home/lk/deepseek-harness/packages/client/ui-chat/src/client/chat/ContextInjectionRow.tsx\n- /home/lk/deepseek-harness/packages/client/ui-chat/src/client/chat/ContextBody.tsx\n- /home/lk/deepseek-harness/packages/client/ui-conversation/src/client/skeleton/ConversationRoot.module.css</pre><dl class=\"c0-fields\" data-context-fields><div class=\"c0-field\"><dt class=\"c0-fieldKey\">form</dt><dd class=\"c0-fieldValue\">digest</dd></div><div class=\"c0-field\"><dt class=\"c0-fieldKey\">server</dt><dd class=\"c0-fieldValue\">filesystem</dd></div><div class=\"c0-field\"><dt class=\"c0-fieldKey\">payload</dt><dd class=\"c0-fieldValue\">{\"changed\":3,\"root\":\"/home/lk/deepseek-harness\"}</dd></div></dl></div></div>"
+        },
+        {
+          "label": "来源没有 form：只列字段",
+          "note": "数组、对象一律 <code>JSON.stringify</code> 后输出；字符串与数字直接原样",
+          "pad": "lg",
+          "html": "<div style=\"width:620px\"><div class=\"c1-body\" data-context-injection-body><pre class=\"c0-text\" data-context-text>外部生产者把这条上下文原样写进了会话日志；本版本没有对应的呈现形式，因此按原文与来源字段展示。</pre><dl class=\"c0-fields\" data-context-fields><div class=\"c0-field\"><dt class=\"c0-fieldKey\">requestId</dt><dd class=\"c0-fieldValue\">7f2a91c4</dd></div><div class=\"c0-field\"><dt class=\"c0-fieldKey\">scopes</dt><dd class=\"c0-fieldValue\">[\"workspace\",\"user-global\"]</dd></div><div class=\"c0-field\"><dt class=\"c0-fieldKey\">meta</dt><dd class=\"c0-fieldValue\">{\"source\":\"mcp\",\"retry\":false}</dd></div></dl></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "content",
+          "type": "ContextMessageNode['content']",
+          "default": "—",
+          "desc": "模型可见内容块：相邻 text 块合并成一段，未知块（merge-extensible 联合）单独渲染成 JSON 块而不是被丢掉。"
+        },
+        {
+          "name": "source",
+          "type": "unknown",
+          "default": "—",
+          "desc": "生产者的持久化来源记录；按 key/value 列出除 <code>kind</code> 之外的字段，非对象来源直接不渲染字段表。"
+        },
+        {
+          "name": "t",
+          "type": "ChatViewSlotProps['t']",
+          "default": "—",
+          "desc": "所属视图的词典位；正文超过 20000 字符时用它取 <code>json.truncated</code> 截断提示。"
+        }
+      ],
+      "notes": "每个 form 都以此为正文档底：声明了 form 但字段读不成（changes / entries / sections / senderSessionId / references 任一不可读）时，<code>contextBody</code> 返回 <code>rendered: null</code>，行头改标的也是「上下文注入」而不是声明的 form。字段值本身也有 20000 字符上限，未知生产者写入的超长字符串或数组不会撑爆卡片。非法来源（null、数组）不渲染字段表，只留正文。",
+      "keywords": [
+        "opaque",
+        "兜底",
+        "未知 form",
+        "上下文正文",
+        "context body",
+        "source fields"
+      ]
+    },
+    {
+      "id": "instructions-body",
+      "name": "InstructionsBody",
+      "exportName": "InstructionsBody",
+      "zh": "指令正文",
+      "group": "conversation",
+      "summary": "<code>instructions</code> form 的展开正文：先是一行行被核对的工作区指令文件（<code>ul.files</code>，flex 换行、行内 6px 间隙、列表下方 8px），每行左侧是 secondary 的路径、右侧是 caption 的动作词；动作词随 <code>action</code> 与 <code>baseline</code> 变化——基线里的 <code>set</code> 读作「已载入」，增量里 <code>set</code> → 「已新增」、<code>replace</code> → 「已更新」、<code>remove</code> → 「已移除」。文件表下面是模型真正读到的原文 <code>pre.text</code>，<code>&lt;system-reminder&gt;</code> 外壳逐字保留（那层包装本身就是模型读到的东西）。文件列表读不出来时整体退回兜底正文。",
+      "source": "packages/client/ui-chat/src/client/chat/ContextBody.tsx#L247",
+      "css": [
+        "packages/client/ui-chat/src/client/chat/ContextBody.module.css",
+        "packages/client/ui-chat/src/client/chat/ContextInjectionRow.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l2",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-markdown-code-block",
+        "--dsw-radius-md"
+      ],
+      "specimens": [
+        {
+          "label": "启动基线：两个文件已载入（baseline: true）",
+          "note": "基线里的 <code>set</code> 显示为「已载入」；每行 <code>title</code> 是文件摘要 digest",
+          "pad": "lg",
+          "html": "<div style=\"width:620px\"><div class=\"c1-body\" data-context-injection-body data-context-form=\"instructions\"><ul class=\"c0-files\" data-context-files><li class=\"c0-file\" title=\"sha256:41c0e9d2b7a4\"><span class=\"c0-filePath\">/home/lk/deepseek-harness/AGENTS.md</span><span class=\"c0-fileAction\">已载入</span></li><li class=\"c0-file\" title=\"sha256:ab3391f0c5d8\"><span class=\"c0-filePath\">/home/lk/deepseek-harness/packages/client/AGENTS.md</span><span class=\"c0-fileAction\">已载入</span></li></ul><pre class=\"c0-text\" data-context-text>&lt;system-reminder&gt;\nThe following workspace instructions may be relevant to your work.\nInstructions from: /home/lk/deepseek-harness/AGENTS.md\n&lt;/system-reminder&gt;</pre></div></div>"
+        },
+        {
+          "label": "增量：已更新 / 已新增 / 已移除",
+          "note": "没有 <code>baseline: true</code> 时 <code>set</code> 读作「已新增」，与 <code>replace</code> 分开",
+          "pad": "lg",
+          "html": "<div style=\"width:620px\"><div class=\"c1-body\" data-context-injection-body data-context-form=\"instructions\"><ul class=\"c0-files\" data-context-files><li class=\"c0-file\" title=\"sha256:5d17c8ee02af\"><span class=\"c0-filePath\">/home/lk/deepseek-harness/AGENTS.md</span><span class=\"c0-fileAction\">已更新</span></li><li class=\"c0-file\"><span class=\"c0-filePath\">/home/lk/deepseek-harness/packages/client/AGENTS.md</span><span class=\"c0-fileAction\">已新增</span></li><li class=\"c0-file\"><span class=\"c0-filePath\">/home/lk/deepseek-harness/CLAUDE.md</span><span class=\"c0-fileAction\">已移除</span></li></ul><pre class=\"c0-text\" data-context-text>&lt;system-reminder&gt;\nInstructions from: /home/lk/deepseek-harness/AGENTS.md\n&lt;/system-reminder&gt;</pre></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "content",
+          "type": "ContextMessageNode['content']",
+          "default": "—",
+          "desc": "模型可见正文；指令 form 下就是带 <code>&lt;system-reminder&gt;</code> 外壳的原文，按真实换行输出。"
+        },
+        {
+          "name": "source",
+          "type": "unknown",
+          "default": "—",
+          "desc": "读 <code>source.changes</code>（<code>{action,path,digest?}</code> 数组）与 <code>source.baseline</code>；路径按首次出现去重，任一项不可读就整体退回兜底正文。"
+        },
+        {
+          "name": "t",
+          "type": "ChatViewSlotProps['t']",
+          "default": "—",
+          "desc": "词典位：<code>message.context.instructions.loaded / added / updated / removed</code> 四个动作词。"
+        }
+      ],
+      "notes": "文件表的读取是全有或全无的：只要有一条 <code>changes</code> 不可读（路径为空、action 不是 set/replace/remove），整块退回兜底正文——宁可显示原文，也不给一份自信但不完整的文件清单。<code>changes</code> 为空数组时同样退回。任务说指令载入时，通常会连开好几行：baseline 行给完整文件表，后续 delta 行各自只报自己改动的路径。",
+      "keywords": [
+        "instructions",
+        "指令文件",
+        "AGENTS.md",
+        "system-reminder",
+        "工作区指令"
+      ]
+    },
+    {
+      "id": "catalog-body",
+      "name": "CatalogBody",
+      "exportName": "CatalogBody",
+      "zh": "目录正文",
+      "group": "conversation",
+      "summary": "<code>catalog</code> form 的展开正文：技能目录直接从持久化来源的 <code>entries</code> 读出来，而不是回去解析模型可见的 <code>&lt;available_skills&gt;</code> 散文。每行一条：等宽的 <code>code.entryName</code> 是 secondary，右侧描述 tertiary、单行、溢出打省略号；行间距 4px，列表本身不带外框。替换型目录（<code>source.update === true</code>）在列表上方多一行 caption 色的「替换目录」。条目超过 200 条时只物化前 200 行，尾部再补一行「…还有 N 条」；目录为空数组是合法目录（旧名单全部退场），只有形状不可读才退回兜底正文。",
+      "source": "packages/client/ui-chat/src/client/chat/ContextBody.tsx#L312",
+      "css": [
+        "packages/client/ui-chat/src/client/chat/ContextBody.module.css",
+        "packages/client/ui-chat/src/client/chat/ContextInjectionRow.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l2",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-markdown-code-block",
+        "--dsw-radius-md"
+      ],
+      "specimens": [
+        {
+          "label": "首次发布：四条技能",
+          "note": "描述来自生产者截断后的文本（默认上限 500 字符），这里再被单行省略号截一次",
+          "pad": "lg",
+          "html": "<div style=\"width:640px\"><div class=\"c1-body\" data-context-injection-body data-context-form=\"catalog\"><ul class=\"c0-entries\" data-context-entries><li class=\"c0-entry\"><code class=\"c0-entryName\">code-review</code><span class=\"c0-entryDescription\">Review the changes since a fixed point along Standards and Spec axes.</span></li><li class=\"c0-entry\"><code class=\"c0-entryName\">research</code><span class=\"c0-entryDescription\">Investigate a question against high-trust primary sources and capture the findings as a Markdown file in the repo.</span></li><li class=\"c0-entry\"><code class=\"c0-entryName\">writing-for-agents</code><span class=\"c0-entryDescription\">Writing documents for agents. Use when creating or editing skills, or modifying AGENTS.md or CLAUDE.md.</span></li><li class=\"c0-entry\"><code class=\"c0-entryName\">diagnosing-bugs</code><span class=\"c0-entryDescription\">Diagnosis loop for hard bugs and performance regressions.</span></li></ul></div></div>"
+        },
+        {
+          "label": "替换目录：update 标记 + 换代名单",
+          "note": "首行「替换目录」来自 <code>source.update</code>；条目为空时这里只剩这行提示",
+          "pad": "lg",
+          "html": "<div style=\"width:640px\"><div class=\"c1-body\" data-context-injection-body data-context-form=\"catalog\"><p class=\"c0-catalogNotice\" data-context-catalog-update>替换目录</p><ul class=\"c0-entries\" data-context-entries><li class=\"c0-entry\"><code class=\"c0-entryName\">code-review</code><span class=\"c0-entryDescription\">Review the changes since a fixed point along Standards and Spec axes.</span></li><li class=\"c0-entry\"><code class=\"c0-entryName\">dsh-code-review</code><span class=\"c0-entryDescription\">Use when reviewing a pull request in the deepseek-harness repo.</span></li></ul></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "content",
+          "type": "ContextMessageNode['content']",
+          "default": "—",
+          "desc": "模型可见正文；catalog form 不用它渲染列表，只从中挑出未知块单独展示，避免丢掉模型看过的内容。"
+        },
+        {
+          "name": "source",
+          "type": "unknown",
+          "default": "—",
+          "desc": "读 <code>source.entries</code>（<code>{name,description}</code> 数组）与 <code>source.update</code>；name 为空串或 description 非字符串即判定不可读并退回兜底正文。"
+        },
+        {
+          "name": "t",
+          "type": "ChatViewSlotProps['t']",
+          "default": "—",
+          "desc": "词典位：<code>message.context.catalog.replaced</code> 与 <code>message.context.catalog.more</code>（截断剩余条数）。"
+        }
+      ],
+      "notes": "条目按名字去重是不做的：手改或外来日志里可能有重名，列表用下标做 key，免得 React 把模型真看过的一行丢掉。空 <code>entries</code> 数组不退回兜底——那是「这份替换目录一条都不剩」的真实语义。列表的行数上限（200）和滚动区高度上限（141px）是两件事：前者限制节点数，后者限制可视高度。",
+      "keywords": [
+        "catalog",
+        "技能目录",
+        "available_skills",
+        "skill catalog",
+        "替换目录"
+      ]
+    },
+    {
+      "id": "snapshot-body",
+      "name": "SnapshotBody",
+      "exportName": "SnapshotBody",
+      "zh": "快照正文",
+      "group": "conversation",
+      "summary": "<code>snapshot</code> form 的展开正文：按生产者拼装的顺序列出这份运行态快照的每个命名贡献，<code>dl.sections</code> 纵向排列、区块之间 8px，标题是小字 caption（例如 <code>working-directory:current</code>、<code>harness:source</code>、<code>app:web-surface</code>），正文 secondary 且 <code>white-space:pre-wrap</code>，保留生产者写下的换行。开头一行「取代先前的快照」是 form 自身的语义（生产者把这句话写进了模型可见文本，但不属于任何区块），所以这里用一句说明代替把它再抄一遍。区块列表读不出来时退回兜底正文。",
+      "source": "packages/client/ui-chat/src/client/chat/ContextBody.tsx#L388",
+      "css": [
+        "packages/client/ui-chat/src/client/chat/ContextBody.module.css",
+        "packages/client/ui-chat/src/client/chat/ContextInjectionRow.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l2",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-markdown-code-block",
+        "--dsw-radius-md"
+      ],
+      "specimens": [
+        {
+          "label": "两个子系统贡献的命名区块",
+          "note": "区块顺序 = 生产者拼装顺序；正文里的路径与 URL 都是原文（带引号的 JSON 字符串），第三个贡献（app:web-surface）会继续往下排",
+          "pad": "lg",
+          "html": "<div style=\"width:640px\"><div class=\"c1-body\" data-context-injection-body data-context-form=\"snapshot\"><p class=\"c0-catalogNotice\" data-context-snapshot-supersedes>取代先前的快照</p><dl class=\"c0-sections\" data-context-sections><div class=\"c0-section\"><dt class=\"c0-sectionName\">working-directory:current</dt><dd class=\"c0-sectionText\">Current working directory: \"/home/lk/deepseek-harness\".</dd></div><div class=\"c0-section\"><dt class=\"c0-sectionName\">harness:source</dt><dd class=\"c0-sectionText\">Current DeepSeek Harness implementation checkout: \"/home/lk/deepseek-harness\".</dd></div></dl></div></div>"
+        },
+        {
+          "label": "单一贡献：time-context 的三行快照",
+          "note": "同一个 <code>dl</code> 只装一个区块也成立；多行文本靠 pre-wrap，不横向滚动",
+          "pad": "lg",
+          "html": "<div style=\"width:640px\"><div class=\"c1-body\" data-context-injection-body data-context-form=\"snapshot\"><p class=\"c0-catalogNotice\" data-context-snapshot-supersedes>取代先前的快照</p><dl class=\"c0-sections\" data-context-sections><div class=\"c0-section\"><dt class=\"c0-sectionName\">time-context</dt><dd class=\"c0-sectionText\">Time sampled while preparing turn 3, step 1: 2026-10-19 13:37:54 (Asia/Shanghai)\nBrowser time zone for this request: unavailable.\nElapsed since the preceding model-visible message: 6m 12s.</dd></div></dl></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "content",
+          "type": "ContextMessageNode['content']",
+          "default": "—",
+          "desc": "模型可见正文（若干区块拼起来的散文）；snapshot form 不重印它，只按来源的区块逐一呈现。"
+        },
+        {
+          "name": "source",
+          "type": "unknown",
+          "default": "—",
+          "desc": "读 <code>source.sections</code>（<code>{name,text}</code> 数组）；空数组或任一区块的 name/text 不可读都退回兜底正文。"
+        },
+        {
+          "name": "t",
+          "type": "ChatViewSlotProps['t']",
+          "default": "—",
+          "desc": "词典位：<code>message.context.snapshot.supersedes</code>（首行说明）与区块超长时的截断提示。"
+        }
+      ],
+      "notes": "每个区块的 <code>text</code> 也吃 20000 字符上限（<code>boundedText</code>），但正文块之间不合并。区别易混：<code>instructions</code> 的 <code>&lt;system-reminder&gt;</code> 包装裹着内容、没法与内容分开，所以逐字保留；snapshot 的「取代先前的快照」只是 form 自己的语义说明，不裹任何内容，于是改写成首行 caption。",
+      "keywords": [
+        "snapshot",
+        "运行态快照",
+        "runtime context",
+        "working-directory:current",
+        "区块"
+      ]
+    },
+    {
+      "id": "notice-body",
+      "name": "NoticeBody",
+      "exportName": "NoticeBody",
+      "zh": "通知正文",
+      "group": "conversation",
+      "summary": "<code>notice</code> form 的展开正文，也是最薄的一个：只有模型可见文本本身（<code>pre.text</code>，secondary、pre-wrap、<code>overflow-wrap:anywhere</code>），没有文件表、没有字段表、没有区块标题。它之所以通常不用展开，是因为同一句摘要还挂在折叠行上（<code>source.summary</code> 交给 <code>contextBody</code> 渲染成行内 summary）。相邻文本块按 provider 的展平方式直接相接、不插分隔符，所以子智能体结算这类多块通知读起来是连排的。",
+      "source": "packages/client/ui-chat/src/client/chat/ContextBody.tsx#L421",
+      "css": [
+        "packages/client/ui-chat/src/client/chat/ContextBody.module.css",
+        "packages/client/ui-chat/src/client/chat/ContextInjectionRow.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l2",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-markdown-code-block",
+        "--dsw-radius-md"
+      ],
+      "specimens": [
+        {
+          "label": "计划模式切换：一句话通知",
+          "note": "正文就是模型读到的那一句；同一个句子还被折叠行拿来当摘要",
+          "pad": "lg",
+          "html": "<div style=\"width:620px\"><div class=\"c1-body\" data-context-injection-body data-context-form=\"notice\"><pre class=\"c0-text\" data-context-text>The user switched this session to plan mode.</pre></div></div>"
+        },
+        {
+          "label": "子智能体结算：相邻文本块直接相接",
+          "note": "摘要行、结尾消息、结构化结果三段在正文里连排——这是相邻 text 块不插分隔符的真实结果",
+          "pad": "lg",
+          "html": "<div style=\"width:620px\"><div class=\"c1-body\" data-context-injection-body data-context-form=\"notice\"><pre class=\"c0-text\" data-context-text>Background subagent session-7c1d4e2a-9f38-4b6c-a1d2-5e8f0b3a6c7d finished and will do no further work unless you send it more.Its closing message:ContextInjectionRow 的六个 form 正文已补齐，pnpm run test:gui 全绿。Structured result: {\"forms\":6}</pre></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "content",
+          "type": "ContextMessageNode['content']",
+          "default": "—",
+          "desc": "模型可见内容块；只有文本与未知块两种走法，未知块渲染成 JSON 块。"
+        },
+        {
+          "name": "source",
+          "type": "unknown",
+          "default": "—",
+          "desc": "该 form 的正文不读来源字段；<code>source.summary</code> 由 <code>contextBody</code> 取走交给折叠行。summary 缺失时整条退回兜底正文。"
+        },
+        {
+          "name": "t",
+          "type": "ChatViewSlotProps['t']",
+          "default": "—",
+          "desc": "词典位：正文超长时取 <code>json.truncated</code>，未知块标题取 <code>message.unknownBlock</code>。"
+        }
+      ],
+      "notes": "notice 的生产者遍布宿主侧：计划模式切换、子智能体结算、后台任务完成、重复工具调用提醒、webhook 投递、goal 回合收尾——它们共同的形状是「一句能独立读懂的话 + 正文」，所以摘要行不是装饰而是这条 form 的一半。摘要由 <code>boundContextSummary</code> 之类在宿主侧截断，客户端不再重复截断。",
+      "keywords": [
+        "notice",
+        "通知",
+        "plan-mode",
+        "subagent-settled",
+        "一句话通知"
+      ]
+    },
+    {
+      "id": "relay-body",
+      "name": "RelayBody",
+      "exportName": "RelayBody",
+      "zh": "转发正文",
+      "group": "conversation",
+      "summary": "<code>relay</code> form 的展开正文：正文之上先给一行 caption 色的「来自会话 {senderSessionId}」，下面才是对方说的话（<code>pre.text</code>）。发送者是一个不透明会话 id，本客户端解析不出标题，所以它按字段展示而不是当标签；因为 id 很长，这一行与正文都开了 <code>overflow-wrap:anywhere</code>，只在必要时折行、不横向滚动。来源里没有可用 senderSessionId 时退回兜底正文。",
+      "source": "packages/client/ui-chat/src/client/chat/ContextBody.tsx#L437",
+      "css": [
+        "packages/client/ui-chat/src/client/chat/ContextBody.module.css",
+        "packages/client/ui-chat/src/client/chat/ContextInjectionRow.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l2",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-markdown-code-block",
+        "--dsw-radius-md"
+      ],
+      "specimens": [
+        {
+          "label": "来自相邻智能体：发送者在正文之上",
+          "note": "「Agent … sent a message:」也是正文的一部分——那是生产者写进内容块的前缀",
+          "pad": "lg",
+          "html": "<div style=\"width:620px\"><div class=\"c1-body\" data-context-injection-body data-context-form=\"relay\"><p class=\"c0-relaySender\" data-context-relay-sender>来自会话 session-7c1d4e2a-9f38-4b6c-a1d2-5e8f0b3a6c7d</p><pre class=\"c0-text\" data-context-text>Agent session-7c1d4e2a-9f38-4b6c-a1d2-5e8f0b3a6c7d sent a message: ContextInjectionRow 的六个 form 正文已补齐，pnpm run test:gui 全绿，现在把结果发回父会话。</pre></div></div>"
+        },
+        {
+          "label": "长句：在任意位置折行",
+          "note": "sender 行 6px 下方距正文；长 URL 与长 id 都靠 <code>overflow-wrap:anywhere</code> 断行",
+          "pad": "lg",
+          "html": "<div style=\"width:620px\"><div class=\"c1-body\" data-context-injection-body data-context-form=\"relay\"><p class=\"c0-relaySender\" data-context-relay-sender>来自会话 session-1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d</p><pre class=\"c0-text\" data-context-text>Agent session-1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d sent a message: 请把 https://github.com/deepseek-ai/deepseek-harness/pull/1234 的 review 意见整理成 ISSUE，再把 ContextInjectionRow 的六个 form 正文补齐。</pre></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "content",
+          "type": "ContextMessageNode['content']",
+          "default": "—",
+          "desc": "对方发来的内容块；相邻文本块合并，未知块单独渲染成 JSON 块。"
+        },
+        {
+          "name": "source",
+          "type": "unknown",
+          "default": "—",
+          "desc": "读 <code>source.senderSessionId</code>；非字符串或空串即退回兜底正文（宁可显示原文也不给一个没有发送者的转发卡）。"
+        },
+        {
+          "name": "t",
+          "type": "ChatViewSlotProps['t']",
+          "default": "—",
+          "desc": "词典位：<code>message.context.relay.from</code>，模板是「来自会话 {session}」。"
+        }
+      ],
+      "notes": "relay 与 recall 是两种角色：relay 是相邻智能体发来的一条消息（<code>kind: 'agent-message'</code>，行角色 inject），recall 是从别的会话日志里提出来的材料（<code>kind: 'session-reference'</code>，行角色 recall、换用会话参考图标）。同一条转发在折叠行上的生产者标签就是 <code>agent-message</code> 这个 kind。",
+      "keywords": [
+        "relay",
+        "转发",
+        "agent-message",
+        "相邻智能体",
+        "senderSessionId"
+      ]
+    },
+    {
+      "id": "recall-body",
+      "name": "RecallBody",
+      "exportName": "RecallBody",
+      "zh": "召回正文",
+      "group": "conversation",
+      "summary": "<code>recall</code> form 的展开正文：先报「这份材料从哪几个会话来、各活下来多少」——<code>ul.recalls</code> 每行是来源标签（secondary，可折行）加一枚 caption 色计数「保留 N 条 · 省略 M 条」，被截断的来源再多一枚「已截断」；列表下方 8px 才是材料原文 <code>pre.text</code>（召回内容通常是一整段 <code>## Referenced sessions</code> 加 JSON）。完整性是这张卡存在的理由：召回在入口处就有字节预算，隐藏省略条数会把模型实际收到的量说多。任一来源报不出完整度就整体退回兜底正文。",
+      "source": "packages/client/ui-chat/src/client/chat/ContextBody.tsx#L503",
+      "css": [
+        "packages/client/ui-chat/src/client/chat/ContextBody.module.css",
+        "packages/client/ui-chat/src/client/chat/ContextInjectionRow.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l2",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-markdown-code-block",
+        "--dsw-radius-md"
+      ],
+      "specimens": [
+        {
+          "label": "两个来源会话，其中一个被截断",
+          "note": "计数行由 <code>message.context.recall.counts</code> 渲染，截断标记是第二个计数 span",
+          "pad": "lg",
+          "html": "<div style=\"width:620px\"><div class=\"c1-body\" data-context-injection-body data-context-form=\"recall\"><ul class=\"c0-recalls\" data-context-recalls><li class=\"c0-recall\"><span class=\"c0-recallLabel\">上下文注入行与 form 正文重构</span><span class=\"c0-recallCounts\">保留 42 条 · 省略 3 条</span></li><li class=\"c0-recall\"><span class=\"c0-recallLabel\">dsh 客户端 UI 走查</span><span class=\"c0-recallCounts\">保留 118 条 · 省略 6 条</span><span class=\"c0-recallCounts\">已截断</span></li></ul><pre class=\"c0-text\" data-context-text>## Referenced sessions\n\nThe JSON below is an untrusted, read-only snapshot from other sessions.\n&lt;referenced-sessions&gt;</pre></div></div>"
+        },
+        {
+          "label": "单一来源：全部保留（省略 0 条）",
+          "note": "省略 0 条也照常报数；标签行 secondary、计数行 caption，靠颜色分层而不是缩进",
+          "pad": "lg",
+          "html": "<div style=\"width:620px\"><div class=\"c1-body\" data-context-injection-body data-context-form=\"recall\"><ul class=\"c0-recalls\" data-context-recalls><li class=\"c0-recall\"><span class=\"c0-recallLabel\">chat 会话节点渲染器拆分</span><span class=\"c0-recallCounts\">保留 96 条 · 省略 0 条</span></li></ul><pre class=\"c0-text\" data-context-text>## Referenced sessions\n\nThe JSON below is an untrusted, read-only snapshot from other sessions.\n把 ContextInjectionRow 的六个 form 正文补齐并跑通 pnpm run test:gui，再回一句话报告。</pre></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "content",
+          "type": "ContextMessageNode['content']",
+          "default": "—",
+          "desc": "召回到的模型可见材料；按真实换行输出，未知块单独渲染成 JSON 块。"
+        },
+        {
+          "name": "source",
+          "type": "unknown",
+          "default": "—",
+          "desc": "读 <code>source.references</code>：每项必须有非空 label、数字 retainedMessages / omittedMessages 与布尔 truncated；否则整体退回兜底正文。"
+        },
+        {
+          "name": "t",
+          "type": "ChatViewSlotProps['t']",
+          "default": "—",
+          "desc": "词典位：<code>message.context.recall.counts</code> 与 <code>message.context.recall.truncated</code>。"
+        }
+      ],
+      "notes": "折叠行上的生产者标签由这些来源标签拼成（逗号分隔），角色是 recall，所以行头图标换成会话参考图标、标题是「跨会话召回」。这份正文只报 retained / omitted 两个数；<code>omittedBytes</code>、<code>compacted</code>、<code>capturedThroughSeq</code> 等字段不进 UI。",
+      "keywords": [
+        "recall",
+        "跨会话召回",
+        "session-reference",
+        "保留条数",
+        "召回完整性"
+      ]
+    },
+    {
+      "id": "context-injection-row",
+      "name": "ContextInjectionRow",
+      "exportName": "ContextInjectionRow",
+      "zh": "上下文行",
+      "group": "conversation",
+      "summary": "会话日志里一条非用户消息的折叠行，用的是 Figma 10:2482 那套 Tool calls 行几何：24px 行高、16px 图标盒加 6px 间隙、13px/24px 的 secondary 标题，标题右侧一枚 2×2 的 caption 色圆点分隔出生产者名（skill-catalog、agent-instructions、plan-mode、session-reference 的标题串…）。展开后正文从这个 22px 缩进处开始，是 141px 上限的代码块滚动区（<code>--dsw-alias-markdown-code-block</code> 底、<code>--dsw-radius-md</code> 圆角、400 11px/16px 等宽字），里面的内容按生产者声明的 form 走六个专用正文之一，未声明或未识别的一律走兜底正文。图标随角色变：注入用上下文注入图标、召回用会话参考图标、只有工具增删块时用浏览图标。",
+      "source": "packages/client/ui-chat/src/client/chat/ContextInjectionRow.tsx#L31",
+      "css": [
+        "packages/client/ui-chat/src/client/chat/ContextInjectionRow.module.css",
+        "packages/client/ui-primitives/src/DisclosureRow.module.css",
+        "packages/client/ui-primitives/src/TextShimmer.module.css",
+        "packages/client/ui-chat/src/client/chat/ContextBody.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l2",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-shimmer",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-markdown-code-block",
+        "--dsw-radius-md"
+      ],
+      "specimens": [
+        {
+          "label": "折叠：技能目录注入（悬停模拟）",
+          "note": "悬停模拟：图标让位给下箭头、标题与生产者名转 secondary",
+          "pad": "lg",
+          "css": "/* 状态模拟：:hover 无法静态触发，以下三条是 DisclosureRow.module.css 里 .row:hover 相关规则的原样副本。 */\n.row.forceHover { color: var(--dsw-alias-label-secondary); }\n.row.forceHover .iconIdle { opacity: 0; }\n.row.forceHover .chevronHover { opacity: 1; }",
+          "html": "<div style=\"width:660px\"><div class=\"c0-root c1-root\"><div class=\"c1-header\" data-disclosure-header><div class=\"c1-row forceHover\" data-disclosure-row data-expandable=\"true\" role=\"button\" tabindex=\"0\" aria-expanded=\"false\"><span class=\"c1-leading\"><span class=\"c1-iconIdle\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M5 2.5H3.5C3.23478 2.5 2.98043 2.60536 2.79289 2.79289C2.60536 2.98043 2.5 3.23478 2.5 3.5V13.5C2.5 13.7652 2.60536 14.0196 2.79289 14.2071C2.98043 14.3946 3.23478 14.5 3.5 14.5H12.5C12.7652 14.5 13.0196 14.3946 13.2071 14.2071C13.3946 14.0196 13.5 13.7652 13.5 13.5V3.5C13.5 3.23478 13.3946 2.98043 13.2071 2.79289C13.0196 2.60536 12.7652 2.5 12.5 2.5H11\" stroke=\"currentColor\"/><path d=\"M8 0.5V7.5\" stroke=\"currentColor\"/><path d=\"M5.5 5L8 7.5L10.5 5\" stroke=\"currentColor\"/><path d=\"M5.5 11H10.5\" stroke=\"currentColor\"/></svg></span><svg class=\"c1-chevronHover c0-chevron\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></span><span class=\"c2-root\"><span class=\"c2-content\"><span class=\"c2-text c1-title\">上下文注入</span><span class=\"c0-sep\" aria-hidden=\"true\"></span><span class=\"c0-source\" data-context-source>skill-catalog</span></span></span></div></div></div></div>"
+        },
+        {
+          "label": "折叠：通知（生产者 + 摘要两点分隔）",
+          "note": "notice 的 <code>source.summary</code> 挂在折叠行上，所以这类行通常不用展开",
+          "pad": "lg",
+          "html": "<div style=\"width:660px\"><div class=\"c0-root c1-root\"><div class=\"c1-header\" data-disclosure-header><div class=\"c1-row\" data-disclosure-row data-expandable=\"true\" role=\"button\" tabindex=\"0\" aria-expanded=\"false\"><span class=\"c1-leading\"><span class=\"c1-iconIdle\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M5 2.5H3.5C3.23478 2.5 2.98043 2.60536 2.79289 2.79289C2.60536 2.98043 2.5 3.23478 2.5 3.5V13.5C2.5 13.7652 2.60536 14.0196 2.79289 14.2071C2.98043 14.3946 3.23478 14.5 3.5 14.5H12.5C12.7652 14.5 13.0196 14.3946 13.2071 14.2071C13.3946 14.0196 13.5 13.7652 13.5 13.5V3.5C13.5 3.23478 13.3946 2.98043 13.2071 2.79289C13.0196 2.60536 12.7652 2.5 12.5 2.5H11\" stroke=\"currentColor\"/><path d=\"M8 0.5V7.5\" stroke=\"currentColor\"/><path d=\"M5.5 5L8 7.5L10.5 5\" stroke=\"currentColor\"/><path d=\"M5.5 11H10.5\" stroke=\"currentColor\"/></svg></span><svg class=\"c1-chevronHover c0-chevron\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></span><span class=\"c2-root\"><span class=\"c2-content\"><span class=\"c2-text c1-title\">上下文注入</span><span class=\"c0-sep\" aria-hidden=\"true\"></span><span class=\"c0-source\" data-context-source>plan-mode</span><span class=\"c0-sep\" aria-hidden=\"true\"></span><span class=\"c0-summary\" data-context-summary>The user switched this session to plan mode.</span></span></span></div></div></div></div>"
+        },
+        {
+          "label": "展开：技能目录正文（chevron 朝上 + 141px 代码块）",
+          "note": "打开态给根节点加 <code>data-open</code>（多 4px 下边距），摘要/生产者名仍在行内（keepContentWhenOpen）",
+          "pad": "lg",
+          "html": "<div style=\"width:660px\"><div class=\"c0-root c1-root\" data-open=\"true\"><div class=\"c1-header\" data-disclosure-header><div class=\"c1-row\" data-disclosure-row data-expandable=\"true\" role=\"button\" tabindex=\"0\" aria-expanded=\"true\"><span class=\"c1-leading\"><svg class=\"c0-chevron\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10\" stroke=\"currentColor\"/></svg></span><span class=\"c2-root\"><span class=\"c2-content\"><span class=\"c2-text c1-title\">上下文注入</span><span class=\"c0-sep\" aria-hidden=\"true\"></span><span class=\"c0-source\" data-context-source>skill-catalog</span></span></span></div></div><div class=\"c0-body\" data-context-injection-body data-context-form=\"catalog\"><ul class=\"c3-entries\" data-context-entries><li class=\"c3-entry\"><code class=\"c3-entryName\">code-review</code><span class=\"c3-entryDescription\">Review the changes since a fixed point along Standards and Spec axes.</span></li><li class=\"c3-entry\"><code class=\"c3-entryName\">research</code><span class=\"c3-entryDescription\">Investigate a question against high-trust primary sources and capture the findings as a Markdown file in the repo.</span></li><li class=\"c3-entry\"><code class=\"c3-entryName\">writing-for-agents</code><span class=\"c3-entryDescription\">Writing documents for agents. Use when creating or editing skills, or modifying AGENTS.md or CLAUDE.md.</span></li></ul></div></div></div>"
+        },
+        {
+          "label": "工具增删：折叠时的浏览图标 + 展开后的名单正文",
+          "note": "内容全为 tool-addition / tool-removal 时行首图标换成浏览图标（折叠行可见），展开后按 DisclosureRow 换成上箭头；摘要报增删数量、正文列名单",
+          "pad": "lg",
+          "html": "<div style=\"width:660px;display:flex;flex-direction:column;gap:2px\"><div class=\"c0-root c1-root\"><div class=\"c1-header\" data-disclosure-header><div class=\"c1-row\" data-disclosure-row data-expandable=\"true\" role=\"button\" tabindex=\"0\" aria-expanded=\"false\"><span class=\"c1-leading\"><span class=\"c1-iconIdle\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4.9375 5.90295H11.0625\" stroke=\"currentColor\"/><path d=\"M4.9375 9.02991H8.27841\" stroke=\"currentColor\"/><path d=\"M12.5 1.32617C13.3039 1.32617 14 1.95171 14 2.77637V13.2246C13.9996 14.0489 13.3036 14.6738 12.5 14.6738H3.5C2.69637 14.6738 2.00042 14.0489 2 13.2246V2.77637C2 1.95171 2.69613 1.32617 3.5 1.32617H12.5ZM3.5 2.32617C3.1993 2.32617 3 2.55186 3 2.77637V13.2246C3.00044 13.4489 3.19963 13.6738 3.5 13.6738H12.5C12.8004 13.6738 12.9996 13.4489 13 13.2246V2.77637C13 2.55186 12.8007 2.32617 12.5 2.32617H3.5Z\" fill=\"currentColor\"/></svg></span><svg class=\"c1-chevronHover c0-chevron\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></span><span class=\"c2-root\"><span class=\"c2-content\"><span class=\"c2-text c1-title\">工具已更新</span><span class=\"c0-sep\" aria-hidden=\"true\"></span><span class=\"c0-summary\">新增 2 个，移除 1 个</span></span></span></div></div></div><div class=\"c0-root c1-root\" data-open=\"true\"><div class=\"c1-header\" data-disclosure-header><div class=\"c1-row\" data-disclosure-row data-expandable=\"true\" role=\"button\" tabindex=\"0\" aria-expanded=\"true\"><span class=\"c1-leading\"><svg class=\"c0-chevron\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10\" stroke=\"currentColor\"/></svg></span><span class=\"c2-root\"><span class=\"c2-content\"><span class=\"c2-text c1-title\">工具已更新</span><span class=\"c0-sep\" aria-hidden=\"true\"></span><span class=\"c0-summary\">新增 2 个，移除 1 个</span></span></span></div></div><div class=\"c0-body\" data-context-injection-body><div class=\"c0-toolChanges\"><div>新增：mcp__srv__remote, mcp__srv__revived</div><div>移除：mcp__srv__stale</div></div></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "content",
+          "type": "ContextMessageNode['content']",
+          "default": "—",
+          "desc": "这一条非用户消息的内容块；全部是工具增删块时行头与正文改走工具变更形态。"
+        },
+        {
+          "name": "source",
+          "type": "ContextMessageNode['source']",
+          "default": "—",
+          "desc": "持久化来源，透传给 <code>contextBody</code> 决定用哪个 form 的正文。"
+        },
+        {
+          "name": "producer",
+          "type": "ContextMessageNode['producer']",
+          "default": "—",
+          "desc": "从来源投射出的 <code>{role, label}</code>：role 决定图标与标题（recall 换会话参考图标、标题「跨会话召回」），label 是行内生产者名；label 为 null 时连分隔点一起省掉。"
+        },
+        {
+          "name": "form",
+          "type": "ContextMessageNode['form']",
+          "default": "—",
+          "desc": "生产者声明的 form（instructions / catalog / snapshot / notice / relay / recall）；null 或读不成时渲染兜底正文，行头标注的是实际渲染出来的那个 form。"
+        },
+        {
+          "name": "t",
+          "type": "ChatViewSlotProps['t']",
+          "default": "—",
+          "desc": "所属视图的词典位：行标题、工具增删文案与正文内的截断提示。"
+        }
+      ],
+      "notes": "本地 <code>open</code> 状态由行自己持有（<code>useState</code>），行不写入任何会话状态。单条工具增删（<code>toolBlocks.length === 1</code>）是不可展开的：标题直接写成「已添加工具：X」/「已移除工具：X」，没有箭头也没有正文。可展开时 <code>expandOnRowClick</code> 让整行成为按钮（<code>role=\"button\"</code>、<code>tabindex=0</code>、Enter / 空格切换、<code>aria-expanded</code>），图标区本身仍是独立的展开按钮，所以键盘用户有两个等价入口。展开区 <code>max-height:141px</code> 内部滚动，宽度扣掉 22px 缩进与字体增量，长内容不会撑高整条会话。",
+      "keywords": [
+        "上下文注入",
+        "context injection",
+        "DisclosureRow",
+        "tool-registry",
+        "折叠行",
+        "form"
+      ]
+    },
+    {
+      "id": "generic-command-card",
+      "name": "GenericCommandCard",
+      "exportName": "GenericCommandCard",
+      "zh": "指令卡片",
+      "group": "conversation",
+      "summary": "普通斜杠命令在会话里的落点（<code>/compact</code>、<code>/model</code>、<code>/permission</code>、插件注册的命令）：一行 24px 的 DisclosureRow，左侧 14px 的 API 图标、标题是命令名（没有名字时兜底「指令」，字重 400），右侧 2×2 圆点后跟结果摘要——摘要就是结算文本本身，运行中回落到「执行中…」、成功无文本回落「已完成」、失败回落「指令失败」。摘要包在 TextShimmer 里，运行中整行扫光；失败时摘要转 <code>--dsw-alias-state-error-primary</code>。结果文本含换行时行变可展开，正文是 260px 上限的 <code>pre.body</code>（0.5px l1 描边、<code>--dsw-radius-lg</code> 圆角、代码块底色、<code>--dsw-font-markdown-code-block-small</code>）。",
+      "source": "packages/client/ui-chat/src/client/chat/GenericCommandCard.tsx#L29",
+      "css": [
+        "packages/client/ui-chat/src/client/chat/GenericCommandCard.module.css",
+        "packages/client/ui-primitives/src/DisclosureRow.module.css",
+        "packages/client/ui-primitives/src/TextShimmer.module.css",
+        "packages/client/ui-chat/src/client/chat/accessibility.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l1",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-shimmer",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-markdown-code-block",
+        "--dsw-alias-state-error-primary",
+        "--dsw-font-markdown-code-block-small",
+        "--dsw-radius-lg"
+      ],
+      "specimens": [
+        {
+          "label": "运行中：/compact 扫光",
+          "note": "没有换行结果时行不可展开，图标直接显示、不换成箭头；<code>data-shimmer</code> 那层装饰副本负责扫光",
+          "pad": "lg",
+          "html": "<div style=\"width:660px\"><div class=\"c0-root\" data-variant=\"others\" data-state=\"running\"><span class=\"c3-visuallyHidden\">运行中</span><div class=\"c1-root\"><div class=\"c1-header\" data-disclosure-header><div class=\"c1-row\" data-disclosure-row><span class=\"c1-leading c0-leading\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3 4L7 8L3 12\" stroke=\"currentColor\"/><path d=\"M9 12H13\" stroke=\"currentColor\"/></svg></span><span class=\"c2-root\" data-shimmer=\"true\"><span class=\"c2-content\"><span class=\"c2-text c1-title c0-title\">compact</span><span class=\"c0-separator\" data-shimmer-decoration=\"true\" aria-hidden=\"true\"></span><span class=\"c0-summary\"><span class=\"c2-text\" data-shimmer-text=\"执行中…\"></span></span></span><span class=\"c2-decoration\" aria-hidden=\"true\" inert=\"\"><span class=\"c2-sweep\"><span class=\"c2-content c2-highlight\"><span class=\"c2-text c1-title c0-title\" data-shimmer-text=\"compact\"></span><span class=\"c0-separator\" data-shimmer-decoration=\"true\" aria-hidden=\"true\"></span><span class=\"c0-summary\"><span class=\"c2-text\" data-shimmer-text=\"执行中…\"></span></span></span></span></span></span></div></div></div></div></div>"
+        },
+        {
+          "label": "完成：/model 没有结果文本",
+          "note": "命令结算没有 text 时摘要回落「已完成」，标题就是命令名 <code>node.name</code>",
+          "pad": "lg",
+          "html": "<div style=\"width:660px\"><div class=\"c0-root\" data-variant=\"others\" data-state=\"ok\"><div class=\"c1-root\"><div class=\"c1-header\" data-disclosure-header><div class=\"c1-row\" data-disclosure-row><span class=\"c1-leading c0-leading\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3 4L7 8L3 12\" stroke=\"currentColor\"/><path d=\"M9 12H13\" stroke=\"currentColor\"/></svg></span><span class=\"c2-root\"><span class=\"c2-content\"><span class=\"c2-text c1-title c0-title\">model</span><span class=\"c0-separator\" data-shimmer-decoration=\"true\" aria-hidden=\"true\"></span><span class=\"c0-summary\"><span class=\"c2-text\">已完成</span></span></span></span></div></div></div></div></div>"
+        },
+        {
+          "label": "展开：多行结果（插件命令）",
+          "note": "只有结果文本含换行才挂载正文；展开时图标换成上箭头，摘要仍留在行内",
+          "pad": "lg",
+          "html": "<div style=\"width:660px\"><div class=\"c0-root\" data-variant=\"others\" data-state=\"ok\"><div class=\"c1-root\"><div class=\"c1-header\" data-disclosure-header><div class=\"c1-row\" data-disclosure-row data-expandable=\"true\" role=\"button\" tabindex=\"0\" aria-expanded=\"true\"><span class=\"c1-leading c0-leading\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10\" stroke=\"currentColor\"/></svg></span><span class=\"c2-root\"><span class=\"c2-content\"><span class=\"c2-text c1-title c0-title\">goal</span><span class=\"c0-separator\" data-shimmer-decoration=\"true\" aria-hidden=\"true\"></span><span class=\"c0-summary\"><span class=\"c2-text\">目标：把 ContextInjectionRow 的六个 form 正文补齐</span></span></span></span></div></div><pre class=\"c0-body\">Goal\nStatus: active\nObjective: 把 ContextInjectionRow 的六个 form 正文补齐\nRounds: 3/8\nActivation: armed</pre></div></div></div>"
+        },
+        {
+          "label": "失败：/compact 带了参数",
+          "note": "<code>data-error</code> 让摘要转错误色；同一条规则也管正文",
+          "pad": "lg",
+          "html": "<div style=\"width:660px\"><div class=\"c0-root\" data-variant=\"others\" data-state=\"error\"><span class=\"c3-visuallyHidden\">失败</span><div class=\"c1-root\"><div class=\"c1-header\" data-disclosure-header><div class=\"c1-row\" data-disclosure-row><span class=\"c1-leading c0-leading\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3 4L7 8L3 12\" stroke=\"currentColor\"/><path d=\"M9 12H13\" stroke=\"currentColor\"/></svg></span><span class=\"c2-root\"><span class=\"c2-content\"><span class=\"c2-text c1-title c0-title\">compact</span><span class=\"c0-separator\" data-shimmer-decoration=\"true\" aria-hidden=\"true\"></span><span class=\"c0-summary\" data-error=\"true\"><span class=\"c2-text\">Usage: /compact (no arguments)</span></span></span></span></div></div></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "node",
+          "type": "CommandNode",
+          "default": "—",
+          "desc": "这一条命令的生命周期数据：<code>name</code> 是标题（null 时兜底「指令」），<code>outcome</code> 为 null 表示还在运行、否则按 <code>kind</code> 分成成功与失败。"
+        },
+        {
+          "name": "t",
+          "type": "ChatViewSlotProps['t']",
+          "default": "—",
+          "desc": "词典位：<code>command.running / command.failed / command.done / command.title</code>，以及行内无障碍播报 <code>row.running / row.failed</code>。"
+        },
+        {
+          "name": "runningSummary",
+          "type": "string | undefined",
+          "default": "undefined",
+          "desc": "运行中摘要的专用文案，缺省用「执行中…」；CompactionCommandCard 传「正在压缩…」这类更具体的说法。"
+        }
+      ],
+      "notes": "状态由 outcome 推导：null → running（整行扫光）、<code>kind === 'error'</code> → error、其余 → ok。运行中与失败时行首会加一段 <code>visuallyHidden</code> 文本（「运行中」/「失败」）供读屏播报，视觉上看不见。结果文本含换行时行才可展开（<code>role=\"button\"</code>、<code>tabindex=0</code>、<code>aria-expanded</code>），正文 <code>max-height:260px</code> 内部滚动；不含换行的单行结果只做摘要，不挂正文。它是 <code>conversation.chat.commandview</code> 的兜底实现，专用命令卡（如 CompactionCommandCard）优先。",
+      "keywords": [
+        "指令卡片",
+        "command",
+        "compact",
+        "斜杠命令",
+        "TextShimmer",
+        "命令结果"
+      ]
+    }
+  ]
+}

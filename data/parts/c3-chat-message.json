@@ -1,0 +1,629 @@
+{
+  "schemaVersion": 1,
+  "note": "消息节点视图（conversation）：用户提交回声、上下文 / 压缩 / 重试 / 上限 / 未知事件五种节点、跨框架的额度提示宿主，以及思考正文、运行状态与鲸鱼图标。门户 Toast 与跑动的鲸鱼图标在预览页各有一处静态回退，均写在各示例的 css 里。",
+  "entries": [
+    {
+      "id": "pending-submission-bubble",
+      "name": "PendingSubmissionBubble",
+      "exportName": "PendingSubmissionBubble",
+      "zh": "提交回声",
+      "group": "conversation",
+      "summary": "本地提交回声：点下发送后、耐久 <code>user/message</code> 落库前立刻显示的用户气泡，观感与落库后的用户行完全一致——右对齐 <code>.userStack</code>，宽度上限 <code>min(calc(var(--dsh-chat-content-width, 748px) * 0.702), 82%)</code>，气泡 <code>--dsw-radius-xl</code> 圆角、10px 16px 内边距、14px/22px 正文。附件预览排在气泡上方（240px 宽、最小高 64px 的文件卡），下方是带时间戳的复制操作行。它只多两个不参与样式的标记：<code>data-submission-echo</code> 恒有，<code>data-pending-steering</code> 仅当 <code>placement === &#39;steering&#39;</code>。",
+      "source": "packages/client/ui-chat/src/client/chat/MessageItem.tsx#L251",
+      "css": [
+        "packages/client/ui-chat/src/client/chat/MessageItem.module.css",
+        "packages/client/ui-chat/src/client/chat/MessageIconActions.module.css",
+        "packages/client/ui-conversation/src/client/user-text/UserText.module.css",
+        "packages/client/ui-primitives/src/user-text.module.css",
+        "packages/client/ui-primitives/src/FileTypeIcon.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-base",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-interactive-bg-hover-solid",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-state-business-primary",
+        "--dsw-alias-state-error-primary",
+        "--dsw-alias-state-warn-primary",
+        "--dsw-focus-ring-color",
+        "--dsw-font-markdown-code-block-small",
+        "--dsw-radius-lg",
+        "--dsw-radius-sm",
+        "--dsw-radius-xl",
+        "--dsw-specific-bubble",
+        "--dsw-specific-input-major",
+        "--dsw-static-neutral-400",
+        "--dsw-static-neutral-bluish-300"
+      ],
+      "specimens": [
+        {
+          "label": "提交回声：文本 + 时间戳（transcript 放置）",
+          "note": "data-submission-echo 标记不可见",
+          "html": "<div style=\"width:640px\"><div class=\"userRow\" data-submission-echo=\"true\"><div class=\"userStack\"><div class=\"bubble\"><span class=\"root\"><span class=\"plainRun\">把 MessageItem 里的重试行与上限提示补上，然后跑一遍 pnpm run test:gui</span></span></div></div><div class=\"actions\" data-clock=\"start\"><span class=\"timeStart\">14:36</span><button type=\"button\" class=\"action\" aria-label=\"复制\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><rect x=\"1.52075\" y=\"4.07373\" width=\"10.3932\" height=\"10.3932\" rx=\"2\" stroke=\"currentColor\"/><path d=\"M11.9792 1.53296C13.36 1.53296 14.4792 2.65225 14.4792 4.03296V9.42847C14.4792 10.3756 13.9521 11.1987 13.1755 11.6228V10.3298C13.3652 10.0787 13.4792 9.7674 13.4792 9.42847V4.03296C13.4792 3.20453 12.8077 2.53296 11.9792 2.53296H6.58374C6.27966 2.53301 5.99684 2.6235 5.7605 2.77905H4.42358C4.85652 2.03463 5.66056 1.53304 6.58374 1.53296H11.9792Z\" fill=\"currentColor\"/></svg></button></div></div></div>"
+        },
+        {
+          "label": "steering 放置 + 附件预览：文件卡在气泡上方",
+          "note": "data-pending-steering 只在 placement 为 steering 时出现",
+          "html": "<div style=\"width:640px\"><div class=\"userRow\" data-pending-steering=\"true\" data-submission-echo=\"true\"><div class=\"userStack\"><div class=\"attachmentRow\" data-message-attachments=\"true\"><span class=\"fileCard\" title=\"notes.txt\"><svg width=\"28\" height=\"28\" class=\"icon other fileIcon\" viewBox=\"0 0 28 28\" fill=\"none\" aria-hidden=\"true\"><path d=\"M8.48924 28H19.5108C21.6479 28 22.7165 28 23.5594 27.6509C24.6833 27.1853 25.5762 26.2924 26.0417 25.1685C26.3909 24.3256 26.3909 23.257 26.3909 21.1199V8.79443C26.3909 8.32877 26.3909 8.09593 26.3471 7.87507C26.2887 7.58058 26.173 7.30042 26.0067 7.05048C25.882 6.86303 25.7177 6.69799 25.3893 6.36792L20.0611 1.01354C19.7304 0.681235 19.5651 0.515081 19.3769 0.38885C19.126 0.220541 18.8443 0.103463 18.5481 0.0443412C18.3259 0 18.0915 0 17.6226 0H8.48924C6.35209 0 5.28351 0 4.4406 0.349145C3.31672 0.814671 2.4238 1.70759 1.95828 2.83147C1.60913 3.67438 1.60913 4.74296 1.60913 6.88011V21.1199C1.60913 23.257 1.60913 24.3256 1.95828 25.1685C2.4238 26.2924 3.31672 27.1853 4.4406 27.6509C5.28351 28 6.35209 28 8.48924 28Z\" fill=\"currentColor\"/><path d=\"M26.3909 7.37445L19.0525 0V3.77445C19.0525 4.89271 19.0525 5.45184 19.2352 5.89289C19.4788 6.48096 19.946 6.94818 20.5341 7.19176C20.9751 7.37445 21.5342 7.37445 22.6525 7.37445H26.3909Z\" fill=\"var(--dsw-static-neutral-400)\"/></svg><span class=\"fileContent\"><span class=\"fileName\">notes.txt</span><span class=\"fileMeta\">TXT 3.1KB</span></span></span></div><div class=\"bubble\"><span class=\"root\"><span class=\"plainRun\">先按 notes.txt 里的清单核对一遍，再补 MessageIconActions 的复制按钮</span></span></div></div><div class=\"actions\" data-clock=\"start\"><span class=\"timeStart\">14:37</span><button type=\"button\" class=\"action\" aria-label=\"复制\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><rect x=\"1.52075\" y=\"4.07373\" width=\"10.3932\" height=\"10.3932\" rx=\"2\" stroke=\"currentColor\"/><path d=\"M11.9792 1.53296C13.36 1.53296 14.4792 2.65225 14.4792 4.03296V9.42847C14.4792 10.3756 13.9521 11.1987 13.1755 11.6228V10.3298C13.3652 10.0787 13.4792 9.7674 13.4792 9.42847V4.03296C13.4792 3.20453 12.8077 2.53296 11.9792 2.53296H6.58374C6.27966 2.53301 5.99684 2.6235 5.7605 2.77905H4.42358C4.85652 2.03463 5.66056 1.53304 6.58374 1.53296H11.9792Z\" fill=\"currentColor\"/></svg></button></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "submission",
+          "type": "PendingSubmission",
+          "default": "—",
+          "desc": "本地提交流水：<code>requestId</code>、<code>placement</code>（transcript / queued / steering）、客户端提交时间 <code>time</code>、<code>text</code> 与按顺序排好的 <code>attachments</code>。"
+        },
+        {
+          "name": "loadImage",
+          "type": "MessageImageLoader",
+          "default": "—",
+          "desc": "会话授权的图片加载器，透传给 <code>conversation.chat.user.content</code>。"
+        },
+        {
+          "name": "renderFactorySlot",
+          "type": "PropsRenderFactories[&#39;renderFactorySlot&#39;]",
+          "default": "—",
+          "desc": "渲染 <code>conversation.chat.user.content</code> Factory 的座位，官方实现是 <code>UserContent</code>。"
+        },
+        {
+          "name": "t",
+          "type": "ChatViewSlotProps[&#39;t&#39;]",
+          "default": "—",
+          "desc": "<code>chat</code> 命名空间的本地化座位（复制 / 分支等动作）。"
+        }
+      ],
+      "notes": "与 <code>PendingSteeringBubble</code> 共用同一个 <code>UserStyleBubble</code>：插话没有时间戳、也不带 <code>data-submission-echo</code>；提交回声恒带该标记，并多一个 <code>submission.time</code> 时钟。图片附件走 <code>conversation.chat.user.images</code> 槽位（不在本条样式表内），文件附件用 240px 文件卡 + <code>FileTypeIcon</code>。回声只存在于客户端内存，重连或刷新后按耐久事件重建。"
+    },
+    {
+      "id": "context-message-node-view",
+      "name": "ContextMessageNodeView",
+      "exportName": "ContextMessageNodeView",
+      "zh": "上下文节点",
+      "group": "conversation",
+      "summary": "被注入的上下文（用户以外的耐久消息）沿用 Tool calls 的披露骨架：24px 整行，左侧 16px 槽里放上下文图标，悬停 / 聚焦时 100ms 交叉淡入箭头；标题按角色取「上下文注入」或「跨会话召回」，其后是 2×2px 分隔点、生产者名与单行省略的摘要。展开后正文缩进 22px、11px/16px 排进最大高 141px 的可滚动代码底板块，内容按 <code>form</code> 分派：<code>instructions</code> 列文件、<code>catalog</code> 列条目与替换提示、<code>snapshot</code> / <code>recall</code> / <code>relay</code> / <code>notice</code> 各有版式，读不出来时退回不透明正文。",
+      "source": "packages/client/ui-chat/src/client/chat/MessageItem.tsx#L324",
+      "css": [
+        "packages/client/ui-chat/src/client/chat/ContextInjectionRow.module.css",
+        "packages/client/ui-primitives/src/DisclosureRow.module.css",
+        "packages/client/ui-primitives/src/TextShimmer.module.css",
+        "packages/client/ui-chat/src/client/chat/ContextBody.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l2",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-shimmer",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-markdown-code-block",
+        "--dsw-radius-md"
+      ],
+      "specimens": [
+        {
+          "label": "折叠：notice 形式（生产者 + 一行摘要）",
+          "note": "整行都是展开热区，图标悬停时换成箭头",
+          "html": "<div style=\"width:640px\"><div class=\"c0-root c1-root\"><div class=\"c1-header\" data-disclosure-header=\"true\"><div class=\"c1-row\" data-disclosure-row=\"true\" data-expandable=\"true\" role=\"button\" tabindex=\"0\" aria-expanded=\"false\"><span class=\"c1-leading\"><span class=\"c1-iconIdle\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M5 2.5H3.5C3.23478 2.5 2.98043 2.60536 2.79289 2.79289C2.60536 2.98043 2.5 3.23478 2.5 3.5V13.5C2.5 13.7652 2.60536 14.0196 2.79289 14.2071C2.98043 14.3946 3.23478 14.5 3.5 14.5H12.5C12.7652 14.5 13.0196 14.3946 13.2071 14.2071C13.3946 14.0196 13.5 13.7652 13.5 13.5V3.5C13.5 3.23478 13.3946 2.98043 13.2071 2.79289C13.0196 2.60536 12.7652 2.5 12.5 2.5H11\" stroke=\"currentColor\"/><path d=\"M8 0.5V7.5\" stroke=\"currentColor\"/><path d=\"M5.5 5L8 7.5L10.5 5\" stroke=\"currentColor\"/><path d=\"M5.5 11H10.5\" stroke=\"currentColor\"/></svg></span><svg class=\"c0-chevron c1-chevronHover\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></span><span class=\"c2-root\"><span class=\"c2-content\"><span class=\"c2-text c1-title\">上下文注入</span><span class=\"c0-sep\" aria-hidden=\"true\"></span><span class=\"c0-source\" data-context-source=\"true\">deepseek-harness</span><span class=\"c0-sep\" aria-hidden=\"true\"></span><span class=\"c0-summary\" data-context-summary=\"true\">索引重建完成，纳入 128 个文件</span></span></span></div></div></div></div>"
+        },
+        {
+          "label": "展开：instructions 形式（文件清单 + 模型可见正文）",
+          "note": "正文最大高 141px，超出在块内滚动",
+          "html": "<div style=\"width:640px\"><div class=\"c0-root c1-root\" data-open=\"true\"><div class=\"c1-header\" data-disclosure-header=\"true\"><div class=\"c1-row\" data-disclosure-row=\"true\" data-expandable=\"true\" role=\"button\" tabindex=\"0\" aria-expanded=\"true\"><span class=\"c1-leading\"><svg class=\"c0-chevron\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10\" stroke=\"currentColor\"/></svg></span><span class=\"c2-root\"><span class=\"c2-content\"><span class=\"c2-text c1-title\">上下文注入</span><span class=\"c0-sep\" aria-hidden=\"true\"></span><span class=\"c0-source\" data-context-source=\"true\">deepseek-harness</span><span class=\"c0-sep\" aria-hidden=\"true\"></span><span class=\"c0-source\" data-context-source=\"true\">AGENTS.md · packages/client/AGENTS.md</span><span class=\"c0-sep\" aria-hidden=\"true\"></span><span class=\"c0-summary\" data-context-summary=\"true\">已载入 2 个文件</span></span></span></div></div><div class=\"c0-body\" data-context-injection-body=\"true\" data-context-form=\"instructions\"><ul class=\"c3-files\" data-context-files=\"true\"><li class=\"c3-file\"><span class=\"c3-filePath\">AGENTS.md</span><span class=\"c3-fileAction\">已载入</span></li><li class=\"c3-file\"><span class=\"c3-filePath\">packages/client/AGENTS.md</span><span class=\"c3-fileAction\">已载入</span></li></ul><pre class=\"c3-text\" data-context-text=\"true\">&lt;system-reminder&gt;\nThe following workspace instructions may be relevant to your work. Use them as guidance when applicable. More specific instructions take precedence over broader ones. They do not override system, developer, or direct user instructions.\n\nInstructions from: AGENTS.md\n\n# AGENTS.md\n\nDeepSeek Harness is an all-plugin Cordis agent harness. Read docs/architecture.md before changing packages/.\n&lt;/system-reminder&gt;</pre></div></div></div>"
+        },
+        {
+          "label": "展开：catalog 形式（目录替换 + 条目列表）",
+          "note": "form 由生产者声明，读不出来时退回不透明正文",
+          "html": "<div style=\"width:640px\"><div class=\"c0-root c1-root\" data-open=\"true\"><div class=\"c1-header\" data-disclosure-header=\"true\"><div class=\"c1-row\" data-disclosure-row=\"true\" data-expandable=\"true\" role=\"button\" tabindex=\"0\" aria-expanded=\"true\"><span class=\"c1-leading\"><svg class=\"c0-chevron\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10\" stroke=\"currentColor\"/></svg></span><span class=\"c2-root\"><span class=\"c2-content\"><span class=\"c2-text c1-title\">上下文注入</span><span class=\"c0-sep\" aria-hidden=\"true\"></span><span class=\"c0-source\" data-context-source=\"true\">deepseek-harness</span><span class=\"c0-sep\" aria-hidden=\"true\"></span><span class=\"c0-source\" data-context-source=\"true\">skill-catalog</span></span></span></div></div><div class=\"c0-body\" data-context-injection-body=\"true\" data-context-form=\"catalog\"><p class=\"c3-catalogNotice\" data-context-catalog-update=\"true\">替换目录</p><ul class=\"c3-entries\" data-context-entries=\"true\"><li class=\"c3-entry\"><code class=\"c3-entryName\">code-review</code><span class=\"c3-entryDescription\">按 Standards 与 Spec 两轴评审改动</span></li><li class=\"c3-entry\"><code class=\"c3-entryName\">frontend-design</code><span class=\"c3-entryDescription\">给界面挑一套不雷同的视觉方向</span></li><li class=\"c3-entry\"><code class=\"c3-entryName\">tdd</code><span class=\"c3-entryDescription\">先红后绿地推进功能</span></li></ul></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "node",
+          "type": "ChatNodeViewProps[&#39;context&#39;][&#39;node&#39;]",
+          "default": "—",
+          "desc": "<code>kind: &#39;context&#39;</code> 的节点：<code>content</code> 原始内容块、<code>source</code> 耐久来源、投影出的 <code>producer</code>（角色 + 名称）与生产者声明的 <code>form</code>。"
+        },
+        {
+          "name": "t",
+          "type": "ChatViewSlotProps[&#39;t&#39;]",
+          "default": "—",
+          "desc": "<code>chat</code> 命名空间的本地化座位（上下文注入 / 召回 / 工具更新文案）。"
+        }
+      ],
+      "notes": "标题按 <code>producer.role</code> 分流：<code>recall</code> 取 <code>message.contextRecall</code> 并改用会话引用图标；<code>producer.label</code> 为 null 时连分隔点一起省掉。整行内容全是 <code>tool-addition</code> / <code>tool-removal</code> 块时换成浏览图标、标题 <code>message.toolsUpdated</code>，且行内退化成只读摘要（不展开）。展开区 <code>max-height: 141px</code>、11px/16px 等宽字体来自 Figma 10:2482。"
+    },
+    {
+      "id": "compaction-node-view",
+      "name": "CompactionNodeView",
+      "exportName": "CompactionNodeView",
+      "zh": "压缩节点",
+      "group": "conversation",
+      "summary": "自动上下文压缩的标记行，内部即 <code>CompactionItem</code>：<code>calc(24px + 字体增量)</code> 高的整宽按钮，左侧 16px 槽里上下文图标与展开箭头叠放，悬停 / 聚焦时交叉淡入；中间是 13px 标题（自动压缩固定「上下文已压缩」）、2×2 分隔点与省略号截断的摘要「已压缩 N 条历史记录（约 M tokens）」。只有 checkpoint 摘要还在当前窗口内时按钮才可展开；展开后摘要以 <code>MarkdownText</code> 的 body 变体压在 <code>.compactionBody</code> 里，按钮转成 <code>position: sticky</code> 顶栏并改用 <code>--dsw-alias-bg-base</code> 遮住滚动的正文。",
+      "source": "packages/client/ui-chat/src/client/chat/MessageItem.tsx#L338",
+      "css": [
+        "packages/client/ui-chat/src/client/chat/MessageItem.module.css",
+        "packages/client/ui-primitives/src/markdown/MarkdownText.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-base",
+        "--dsw-alias-border-l1",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-interactive-bg-hover-solid",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-link",
+        "--dsw-alias-markdown-inline-code",
+        "--dsw-alias-state-business-primary",
+        "--dsw-alias-state-error-primary",
+        "--dsw-alias-state-warn-primary",
+        "--dsw-focus-ring-color",
+        "--dsw-focus-ring-width",
+        "--dsw-font-markdown-base",
+        "--dsw-font-markdown-base-strong",
+        "--dsw-font-markdown-code",
+        "--dsw-font-markdown-code-block-small",
+        "--dsw-font-markdown-h1",
+        "--dsw-font-markdown-h2",
+        "--dsw-font-markdown-h3",
+        "--dsw-font-markdown-h4",
+        "--dsw-font-markdown-table",
+        "--dsw-font-markdown-table-head",
+        "--dsw-radius-lg",
+        "--dsw-radius-md",
+        "--dsw-radius-sm",
+        "--dsw-radius-xl",
+        "--dsw-radius-xs",
+        "--dsw-specific-bubble",
+        "--dsw-specific-input-major"
+      ],
+      "specimens": [
+        {
+          "label": "折叠：自动压缩（默认标题）",
+          "note": "与手动压缩的差别只有标题：这里固定取 message.compaction",
+          "html": "<div style=\"width:640px\"><div class=\"c0-compactionRow\"><button type=\"button\" class=\"c0-compactionButton\" aria-expanded=\"false\"><span class=\"c0-compactionLeading\" aria-hidden=\"true\"><span class=\"c0-compactionContextIcon\" data-compaction-icon=\"context\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3 4L7 8L3 12\" stroke=\"currentColor\"/><path d=\"M9 12H13\" stroke=\"currentColor\"/></svg></span><span class=\"c0-compactionDisclosureIcon\" data-compaction-disclosure=\"collapsed\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4\" stroke=\"currentColor\"/></svg></span></span><span class=\"c0-compactionTitle\">上下文已压缩</span><span class=\"c0-compactionSep\" aria-hidden=\"true\"></span><span class=\"c0-compactionSummary\">已压缩 128 条历史记录（约 46,000 tokens）</span></button></div></div>"
+        },
+        {
+          "label": "展开：checkpoint 摘要（MarkdownText）",
+          "note": "按钮变 sticky 顶栏并用 bg-base 遮住正文",
+          "html": "<div style=\"width:640px\"><div class=\"c0-compactionRow\"><button type=\"button\" class=\"c0-compactionButton\" aria-expanded=\"true\"><span class=\"c0-compactionLeading\" aria-hidden=\"true\"><span class=\"c0-compactionContextIcon\" data-compaction-icon=\"context\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3 4L7 8L3 12\" stroke=\"currentColor\"/><path d=\"M9 12H13\" stroke=\"currentColor\"/></svg></span><span class=\"c0-compactionDisclosureIcon\" data-compaction-disclosure=\"expanded\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></span></span><span class=\"c0-compactionTitle\">上下文已压缩</span><span class=\"c0-compactionSep\" aria-hidden=\"true\"></span><span class=\"c0-compactionSummary\">已压缩 128 条历史记录（约 46,000 tokens）</span></button><div class=\"c0-compactionBody\"><div class=\"c1-markdown\"><p>较早的 128 条历史记录已折叠成这一段结论，只保留仍然需要的上下文：</p><ul><li>会话节点的分组与折叠判据不变，<code>conversation.chat.flow</code> 继续只管行序。</li><li>丢弃 96 次工具调用的中间输出，token 估算 46,000。</li></ul></div></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "node",
+          "type": "ChatNodeViewProps[&#39;compaction&#39;][&#39;node&#39;][&#39;data&#39;]",
+          "default": "—",
+          "desc": "checkpoint 记录：<code>summary</code>（窗口外为 null）、<code>shadowedItemCount</code> 与 <code>shadowedTokenCount</code>。"
+        },
+        {
+          "name": "t",
+          "type": "ChatViewSlotProps[&#39;t&#39;]",
+          "default": "—",
+          "desc": "<code>chat</code> 命名空间的本地化座位（压缩文案与 Markdown 控件文案）。"
+        }
+      ],
+      "notes": "本条只是把 <code>compaction</code> 节点接到 <code>CompactionItem</code> 上，因此不传 <code>title</code> 与 <code>fallbackSummary</code>：手动压缩走 <code>ManualCompactionNodeView</code>（传 <code>title=\"compact\"</code>）。<code>node.summary</code> 为 null 时按钮 <code>disabled</code>、摘要显示「压缩摘要不可用」，该态与 <code>compaction-item</code> 条目一致。标记不替换被压缩掉的历史行，只插在它们的位置上。"
+    },
+    {
+      "id": "retry-node-view",
+      "name": "RetryNodeView",
+      "exportName": "RetryNodeView",
+      "zh": "重试节点",
+      "group": "conversation",
+      "summary": "模型请求重试链的当前一节：一个原生 <code>&lt;details&gt;</code>，summary 是 13px 三级色的一行状态——「等待重试模型请求（1/5） · 3s」由标签、重试序号 / 上限与剩余秒数拼成，<code>scheduled</code> 期间秒数每 250ms 递减。折叠箭头是 6px 的 CSS 方块：收起时 <code>rotate(-45deg)</code>，<code>[open]</code> 后转成 45°；展开区缩进 14px，逐行列出重试延迟与失败原因。只有 <code>scheduled</code> 状态整行走 TextShimmer 扫光，其余状态静止。",
+      "source": "packages/client/ui-chat/src/client/chat/MessageItem.tsx#L343",
+      "css": [
+        "packages/client/ui-chat/src/client/chat/MessageItem.module.css",
+        "packages/client/ui-primitives/src/TextShimmer.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-base",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-interactive-bg-hover-solid",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-shimmer",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-state-business-primary",
+        "--dsw-alias-state-error-primary",
+        "--dsw-alias-state-warn-primary",
+        "--dsw-focus-ring-color",
+        "--dsw-font-markdown-code-block-small",
+        "--dsw-radius-lg",
+        "--dsw-radius-sm",
+        "--dsw-radius-xl",
+        "--dsw-specific-bubble",
+        "--dsw-specific-input-major"
+      ],
+      "specimens": [
+        {
+          "label": "等待重试：倒计时 + 扫光",
+          "note": "状态模拟：扫光动画暂停在扫过中段",
+          "html": "<div style=\"width:640px\"><details class=\"retryRow\" data-active=\"true\"><summary class=\"retrySummary\"><span class=\"retryText\" role=\"status\"><span class=\"c1-root\" data-shimmer=\"true\"><span class=\"c1-content\"><span class=\"c1-text\">等待重试模型请求（1/5） · 3s</span></span><span class=\"c1-decoration\" aria-hidden=\"true\" inert=\"\"><span class=\"c1-sweep\"><span class=\"c1-content c1-highlight\"><span class=\"c1-text\" data-shimmer-text=\"等待重试模型请求（1/5） · 3s\"></span></span></span></span></span></span></summary></details></div>",
+          "css": "/* 状态模拟：1.5s 无限循环的 dsh-row-shimmer-sweep / -highlight 暂停在扫过中段，静态呈现重试中的扫光。 */\n.c1-sweep, .c1-content.c1-highlight { animation-play-state: paused; animation-delay: -0.75s; }"
+        },
+        {
+          "label": "展开详情：延迟 + 失败原因",
+          "note": "原生 details 的 open 态，箭头翻成 45°",
+          "html": "<div style=\"width:640px\"><details class=\"retryRow\" data-active=\"true\" open=\"\"><summary class=\"retrySummary\"><span class=\"retryText\" role=\"status\"><span class=\"c1-root\" data-shimmer=\"true\"><span class=\"c1-content\"><span class=\"c1-text\">等待重试模型请求（1/5） · 2s</span></span><span class=\"c1-decoration\" aria-hidden=\"true\" inert=\"\"><span class=\"c1-sweep\"><span class=\"c1-content c1-highlight\"><span class=\"c1-text\" data-shimmer-text=\"等待重试模型请求（1/5） · 2s\"></span></span></span></span></span></span></summary><div class=\"retryDetails\"><div><span class=\"retryDetailLabel\">重试延迟：</span>2500毫秒</div><div><span class=\"retryDetailLabel\">失败原因：</span>当前请求的额度已用尽</div></div></details></div>",
+          "css": "/* 状态模拟：扫光动画暂停在扫过中段；展开态用真实的 details[open] 静态呈现。 */\n.c1-sweep, .c1-content.c1-highlight { animation-play-state: paused; animation-delay: -0.75s; }"
+        },
+        {
+          "label": "已重试（非 scheduled）：无扫光，上限为 ∞",
+          "note": "retryState 变成 started 后整行静止",
+          "html": "<div style=\"width:640px\"><details class=\"retryRow\"><summary class=\"retrySummary\"><span class=\"retryText\" role=\"status\"><span class=\"c1-root\"><span class=\"c1-content\"><span class=\"c1-text\">已重试模型请求（2/∞） · 8s</span></span></span></span></summary></details></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "node",
+          "type": "ChatNodeViewProps[&#39;model-retry&#39;][&#39;node&#39;]",
+          "default": "—",
+          "desc": "重试链节点：<code>data.current</code> 是当前 <code>ModelRetryNode</code>（<code>retry</code> / <code>maxRetries</code> / <code>delayMs</code> / <code>mode</code> / <code>failure</code> / <code>retryState</code>）。"
+        },
+        {
+          "name": "t",
+          "type": "ChatViewSlotProps[&#39;t&#39;]",
+          "default": "—",
+          "desc": "<code>chat</code> 命名空间的本地化座位（重试状态、延迟毫秒、失败文案）。"
+        }
+      ],
+      "notes": "倒计时以浏览器首次渲染该节点的时间为锚（<code>Date.now() + delayMs</code>），因为宿主事件时间与本机时钟可能不同；<code>active</code> 只在 <code>retryState === &#39;scheduled&#39;</code> 时为真。秒数由 <code>retrySeconds</code> 向上取整且最小 1，上限取 <code>mode === &#39;normal&#39; ? maxRetries : &#39;∞&#39;</code>。失败原因按 code 换成中性文案：<code>ACCOUNT_SIGNED_OUT</code> / <code>INTERRUPTED</code> / <code>ACCOUNT_SIGN_IN_REQUIRED</code> / <code>QUOTA</code> / <code>ACCOUNT_QUOTA</code> / <code>AUTH</code>。"
+    },
+    {
+      "id": "turn-max-tokens-node-view",
+      "name": "TurnMaxTokensNodeView",
+      "exportName": "TurnMaxTokensNodeView",
+      "zh": "上限提示",
+      "group": "conversation",
+      "summary": "输出 token 触顶的常驻提示行：与失败行共用 <code>.turnErrorRow</code> 的三列网格（10px 状态点 / <code>minmax(0,1fr)</code> / auto、间距 8px、<code>padding: 2px 0</code>），但状态点取 warning 色、标题用 <code>--dsw-alias-state-warn-primary</code> 加粗。标题固定「已达到输出 token 上限」，后面跟「回答被截断，已有输出保留在对话中。发送“继续”可让模型接着输出。」——13px/20px，长文案在窄列里靠 <code>overflow-wrap: anywhere</code> 折行。",
+      "source": "packages/client/ui-chat/src/client/chat/MessageItem.tsx#L354",
+      "css": [
+        "packages/client/ui-chat/src/client/chat/MessageItem.module.css",
+        "packages/client/ui-primitives/src/StateDot.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-base",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-interactive-bg-hover-solid",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-primary-foreground",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-state-business-primary",
+        "--dsw-alias-state-error-primary",
+        "--dsw-alias-state-idle-primary",
+        "--dsw-alias-state-success-primary",
+        "--dsw-alias-state-warn-primary",
+        "--dsw-focus-ring-color",
+        "--dsw-font-markdown-code-block-small",
+        "--dsw-radius-lg",
+        "--dsw-radius-sm",
+        "--dsw-radius-xl",
+        "--dsw-specific-bubble",
+        "--dsw-specific-input-major"
+      ],
+      "specimens": [
+        {
+          "label": "默认列宽：warning 点 + 加粗标题 + 一句提示",
+          "note": "role=\"status\" 常驻，不随折叠消失",
+          "html": "<div style=\"width:640px\"><div class=\"turnErrorRow\" role=\"status\"><span class=\"dot turnErrorDot\" data-state=\"warning\" aria-hidden=\"true\" style=\"width:10px;height:10px\"></span><div class=\"turnErrorCopy\"><span class=\"maxTokensTitle\">已达到输出 token 上限</span><span class=\"turnErrorMessage\">回答被截断，已有输出保留在对话中。发送“继续”可让模型接着输出。</span></div></div></div>"
+        },
+        {
+          "label": "窄列：长文案在 minmax(0,1fr) 列里折行",
+          "note": "状态点与标题的对齐由 5px 下沉维持",
+          "html": "<div style=\"width:320px\"><div class=\"turnErrorRow\" role=\"status\"><span class=\"dot turnErrorDot\" data-state=\"warning\" aria-hidden=\"true\" style=\"width:10px;height:10px\"></span><div class=\"turnErrorCopy\"><span class=\"maxTokensTitle\">已达到输出 token 上限</span><span class=\"turnErrorMessage\">回答被截断，已有输出保留在对话中。发送“继续”可让模型接着输出。</span></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "node",
+          "type": "ChatNodeViewProps[&#39;turn-max-tokens&#39;][&#39;node&#39;]",
+          "default": "—",
+          "desc": "<code>kind: &#39;turn-max-tokens&#39;</code> 的节点；该渲染器不读它的内容，文案完全来自词典。"
+        },
+        {
+          "name": "t",
+          "type": "ChatViewSlotProps[&#39;t&#39;]",
+          "default": "—",
+          "desc": "<code>chat</code> 命名空间的本地化座位（<code>message.maxTokens</code> 与 <code>message.maxTokens.hint</code>）。"
+        }
+      ],
+      "notes": "这是 <code>turn/end</code> 因输出 token 上限截断时插入的节点，与 <code>TurnErrorNodeView</code>（红色状态点、可带 code 芯片）共用骨架但语义不同：warning 点、warning 标题、没有 code 芯片。文案来自词典，因此不跟随模型语言。"
+    },
+    {
+      "id": "unknown-node-view",
+      "name": "UnknownNodeView",
+      "exportName": "UnknownNodeView",
+      "zh": "未知事件",
+      "group": "conversation",
+      "summary": "未识别 surface 事件的兜底行：<code>.contextRow</code> 里嵌一个 <code>JsonBlock</code>，折叠时只有一枚 12px 的可点按钮「▸ 未知 surface 事件：developer/message」，展开后是 0.5px 描边、最大高 200px 内滚动的 <code>pre</code>，按两空格缩进打印事件 payload，超过 20,000 字符时在末尾追加截断说明。它保证新版本或第三方插件写入的事件在读端至少能看到原始数据，而不是被静默丢掉。",
+      "source": "packages/client/ui-chat/src/client/chat/MessageItem.tsx#L359",
+      "css": [
+        "packages/client/ui-chat/src/client/chat/MessageItem.module.css",
+        "packages/client/ui-primitives/src/markdown/JsonBlock.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-base",
+        "--dsw-alias-border-l1",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-interactive-bg-hover-solid",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-markdown-code-block",
+        "--dsw-alias-state-business-primary",
+        "--dsw-alias-state-error-primary",
+        "--dsw-alias-state-warn-primary",
+        "--dsw-focus-ring-color",
+        "--dsw-font-markdown-code-block-small",
+        "--dsw-radius-lg",
+        "--dsw-radius-sm",
+        "--dsw-radius-xl",
+        "--dsw-specific-bubble",
+        "--dsw-specific-input-major"
+      ],
+      "specimens": [
+        {
+          "label": "折叠：只有一行可点按钮",
+          "note": "type 直接来自事件类型",
+          "html": "<div style=\"width:640px\"><div class=\"contextRow\"><div class=\"c1-root\"><button type=\"button\" class=\"c1-toggle\">▸ 未知 surface 事件：developer/message</button></div></div></div>"
+        },
+        {
+          "label": "展开：原始 payload（JSON）",
+          "note": "缩进两空格，超长时末尾追加截断说明",
+          "html": "<div style=\"width:640px\"><div class=\"contextRow\"><div class=\"c1-root\"><button type=\"button\" class=\"c1-toggle\">▾ 未知 surface 事件：developer/message</button><pre class=\"c1-body\">{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"检查 packages/client/ui-chat 的节点渲染器注册顺序\"\n    }\n  ]\n}</pre></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "node",
+          "type": "ChatNodeViewProps[&#39;unknown&#39;][&#39;node&#39;][&#39;data&#39;]",
+          "default": "—",
+          "desc": "<code>UnknownSurfaceNode</code>：<code>type</code> 是未被认领的事件类型，<code>data</code> 是事件原始 payload。"
+        },
+        {
+          "name": "t",
+          "type": "ChatViewSlotProps[&#39;t&#39;]",
+          "default": "—",
+          "desc": "<code>chat</code> 命名空间的本地化座位（<code>message.unknownSurface</code> 与截断文案）。"
+        }
+      ],
+      "notes": "只有未被任何 Definition 认领的 append-surface 事件才会落到这里（<code>match</code> 排除 <code>assistant/live-chunk</code>）。它与 <code>ContextBody</code> 里「未知内容块」的 JsonBlock 是两个不同的兜底：一个兜事件，一个兜内容块。按钮文字里的三角是 <code>▸</code> / <code>▾</code>，不是图标。"
+    },
+    {
+      "id": "quota-notice-host",
+      "name": "QuotaNoticeHost",
+      "exportName": "QuotaNoticeHost",
+      "zh": "额度提示",
+      "group": "conversation",
+      "summary": "横跨整个框架的额度提示宿主，挂在 <code>shell.overlay</code> 上，因此切走 Chat 面板也不会丢。它自身不产生任何外观：只读取一条 live notice，把 <code>shell.quota-notice</code> 链交给插件；链上没有实现时回退成一枚顶部 <code>Toast</code>——深色横幅（<code>--dsw-alias-toast-bg</code> / <code>--dsw-alias-toast-label</code>）、18px 警告图标、14px/22px 文案，3 秒保持后 1 秒淡出并自动卸载。没有 live notice 时它返回 null，什么都不渲染。",
+      "source": "packages/client/ui-chat/src/client/chat/QuotaNoticeHost.tsx#L14",
+      "css": [
+        "packages/client/ui-primitives/src/Toast.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-state-success-primary",
+        "--dsw-alias-state-warn-label",
+        "--dsw-alias-toast-bg",
+        "--dsw-alias-toast-label",
+        "--dsw-radius-lg",
+        "--dsw-shadow-lv3",
+        "--dsw-static-deepseek-400"
+      ],
+      "specimens": [
+        {
+          "label": "额度失败：回退 Toast（该组件本身无独立外观，这里展示它渲染的内容）",
+          "note": "静态快照：取消 fixed 定位与自动淡出",
+          "html": "<div style=\"width:640px\"><div class=\"toast snapshotStatic\" role=\"alert\" style=\"--dsh-toast-hold:3000ms\"><span class=\"icon\" aria-hidden=\"true\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 14.5C11.5899 14.5 14.5 11.5899 14.5 8C14.5 4.41015 11.5899 1.5 8 1.5C4.41015 1.5 1.5 4.41015 1.5 8C1.5 11.5899 4.41015 14.5 8 14.5Z\" stroke=\"currentColor\"/><path d=\"M8 4.29199V9.79199\" stroke=\"currentColor\"/><path d=\"M8 10.708V11.708\" stroke=\"currentColor\"/></svg></span><span class=\"text\">当前请求的额度已用尽</span></div></div>",
+          "css": "/* 静态快照：Toast 在真实产品里由门户挂到 body，position: fixed + top: 40px + translateX(-50%)，并在 3s 保持后开始 1s 淡出；这里改回文档流内的相对定位（留住包含块）、取消位移与动画，配色与尺寸仍走真实样式表。 */\n.toast.snapshotStatic { position: relative; top: auto; left: auto; transform: none; animation: none; width: max-content; max-width: 100%; }"
+        }
+      ],
+      "props": [
+        {
+          "name": "useNotice",
+          "type": "HostObservable&lt;QuotaNoticeState | null&gt;",
+          "default": "—",
+          "desc": "注入的 hooks 舱位，渲染器绑定为 useNotice：当前 live notice（<code>code</code> 与重播用的 <code>seq</code>），或 null。"
+        },
+        {
+          "name": "dismissNotice",
+          "type": "() => void",
+          "default": "—",
+          "desc": "收起当前 notice；同时作为回退 Toast 的 <code>onDone</code>，淡出结束即卸载。"
+        },
+        {
+          "name": "keepNoticeOpen",
+          "type": "() => (() => void)",
+          "default": "—",
+          "desc": "取一个 hold，期间后续额度失败不会顶掉这条提示；返回幂等释放函数，释放最后一个 hold 后恢复。"
+        },
+        {
+          "name": "renderSlotChain",
+          "type": "PropsRenderSlots&lt;&#39;shell.quota-notice&#39;&gt;[&#39;renderSlotChain&#39;]",
+          "default": "—",
+          "desc": "渲染 <code>shell.quota-notice</code> 链；没有插件认领时回退到内置 Toast。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS&lt;&#39;chat&#39;&gt;",
+          "default": "—",
+          "desc": "<code>chat</code> 命名空间的本地化座位，回退横幅的正文取 <code>message.failure.quota</code>。"
+        }
+      ],
+      "notes": "同一时刻只保留一条 notice：新 notice 到达会以 <code>seq</code> 为 key 重新挂载，从而重播 3 秒窗口。<code>keepOpen</code> 的持有者必须在卸载时释放，否则后续额度失败都会被压住。恢复会话时 quota 失败也可能只以普通 Toast 出现——那条路径不经过本宿主。"
+    },
+    {
+      "id": "reasoning-content",
+      "name": "ReasoningContent",
+      "exportName": "ReasoningContent",
+      "zh": "思考正文",
+      "group": "conversation",
+      "summary": "思考内容的官方 Content Factory：把模型原文交给 <code>MarkdownText</code> 的 <code>compact</code> 变体，得到一列 13px/20px、三级色的紧凑 Markdown——标题一律继承字号只加粗、块间距收到 4px、行内代码字号跟随正文且圆角收到 xs、链接沿用正文色加虚线下划线。它不包外壳（没有折叠行、没有缩进，也不需要 Session），因此第三方可以用自己的容器包一层，或直接用 <code>DefaultReasoningBody</code> 走同一 Factory。",
+      "source": "packages/client/ui-chat/src/client/chat/ReasoningContent.tsx#L14",
+      "css": [
+        "packages/client/ui-primitives/src/markdown/MarkdownText.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-base",
+        "--dsw-alias-border-l1",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-link",
+        "--dsw-alias-markdown-inline-code",
+        "--dsw-alias-state-business-primary",
+        "--dsw-focus-ring-color",
+        "--dsw-focus-ring-width",
+        "--dsw-font-markdown-base",
+        "--dsw-font-markdown-base-strong",
+        "--dsw-font-markdown-code",
+        "--dsw-font-markdown-h1",
+        "--dsw-font-markdown-h2",
+        "--dsw-font-markdown-h3",
+        "--dsw-font-markdown-h4",
+        "--dsw-font-markdown-table",
+        "--dsw-font-markdown-table-head",
+        "--dsw-radius-md",
+        "--dsw-radius-sm",
+        "--dsw-radius-xs"
+      ],
+      "specimens": [
+        {
+          "label": "完成态：段落 + 行内代码 + 列表",
+          "note": "running=false：一次性整段解析",
+          "html": "<div style=\"width:640px\"><div class=\"markdown compact\" data-markdown-variant=\"compact\"><p>先确认 <code>.bubble</code> 的宽度上限是怎么算的：<code>min(calc(var(--dsh-chat-content-width, 748px) * 0.702), 82%)</code>，所以拖动列宽时气泡会跟着变，不是写死的 525px。</p><p>再把三处圆角统一到 <code>--dsw-radius-md</code>，然后跑一遍 <code>pnpm run test:gui</code> 看对照截图。</p><ul><li>引用摘要在气泡下方单独一行，13px 三级色。</li><li>时间戳在操作行左侧，同样 13px。</li></ul></div></div>"
+        },
+        {
+          "label": "标题 / 引用 / 分隔线在 compact 下的统一版式",
+          "note": "标题继承字号只加粗，块间距 4px",
+          "html": "<div style=\"width:640px\"><div class=\"markdown compact\" data-markdown-variant=\"compact\"><h3>为什么用 compact 变体</h3><p><strong>思考正文只提供排版，不提供外壳</strong>：折叠行、缩进、sticky 标题都属于 <code>ReasoningRow</code>，这一层只保证 Markdown 在 13px/20px 下可读。</p><blockquote><p>标题一律继承正文字号、只加粗，不再按 h1–h4 分级。</p></blockquote><hr/><p>于是同一段思考在窄列与宽列里都保持同一套节律。</p></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "text",
+          "type": "string",
+          "default": "—",
+          "desc": "模型给出的完整或流式思考原文，不做任何改写。"
+        },
+        {
+          "name": "running",
+          "type": "boolean",
+          "default": "—",
+          "desc": "思考尾部是否仍在流式；为真时走增量解析（尾部重解析），排版不变。"
+        },
+        {
+          "name": "labels",
+          "type": "MarkdownLabels | undefined",
+          "default": "undefined",
+          "desc": "本地化的 Markdown 控件文案；传入即整份使用，不与 Chat 默认字典合并，缺省用 <code>markdownLabels(t)</code>。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS&lt;&#39;chat&#39;&gt;",
+          "default": "—",
+          "desc": "Factory 注入的 locale 座位，用于取默认的 Markdown 标签。"
+        }
+      ],
+      "notes": "与 <code>body</code> 变体的区别：字号 13px / 行高 20px、三级色、标题不设字号层级、块间距 4px、表格内边距 4px 8px、代码块 margin 4px、KaTeX 跟随 1em。折叠行、22px 缩进与 sticky 标题都属于 <code>ReasoningRow</code>，不在本组件里；官方搭档是 <code>DefaultReasoningBody</code>，它以 priority 100 占住 <code>conversation.chat.reasoning.body</code> 并回叫本 Factory。"
+    },
+    {
+      "id": "running-status",
+      "name": "RunningStatus",
+      "exportName": "RunningStatus",
+      "zh": "运行状态",
+      "group": "conversation",
+      "summary": "当前轮次还在跑时贴在内容末尾的蓝色状态行：14px 鲸鱼图标 + 扫光文案，字号取正文 −2px、行高 22px，颜色 <code>--dsw-alias-label-deep-diving</code>。还没拿到起始时间时只显示「深度求索中」，拿到后变成「深度求索中，用时 12秒 ···」，每秒刷新一次；<code>aria-live</code> 播报只发生在隐藏的 <code>role=status</code> 里，计时文本本身不逐秒朗读。上一行有输出时它上方会出现一条 0.5px 分隔线（<code>margin: 8px 0 10px</code>）。",
+      "source": "packages/client/ui-chat/src/client/chat/RunningStatus.tsx#L20",
+      "css": [
+        "packages/client/ui-chat/src/client/chat/ChatView.module.css",
+        "packages/client/ui-chat/src/client/chat/accessibility.module.css",
+        "packages/client/ui-primitives/src/TextShimmer.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l1",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-label-deep-diving",
+        "--dsw-alias-label-deep-diving-shimmer",
+        "--dsw-alias-label-shimmer"
+      ],
+      "specimens": [
+        {
+          "label": "运行中：分隔线 + 鲸鱼 + 扫光计时",
+          "note": "状态模拟：扫光暂停在扫过中段，分隔线按真实规则补显示",
+          "html": "<div style=\"width:640px\"><div class=\"running\" data-chat-running=\"true\"><span class=\"visuallyHidden\" role=\"status\" aria-live=\"polite\" aria-atomic=\"true\">深度求索中</span><span class=\"runningDivider\" aria-hidden=\"true\"></span><span class=\"runningContent\"><span class=\"runningIcon\" aria-hidden=\"true\"><span class=\"runningWhaleAnimated\"></span><svg class=\"runningWhaleStill\" width=\"100%\" height=\"100%\" viewBox=\"0 0 16 16\" fill=\"none\"><path d=\"M8.844 13.742C8.967 12.328 8.45 10.4 8.45 9.65C8.45 8.94 8.88 8.43 9.6 8.43C11.285 8.43 12.106 8.281 12.685 8.104C13.71 7.791 14.585 6.768 15.055 5.945C15.137 5.803 14.99 5.641 14.829 5.671C13.829 5.86 12.828 5.376 11.827 4.978C10.659 4.514 9.491 4.707 8.935 4.876C8.805 4.915 8.658 4.819 8.636 4.686C8.468 3.643 7.405 2.615 5.498 2.238C4.54 2.048 3.748 1.574 3.347 1.202C3.252 1.113 3.088 1.125 3.03 1.242C2.628 2.059 2.168 3.82 5.248 6.115C5.82 6.494 6.31 6.785 6.574 7.637C6.72 8.104 6.157 9.168 6.061 9.368C5.157 11.27 5.089 12.19 4.926 13.742\" stroke=\"currentColor\" stroke-width=\"1\"/></svg></span><span class=\"c2-root runningText\" data-shimmer=\"true\"><span class=\"c2-content\"><span class=\"c2-text\">深度求索中，用时 12秒 ···</span></span><span class=\"c2-decoration\" aria-hidden=\"true\" inert=\"\"><span class=\"c2-sweep\"><span class=\"c2-content c2-highlight\"><span class=\"c2-text\" data-shimmer-text=\"深度求索中，用时 12秒 ···\"></span></span></span></span></span></span></div></div>",
+          "css": "/* 状态模拟：分隔线在真实产品里由兄弟选择器「上一行有输出」才显示，示例里没有 flow 列，这里直接补上；扫光动画暂停在扫过中段。\n   静态快照：running-whale@2x.png 在预览页取不到，遮罩会让图标整块消失，这里退回组件的静态 SVG 层（与 prefers-reduced-motion 路径一致）。 */\n.running > .runningDivider { display: block; }\n.c2-sweep, .c2-content.c2-highlight { animation-play-state: paused; animation-delay: -0.75s; }\n.runningIcon > .runningWhaleAnimated { display: none; }\n.runningIcon > .runningWhaleStill { display: initial; }"
+        },
+        {
+          "label": "刚开始：还没有起始时间，只有「深度求索中」",
+          "note": "startTime 为空时不挂计时器，也不出分隔线",
+          "html": "<div style=\"width:640px\"><div class=\"running\" data-chat-running=\"true\"><span class=\"visuallyHidden\" role=\"status\" aria-live=\"polite\" aria-atomic=\"true\">深度求索中</span><span class=\"runningContent\"><span class=\"runningIcon\" aria-hidden=\"true\"><span class=\"runningWhaleAnimated\"></span><svg class=\"runningWhaleStill\" width=\"100%\" height=\"100%\" viewBox=\"0 0 16 16\" fill=\"none\"><path d=\"M8.844 13.742C8.967 12.328 8.45 10.4 8.45 9.65C8.45 8.94 8.88 8.43 9.6 8.43C11.285 8.43 12.106 8.281 12.685 8.104C13.71 7.791 14.585 6.768 15.055 5.945C15.137 5.803 14.99 5.641 14.829 5.671C13.829 5.86 12.828 5.376 11.827 4.978C10.659 4.514 9.491 4.707 8.935 4.876C8.805 4.915 8.658 4.819 8.636 4.686C8.468 3.643 7.405 2.615 5.498 2.238C4.54 2.048 3.748 1.574 3.347 1.202C3.252 1.113 3.088 1.125 3.03 1.242C2.628 2.059 2.168 3.82 5.248 6.115C5.82 6.494 6.31 6.785 6.574 7.637C6.72 8.104 6.157 9.168 6.061 9.368C5.157 11.27 5.089 12.19 4.926 13.742\" stroke=\"currentColor\" stroke-width=\"1\"/></svg></span><span class=\"c2-root runningText\" data-shimmer=\"true\"><span class=\"c2-content\"><span class=\"c2-text\">深度求索中</span></span><span class=\"c2-decoration\" aria-hidden=\"true\" inert=\"\"><span class=\"c2-sweep\"><span class=\"c2-content c2-highlight\"><span class=\"c2-text\" data-shimmer-text=\"深度求索中\"></span></span></span></span></span></span></div></div>",
+          "css": "/* 状态模拟：扫光动画暂停在扫过中段。\n   静态快照：mask 引用的 APNG 在预览页取不到，退回静态 SVG 层。 */\n.c2-sweep, .c2-content.c2-highlight { animation-play-state: paused; animation-delay: -0.75s; }\n.runningIcon > .runningWhaleAnimated { display: none; }\n.runningIcon > .runningWhaleStill { display: initial; }"
+        }
+      ],
+      "props": [
+        {
+          "name": "startTime",
+          "type": "number | undefined",
+          "default": "undefined",
+          "desc": "当前轮次的起始时间（epoch ms）；为空表示这一轮的 <code>turn/start</code> 还没到，只显示不带用时的文案。"
+        },
+        {
+          "name": "t",
+          "type": "ChatViewSlotProps[&#39;t&#39;]",
+          "default": "—",
+          "desc": "<code>chat</code> 命名空间的本地化座位（<code>chat.deepDiving</code> / <code>chat.deepDivingFor</code> 与时长单位）。"
+        }
+      ],
+      "notes": "只应在 Session 运行中挂载。隐藏的 <code>role=\"status\"</code> 用 <code>visuallyHidden</code> 裁成 1×1，<code>aria-live=\"polite\"</code>、<code>aria-atomic=\"true\"</code>，避免每秒把计时文本都念一遍。<code>--dsw-alias-label-shimmer</code> 在 <code>.running</code> 上被本地映射到 <code>--dsw-alias-label-deep-diving-shimmer</code>，扫光因此是深蓝而不是默认色。分隔线的显示条件写在 <code>ChatView.module.css</code> 的兄弟选择器里，不在本组件内。"
+    },
+    {
+      "id": "running-whale-tail",
+      "name": "RunningWhaleTail",
+      "exportName": "RunningWhaleTail",
+      "zh": "运行图标",
+      "group": "conversation",
+      "summary": "运行状态行里那枚 14px 装饰图标：一个固定 <code>calc(14px + 字体增量)</code> 的正方形 <code>.runningIcon</code> 里叠两层——支持 <code>mask-mode: alpha</code>、未开启「减少动态效果」且不在强制色模式时，用 28×28 的 APNG 作 alpha 遮罩、<code>background: currentColor</code> 播放动画（60 帧）；否则显示同样笔画路径的静态 SVG 鲸鱼尾。它 <code>aria-hidden</code>、<code>contain: strict</code>、没有内联样式，颜色完全继承父级（运行行里的深蓝）。",
+      "source": "packages/client/ui-chat/src/client/chat/RunningWhaleTail.tsx#L10",
+      "css": [
+        "packages/client/ui-chat/src/client/chat/ChatView.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-label-deep-diving",
+        "--dsh-content-font-delta"
+      ],
+      "specimens": [
+        {
+          "label": "运行行里的实际尺寸：14×14，颜色继承 .running",
+          "note": "静态快照：mask 的 APNG 在预览页取不到，退回静态 SVG 层",
+          "html": "<div style=\"width:640px\"><div class=\"running\"><span class=\"runningContent\"><span class=\"runningIcon\" aria-hidden=\"true\"><span class=\"runningWhaleAnimated\"></span><svg class=\"runningWhaleStill\" width=\"100%\" height=\"100%\" viewBox=\"0 0 16 16\" fill=\"none\"><path d=\"M8.844 13.742C8.967 12.328 8.45 10.4 8.45 9.65C8.45 8.94 8.88 8.43 9.6 8.43C11.285 8.43 12.106 8.281 12.685 8.104C13.71 7.791 14.585 6.768 15.055 5.945C15.137 5.803 14.99 5.641 14.829 5.671C13.829 5.86 12.828 5.376 11.827 4.978C10.659 4.514 9.491 4.707 8.935 4.876C8.805 4.915 8.658 4.819 8.636 4.686C8.468 3.643 7.405 2.615 5.498 2.238C4.54 2.048 3.748 1.574 3.347 1.202C3.252 1.113 3.088 1.125 3.03 1.242C2.628 2.059 2.168 3.82 5.248 6.115C5.82 6.494 6.31 6.785 6.574 7.637C6.72 8.104 6.157 9.168 6.061 9.368C5.157 11.27 5.089 12.19 4.926 13.742\" stroke=\"currentColor\" stroke-width=\"1\"/></svg></span></span></div></div>",
+          "css": "/* 静态快照：@supports 分支里的 .runningWhaleAnimated 用 ./running-whale@2x.png 作 alpha 遮罩，预览页没有这张图，遮罩失败会让图标整块消失；这里退回组件的静态 SVG 层（与 prefers-reduced-motion 路径一致）。 */\n.runningIcon > .runningWhaleAnimated { display: none; }\n.runningIcon > .runningWhaleStill { display: initial; }"
+        },
+        {
+          "label": "放大看画稿：同一条路径，28px 网格",
+          "note": "尺寸补位：内联宽高只放大展示，产品里固定 14px + 字体增量",
+          "html": "<div style=\"width:640px\"><div style=\"display:flex;align-items:flex-end;gap:20px\"><div class=\"running\"><span class=\"runningContent\"><span class=\"runningIcon\" aria-hidden=\"true\"><span class=\"runningWhaleAnimated\"></span><svg class=\"runningWhaleStill\" width=\"100%\" height=\"100%\" viewBox=\"0 0 16 16\" fill=\"none\"><path d=\"M8.844 13.742C8.967 12.328 8.45 10.4 8.45 9.65C8.45 8.94 8.88 8.43 9.6 8.43C11.285 8.43 12.106 8.281 12.685 8.104C13.71 7.791 14.585 6.768 15.055 5.945C15.137 5.803 14.99 5.641 14.829 5.671C13.829 5.86 12.828 5.376 11.827 4.978C10.659 4.514 9.491 4.707 8.935 4.876C8.805 4.915 8.658 4.819 8.636 4.686C8.468 3.643 7.405 2.615 5.498 2.238C4.54 2.048 3.748 1.574 3.347 1.202C3.252 1.113 3.088 1.125 3.03 1.242C2.628 2.059 2.168 3.82 5.248 6.115C5.82 6.494 6.31 6.785 6.574 7.637C6.72 8.104 6.157 9.168 6.061 9.368C5.157 11.27 5.089 12.19 4.926 13.742\" stroke=\"currentColor\" stroke-width=\"1\"/></svg></span></span></div><div class=\"running\"><span class=\"runningContent\"><span class=\"runningIcon\" style=\"width:28px;height:28px\" aria-hidden=\"true\"><span class=\"runningWhaleAnimated\"></span><svg class=\"runningWhaleStill\" width=\"100%\" height=\"100%\" viewBox=\"0 0 16 16\" fill=\"none\"><path d=\"M8.844 13.742C8.967 12.328 8.45 10.4 8.45 9.65C8.45 8.94 8.88 8.43 9.6 8.43C11.285 8.43 12.106 8.281 12.685 8.104C13.71 7.791 14.585 6.768 15.055 5.945C15.137 5.803 14.99 5.641 14.829 5.671C13.829 5.86 12.828 5.376 11.827 4.978C10.659 4.514 9.491 4.707 8.935 4.876C8.805 4.915 8.658 4.819 8.636 4.686C8.468 3.643 7.405 2.615 5.498 2.238C4.54 2.048 3.748 1.574 3.347 1.202C3.252 1.113 3.088 1.125 3.03 1.242C2.628 2.059 2.168 3.82 5.248 6.115C5.82 6.494 6.31 6.785 6.574 7.637C6.72 8.104 6.157 9.168 6.061 9.368C5.157 11.27 5.089 12.19 4.926 13.742\" stroke=\"currentColor\" stroke-width=\"1\"/></svg></span></span></div><span style=\"font-size:11px\">14×14 / 28×28</span></div></div>",
+          "css": "/* 静态快照：同上一例，遮罩取不到图时退回静态 SVG 层；右侧一枚用内联宽高放大到 28px 展示画稿。 */\n.runningIcon > .runningWhaleAnimated { display: none; }\n.runningIcon > .runningWhaleStill { display: initial; }"
+        }
+      ],
+      "notes": "动画由 APNG 资产本身决定（28×28、60 帧 × 50ms、无限循环），组件不写任何动画 CSS；<code>.runningWhaleAnimated</code> 只在 <code>@supports (mask-mode: alpha) and (mask-image: url(&#39;&#39;))</code> 且未要求减少动态效果、也不在强制色模式时显示。图标尺寸靠 <code>--dsh-content-font-delta</code> 跟随设置里的字号偏好，因此没有自己的颜色或尺寸 token。"
+    }
+  ]
+}

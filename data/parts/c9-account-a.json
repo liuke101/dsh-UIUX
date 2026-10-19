@@ -1,0 +1,686 @@
+{
+ "schemaVersion": 1,
+ "note": "批次 c9-account-a：ui-settings-account 的账户与引导 A 组（8 条）。示例里的类名全部来自各组件真实的 CSS Module；浮层条目（通知栈、登录弹窗、原生页面宿主、引导整屏页）在 specimen.css 里用 position: relative; inset: auto 拉回文档流，插画位图与 FileTypeIcon 字形未内联，均在对应的 note 里注明。",
+ "entries": [
+  {
+   "id": "account-notice-stack",
+   "name": "AccountNoticeStack",
+   "exportName": "AccountNoticeStack",
+   "zh": "赠金通知",
+   "group": "settings",
+   "summary": "侧栏账号入口上方浮出的赠金到账通知栈，经 <code>createPortal</code> 挂到 body：280px 宽的卡片内边距 20px、圆角 16px，底色 <code>--dsw-specific-input-major</code> 配 <code>--dsw-elevation-panel</code>，右上角是 18×18 的关闭按钮。标题行 14px/20px 字重 500、前面是 14px 的礼物字形（<code>--dsw-alias-brand-primary-new-colorprimary-new-color</code>），正文 14px/22px 且保留服务端换行。多张通知从前景往后每层上移 4px、横向按 <code>272/280</code> 收窄（<code>--notice-depth</code> / <code>--notice-scale</code> 由组件写在行内），后层 <code>position: absolute; inset: 0</code>、<code>pointer-events: none</code>，只有前景卡能上报展示、能被关闭。",
+   "source": "packages/client/ui-settings-account/src/client/AccountNotice.tsx#L52",
+   "css": [
+    "packages/client/ui-settings-account/src/client/AccountNotice.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-brand-primary-new-colorprimary-new-color",
+    "--dsw-alias-label-caption",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-state-business-primary",
+    "--dsw-elevation-panel",
+    "--dsw-focus-ring-color",
+    "--dsw-specific-input-major"
+   ],
+   "specimens": [
+    {
+     "label": "单张前景卡：赠金已到账",
+     "note": "静态快照",
+     "html": "<div style='width:320px'><div class=\"stack snapshotStatic\"><aside class=\"card\" data-front=\"true\" aria-hidden=\"false\" style=\"--notice-depth:0;--notice-scale:1\"><div role=\"status\" class=\"copy\"><div class=\"title\"><span class=\"icon\" aria-hidden=\"true\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 14 14\" fill=\"none\" aria-hidden=\"true\"><path d=\"M3.6355 6.93969C3.6355 4.8398 5.33779 3.1375 7.43768 3.1375C9.53757 3.1375 11.23987 4.8398 11.23987 6.93968V11.363H3.6355V6.93969Z\" fill=\"currentColor\" fill-opacity=\"0.2\" stroke=\"currentColor\" stroke-width=\"0.875\"/><path d=\"M1.641 11.3645H12.36M5.053 13.3095H8.9479M7.4375 4.27422V2.70137912\" stroke=\"currentColor\" stroke-width=\"0.875\"/></svg></span><span>赠金已到账</span></div><p>¥10.00 赠金已到账，可在「设置 → 账号与余额」查看余额。</p></div><button type=\"button\" class=\"close\" aria-label=\"关闭\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></aside></div></div>",
+     "css": "/* 静态快照：.stack 在真实产品里是 portal 到 body 的 position: fixed 浮层，\n   这里拉回文档流（relative 保留包含块，inset: auto 抵消原来的定位）。 */\n.stack.snapshotStatic { position: relative; inset: auto; }"
+    },
+    {
+     "label": "三层堆叠：只有前景卡可交互",
+     "note": "堆叠深度模拟：后层 aria-hidden 且不接指针",
+     "html": "<div style='width:320px'><div class=\"stack snapshotStatic\"><aside class=\"card\" data-front=\"true\" aria-hidden=\"false\" style=\"--notice-depth:0;--notice-scale:1\"><div role=\"status\" class=\"copy\"><div class=\"title\"><span class=\"icon\" aria-hidden=\"true\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 14 14\" fill=\"none\" aria-hidden=\"true\"><path d=\"M3.6355 6.93969C3.6355 4.8398 5.33779 3.1375 7.43768 3.1375C9.53757 3.1375 11.23987 4.8398 11.23987 6.93968V11.363H3.6355V6.93969Z\" fill=\"currentColor\" fill-opacity=\"0.2\" stroke=\"currentColor\" stroke-width=\"0.875\"/><path d=\"M1.641 11.3645H12.36M5.053 13.3095H8.9479M7.4375 4.27422V2.70137912\" stroke=\"currentColor\" stroke-width=\"0.875\"/></svg></span><span>赠金已到账</span></div><p>¥10.00 赠金已到账，可在「设置 → 账号与余额」查看余额。</p></div><button type=\"button\" class=\"close\" aria-label=\"关闭\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></aside><aside class=\"card\" data-front=\"false\" aria-hidden=\"true\" style=\"--notice-depth:1;--notice-scale:0.9714285714\"><div role=\"status\" class=\"copy\"><div class=\"title\"><span class=\"icon\" aria-hidden=\"true\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 14 14\" fill=\"none\" aria-hidden=\"true\"><path d=\"M3.6355 6.93969C3.6355 4.8398 5.33779 3.1375 7.43768 3.1375C9.53757 3.1375 11.23987 4.8398 11.23987 6.93968V11.363H3.6355V6.93969Z\" fill=\"currentColor\" fill-opacity=\"0.2\" stroke=\"currentColor\" stroke-width=\"0.875\"/><path d=\"M1.641 11.3645H12.36M5.053 13.3095H8.9479M7.4375 4.27422V2.70137912\" stroke=\"currentColor\" stroke-width=\"0.875\"/></svg></span><span>赠金已到账</span></div><p>¥5.00 赠金已到账，可在「设置 → 账号与余额」查看余额。</p></div><button type=\"button\" class=\"close\" aria-label=\"关闭\" tabindex=\"-1\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></aside><aside class=\"card\" data-front=\"false\" aria-hidden=\"true\" style=\"--notice-depth:2;--notice-scale:0.9436734694\"><div role=\"status\" class=\"copy\"><div class=\"title\"><span class=\"icon\" aria-hidden=\"true\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 14 14\" fill=\"none\" aria-hidden=\"true\"><path d=\"M3.6355 6.93969C3.6355 4.8398 5.33779 3.1375 7.43768 3.1375C9.53757 3.1375 11.23987 4.8398 11.23987 6.93968V11.363H3.6355V6.93969Z\" fill=\"currentColor\" fill-opacity=\"0.2\" stroke=\"currentColor\" stroke-width=\"0.875\"/><path d=\"M1.641 11.3645H12.36M5.053 13.3095H8.9479M7.4375 4.27422V2.70137912\" stroke=\"currentColor\" stroke-width=\"0.875\"/></svg></span><span>赠金已到账</span></div><p>¥20.00 赠金已到账，可在「设置 → 账号与余额」查看余额。</p></div><button type=\"button\" class=\"close\" aria-label=\"关闭\" tabindex=\"-1\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></aside></div></div>",
+     "css": "/* 静态快照：同上把 portal 浮层拉回文档流；后层的位移与缩放来自源码写死的\n   --notice-depth / --notice-scale 行内值，这里不再改写。 */\n.stack.snapshotStatic { position: relative; inset: auto; }"
+    }
+   ],
+   "props": [
+    {
+     "name": "notices",
+     "type": "readonly BonusNotice[]",
+     "default": "—",
+     "desc": "服务端排序的赠金通知；<code>expiresAt</code> 已过期（且时间戳可解析）的那条根本不画。"
+    },
+    {
+     "name": "anchor",
+     "type": "RefObject<HTMLElement>",
+     "default": "—",
+     "desc": "侧栏账号入口的 DOM 引用：卡片左边缘取 <code>rect.left</code> 并夹在 8 与 <code>innerWidth-288</code> 之间，底边为 <code>innerHeight - rect.top + 4</code>，跟着 ResizeObserver 与 scroll/resize 重算。"
+    },
+    {
+     "name": "title",
+     "type": "string",
+     "default": "—",
+     "desc": "默认标题，通知自带 <code>title</code> 时以它为准。"
+    },
+    {
+     "name": "closeLabel",
+     "type": "string",
+     "default": "—",
+     "desc": "关闭按钮的 <code>aria-label</code>。"
+    },
+    {
+     "name": "onShown",
+     "type": "(orderId: BonusNotice['orderId']) => void",
+     "default": "—",
+     "desc": "前景卡在可见文档里过完一帧绘制后上报一次；每张卡一生只报一次。"
+    },
+    {
+     "name": "onDismiss",
+     "type": "(orderId: BonusNotice['orderId']) => void",
+     "default": "—",
+     "desc": "用户点关闭时上报；关闭动作本身先走 <code>dismissNotice</code> 的 250ms 位移过渡。"
+    }
+   ],
+   "notes": "点击关闭会先播 250ms 的 <code>transform</code> 过渡（<code>notice-transition.ts</code>）再回调；<code>prefers-reduced-motion: reduce</code> 时过渡关闭。后层卡带 <code>aria-hidden=\"true\"</code> 与 <code>tabIndex={-1}</code>，关闭按钮不可 Tab 到。图标色写成 <code>var(--dsw-alias-brand-primary-new-colorprimary-new-color)</code>——源码里的变量名粘连，主题未声明该名，实际回落到继承色。",
+   "keywords": [
+    "赠金",
+    "通知栈",
+    "bonus notice",
+    "toast stack",
+    "到账"
+   ]
+  },
+  {
+   "id": "account-onboarding",
+   "name": "AccountOnboarding",
+   "exportName": "AccountOnboarding",
+   "zh": "账号引导步",
+   "group": "settings",
+   "summary": "模型凭据引导步骤里的账号选择位，自身不产生 DOM：它把引导步骤的 <code>complete</code> / <code>useApiKey</code> 与账号动作接到 <code>SignInDialog</code> 上，所以用户看到的就是那个登录弹窗——Modal 的遮罩加 380px 卡片、16px/24px 标题、14px/22px 正文和两个最小宽 72px、高 36px 的按钮。挂载期间还会 <code>setOnboarding(true)</code> 占住弹窗所有权，赠金通知因此延后；账号状态还没到或已是 <code>credential-stored</code> 时渲染 <code>null</code>，后者会顺手 <code>complete()</code> 推进步骤。",
+   "source": "packages/client/ui-settings-account/src/client/AccountOnboarding.tsx#L9",
+   "css": [
+    "packages/client/ui-primitives/src/Modal.module.css",
+    "packages/client/ui-settings-account/src/client/SignInDialog.module.css",
+    "packages/client/ui-primitives/src/Button.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-layer-2",
+    "--dsw-alias-bg-mask-1",
+    "--dsw-alias-border-inverted",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-button-primary-fill",
+    "--dsw-elevation-prominent",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-primary-foreground",
+    "--dsw-mask-blur",
+    "--dsw-radius-md",
+    "--dsw-radius-panel",
+    "--dsw-radius-sm",
+    "--dsh-frame-chrome-top",
+    "--dsh-frame-overlay-top"
+   ],
+   "specimens": [
+    {
+     "label": "引导步骤里的登录弹窗（初始态）",
+     "note": "该组件本身无独立外观，这里展示它渲染出的 SignInDialog；静态快照",
+     "html": "<div style='width:460px'><div class=\"root snapshotStatic\" role='presentation'><div class=\"mask\" aria-hidden='true'></div><div class=\"c0-dialog c1-dialog\" role='dialog' aria-modal='true' aria-label='开始使用'><div class=\"c1-content\"><div class=\"c1-header\"><h2 class=\"c1-title\">开始使用</h2><button type='button' class=\"c1-close\" aria-label='关闭'><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></div><p class=\"c1-description\">登录 DeepSeek 账号，或添加 API Key，即可开始使用。你的项目和文件保存在本地。</p></div><div class=\"actions\"><button type='button' class=\"button outline md secondaryButton\">添加 API Key</button><button type='button' class=\"button primary md primaryButton\">登录</button></div></div></div></div>",
+     "css": "/* 静态快照：Modal 的 .root 在真实产品里是 body 上的 fixed 全屏层，这里改回文档流，\n   同时保留它作为 .mask 绝对定位的父级；卡片同时承载 Modal(c0) 与 SignInDialog(c1)\n   两个模块的 .dialog。.content/.header/.title/.close/.description 在两个模块里同名，\n   多模块条目下裸类名只会落到先列出的 Modal，所以这几处用显式所有者前缀指回\n   SignInDialog 自己的那份（Modal 的同名规则只服务非 headless 弹窗）。 */\n.root.snapshotStatic { position: relative; inset: auto; }\n.c0-dialog.c1-dialog { max-width: 100%; }\n.c1-content, .c1-header, .c1-title, .c1-close, .c1-description { box-sizing: border-box; }"
+    }
+   ],
+   "props": [
+    {
+     "name": "complete",
+     "type": "() => void",
+     "default": "—",
+     "desc": "引导步骤的上报座位（<code>settings.models.sign-in</code> 的 owner）：凭据已存储时组件会自己调用它推进下一步。"
+    },
+    {
+     "name": "useApiKey",
+     "type": "() => void",
+     "default": "—",
+     "desc": "切到 API Key 路径：先 <code>showLogin(false)</code> 再交给宿主。"
+    },
+    {
+     "name": "setOnboarding",
+     "type": "(active: boolean) => void",
+     "default": "—",
+     "desc": "挂载期间置 true、卸载置 false，声明登录弹窗归引导所有，赠金通知据此延后。"
+    },
+    {
+     "name": "showLogin",
+     "type": "(visible: boolean) => void",
+     "default": "—",
+     "desc": "关闭由引导托管的登录弹窗。"
+    },
+    {
+     "name": "start",
+     "type": "() => Promise<void>",
+     "default": "—",
+     "desc": "发起一次登录尝试，透传给 SignInDialog。"
+    },
+    {
+     "name": "cancel",
+     "type": "(id: SignInAttemptId) => Promise<void>",
+     "default": "—",
+     "desc": "取消进行中的尝试，关闭弹窗时先取消再关闭。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'settings.account'>",
+     "default": "—",
+     "desc": "账号命名空间的翻译座位。"
+    }
+   ],
+   "notes": "与设置页里的 <code>SignInDialog</code> 是同一个组件、同一套样式，区别只在挂载点与回调：这里 <code>close</code> 会同时 <code>showLogin(false)</code> 并 <code>complete()</code>，所以关掉弹窗等于跳过这一步。它渲染 <code>null</code> 时整个步骤由模型凭据页自己的界面接管。",
+   "keywords": [
+    "账号引导",
+    "登录引导",
+    "模型凭据",
+    "onboarding",
+    "sign in"
+   ]
+  },
+  {
+   "id": "account-platform-host",
+   "name": "AccountPlatformHost",
+   "exportName": "AccountPlatformHost",
+   "zh": "开放平台宿主",
+   "group": "settings",
+   "summary": "整个账号功能共用的原生 Platform 页面宿主，挂在 <code>shell.overlay</code> 上：没有 claim 时渲染 <code>null</code>，有 claim 时渲染 <code>PlatformOverlay</code>——全窗口 <code>position: fixed; inset: 0</code> 的容器，顶部 48px 返回条（macOS 才显示的 60.667×14 红绿灯占位＋28px 高的「返回 DeepSeek Harness」按钮，带 16px 左箭头），下面是 <code>flex: 1</code> 的原生视图矩形。Desktop 只有一块 <code>WebContentsView</code>，设置页余额、「查询用量/充值」、全框额度提示与引导充值都只向这个宿主申请页面；加载中显示 24px 旋转圈，失败时显示 14px 提示加一个 32px 高的重试按钮。",
+   "source": "packages/client/ui-settings-account/src/client/AccountPlatformHost.tsx#L27",
+   "css": [
+    "packages/client/ui-settings-account/src/client/PlatformOverlay.module.css",
+    "packages/client/ui-primitives/src/Button.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-base",
+    "--dsw-alias-border-l1",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-border-l3",
+    "--dsw-alias-button-primary-fill",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-primary-foreground",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-radius-md",
+    "--dsw-radius-sm",
+    "--dsh-windows-titlebar-height"
+   ],
+   "specimens": [
+    {
+     "label": "加载中：返回条 + 24px 旋转圈",
+     "note": "该组件本身无独立外观，这里展示它渲染出的 PlatformOverlay；静态快照",
+     "html": "<div style='width:820px;height:430px;display:flex'><div class=\"overlay snapshotStatic\" role='dialog' aria-modal='true' aria-label='返回 DeepSeek Harness'><header class=\"header\" data-window-drag><div class=\"controls\"><span class=\"trafficLights\" aria-hidden='true'></span><button type='button' class=\"back\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M10 4L6.70711 7.29289C6.31658 7.68342 6.31658 8.31658 6.70711 8.70711L10 12\" stroke=\"currentColor\"/></svg>返回 DeepSeek Harness</button></div></header><div class=\"viewport\"><div class=\"status\" role='status' aria-label='加载中…'><span class=\"spinner\" aria-hidden='true'></span></div></div></div></div>",
+     "css": "/* 静态快照：.overlay 在真实产品里是 portal 到 body 的 position: fixed; inset: 0\n   全窗口层，这里拉回文档流并给出固定尺寸（原生视图矩形靠 .viewport 的 flex:1）。 */\n.overlay.snapshotStatic { position: relative; inset: auto; height: 430px; width: 820px; }"
+    },
+    {
+     "label": "加载失败：提示 + 重试",
+     "note": "该组件本身无独立外观，这里展示它渲染出的 PlatformOverlay；静态快照",
+     "html": "<div style='width:820px;height:430px;display:flex'><div class=\"overlay snapshotStatic\" role='dialog' aria-modal='true' aria-label='返回 DeepSeek Harness'><header class=\"header\" data-window-drag><div class=\"controls\"><span class=\"trafficLights\" aria-hidden='true'></span><button type='button' class=\"back\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M10 4L6.70711 7.29289C6.31658 7.68342 6.31658 8.31658 6.70711 8.70711L10 12\" stroke=\"currentColor\"/></svg>返回 DeepSeek Harness</button></div></header><div class=\"viewport\"><div class=\"status\" role='status'><span class=\"failure\">操作未完成，请重试</span><button type='button' class=\"button outline md retry\">重试</button></div></div></div></div>",
+     "css": "/* 静态快照：.overlay 在真实产品里是 portal 到 body 的 position: fixed; inset: 0\n   全窗口层，这里拉回文档流并给出固定尺寸（原生视图矩形靠 .viewport 的 flex:1）。 */\n.overlay.snapshotStatic { position: relative; inset: auto; height: 430px; width: 820px; }"
+    }
+   ],
+   "props": [
+    {
+     "name": "platform",
+     "type": "PlatformBridge",
+     "default": "—",
+     "desc": "preload 给的非敏感命令：<code>open(page, bounds)</code> / <code>setBounds(bounds)</code> / <code>close()</code>，由宿主按 <code>.viewport</code> 的实测矩形调用。"
+    },
+    {
+     "name": "usePage",
+     "type": "HostObservable<PlatformPageClaim | null>",
+     "default": "—",
+     "desc": "当前活着的页面请求（只有 <code>{ page: 'usage' | 'top-up' }</code> 一种形状）；为 null 时本组件返回 <code>null</code>。"
+    },
+    {
+     "name": "closePage",
+     "type": "() => void",
+     "default": "—",
+     "desc": "观众返回：丢掉这份请求并以「返回」原因通知它的所有者，宿主本身只负责关页。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'settings.account'>",
+     "default": "—",
+     "desc": "取 <code>backToHarness</code> / <code>loading</code> / <code>platformFailed</code> / <code>platformRetry</code> 四条文案。"
+    }
+   ],
+   "notes": "<code>.overlay</code> 的 <code>z-index: 1001</code> 压在 Modal 的 1000 之上：弹窗必须让位给不透明的原生视图（<code>AccountQuotaNotice</code> 因此在页面打开期间渲染 <code>null</code>）。Windows 下 <code>[data-windows-titlebar]</code> 命中时整层下移 <code>--dsh-windows-titlebar-height</code>；<code>.spinner</code> 的图形是一段 base64 的 SVG 背景，<code>prefers-reduced-motion</code> 时停止旋转。",
+   "keywords": [
+    "开放平台",
+    "原生页面",
+    "PlatformOverlay",
+    "充值页",
+    "用量页",
+    "WebContentsView"
+   ]
+  },
+  {
+   "id": "account-quota-notice",
+   "name": "AccountQuotaNotice",
+   "exportName": "AccountQuotaNotice",
+   "zh": "额度提示接管",
+   "group": "settings",
+   "summary": "账号侧对全框额度提示（<code>shell.quota-notice</code>）的接管条目：已登录且挂了原生页面通道时，弹一个 Modal 说明「当前无可用余额」，页脚是 36px 高的「取消」与主色「去充值」；点了充值就渲染 <code>null</code>，避免在不透明原生视图下留一份隐藏的焦点与 Esc 处理。未登录的账号、或本来就没有原生宿主（普通浏览器）时退化成顶部居中的 <code>Toast</code>——深色底、18px 警告图标、默认 3 秒后淡出，文案直接用额度提示自己的 <code>message</code>。",
+   "source": "packages/client/ui-settings-account/src/client/AccountQuotaNotice.tsx#L29",
+   "css": [
+    "packages/client/ui-primitives/src/Modal.module.css",
+    "packages/client/ui-primitives/src/Toast.module.css",
+    "packages/client/ui-primitives/src/Button.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-layer-2",
+    "--dsw-alias-bg-mask-1",
+    "--dsw-alias-border-l3",
+    "--dsw-alias-button-primary-fill",
+    "--dsw-alias-button-primary-hover",
+    "--dsw-elevation-prominent",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-primary-foreground",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-state-warn-label",
+    "--dsw-alias-toast-bg",
+    "--dsw-alias-toast-label",
+    "--dsw-mask-blur",
+    "--dsw-radius-lg",
+    "--dsw-radius-md",
+    "--dsw-radius-panel",
+    "--dsw-radius-sm",
+    "--dsw-shadow-lv3",
+    "--dsh-frame-chrome-top",
+    "--dsh-frame-overlay-top",
+    "--dsh-toast-hold"
+   ],
+   "specimens": [
+    {
+     "label": "余额不足弹窗：取消 / 去充值",
+     "note": "静态快照",
+     "html": "<div style='width:460px'><div class=\"root snapshotStatic\" role='presentation'><div class=\"mask\" aria-hidden='true'></div><div class=\"dialog\" role='dialog' aria-modal='true' aria-label='当前无可用余额'><div class=\"content\"><div class=\"header\"><h2 class=\"title\">当前无可用余额</h2><button type='button' class=\"close\" aria-label='关闭'><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></div><p class=\"description\">没有可用额度时，DeepSeek Harness 无法开始新的任务，是否前往充值？或者可以稍后前往 设置 → 账号与余额 进行充值。</p></div><div class=\"footer\"><button type='button' class=\"button outline md\">取消</button><button type='button' class=\"button primary md\">去充值</button></div></div></div></div>",
+     "css": "/* 静态快照：Modal 的 .root 是 body 上的 fixed 全屏层，这里拉回文档流，\n   .mask 仍以它为包含块；卡片本身没传 className，只有 Modal 自己的 .dialog。 */\n.root.snapshotStatic { position: relative; inset: auto; }\n.dialog { max-width: 100%; }"
+    },
+    {
+     "label": "兜底 Toast：未登录或无原生宿主",
+     "note": "静态快照：Toast 淡出动画已关掉",
+     "html": "<div style='width:560px'><div class=\"toast snapshotStatic\" role='alert' style=\"--dsh-toast-hold:3000ms\"><span class=\"c1-icon\" aria-hidden=\"true\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 14.5C11.5899 14.5 14.5 11.5899 14.5 8C14.5 4.41015 11.5899 1.5 8 1.5C4.41015 1.5 1.5 4.41015 1.5 8C1.5 11.5899 4.41015 14.5 8 14.5Z\" stroke=\"currentColor\"/><path d=\"M8 4.29199V9.79199\" stroke=\"currentColor\"/><path d=\"M8 10.708V11.708\" stroke=\"currentColor\"/></svg></span><span class=\"text\">当前账号余额不足，无法开始新的任务。</span></div></div>",
+     "css": "/* 静态快照：Toast 是 portal 到 body 的 fixed 顶部横幅，这里拉回文档流；\n   --dsh-toast-hold 是组件写在行内的本地变量，这里沿用默认 3000ms。\n   .icon 在 Toast(c1) 与 Button(c2) 里同名，元素属于 Toast，故写显式所有者前缀。 */\n.toast.snapshotStatic { position: relative; inset: auto; left: auto; transform: none; animation: none; }"
+    }
+   ],
+   "props": [
+    {
+     "name": "matched",
+     "type": "QuotaNoticeOwnerProps",
+     "default": "—",
+     "desc": "被认领的提示：<code>code</code> / <code>message</code>（文案）/ <code>dismiss()</code>（收下）/ <code>keepOpen()</code>（压住后续提示，返回幂等释放）。"
+    },
+    {
+     "name": "openPlatformPage",
+     "type": "PlatformPages['open'] | undefined",
+     "default": "—",
+     "desc": "Desktop 才有：把充值页交给共享原生宿主；缺失时整条退化成 Toast。进页面前先 <code>keepOpen()</code>，页面回来自动关掉提示。"
+    },
+    {
+     "name": "useAccount",
+     "type": "HostObservable<AccountSnapshot>",
+     "default": "—",
+     "desc": "读 <code>view?.status</code> 与 <code>failed</code>：只有 <code>credential-stored</code> 才弹余额弹窗，且真正的登出会收掉它。"
+    },
+    {
+     "name": "usePlatformPage",
+     "type": "HostObservable<PlatformPageClaim | null>",
+     "default": "—",
+     "desc": "原生页面开着时返回 <code>null</code>，把焦点与 Esc 让给不透明视图。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'settings.account'>",
+     "default": "—",
+     "desc": "取 <code>quotaTitle</code> / <code>quotaDescription</code> / <code>cancel</code> / <code>quotaTopUp</code> / <code>close</code>。"
+    }
+   ],
+   "notes": "两条 claim（<code>keepOpen</code> 的 hold 与 <code>openPlatformPage</code> 的页面）都绑在这条 entry 的生命周期上：非本条目主动的卸载（更高优先级条目接管、插件重载、崩溃）也必须释放，否则会把 hold 或页面留在原地。首个账号快照还没到时先渲染 <code>null</code> 等它，但终止性的流失败会结束等待、把通用警告放出来。",
+   "keywords": [
+    "余额不足",
+    "额度提示",
+    "quota",
+    "充值引导",
+    "去充值"
+   ]
+  },
+  {
+   "id": "account-section",
+   "name": "AccountSection",
+   "exportName": "AccountSection",
+   "zh": "账号与余额",
+   "group": "settings",
+   "summary": "设置页里「账号与余额」整块：外层 <code>.section</code> 纵向 16px 间距、13px/22px 字，上面是身份卡（32px 圆形头像位＋14px 用户名＋13px 状态行，右侧「更多账号信息」外链），下面是余额卡——「充值余额」「赠金余额」「更多」三行，行最矮 40px、行间 0.5px 分隔线，金额 18px/28px 字重 510，多币种用 <code>+</code> 拼接，右下的「查询用量」与主色「充值」都是 36px 高、最小宽 58px 的链接按钮。未登录且没有进行中的登录尝试时，整块换成居中的空状态：14px 标题、12px 说明和一个主按钮。",
+   "source": "packages/client/ui-settings-account/src/client/AccountSection.tsx#L93",
+   "css": [
+    "packages/client/ui-settings-account/src/client/AccountSection.module.css",
+    "packages/client/ui-settings-account/src/client/AccountAvatar.module.css",
+    "packages/client/ui-primitives/src/Button.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-skeleton",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-border-l3",
+    "--dsw-alias-button-primary-fill",
+    "--dsw-alias-button-primary-hover",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-primary-foreground",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-settings-card-fill",
+    "--dsw-alias-settings-card-stroke",
+    "--dsw-alias-state-business-primary",
+    "--dsw-focus-ring-color",
+    "--dsw-focus-ring-width",
+    "--dsw-radius-md",
+    "--dsw-radius-xl"
+   ],
+   "specimens": [
+    {
+     "label": "已登录：身份卡 + 余额卡",
+     "note": "静态快照：头像是加载失败回落的图标态",
+     "html": "<div style='width:440px'><section class=\"section\" aria-label='账号与余额'><div class=\"card\"><div class=\"identity\"><span class=\"avatar\" data-avatar-status=\"failed\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1.3\"><path d=\"M8 8.25C9.51878 8.25 10.75 7.01878 10.75 5.5C10.75 3.98122 9.51878 2.75 8 2.75C6.48122 2.75 5.25 3.98122 5.25 5.5C5.25 7.01878 6.48122 8.25 8 8.25Z\" stroke=\"currentColor\"/><path d=\"M2.5 14.5C2.5 11.5 5.25 10.25 8 10.25C10.75 10.25 13.5 11.5 13.5 14.5\" stroke=\"currentColor\"/></svg></span><div class=\"identityCopy\"><span class=\"name\">张明</span><span class=\"status\" role='status'>zhangming@deepseek.com</span></div></div><a class=\"accountInfo\" href='https://platform.deepseek.com'>更多账号信息<svg width=\"12\" height=\"12\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M11.7256 2.77441C12.5538 2.77469 13.2256 3.44616 13.2256 4.27441V10.1416H12.2256V4.27441C12.2256 3.99844 12.0015 3.77469 11.7256 3.77441H5.7207V2.77441H11.7256Z\" fill=\"currentColor\"/><path d=\"M2.77441 13.2255L12.3756 3.62427\" stroke=\"currentColor\"/></svg></a></div><div class=\"balanceCard\"><div class=\"row\"><span>充值余额</span><span class=\"amount\"><span>¥1,280.00</span></span></div><div class=\"divider\"></div><div class=\"row\"><span>赠金余额</span><span class=\"bonusValue\"><span class=\"amount\"><span>¥10.00</span><span>$2.00</span></span></span></div><div class=\"divider\"></div><div class=\"row\"><span class=\"secondary\">更多</span><div class=\"links\"><a class=\"linkButton\" href='https://platform.deepseek.com'>查询用量</a><a class=\"c0-primary linkButton\" href='https://platform.deepseek.com'>充值</a></div></div></div></section></div>",
+     "css": "/* 静态快照：多模块条目里 .primary 同时被 AccountSection 与 Button 声明，\n   裸类名会同时落到两张表上，所以标记里把元素钉到各自所有者：余额卡右下的充值\n   链接是 c0-primary，<Button> 用 c2-primary。本示例不需要改写任何规则。 */"
+    },
+    {
+     "label": "未登录：居中空状态 + 登录",
+     "note": "静态快照",
+     "html": "<div style='width:440px;height:220px;display:flex'><section class=\"signedOut\" aria-label='账号与余额'><div class=\"signedOutContent\"><div class=\"signedOutCopy\"><span class=\"signedOutTitle\">当前未登录 DeepSeek Harness 账号</span><span class=\"signedOutDescription\" role='status'>登录 DeepSeek Harness 账号获取专属 API Key</span></div><button type='button' class=\"button c2-primary md signInButton\">登录</button></div></section></div>",
+     "css": "/* 静态快照：.signedOut 的 min-height 是 calc(100% + 16px) 再配 -16px 负外边距，\n   靠设置面板的满高容器生效；这里给出 220px 的容器让它取到相同的高度。\n   .primary 同时被 AccountSection(c0) 与 Button(c2) 声明，这个元素是 <Button>，\n   所以显式写成 c2-primary 钉到 Button 那张表。 */\n.signedOut { min-height: 236px; margin-bottom: 0; }"
+    },
+    {
+     "label": "登录中：打开浏览器 / 取消 + 余额未知",
+     "note": "静态快照",
+     "html": "<div style='width:440px'><section class=\"section\" aria-label='账号与余额'><div class=\"card\"><div class=\"identity\"><span class=\"avatar\" data-avatar-status=\"loading\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1.3\"><path d=\"M8 8.25C9.51878 8.25 10.75 7.01878 10.75 5.5C10.75 3.98122 9.51878 2.75 8 2.75C6.48122 2.75 5.25 3.98122 5.25 5.5C5.25 7.01878 6.48122 8.25 8 8.25Z\" stroke=\"currentColor\"/><path d=\"M2.5 14.5C2.5 11.5 5.25 10.25 8 10.25C10.75 10.25 13.5 11.5 13.5 14.5\" stroke=\"currentColor\"/></svg></span><div class=\"identityCopy\"><span class=\"name\">尚未登录</span><span class=\"status\" role='status'>正在发起登录…</span></div></div></div><div class=\"actions\"><a class=\"linkButton\" href='https://platform.deepseek.com'>打开浏览器</a><button type='button' class=\"button outline md\">取消</button></div><div class=\"balanceCard\"><div class=\"row\"><span>充值余额</span><span class=\"unavailable\">登录后查看</span></div><div class=\"divider\"></div><div class=\"row\"><span class=\"secondary\">更多</span><div class=\"links\"><a class=\"linkButton\" href='https://platform.deepseek.com'>查询用量</a><a class=\"c0-primary linkButton\" href='https://platform.deepseek.com'>充值</a></div></div></div></section></div>",
+     "css": "/* 静态快照：同已登录示例，.primary 归 AccountSection 自己的链接所有；\n   .actions 行只在有进行中的登录尝试时渲染，所以它只出现在这一态。 */"
+    }
+   ],
+   "props": [
+    {
+     "name": "useAccount",
+     "type": "HostObservable<AccountSnapshot>",
+     "default": "—",
+     "desc": "订阅账号快照：<code>view</code>（尝试阶段与登录状态）、<code>details</code>（资料与钱包）、<code>avatar</code>、<code>failed</code>。"
+    },
+    {
+     "name": "useTheme",
+     "type": "HostObservable<ThemeSnapshot>",
+     "default": "—",
+     "desc": "读 <code>active.colorScheme</code>，决定「打开浏览器」外链是否带深色参数。"
+    },
+    {
+     "name": "start",
+     "type": "() => Promise<void>",
+     "default": "—",
+     "desc": "发起登录；失败被 <code>run()</code> 捕获后把状态行切成「操作未完成，请重试。」"
+    },
+    {
+     "name": "cancel",
+     "type": "(id: SignInAttemptId) => Promise<void>",
+     "default": "—",
+     "desc": "取消进行中的尝试；提交阶段（<code>committing</code>）按钮禁用。"
+    },
+    {
+     "name": "openPlatformPage",
+     "type": "PlatformPages['open'] | undefined",
+     "default": "—",
+     "desc": "Desktop 才有：点「查询用量」/「充值」时不跳新标签页，改成在共享原生宿主里打开对应页面。"
+    },
+    {
+     "name": "avatarFailed",
+     "type": "(snapshot: AccountAvatarSnapshot) => void",
+     "default": "—",
+     "desc": "渲染出来的头像图片加载失败时上报；已过期的尝试会被忽略，头像位回落成 16px 图标。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'settings.account'>",
+     "default": "—",
+     "desc": "账号命名空间的翻译座位。"
+    }
+   ],
+   "notes": "状态行优先级：本地/流失败 > 尝试 <code>expired</code> > 进行中（<code>initializing</code>→「正在发起登录…」、<code>waiting-browser</code>→「请在浏览器中继续」、其余→「正在完成登录…」）> 已登录（<code>profile.contact</code>，资料未到用「账号资料暂不可用」）> 未登录时的「登录 DeepSeek 账号以开始使用」。钱包读取失败时余额位不消失，改渲染带下划线的「前往开放平台查看」链接，目的地与「查询用量」相同。",
+   "keywords": [
+    "账号设置",
+    "余额",
+    "充值余额",
+    "赠金余额",
+    "登出",
+    "account settings"
+   ]
+  },
+  {
+   "id": "desktop-onboarding",
+   "name": "DesktopOnboarding",
+   "exportName": "DesktopOnboarding",
+   "zh": "首启引导",
+   "group": "settings",
+   "summary": "Desktop 首启引导的整屏页面，由 <code>OnboardingSurface</code> portal 到 body：<code>position: fixed; inset: 0</code> 的 <code>.onboardingOverlay</code> 铺 <code>--dsw-alias-bg-base</code>，里面的 <code>.onboardingStage</code> 居中承载 <code>.page</code>（最小高 480px，左右留 <code>clamp(40px, 8.333vw, 120px)</code>）。欢迎页左侧是 28px/48px 标题、16px/28px 说明和 240px 宽的主按钮，右侧是 1247×822 的插画层；选择页的卡片是 32px 圆角、最小高 222px、<code>backdrop-filter: blur(32.609px)</code> 的玻璃卡，勾选后 <code>::after</code> 用锥形渐变描出 2px 边框并 14s 循环扫光；底部 <code>.navigation</code> 是「上一步 / 跳过」两个无边框文字按钮。",
+   "source": "packages/client/ui-settings-account/src/client/DesktopOnboarding.tsx#L28",
+   "css": [
+    "packages/client/ui-settings-account/src/client/DesktopOnboarding.module.css",
+    "packages/client/ui-settings-account/src/client/OnboardingSurface.module.css",
+    "packages/client/ui-primitives/src/Button.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-border-l2",
+    "--dsw-alias-border-l4",
+    "--dsw-alias-bg-base",
+    "--dsw-alias-brand-primary",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-primary-foreground",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-onboarding-accent",
+    "--dsw-alias-onboarding-card-fill",
+    "--dsw-alias-onboarding-checkbox-border",
+    "--dsw-alias-onboarding-secondary-fill",
+    "--dsw-alias-state-business-primary",
+    "--dsw-focus-ring-color",
+    "--dsw-font-family",
+    "--dsw-font-family-brand",
+    "--dsw-gradient-onboarding-blue-stops",
+    "--dsw-gradient-onboarding-cyan-stops",
+    "--dsw-gradient-onboarding-violet-stops",
+    "--dsw-mask-blur"
+   ],
+   "specimens": [
+    {
+     "label": "欢迎页：标题 + 说明 + 240px 主按钮",
+     "note": "静态快照：右侧 1247×822 的 webp 插画层未内联",
+     "html": "<div style='width:1000px;height:720px;display:flex'><div class=\"onboardingOverlay snapshotStatic\" role='presentation'><div class=\"dragBand\" data-window-drag aria-hidden='true'></div><div class=\"onboardingStage\"><section class=\"page\" data-desktop-onboarding=\"welcome\" lang='zh' aria-labelledby='desktop-onboarding-title' aria-busy=\"false\"><div class=\"content welcome\"><div class=\"copy\"><h1 id='desktop-onboarding-title' tabindex='-1'>欢迎使用 <em class=\"brand\">DeepSeek Harness</em></h1><p class=\"heroDescription\">DeepSeek Harness 会以本地文件夹作为工作区，通过调用各种工具，读写本机文件，完成搜索整理资料、制作文档表格、编写代码、排查问题等各种任务。</p><button type='button' class=\"button primary md action start\">开始设置</button></div></div></section></div></div></div>",
+     "css": "/* 静态快照：OnboardingSurface 的 .onboardingOverlay 在真实产品里是 portal 到 body 的\n   position: fixed; inset: 0 全屏层，这里拉回文档流并交给外层固定尺寸的容器取高。 */\n.onboardingOverlay.snapshotStatic { position: relative; inset: auto; height: 100%; }"
+    },
+    {
+     "label": "用途选择：两张 32px 圆角玻璃卡",
+     "note": "静态快照：卡片图标为 assets/onboarding-*.svg 的同一份几何",
+     "html": "<div style='width:1000px;height:720px;display:flex'><div class=\"onboardingOverlay snapshotStatic\" role='presentation'><div class=\"dragBand\" data-window-drag aria-hidden='true'></div><div class=\"onboardingStage\"><section class=\"page\" data-desktop-onboarding=\"purpose\" lang='zh' aria-labelledby='desktop-onboarding-title' aria-busy=\"false\"><div class=\"content purpose\"><div class=\"copy\"><h1 id='desktop-onboarding-title' tabindex='-1'>你希望 <em class=\"brand\">DeepSeek Harness</em> 帮你做什么？</h1><p class=\"subtitle\">我们会根据你的选择调整界面和工具，以更适合你的工作方式。</p></div><div class=\"purposeCards\"><div class=\"card officeCard\"><div class=\"cardTop\"><svg width=\"40\" height=\"40\" viewBox=\"0 0 40 40\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M10.5156 33.7727H29.4816C30.7242 33.7727 31.7316 32.7654 31.7316 31.5227V15.716C31.7316 15.1089 31.4863 14.5277 31.0516 14.1042L23.623 6.86866C23.2029 6.45945 22.6395 6.23047 22.0532 6.23047H10.5156C9.273 6.23047 8.26562 7.23782 8.26562 8.48047V31.5227C8.26562 32.7654 9.27297 33.7727 10.5156 33.7727Z\" stroke=\"#8370F1\" stroke-width=\"2\"/><path d=\"M21.916 6.47656V13.3789C21.916 14.6216 22.9233 15.6289 24.166 15.6289H31.6317\" stroke=\"#8370F1\" stroke-width=\"2\"/><path d=\"M12.1953 21.6016H19.6427\" stroke=\"#8370F1\" stroke-width=\"2\"/><path d=\"M12.1953 27.1172H22.8924\" stroke=\"#8370F1\" stroke-width=\"2\"/></svg><label class=\"cardCheckbox\"><input type=\"checkbox\" aria-label=\"办公与创作\"/><span class=\"indicator\" aria-hidden=\"true\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4\" stroke=\"currentColor\"/></svg></span></label></div><span class=\"cardTitle\">办公与创作</span><span class=\"cardDescription\">编辑文档、整理数据和制作演示文稿等</span></div><div class=\"card\"><div class=\"cardTop\"><svg width=\"40\" height=\"40\" viewBox=\"0 0 40 40\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M10.625 12.5L3.75 20L10.625 27.5\" stroke=\"#3B86FF\" stroke-width=\"2\"/><path d=\"M29.375 12.5L36.25 20L29.375 27.5\" stroke=\"#3B86FF\" stroke-width=\"2\"/><path d=\"M23.125 11.25L16.875 28.75\" stroke=\"#3B86FF\" stroke-width=\"2\"/></svg><label class=\"cardCheckbox\"><input type=\"checkbox\" aria-label=\"代码与开发\"/><span class=\"indicator\" aria-hidden=\"true\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4\" stroke=\"currentColor\"/></svg></span></label></div><span class=\"cardTitle\">代码与开发</span><span class=\"cardDescription\">修改代码、调试问题、运行命令和管理项目文件等</span></div></div></div><footer class=\"navigation\"><button type='button'><span class=\"backIcon\" style=\"mask-image:url('data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20.2792' height='16.825' viewBox='0 0 20.2792 16.825'%3E%3Cpath d='M1.01986 8.58958H20.2792M8.54303 0.407656L0.825554 8.58958L8.54303 16.4077' stroke='%23000' stroke-width='1.18823'/%3E%3C/svg%3E')\" aria-hidden='true'></span>上一步</button><button type='button'>跳过</button></footer></section></div></div></div>",
+     "css": "/* 静态快照：OnboardingSurface 的 .onboardingOverlay 在真实产品里是 portal 到 body 的\n   position: fixed; inset: 0 全屏层，这里拉回文档流并交给外层固定尺寸的容器取高。 */\n.onboardingOverlay.snapshotStatic { position: relative; inset: auto; height: 100%; }"
+    },
+    {
+     "label": "过程选择：选中卡片的渐变描边",
+     "note": "静态快照：中间一张为选中态（borderSweep 扫光）",
+     "html": "<div style='width:1000px;height:720px;display:flex'><div class=\"onboardingOverlay snapshotStatic\" role='presentation'><div class=\"dragBand\" data-window-drag aria-hidden='true'></div><div class=\"onboardingStage\"><section class=\"page\" data-desktop-onboarding=\"process\" lang='zh' aria-labelledby='desktop-onboarding-title' aria-busy=\"false\"><div class=\"content process\"><div class=\"copy\"><h1 id='desktop-onboarding-title' tabindex='-1'>你希望看到多少工作过程？</h1><p class=\"subtitle\">这只会影响工作过程的展示方式，不会影响 DeepSeek Harness 的工作能力。</p></div><div class=\"processCards\" role='radiogroup' aria-labelledby='desktop-onboarding-title'><button type='button' role='radio' data-process=\"compact\" aria-checked=\"false\" tabindex=\"-1\" class=\"card\"><span class=\"processIcon\"><svg width=\"40\" height=\"40\" viewBox=\"0 0 40 40\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M22.5 6.25V15C22.5 15.663 22.7634 16.2989 23.2322 16.7678C23.7011 17.2366 24.337 17.5 25 17.5H33.75\" stroke=\"#8370F1\" stroke-width=\"2\"/><path d=\"M17.5 33.75V25C17.5 24.337 17.2366 23.7011 16.7678 23.2322C16.2989 22.7634 15.663 22.5 15 22.5H6.25\" stroke=\"#8370F1\" stroke-width=\"2\"/></svg></span><span class=\"cardTitle\">聚焦结果</span><span class=\"cardDescription\">只看结果，保持界面简洁明了</span></button><button type='button' role='radio' data-process=\"standard\" aria-checked=\"true\" tabindex=\"0\" class=\"card selected\"><span class=\"processIcon\"><svg width=\"36\" height=\"36\" viewBox=\"0 0 36 36\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M8.4375 14.0625C10.6121 14.0625 12.375 12.2996 12.375 10.125C12.375 7.95038 10.6121 6.1875 8.4375 6.1875C6.26288 6.1875 4.5 7.95038 4.5 10.125C4.5 12.2996 6.26288 14.0625 8.4375 14.0625Z\" stroke=\"#3B86FF\" stroke-width=\"2\"/><path d=\"M16.875 10.125H30.375\" stroke=\"#3B86FF\" stroke-width=\"2\"/><path d=\"M8.4375 29.8125C10.6121 29.8125 12.375 28.0496 12.375 25.875C12.375 23.7004 10.6121 21.9375 8.4375 21.9375C6.26288 21.9375 4.5 23.7004 4.5 25.875C4.5 28.0496 6.26288 29.8125 8.4375 29.8125Z\" stroke=\"#3B86FF\" stroke-width=\"2\"/><path d=\"M16.875 25.875H30.375\" stroke=\"#3B86FF\" stroke-width=\"2\"/></svg></span><span class=\"cardTitle\">关键细节</span><span class=\"cardDescription\">结果优先，仅展示重要步骤和关键操作</span></button><button type='button' role='radio' data-process=\"detailed\" aria-checked=\"false\" tabindex=\"-1\" class=\"card\"><span class=\"processIcon\"><svg width=\"36\" height=\"36\" viewBox=\"0 0 36 36\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M28.125 3.375H7.875C6.63236 3.375 5.625 4.38236 5.625 5.625V30.375C5.625 31.6176 6.63236 32.625 7.875 32.625H28.125C29.3676 32.625 30.375 31.6176 30.375 30.375V5.625C30.375 4.38236 29.3676 3.375 28.125 3.375Z\" stroke=\"#00A4C9\" stroke-width=\"2\"/><path d=\"M12.375 12.375H23.625\" stroke=\"#00A4C9\" stroke-width=\"2\"/><path d=\"M12.375 21.375H19.125\" stroke=\"#00A4C9\" stroke-width=\"2\"/></svg></span><span class=\"cardTitle\">完整过程</span><span class=\"cardDescription\">查看完整工作过程，方便调试和排查问题</span></button></div><div class=\"primaryAction\"><button type='button' class=\"button primary md action\">进入应用</button></div></div><footer class=\"navigation\"><button type='button'><span class=\"backIcon\" style=\"mask-image:url('data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20.2792' height='16.825' viewBox='0 0 20.2792 16.825'%3E%3Cpath d='M1.01986 8.58958H20.2792M8.54303 0.407656L0.825554 8.58958L8.54303 16.4077' stroke='%23000' stroke-width='1.18823'/%3E%3C/svg%3E')\" aria-hidden='true'></span>上一步</button><button type='button'>跳过</button></footer></section></div></div></div>",
+     "css": "/* 静态快照：OnboardingSurface 的 .onboardingOverlay 在真实产品里是 portal 到 body 的\n   position: fixed; inset: 0 全屏层，这里拉回文档流并交给外层固定尺寸的容器取高。 */\n.onboardingOverlay.snapshotStatic { position: relative; inset: auto; height: 100%; }"
+    }
+   ],
+   "props": [
+    {
+     "name": "state",
+     "type": "DesktopOnboardingState",
+     "default": "—",
+     "desc": "渲染态：<code>status</code>（loading/ready/saving/error）、<code>visible</code>、<code>progress</code>（step/purpose/process）、<code>creditFunded</code>、<code>error</code>。"
+    },
+    {
+     "name": "account",
+     "type": "AccountSnapshot",
+     "default": "—",
+     "desc": "账号快照；充值页点「稍后」时用它判断是否已有可用赠金。"
+    },
+    {
+     "name": "update",
+     "type": "(change: OnboardingChange) => Promise<boolean>",
+     "default": "—",
+     "desc": "落地一步选择（step/purpose/process 的部分字段）。"
+    },
+    {
+     "name": "complete",
+     "type": "(reason: 'completed' | 'skipped') => Promise<boolean>",
+     "default": "—",
+     "desc": "结束引导：走完是 completed，跳过是 skipped。"
+    },
+    {
+     "name": "retry",
+     "type": "() => Promise<boolean>",
+     "default": "—",
+     "desc": "保存失败后重试，对应底部 <code>.status</code> 行里的「重试」。"
+    },
+    {
+     "name": "openPlatformPage",
+     "type": "PlatformPages['open'] | undefined",
+     "default": "—",
+     "desc": "Desktop 才有：充值走共享原生宿主；缺失时所有能到充值的控件都禁用。"
+    },
+    {
+     "name": "locale",
+     "type": "string",
+     "default": "—",
+     "desc": "界面语言，决定用中文还是英文插画（<code>zh</code> 取 <code>*-zh.webp</code>）。"
+    },
+    {
+     "name": "track",
+     "type": "TrackProductEvent | undefined",
+     "default": "—",
+     "desc": "埋点回调；分析关闭时不传，页面浏览与点击就不再上报。"
+    },
+    {
+     "name": "exiting",
+     "type": "boolean | undefined",
+     "default": "false",
+     "desc": "完成后的退场：保留最后一步并让 <code>.onboardingOverlay[data-exiting]</code> 播 180ms 淡出。"
+    },
+    {
+     "name": "t",
+     "type": "(key: AccountKey) => string",
+     "default": "—",
+     "desc": "引导文案字典。"
+    }
+   ],
+   "notes": "<code>busy</code> = loading | saving | exiting | 动画中的步骤切换，为真时所有按钮 disabled、卡片带 <code>aria-disabled</code>（光标变 <code>wait</code>）。步骤切换先让 <code>.page</code> 播 40ms 的 <code>Web Animations</code> 淡出再换页；<code>prefers-reduced-motion: reduce</code> 时直接切换并关掉全部过渡与 <code>borderSweep</code>。窗口高不足 760px 时卡片内边距与最小高收缩，宽不足 1100px 时左右留白固定 40px。",
+   "keywords": [
+    "首启",
+    "引导",
+    "onboarding",
+    "欢迎页",
+    "用途选择",
+    "工作过程"
+   ]
+  },
+  {
+   "id": "desktop-onboarding-entry",
+   "name": "DesktopOnboardingEntry",
+   "exportName": "DesktopOnboardingEntry",
+   "zh": "引导挂载点",
+   "group": "settings",
+   "summary": "<code>shell.overlay</code> 上的 Desktop 引导入口，自己不产生 DOM 结构：它把 <code>useOnboarding</code> / <code>useAccount</code> 两个 observable 与 <code>setVisible</code> 接到纯视图 <code>DesktopOnboarding</code> 上，所以用户看到的就是那套整屏引导页。加载中（<code>status === 'loading'</code>）只渲染 <code>OnboardingSurface</code> 加一行没有类名的 <code>role=\"status\"</code> 文案；完成后在没有 <code>prefers-reduced-motion</code> 的环境里会多留 180ms 播退出淡出，再收掉整块覆盖层。",
+   "source": "packages/client/ui-settings-account/src/client/DesktopOnboardingEntry.tsx#L25",
+   "css": [
+    "packages/client/ui-settings-account/src/client/DesktopOnboarding.module.css",
+    "packages/client/ui-settings-account/src/client/OnboardingSurface.module.css",
+    "packages/client/ui-primitives/src/Button.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-border-l2",
+    "--dsw-alias-bg-base",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-primary-foreground",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-onboarding-card-fill",
+    "--dsw-alias-onboarding-checkbox-border",
+    "--dsw-alias-onboarding-secondary-fill",
+    "--dsw-alias-state-business-primary",
+    "--dsw-focus-ring-color",
+    "--dsw-font-family",
+    "--dsw-gradient-onboarding-blue-stops",
+    "--dsw-gradient-onboarding-violet-stops",
+    "--dsw-radius-md",
+    "--dsw-mask-blur"
+   ],
+   "specimens": [
+    {
+     "label": "加载态：正在加载设置…",
+     "note": "该组件本身无独立外观，这里展示它挂载后渲染的内容；静态快照",
+     "html": "<div style='width:1000px;height:720px;display:flex'><div class=\"onboardingOverlay snapshotStatic\" role='presentation'><div class=\"dragBand\" data-window-drag aria-hidden='true'></div><div class=\"onboardingStage\"><section class=\"page\" data-desktop-onboarding=\"loading\" lang='zh' aria-labelledby='desktop-onboarding-title' aria-busy=\"false\"><div role='status'>正在加载设置…</div></section></div></div></div>",
+     "css": "/* 静态快照：OnboardingSurface 的 .onboardingOverlay 在真实产品里是 portal 到 body 的\n   position: fixed; inset: 0 全屏层，这里拉回文档流并交给外层固定尺寸的容器取高。 */\n.onboardingOverlay.snapshotStatic { position: relative; inset: auto; height: 100%; }"
+    },
+    {
+     "label": "流程页（用途选择）+ 保存失败行",
+     "note": "该组件本身无独立外观，这里展示它投影出的引导页；静态快照",
+     "html": "<div style='width:1000px;height:720px;display:flex'><div class=\"onboardingOverlay snapshotStatic\" role='presentation'><div class=\"dragBand\" data-window-drag aria-hidden='true'></div><div class=\"onboardingStage\"><section class=\"page\" data-desktop-onboarding=\"purpose\" lang='zh' aria-labelledby='desktop-onboarding-title' aria-busy=\"false\"><div class=\"content purpose\"><div class=\"copy\"><h1 id='desktop-onboarding-title' tabindex='-1'>你希望 <em class=\"brand\">DeepSeek Harness</em> 帮你做什么？</h1><p class=\"subtitle\">我们会根据你的选择调整界面和工具，以更适合你的工作方式。</p></div><div class=\"purposeCards\"><div class=\"card officeCard\"><div class=\"cardTop\"><svg width=\"40\" height=\"40\" viewBox=\"0 0 40 40\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M10.5156 33.7727H29.4816C30.7242 33.7727 31.7316 32.7654 31.7316 31.5227V15.716C31.7316 15.1089 31.4863 14.5277 31.0516 14.1042L23.623 6.86866C23.2029 6.45945 22.6395 6.23047 22.0532 6.23047H10.5156C9.273 6.23047 8.26562 7.23782 8.26562 8.48047V31.5227C8.26562 32.7654 9.27297 33.7727 10.5156 33.7727Z\" stroke=\"#8370F1\" stroke-width=\"2\"/><path d=\"M21.916 6.47656V13.3789C21.916 14.6216 22.9233 15.6289 24.166 15.6289H31.6317\" stroke=\"#8370F1\" stroke-width=\"2\"/><path d=\"M12.1953 21.6016H19.6427\" stroke=\"#8370F1\" stroke-width=\"2\"/><path d=\"M12.1953 27.1172H22.8924\" stroke=\"#8370F1\" stroke-width=\"2\"/></svg><label class=\"cardCheckbox\"><input type=\"checkbox\" aria-label=\"办公与创作\"/><span class=\"indicator\" aria-hidden=\"true\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4\" stroke=\"currentColor\"/></svg></span></label></div><span class=\"cardTitle\">办公与创作</span><span class=\"cardDescription\">编辑文档、整理数据和制作演示文稿等</span></div><div class=\"card\"><div class=\"cardTop\"><svg width=\"40\" height=\"40\" viewBox=\"0 0 40 40\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M10.625 12.5L3.75 20L10.625 27.5\" stroke=\"#3B86FF\" stroke-width=\"2\"/><path d=\"M29.375 12.5L36.25 20L29.375 27.5\" stroke=\"#3B86FF\" stroke-width=\"2\"/><path d=\"M23.125 11.25L16.875 28.75\" stroke=\"#3B86FF\" stroke-width=\"2\"/></svg><label class=\"cardCheckbox\"><input type=\"checkbox\" aria-label=\"代码与开发\"/><span class=\"indicator\" aria-hidden=\"true\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4\" stroke=\"currentColor\"/></svg></span></label></div><span class=\"cardTitle\">代码与开发</span><span class=\"cardDescription\">修改代码、调试问题、运行命令和管理项目文件等</span></div></div></div><div class=\"status\" role='alert'>未能保存设置，请重试。<button type='button' class=\"button ghost md\">重试</button></div><footer class=\"navigation\"><button type='button'><span class=\"backIcon\" style=\"mask-image:url('data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20.2792' height='16.825' viewBox='0 0 20.2792 16.825'%3E%3Cpath d='M1.01986 8.58958H20.2792M8.54303 0.407656L0.825554 8.58958L8.54303 16.4077' stroke='%23000' stroke-width='1.18823'/%3E%3C/svg%3E')\" aria-hidden='true'></span>上一步</button><button type='button'>跳过</button></footer></section></div></div></div>",
+     "css": "/* 静态快照：OnboardingSurface 的 .onboardingOverlay 在真实产品里是 portal 到 body 的\n   position: fixed; inset: 0 全屏层，这里拉回文档流并交给外层固定尺寸的容器取高。 */\n.onboardingOverlay.snapshotStatic { position: relative; inset: auto; height: 100%; }"
+    }
+   ],
+   "props": [
+    {
+     "name": "useOnboarding",
+     "type": "HostObservable<DesktopOnboardingState>",
+     "default": "—",
+     "desc": "引导状态源；<code>visible</code> 决定是否出页面，会话本身不能改激活状态。"
+    },
+    {
+     "name": "useAccount",
+     "type": "HostObservable<AccountSnapshot>",
+     "default": "—",
+     "desc": "账号快照源；只有 <code>credential-stored</code> 且最后一步是 done 才算真正完成。"
+    },
+    {
+     "name": "setVisible",
+     "type": "(visible: boolean) => void",
+     "default": "—",
+     "desc": "把「是否盖住工作区」发布回宿主快照（含加载、保存与退场动画），Desktop 布局据此渲染 <code>shell.overlay</code>。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'settings.account'>",
+     "default": "—",
+     "desc": "settings.account 文案字典；组件内部用 <code>t('onboardingArtworkLocale')</code> 自己解析界面语言，<code>locale</code> 不是入参（Injected 面已 Omit 掉它）。"
+    }
+   ],
+   "notes": "退场只在「已完成 + 曾经可见 + 未开启减少动效」三条同时成立时发生：<code>exiting</code> 期间用上一份 <code>lastVisible</code> 继续渲染，180ms 后清空。保存中（<code>pendingCompletion</code>）把状态改写成 <code>saving</code> 再交给视图，所以卡片在这一帧仍是禁用态。挂载期间还会通过 <code>globalThis.dshOnboarding.setActive()</code> 通知原生侧。",
+   "keywords": [
+    "引导入口",
+    "shell.overlay",
+    "挂载点",
+    "onboarding entry",
+    "首启"
+   ]
+  },
+  {
+   "id": "logout-icon",
+   "name": "LogoutIcon",
+   "exportName": "LogoutIcon",
+   "zh": "退出图标",
+   "group": "settings",
+   "summary": "账号菜单「退出登录」菜单项的前导字形，Figma <code>IcDsLogOutOutline16</code> 的内联 SVG：外层 16×16 相对定位，里面 13.664×13.571 的图标绝对定位在 <code>left:1.168 / top:1.214</code>，两段 <code>fill=\"currentColor\"</code> 的路径（门框与带箭头的出口）。颜色完全跟随 <code>currentColor</code>（即菜单项的文字色），尺寸写死在 JSX 里——没有 props、没有样式表，唯一的输入是它被放进的图标位。",
+   "source": "packages/client/ui-settings-account/src/client/LogoutIcon.tsx#L4",
+   "css": [],
+   "tokens": [],
+   "specimens": [
+    {
+     "label": "字形本体与菜单项中的用法",
+     "note": "16×16 的图标位；颜色继承自父级 currentColor",
+     "html": "<div style='display:flex;align-items:center;gap:32px'><div style='display:flex;flex-direction:column;align-items:center;gap:6px'><span style='width:16px;height:16px;position:relative;display:inline-block' aria-hidden='true'><svg style=\"position:absolute;left:1.168px;top:1.214px\" width=\"13.664\" height=\"13.571\" viewBox=\"0 0 14 14\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M3.9961 1.40039C3.37842 1.40039 2.96028 1.40039 2.63867 1.42871C2.32631 1.45627 2.17171 1.50666 2.06641 1.56543C1.85606 1.68288 1.68189 1.85605 1.56446 2.06641C1.50569 2.17173 1.45625 2.32627 1.42871 2.63867C1.40036 2.9603 1.39942 3.37827 1.39942 3.9961L1.39942 9.5752C1.39942 10.193 1.40036 10.611 1.42871 10.9326C1.45625 11.245 1.50569 11.3996 1.56445 11.5049C1.68188 11.7153 1.85605 11.8884 2.06641 12.0059C2.17171 12.0646 2.32631 12.115 2.63867 12.1426C2.96028 12.1709 3.37842 12.1709 3.9961 12.1709V13.5713C3.4033 13.5713 2.91297 13.5721 2.51563 13.5371C2.10906 13.5013 1.73277 13.4233 1.38379 13.2285C0.946838 12.9845 0.585697 12.6235 0.341799 12.1865C0.14725 11.8377 0.0700118 11.4621 0.0341815 11.0557C-0.000847399 10.6583 1.58129e-06 10.1681 1.85029e-06 9.5752L2.09416e-06 3.9961C1.83027e-06 3.40325 -0.000846367 2.91297 0.0341818 2.51563C0.0700164 2.10924 0.147239 1.73362 0.341799 1.38477C0.585703 0.947758 0.946825 0.586744 1.38379 0.342775C1.73277 0.148001 2.10906 0.0700381 2.51563 0.0341813C2.91297 -0.000823893 3.40331 1.37805e-06 3.9961 1.71712e-06L3.9961 1.40039Z\" fill=\"currentColor\"/><path d=\"M13.6426 6.51953C13.6705 6.6957 13.6705 6.8756 13.6426 7.05176C13.5902 7.38188 13.4302 7.64112 13.2539 7.86035C13.0857 8.06937 12.8546 8.29971 12.6006 8.55371L9.3086 11.8447L8.31836 10.8545L11.6104 7.56348C11.637 7.53681 11.6628 7.51104 11.6875 7.48633H3.74317V6.08594H11.6885C11.6635 6.06088 11.6374 6.03487 11.6104 6.00781L8.31836 2.7168L9.3086 1.72656L12.6006 5.01758C12.8547 5.27169 13.0857 5.50185 13.2539 5.71094C13.4303 5.93018 13.5902 6.18939 13.6426 6.51953Z\" fill=\"currentColor\"/></svg></span><span style='font-size:11px'>LogoutIcon · 16×16</span></div><div style='display:flex;flex-direction:column;gap:6px'><div style='display:flex;align-items:center;gap:8px'><span style='width:16px;height:16px;position:relative;display:inline-block' aria-hidden='true'><svg style=\"position:absolute;left:1.168px;top:1.214px\" width=\"13.664\" height=\"13.571\" viewBox=\"0 0 14 14\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M3.9961 1.40039C3.37842 1.40039 2.96028 1.40039 2.63867 1.42871C2.32631 1.45627 2.17171 1.50666 2.06641 1.56543C1.85606 1.68288 1.68189 1.85605 1.56446 2.06641C1.50569 2.17173 1.45625 2.32627 1.42871 2.63867C1.40036 2.9603 1.39942 3.37827 1.39942 3.9961L1.39942 9.5752C1.39942 10.193 1.40036 10.611 1.42871 10.9326C1.45625 11.245 1.50569 11.3996 1.56445 11.5049C1.68188 11.7153 1.85605 11.8884 2.06641 12.0059C2.17171 12.0646 2.32631 12.115 2.63867 12.1426C2.96028 12.1709 3.37842 12.1709 3.9961 12.1709V13.5713C3.4033 13.5713 2.91297 13.5721 2.51563 13.5371C2.10906 13.5013 1.73277 13.4233 1.38379 13.2285C0.946838 12.9845 0.585697 12.6235 0.341799 12.1865C0.14725 11.8377 0.0700118 11.4621 0.0341815 11.0557C-0.000847399 10.6583 1.58129e-06 10.1681 1.85029e-06 9.5752L2.09416e-06 3.9961C1.83027e-06 3.40325 -0.000846367 2.91297 0.0341818 2.51563C0.0700164 2.10924 0.147239 1.73362 0.341799 1.38477C0.585703 0.947758 0.946825 0.586744 1.38379 0.342775C1.73277 0.148001 2.10906 0.0700381 2.51563 0.0341813C2.91297 -0.000823893 3.40331 1.37805e-06 3.9961 1.71712e-06L3.9961 1.40039Z\" fill=\"currentColor\"/><path d=\"M13.6426 6.51953C13.6705 6.6957 13.6705 6.8756 13.6426 7.05176C13.5902 7.38188 13.4302 7.64112 13.2539 7.86035C13.0857 8.06937 12.8546 8.29971 12.6006 8.55371L9.3086 11.8447L8.31836 10.8545L11.6104 7.56348C11.637 7.53681 11.6628 7.51104 11.6875 7.48633H3.74317V6.08594H11.6885C11.6635 6.06088 11.6374 6.03487 11.6104 6.00781L8.31836 2.7168L9.3086 1.72656L12.6006 5.01758C12.8547 5.27169 13.0857 5.50185 13.2539 5.71094C13.4303 5.93018 13.5902 6.18939 13.6426 6.51953Z\" fill=\"currentColor\"/></svg></span><span>退出登录</span></div><span style='font-size:11px'>账号菜单项：图标位 + 文案</span></div></div>"
+    }
+   ],
+   "notes": "字形是图标的完整实现，不接 <code>size</code> / <code>className</code>：需要别的尺寸只能靠外层 <code>transform</code>，图标位本身不缩放它。产品里只出现在 <code>AccountMenu</code> 的退出项（<code>Menu</code> 的 16×16 <code>.icon</code> 座位），未登录时那一项换成 <code>IconUserOutlineMedium</code>。",
+   "keywords": [
+    "退出登录",
+    "登出",
+    "logout",
+    "图标",
+    "菜单图标"
+   ]
+  }
+ ]
+}

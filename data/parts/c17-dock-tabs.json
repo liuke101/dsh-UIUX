@@ -1,0 +1,672 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "id": "dock-surface",
+      "name": "DockSurface",
+      "exportName": "DockSurface",
+      "zh": "停靠面",
+      "group": "dock",
+      "summary": "整个 kit 的停靠面：外层只有一个 <code>.surface</code>（<code>display:flex; flex:1 1 auto</code> 加 <code>min-width/min-height:0</code>），里面递归渲染 <code>PaneTree</code>；栏、标题栏、收起态这些外层 chrome 属于嵌入方，kit 只把嵌入方的 <code>chrome</code> 摆在右上窗格标签轨的末端。每个窗格是一条 38px 的标签轨（28px chip 行 + 10px 上内边距：80–170px 宽、28px 高的 chip、10px 的 slot、28px 的加号与分栏按钮）加一个自己滚动的 <code>.paneBody</code>。手势只预览：拖起的 chip <code>opacity:.5</code>、目标槽位画 2×20px 强调色 caret，或整块 body 盖上 <code>.dockScrim</code> 并浮出虚线的落点卡，松手才通过一次 <code>DockIntents</code> 调用落定——浮出的面板不在这里，交给 <code>FloatLayer</code>。",
+      "source": "packages/client/ui-dockkit/src/components/DockSurface.tsx#L300",
+      "css": [
+        "packages/client/ui-dockkit/src/components/dockkit.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-base",
+        "--dsw-alias-border-l4",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-markdown-tag",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-brand-primary-new-colorprimary-new-color",
+        "--dsw-radius-sm",
+        "--dsw-radius-md",
+        "--dsw-radius-lg",
+        "--dsw-alias-scrollbar-bg-l2",
+        "--dsw-alias-scrollbar-hover-l2"
+      ],
+      "specimens": [
+        {
+          "label": "单窗格：38px 标签轨 + 内容区",
+          "note": "标签轨 28px 内容行 + 10px 上内边距；加号是 28px 的 .addTab，分栏按钮在同一行末端",
+          "bg": "platform",
+          "pad": "lg",
+          "html": "<div style=\"width:560px;height:220px;display:flex\"><div class=\"surface\" data-dockkit-surface=\"true\" data-dockkit-drop-zones=\"edges\"><section class=\"pane\" data-dockkit-pane=\"pane-main\" data-dockkit-pane-active=\"true\" tabindex=\"-1\"><div class=\"tabStrip\" role=\"tablist\" data-dockkit-strip=\"pane-main\" data-window-drag=\"true\"><div class=\"stripTabs\" role=\"presentation\" data-dockkit-strip-tabs=\"pane-main\"><div role=\"tab\" aria-selected=\"true\" tabindex=\"0\" class=\"tab tabActive\" data-dockkit-tab=\"tab-plan\"><span class=\"tabTitle\" data-dockkit-tab-title>计划</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭\" data-dockkit-tab-close=\"tab-plan\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"slot\"></div><div role=\"tab\" aria-selected=\"false\" tabindex=\"-1\" class=\"tab\" data-dockkit-tab=\"tab-review\"><span class=\"tabTitle\" data-dockkit-tab-title>第 3 轮改动</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭\" data-dockkit-tab-close=\"tab-review\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"slot\"></div><div role=\"tab\" aria-selected=\"false\" tabindex=\"-1\" class=\"tab\" data-dockkit-tab=\"tab-files\"><span class=\"tabTitle\" data-dockkit-tab-title>文件</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭\" data-dockkit-tab-close=\"tab-files\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div></div><button type=\"button\" class=\"addTab\" aria-label=\"新标签页\" data-dockkit-add-tab=\"pane-main\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 2V14\" stroke=\"currentColor\"/><path d=\"M2 8H14\" stroke=\"currentColor\"/></svg></button><div class=\"stripFill\" data-dockkit-strip-fill=\"true\"></div><button type=\"button\" class=\"iconButton\" aria-label=\"分栏\" data-dockkit-split-button=\"pane-main\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z\" stroke=\"currentColor\"/><path d=\"M8 1.5V14.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"paneBody\"><div style=\"padding:12px\">计划：把停靠面与浮窗的标签轨收敛到同一套 38px 规格</div></div></section></div></div>"
+        },
+        {
+          "label": "递归分栏：.split / .splitCell 的 flex-grow 0.58 / 0.42",
+          "note": "窄栏的分栏按钮 disabled 并挂 data-dockkit-split-blocked=\"width\"；分隔条 0 宽，悬停时淡入 1px 抓柄（悬停模拟）",
+          "bg": "platform",
+          "pad": "lg",
+          "css": "/* 状态模拟：分隔条 hover 时抓柄淡入（.divider:hover::after { opacity: 1 }），\n   静态快照没有指针，把那条规则按同选择器照搬过来；渐变与 120ms 过渡仍由组件样式表提供。 */\n.divider::after { opacity: 1; }",
+          "html": "<div style=\"width:680px;height:240px;display:flex\"><div class=\"surface\" data-dockkit-surface=\"true\" data-dockkit-drop-zones=\"edges\"><div class=\"split splitRow\" data-dockkit-split=\"split-root\"><div class=\"splitCell\" data-dockkit-cell=\"split-root:0\" style=\"flex-grow:0.58\"><section class=\"pane\" data-dockkit-pane=\"pane-plan\" data-dockkit-pane-active=\"true\" tabindex=\"-1\"><div class=\"tabStrip\" role=\"tablist\" data-dockkit-strip=\"pane-plan\" data-window-drag=\"true\"><div class=\"stripTabs\" role=\"presentation\" data-dockkit-strip-tabs=\"pane-plan\"><div role=\"tab\" aria-selected=\"true\" tabindex=\"0\" class=\"tab tabActive\" data-dockkit-tab=\"tab-plan\"><span class=\"tabTitle\" data-dockkit-tab-title>计划</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭\" data-dockkit-tab-close=\"tab-plan\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"slot\"></div><div role=\"tab\" aria-selected=\"false\" tabindex=\"-1\" class=\"tab\" data-dockkit-tab=\"tab-review\"><span class=\"tabTitle\" data-dockkit-tab-title>第 3 轮改动</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭\" data-dockkit-tab-close=\"tab-review\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"slot\"></div><div role=\"tab\" aria-selected=\"false\" tabindex=\"-1\" class=\"tab\" data-dockkit-tab=\"tab-terminal\"><span class=\"tabTitle\" data-dockkit-tab-title>终端</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭\" data-dockkit-tab-close=\"tab-terminal\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div></div><button type=\"button\" class=\"addTab\" aria-label=\"新标签页\" data-dockkit-add-tab=\"pane-plan\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 2V14\" stroke=\"currentColor\"/><path d=\"M2 8H14\" stroke=\"currentColor\"/></svg></button><div class=\"stripFill\" data-dockkit-strip-fill=\"true\"></div><button type=\"button\" class=\"iconButton\" aria-label=\"分栏\" data-dockkit-split-button=\"pane-plan\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z\" stroke=\"currentColor\"/><path d=\"M8 1.5V14.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"paneBody\"><div style=\"padding:12px\">计划：把停靠面与浮窗的标签轨收敛到同一套 38px 规格</div></div></section></div><div class=\"divider\" data-dockkit-divider=\"split-root:0\"></div><div class=\"splitCell\" data-dockkit-cell=\"split-root:1\" style=\"flex-grow:0.42\"><section class=\"pane\" data-dockkit-pane=\"pane-files\" tabindex=\"-1\"><div class=\"tabStrip\" role=\"tablist\" data-dockkit-strip=\"pane-files\" data-window-drag=\"true\"><div class=\"stripTabs\" role=\"presentation\" data-dockkit-strip-tabs=\"pane-files\"><div role=\"tab\" aria-selected=\"true\" tabindex=\"0\" class=\"tab tabActive\" data-dockkit-tab=\"tab-files\"><span class=\"tabTitle\" data-dockkit-tab-title>文件</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭\" data-dockkit-tab-close=\"tab-files\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"slot\"></div><div role=\"tab\" aria-selected=\"false\" tabindex=\"-1\" class=\"tab\" data-dockkit-tab=\"tab-guide\"><span class=\"tabTitle\" data-dockkit-tab-title>开始</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭\" data-dockkit-tab-close=\"tab-guide\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div></div><button type=\"button\" class=\"addTab\" aria-label=\"新标签页\" data-dockkit-add-tab=\"pane-files\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 2V14\" stroke=\"currentColor\"/><path d=\"M2 8H14\" stroke=\"currentColor\"/></svg></button><div class=\"stripFill\" data-dockkit-strip-fill=\"true\"></div><span tabindex=\"0\" aria-label=\"栏宽不足，拖宽侧边栏后再分栏\"><button type=\"button\" class=\"iconButton\" aria-label=\"分栏\" disabled data-dockkit-split-button=\"pane-files\" data-dockkit-split-blocked=\"width\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z\" stroke=\"currentColor\"/><path d=\"M8 1.5V14.5\" stroke=\"currentColor\"/></svg></button></span></div><div class=\"paneBody\"><div style=\"padding:12px\">文件树：packages/client/ui-dockkit/src/components</div></div></section></div></div></div></div>"
+        },
+        {
+          "label": "拖拽预览：body 上的两个水平落点（dropZones=\"horizontal\"）",
+          "note": "被拖动的 chip 仍是原来那个（opacity .5），落点卡 8px 内缩虚线框：指针所在的一半取强调色，另一半留静默轮廓",
+          "bg": "platform",
+          "pad": "lg",
+          "html": "<div style=\"width:560px;height:250px;display:flex\"><div class=\"surface\" data-dockkit-surface=\"true\" data-dockkit-drop-zones=\"horizontal\"><section class=\"pane\" data-dockkit-pane=\"pane-plan\" data-dockkit-pane-active=\"true\" tabindex=\"-1\"><div class=\"tabStrip\" role=\"tablist\" data-dockkit-strip=\"pane-plan\" data-window-drag=\"true\"><div class=\"stripTabs\" role=\"presentation\" data-dockkit-strip-tabs=\"pane-plan\"><div role=\"tab\" aria-selected=\"true\" tabindex=\"0\" class=\"tab tabActive tabDragging\" data-dockkit-tab=\"tab-plan\"><span class=\"tabTitle\" data-dockkit-tab-title>计划</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭\" data-dockkit-tab-close=\"tab-plan\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"slot\"></div><div role=\"tab\" aria-selected=\"false\" tabindex=\"-1\" class=\"tab\" data-dockkit-tab=\"tab-review\"><span class=\"tabTitle\" data-dockkit-tab-title>第 3 轮改动</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭\" data-dockkit-tab-close=\"tab-review\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div></div><button type=\"button\" class=\"addTab\" aria-label=\"新标签页\" data-dockkit-add-tab=\"pane-plan\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 2V14\" stroke=\"currentColor\"/><path d=\"M2 8H14\" stroke=\"currentColor\"/></svg></button><div class=\"stripFill\" data-dockkit-strip-fill=\"true\"></div><button type=\"button\" class=\"iconButton\" aria-label=\"分栏\" data-dockkit-split-button=\"pane-plan\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z\" stroke=\"currentColor\"/><path d=\"M8 1.5V14.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"paneBody\"><div style=\"padding:12px\">计划：把停靠面与浮窗的标签轨收敛到同一套 38px 规格</div><div class=\"dockScrim\" data-dockkit-dock-scrim=\"true\"></div><div class=\"dockHint\" data-dockkit-dock-zone=\"left\" data-dockkit-drop-active=\"true\"><div class=\"dockHintCard\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M9.67272 0.522841C10.8339 0.522841 11.76 0.522714 12.4963 0.602493C13.2453 0.683657 13.8789 0.854248 14.4264 1.25197C14.7504 1.48739 15.0355 1.77247 15.2709 2.0965C15.6686 2.64394 15.8392 3.27758 15.9204 4.02655C16.0002 4.7629 16 5.68895 16 6.85014V9.14986C16 10.3111 16.0002 11.2371 15.9204 11.9735C15.8392 12.7224 15.6686 13.3561 15.2709 13.9035C15.0355 14.2275 14.7504 14.5126 14.4264 14.748C13.8789 15.1458 13.2453 15.3163 12.4963 15.3975C11.76 15.4773 10.8339 15.4772 9.67272 15.4772H6.3273C5.16611 15.4772 4.24006 15.4773 3.50371 15.3975C2.75474 15.3163 2.1211 15.1458 1.57366 14.748C1.24963 14.5126 0.964549 14.2275 0.729131 13.9035C0.331407 13.3561 0.160817 12.7224 0.0796529 11.9735C-0.000126137 11.2371 1.25338e-09 10.3111 1.25338e-09 9.14986V6.85014C1.25329e-09 5.68895 -0.000126137 4.7629 0.0796529 4.02655C0.160817 3.27758 0.331407 2.64394 0.729131 2.0965C0.964549 1.77247 1.24963 1.48739 1.57366 1.25197C2.1211 0.854248 2.75474 0.683657 3.50371 0.602493C4.24006 0.522714 5.16611 0.522841 6.3273 0.522841H9.67272ZM4.1828 14.0873L5.54303 14.1118C5.78636 14.1128 6.04709 14.1169 6.3273 14.1169H9.67272C10.8639 14.1169 11.7032 14.1164 12.3493 14.0465C12.9824 13.9779 13.3497 13.8494 13.6268 13.6482C13.8354 13.4966 14.0195 13.3125 14.1711 13.1039C14.3723 12.8268 14.5007 12.4595 14.5693 11.8264C14.6393 11.1803 14.6398 10.341 14.6398 9.14986V6.85014C14.6398 5.65896 14.6393 4.81967 14.5693 4.1736C14.5007 3.54048 14.3723 3.17318 14.1711 2.89609C14.0195 2.68747 13.8354 2.50337 13.6268 2.35179C13.3497 2.1506 12.9824 2.02212 12.3493 1.95353C11.7032 1.88358 10.8639 1.88307 9.67272 1.88307H6.3273C6.04709 1.88307 5.78636 1.8862 5.54303 1.88715L4.1828 1.91166C3.99125 1.9216 3.8148 1.93577 3.65076 1.95353C3.01764 2.02212 2.65034 2.1506 2.37325 2.35179C2.16463 2.50337 1.98052 2.68747 1.82895 2.89609C1.62776 3.17318 1.49928 3.54048 1.43069 4.1736C1.36074 4.81967 1.36023 5.65896 1.36023 6.85014V9.14986C1.36023 10.341 1.36074 11.1803 1.43069 11.8264C1.49928 12.4595 1.62776 12.8268 1.82895 13.1039C1.98052 13.3125 2.16463 13.4966 2.37325 13.6482C2.65034 13.8494 3.01764 13.9779 3.65076 14.0465C3.81478 14.0642 3.99127 14.0774 4.1828 14.0873Z\" fill=\"currentColor\"/><path d=\"M4 0.523H8V15.477H4A4 4 0 0 1 0 11.477V4.523A4 4 0 0 1 4 0.523Z\" fill=\"currentColor\"/></svg><span class=\"dockHintLabel\">左分栏</span></div></div><div class=\"dockHint\" data-dockkit-dock-zone=\"right\"><div class=\"dockHintCard\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M9.67272 0.522841C10.8339 0.522841 11.76 0.522714 12.4963 0.602493C13.2453 0.683657 13.8789 0.854248 14.4264 1.25197C14.7504 1.48739 15.0355 1.77247 15.2709 2.0965C15.6686 2.64394 15.8392 3.27758 15.9204 4.02655C16.0002 4.7629 16 5.68895 16 6.85014V9.14986C16 10.3111 16.0002 11.2371 15.9204 11.9735C15.8392 12.7224 15.6686 13.3561 15.2709 13.9035C15.0355 14.2275 14.7504 14.5126 14.4264 14.748C13.8789 15.1458 13.2453 15.3163 12.4963 15.3975C11.76 15.4773 10.8339 15.4772 9.67272 15.4772H6.3273C5.16611 15.4772 4.24006 15.4773 3.50371 15.3975C2.75474 15.3163 2.1211 15.1458 1.57366 14.748C1.24963 14.5126 0.964549 14.2275 0.729131 13.9035C0.331407 13.3561 0.160817 12.7224 0.0796529 11.9735C-0.000126137 11.2371 1.25338e-09 10.3111 1.25338e-09 9.14986V6.85014C1.25329e-09 5.68895 -0.000126137 4.7629 0.0796529 4.02655C0.160817 3.27758 0.331407 2.64394 0.729131 2.0965C0.964549 1.77247 1.24963 1.48739 1.57366 1.25197C2.1211 0.854248 2.75474 0.683657 3.50371 0.602493C4.24006 0.522714 5.16611 0.522841 6.3273 0.522841H9.67272ZM4.1828 14.0873L5.54303 14.1118C5.78636 14.1128 6.04709 14.1169 6.3273 14.1169H9.67272C10.8639 14.1169 11.7032 14.1164 12.3493 14.0465C12.9824 13.9779 13.3497 13.8494 13.6268 13.6482C13.8354 13.4966 14.0195 13.3125 14.1711 13.1039C14.3723 12.8268 14.5007 12.4595 14.5693 11.8264C14.6393 11.1803 14.6398 10.341 14.6398 9.14986V6.85014C14.6398 5.65896 14.6393 4.81967 14.5693 4.1736C14.5007 3.54048 14.3723 3.17318 14.1711 2.89609C14.0195 2.68747 13.8354 2.50337 13.6268 2.35179C13.3497 2.1506 12.9824 2.02212 12.3493 1.95353C11.7032 1.88358 10.8639 1.88307 9.67272 1.88307H6.3273C6.04709 1.88307 5.78636 1.8862 5.54303 1.88715L4.1828 1.91166C3.99125 1.9216 3.8148 1.93577 3.65076 1.95353C3.01764 2.02212 2.65034 2.1506 2.37325 2.35179C2.16463 2.50337 1.98052 2.68747 1.82895 2.89609C1.62776 3.17318 1.49928 3.54048 1.43069 4.1736C1.36074 4.81967 1.36023 5.65896 1.36023 6.85014V9.14986C1.36023 10.341 1.36074 11.1803 1.43069 11.8264C1.49928 12.4595 1.62776 12.8268 1.82895 13.1039C1.98052 13.3125 2.16463 13.4966 2.37325 13.6482C2.65034 13.8494 3.01764 13.9779 3.65076 14.0465C3.81478 14.0642 3.99127 14.0774 4.1828 14.0873Z\" fill=\"currentColor\"/><path d=\"M8 0.523H12A4 4 0 0 1 16 4.523V11.477A4 4 0 0 1 12 15.477H8Z\" fill=\"currentColor\"/></svg><span class=\"dockHintLabel\">右分栏</span></div></div></div></section></div></div>"
+        },
+        {
+          "label": "单 tab 且不可关闭：quiet chip 只是一行文字",
+          "note": "canCloseTab 返回 false 且窗格里只有这一个 tab 时走 .tabQuiet：没有胶囊底、没有悬停填充、光标是 default",
+          "bg": "platform",
+          "pad": "lg",
+          "html": "<div style=\"width:480px;height:200px;display:flex\"><div class=\"surface\" data-dockkit-surface=\"true\" data-dockkit-drop-zones=\"edges\"><section class=\"pane\" data-dockkit-pane=\"pane-guide\" data-dockkit-pane-active=\"true\" tabindex=\"-1\"><div class=\"tabStrip\" role=\"tablist\" data-dockkit-strip=\"pane-guide\" data-window-drag=\"true\"><div class=\"stripTabs\" role=\"presentation\" data-dockkit-strip-tabs=\"pane-guide\"><div role=\"tab\" aria-selected=\"true\" tabindex=\"0\" class=\"tab tabActive tabQuiet\" data-dockkit-tab=\"tab-guide\"><span class=\"tabTitle\" data-dockkit-tab-title>开始</span></div></div><button type=\"button\" class=\"addTab\" aria-label=\"新标签页\" data-dockkit-add-tab=\"pane-guide\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 2V14\" stroke=\"currentColor\"/><path d=\"M2 8H14\" stroke=\"currentColor\"/></svg></button><div class=\"stripFill\" data-dockkit-strip-fill=\"true\"></div><span tabindex=\"0\" aria-label=\"已达两格上限\"><button type=\"button\" class=\"iconButton\" aria-label=\"分栏\" disabled data-dockkit-split-button=\"pane-guide\" data-dockkit-split-blocked=\"budget\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z\" stroke=\"currentColor\"/><path d=\"M8 1.5V14.5\" stroke=\"currentColor\"/></svg></button></span></div><div class=\"paneBody\"><div style=\"padding:12px\">运行 pnpm test 通过 42 项</div></div></section></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "state",
+          "type": "LayoutState",
+          "default": "—",
+          "desc": "布局快照：nodes / rootId / floats / activePaneId / expanded；组件只渲染它，不改写它。"
+        },
+        {
+          "name": "canSplit",
+          "type": "boolean",
+          "default": "—",
+          "desc": "窗格预算。false 时每个窗格的分栏按钮都禁用并挂 labels.splitPaneDisabled，边带落点也不再提供。"
+        },
+        {
+          "name": "hideSplitWhenBlocked",
+          "type": "boolean",
+          "default": "false",
+          "desc": "预算用尽或栏宽不足时隐藏分栏按钮，而不是画成禁用。"
+        },
+        {
+          "name": "dropZones",
+          "type": "'edges' | 'horizontal'",
+          "default": "'edges'",
+          "desc": "body 落点几何：四边带，或左右两个半区加整块移动（分栏不可用时）。"
+        },
+        {
+          "name": "minPaneFraction",
+          "type": "number",
+          "default": "MIN_PANE_FRACTION（0.12）",
+          "desc": "分隔条拖动预览里单个窗格的最小占比。"
+        },
+        {
+          "name": "canAddTab",
+          "type": "(paneId: PaneId) => boolean",
+          "default": "每格都画",
+          "desc": "每个窗格的标签轨是否画加号；返回 false 时轨末端控件原地不动，只有 chip 让位。"
+        },
+        {
+          "name": "canCloseTab",
+          "type": "(tabId: TabId) => boolean",
+          "default": "每个 tab 都可关",
+          "desc": "是否画 chip 的关闭控件与菜单里的关闭项；两者一起消失，chip 宽度不变。"
+        },
+        {
+          "name": "intents",
+          "type": "DockIntents",
+          "default": "—",
+          "desc": "已经落定的手势结果（focus / place / drop / float / resizeSplit…）；一次手势只报一次。"
+        },
+        {
+          "name": "labels",
+          "type": "DockLabels",
+          "default": "—",
+          "desc": "全部可见文案与无障碍名，含空面板、分栏、关闭、新标签页与五个落点词；kit 自己不持有任何副本。"
+        },
+        {
+          "name": "renderTab",
+          "type": "TabRenderer",
+          "default": "—",
+          "desc": "画一个 tab 的 body，由嵌入方按 tab.kind 分派；body 自己贴到窗格边缘。"
+        },
+        {
+          "name": "renderTabTitle",
+          "type": "TabRenderer",
+          "default": "缺省用 record.title",
+          "desc": "chip 或浮窗标题里显示什么；嵌入方内部接缝，通常接一个按 kind 分派的标题槽。"
+        },
+        {
+          "name": "renderTabMenuItems",
+          "type": "TabMenuExtras",
+          "default": "只有 kit 自己的关闭项",
+          "desc": "追加到 tab 右键菜单的嵌入方条目，必须带 role=\"menuitem\"，否则菜单按空菜单处理而不弹出。"
+        },
+        {
+          "name": "chrome",
+          "type": "ReactNode",
+          "default": "—",
+          "desc": "整面控件，摆在右上窗格标签轨的末端（行分栏的最后一个孩子、列分栏的第一个），停靠面因此不需要自己的标题行。"
+        },
+        {
+          "name": "onRoom",
+          "type": "(fits: ReadonlyMap<PaneId, HalvesFit>) => void",
+          "default": "—",
+          "desc": "每次量完把「这个窗格放得下两个可用半栏吗」的读数报给嵌入方；映射里没有的窗格是还没量过。"
+        }
+      ],
+      "notes": "与 <code>DockLayout</code> 的区别是渲染器：这个组件画递归的 <code>.split</code> 树（任意方向、最多四格），<code>DockLayout</code> 画右栏那种一栏或两栏的 CSS Grid。两者共用同一份 <code>dockkit.module.css</code> 与同一批手势回调，所以观感一致、行为一致。无障碍上已知缺口：分隔条没有 <code>separator</code> 角色，拆分、移动、浮出都没有键盘路径（README 列为已知限制）。",
+      "keywords": [
+        "停靠",
+        "分栏",
+        "dock surface",
+        "split tree",
+        "窗格",
+        "标签轨"
+      ]
+    },
+    {
+      "id": "dock-layout",
+      "name": "DockLayout",
+      "exportName": "DockLayout",
+      "zh": "停靠布局",
+      "group": "dock",
+      "summary": "右侧栏用的停靠布局，等于 <code>DockSurface</code> 的 props 加一条内容保留策略（<code>keepMounted</code> / <code>active</code>），渲染器换成 <code>TabLayout</code>：外层还是 <code>.surface</code>，里面是一张 <code>.tabLayout</code> 网格，列宽写成 <code>minmax(0, &lt;size&gt;fr) 0px …</code>，中间那条 0px 轨道放 <code>.divider.tabLayoutDivider</code>。只接受一个窗格或左右两个窗格，其它形状直接抛错。每个 tab 在网格里都有自己稳定的一格（选中的才可见），浮出的面板是同树的 <code>.floatingCell</code>，所以切页、搬栏、浮出都不会搬动已连接的 webview 祖先；<code>keepMounted</code> 让访问过的 body 留在隐藏格子里，<code>active</code> 控制整个会话的可见性。",
+      "source": "packages/client/ui-dockkit/src/components/DockSurface.tsx#L314",
+      "css": [
+        "packages/client/ui-dockkit/src/components/dockkit.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-base",
+        "--dsw-alias-bg-layer-2",
+        "--dsw-alias-border-l4",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-markdown-tag",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-brand-primary-new-colorprimary-new-color",
+        "--dsw-radius-sm",
+        "--dsw-radius-md",
+        "--dsw-radius-lg",
+        "--dsw-radius-panel",
+        "--dsw-elevation-prominent",
+        "--dsw-elevation-stroke-color",
+        "--dsw-alias-scrollbar-bg-l2",
+        "--dsw-alias-scrollbar-hover-l2"
+      ],
+      "specimens": [
+        {
+          "label": "单栏（右栏常态，380px）：稳定 cell + 轨末端的嵌入方 chrome",
+          "note": "未选中的 tab 也有自己的 .tabCell，只是 hidden + inert；右上窗格的 strip 末端接了两个 28px 的嵌入方控件",
+          "bg": "platform",
+          "pad": "lg",
+          "html": "<div style=\"width:380px;height:320px;display:flex\"><div class=\"surface\" data-dockkit-surface=\"true\" data-dockkit-drop-zones=\"horizontal\"><div class=\"tabLayout\" style=\"grid-template-columns:minmax(0,1fr)\"><div class=\"tabCell\" hidden data-dockkit-host=\"dock\" data-dockkit-column=\"0\" style=\"grid-column:1;grid-row:1;order:0\"><section class=\"tabHost pane\" tabindex=\"-1\" aria-hidden=\"true\" inert data-dockkit-content=\"tab-review\" data-dockkit-column=\"0\"><div class=\"tabHostHeader\"></div><div class=\"tabHostBody paneBody\"></div></section></div><div class=\"tabCell\" data-dockkit-host=\"dock\" data-dockkit-column=\"0\" style=\"grid-column:1;grid-row:1;order:0\"><section class=\"tabHost pane\" tabindex=\"-1\" data-dockkit-content=\"tab-plan\" data-dockkit-pane=\"pane-main\" data-dockkit-pane-active=\"true\" data-dockkit-column=\"0\"><div class=\"tabHostHeader\"><div class=\"tabStrip\" role=\"tablist\" data-dockkit-strip=\"pane-main\" data-window-drag=\"true\"><div class=\"stripTabs\" role=\"presentation\" data-dockkit-strip-tabs=\"pane-main\"><div role=\"tab\" aria-selected=\"true\" tabindex=\"0\" class=\"tab tabActive\" data-dockkit-tab=\"tab-plan\"><span class=\"tabTitle\" data-dockkit-tab-title>计划</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭\" data-dockkit-tab-close=\"tab-plan\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"slot\"></div><div role=\"tab\" aria-selected=\"false\" tabindex=\"-1\" class=\"tab\" data-dockkit-tab=\"tab-review\"><span class=\"tabTitle\" data-dockkit-tab-title>第 3 轮改动</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭\" data-dockkit-tab-close=\"tab-review\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"slot\"></div><div role=\"tab\" aria-selected=\"false\" tabindex=\"-1\" class=\"tab\" data-dockkit-tab=\"tab-files\"><span class=\"tabTitle\" data-dockkit-tab-title>文件</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭\" data-dockkit-tab-close=\"tab-files\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div></div><button type=\"button\" class=\"addTab\" aria-label=\"新标签页\" data-dockkit-add-tab=\"pane-main\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 2V14\" stroke=\"currentColor\"/><path d=\"M2 8H14\" stroke=\"currentColor\"/></svg></button><div class=\"stripFill\" data-dockkit-strip-fill=\"true\"></div><button type=\"button\" class=\"iconButton\" aria-label=\"分栏\" data-dockkit-split-button=\"pane-main\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z\" stroke=\"currentColor\"/><path d=\"M8 1.5V14.5\" stroke=\"currentColor\"/></svg></button><div class=\"stripChrome\" data-dockkit-strip-chrome=\"true\"><button type=\"button\" class=\"iconButton\" aria-label=\"全屏\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M2.33203 10.4054V13.1681C2.33229 13.444 2.55605 13.6681 2.83203 13.6681H5.49512V14.6681H2.83203C2.00376 14.6681 1.33229 13.9963 1.33203 13.1681V10.4054H2.33203ZM14.6689 13.1681C14.6687 13.996 13.9968 14.6676 13.1689 14.6681H10.4951V13.6681H13.1689C13.4445 13.6676 13.6687 13.4437 13.6689 13.1681V10.4054H14.6689V13.1681ZM13.1689 1.33118C13.9969 1.33163 14.6688 2.00315 14.6689 2.83118V5.4054H13.6689V2.83118C13.6688 2.55544 13.4446 2.33162 13.1689 2.33118H10.4951V1.33118H13.1689ZM5.49512 2.33118H2.83203C2.55598 2.33118 2.33218 2.55516 2.33203 2.83118V5.4054H1.33203V2.83118C1.33218 2.00288 2.00369 1.33118 2.83203 1.33118H5.49512V2.33118Z\" fill=\"currentColor\"/></svg></button><button type=\"button\" class=\"iconButton\" aria-label=\"收起右侧边栏\"><svg class=\"dockGlyph\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z\" stroke=\"currentColor\"/><path d=\"M5.5 1.5V14.5\" stroke=\"currentColor\"/></svg></button></div></div></div><div class=\"tabHostBody paneBody\"><div style=\"padding:12px\">计划：把停靠面与浮窗的标签轨收敛到同一套 38px 规格</div></div></section></div></div></div></div>"
+        },
+        {
+          "label": "两栏（0.62 / 0.38）：0px 中间轨上的分隔条 + 窄栏的 chip 渐隐",
+          "note": "列数按 --- 展开成 3 条轨道，分隔条单独占中间那条；窄栏的 chip 盒挂 data-dockkit-strip-scroll=\"end\"，末尾 24px 把 chip 淡出",
+          "bg": "platform",
+          "pad": "lg",
+          "css": "/* 状态模拟：分隔条 hover 时抓柄淡入（.divider:hover::after { opacity: 1 }），\n   静态快照没有指针，把那条规则按同选择器照搬过来。 */\n.tabLayoutDivider::after { opacity: 1; }",
+          "html": "<div style=\"width:680px;height:280px;display:flex\"><div class=\"surface\" data-dockkit-surface=\"true\" data-dockkit-drop-zones=\"horizontal\"><div class=\"tabLayout\" data-dockkit-split=\"split-root\" style=\"grid-template-columns:minmax(0,0.62fr) 0px minmax(0,0.38fr)\"><div class=\"tabCell\" data-dockkit-host=\"dock\" data-dockkit-column=\"0\" style=\"grid-column:1;grid-row:1;order:0\"><section class=\"tabHost pane\" tabindex=\"-1\" data-dockkit-content=\"tab-plan\" data-dockkit-pane=\"pane-plan\" data-dockkit-pane-active=\"true\" data-dockkit-column=\"0\"><div class=\"tabHostHeader\"><div class=\"tabStrip\" role=\"tablist\" data-dockkit-strip=\"pane-plan\" data-window-drag=\"true\"><div class=\"stripTabs\" role=\"presentation\" data-dockkit-strip-tabs=\"pane-plan\"><div role=\"tab\" aria-selected=\"true\" tabindex=\"0\" class=\"tab tabActive\" data-dockkit-tab=\"tab-plan\"><span class=\"tabTitle\" data-dockkit-tab-title>计划</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭\" data-dockkit-tab-close=\"tab-plan\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"slot\"></div><div role=\"tab\" aria-selected=\"false\" tabindex=\"-1\" class=\"tab\" data-dockkit-tab=\"tab-review\"><span class=\"tabTitle\" data-dockkit-tab-title>第 3 轮改动</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭\" data-dockkit-tab-close=\"tab-review\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"slot\"></div><div role=\"tab\" aria-selected=\"false\" tabindex=\"-1\" class=\"tab\" data-dockkit-tab=\"tab-terminal\"><span class=\"tabTitle\" data-dockkit-tab-title>终端</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭\" data-dockkit-tab-close=\"tab-terminal\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div></div><button type=\"button\" class=\"addTab\" aria-label=\"新标签页\" data-dockkit-add-tab=\"pane-plan\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 2V14\" stroke=\"currentColor\"/><path d=\"M2 8H14\" stroke=\"currentColor\"/></svg></button><div class=\"stripFill\" data-dockkit-strip-fill=\"true\"></div><button type=\"button\" class=\"iconButton\" aria-label=\"分栏\" data-dockkit-split-button=\"pane-plan\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z\" stroke=\"currentColor\"/><path d=\"M8 1.5V14.5\" stroke=\"currentColor\"/></svg></button></div></div><div class=\"tabHostBody paneBody\"><div style=\"padding:12px\">计划：把停靠面与浮窗的标签轨收敛到同一套 38px 规格</div></div></section></div><div class=\"divider tabLayoutDivider\" data-dockkit-divider=\"split-root:0\" style=\"grid-column:2;grid-row:1\"></div><div class=\"tabCell\" data-dockkit-host=\"dock\" data-dockkit-column=\"1\" style=\"grid-column:3;grid-row:1;order:0\"><section class=\"tabHost pane\" tabindex=\"-1\" data-dockkit-content=\"tab-files\" data-dockkit-pane=\"pane-files\" data-dockkit-column=\"1\"><div class=\"tabHostHeader\"><div class=\"tabStrip\" role=\"tablist\" data-dockkit-strip=\"pane-files\" data-window-drag=\"true\"><div class=\"stripTabs\" role=\"presentation\" data-dockkit-strip-tabs=\"pane-files\" data-dockkit-strip-scroll=\"end\"><div role=\"tab\" aria-selected=\"true\" tabindex=\"0\" class=\"tab tabActive\" data-dockkit-tab=\"tab-files\"><span class=\"tabTitle\" data-dockkit-tab-title>文件</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭\" data-dockkit-tab-close=\"tab-files\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"slot\"></div><div role=\"tab\" aria-selected=\"false\" tabindex=\"-1\" class=\"tab\" data-dockkit-tab=\"tab-guide\"><span class=\"tabTitle\" data-dockkit-tab-title>开始</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭\" data-dockkit-tab-close=\"tab-guide\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div></div><button type=\"button\" class=\"addTab\" aria-label=\"新标签页\" data-dockkit-add-tab=\"pane-files\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 2V14\" stroke=\"currentColor\"/><path d=\"M2 8H14\" stroke=\"currentColor\"/></svg></button><div class=\"stripFill\" data-dockkit-strip-fill=\"true\"></div><span tabindex=\"0\" aria-label=\"已达两格上限\"><button type=\"button\" class=\"iconButton\" aria-label=\"分栏\" disabled data-dockkit-split-button=\"pane-files\" data-dockkit-split-blocked=\"budget\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z\" stroke=\"currentColor\"/><path d=\"M8 1.5V14.5\" stroke=\"currentColor\"/></svg></button></span></div></div><div class=\"tabHostBody paneBody\"><div style=\"padding:12px\">文件树：packages/client/ui-dockkit/src/components</div></div></section></div></div></div></div>"
+        },
+        {
+          "label": "浮出面板与停靠栏同树：.floatingCell 里的 .tabHost.float",
+          "note": "浮出的 tab 不离开网格，只是换成 0×0 的 cell（order 与 z-index 决定绘制）；静态快照把 fixed 的浮层拉回文档流",
+          "bg": "platform",
+          "pad": "lg",
+          "css": "/* 静态快照：真实浮层是 position: fixed 的视口坐标面板，这里拉回文档流——\n   relative 让原本的 inset 失效但留住包含块；它同时从绝对定位变成 flex 项，\n   所以补一条 flex: none，免得 0×0 的浮层 cell 把它压扁。 */\n.float { position: relative; inset: auto; flex: none; }",
+          "html": "<div style=\"width:680px;height:320px;display:flex\"><div class=\"surface\" data-dockkit-surface=\"true\" data-dockkit-drop-zones=\"horizontal\"><div class=\"tabLayout\" data-dockkit-split=\"split-root\" style=\"grid-template-columns:minmax(0,0.5fr) 0px minmax(0,0.5fr)\"><div class=\"tabCell\" data-dockkit-host=\"dock\" data-dockkit-column=\"0\" style=\"grid-column:1;grid-row:1;order:0\"><section class=\"tabHost pane\" tabindex=\"-1\" data-dockkit-content=\"tab-plan\" data-dockkit-pane=\"pane-plan\" data-dockkit-column=\"0\"><div class=\"tabHostHeader\"><div class=\"tabStrip\" role=\"tablist\" data-dockkit-strip=\"pane-plan\" data-window-drag=\"true\"><div class=\"stripTabs\" role=\"presentation\" data-dockkit-strip-tabs=\"pane-plan\"><div role=\"tab\" aria-selected=\"true\" tabindex=\"0\" class=\"tab tabActive\" data-dockkit-tab=\"tab-plan\"><span class=\"tabTitle\" data-dockkit-tab-title>计划</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭\" data-dockkit-tab-close=\"tab-plan\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"slot\"></div><div role=\"tab\" aria-selected=\"false\" tabindex=\"-1\" class=\"tab\" data-dockkit-tab=\"tab-review\"><span class=\"tabTitle\" data-dockkit-tab-title>第 3 轮改动</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭\" data-dockkit-tab-close=\"tab-review\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"slot\"></div><div role=\"tab\" aria-selected=\"false\" tabindex=\"-1\" class=\"tab\" data-dockkit-tab=\"tab-files\"><span class=\"tabTitle\" data-dockkit-tab-title>文件</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭\" data-dockkit-tab-close=\"tab-files\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div></div><button type=\"button\" class=\"addTab\" aria-label=\"新标签页\" data-dockkit-add-tab=\"pane-plan\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 2V14\" stroke=\"currentColor\"/><path d=\"M2 8H14\" stroke=\"currentColor\"/></svg></button><div class=\"stripFill\" data-dockkit-strip-fill=\"true\"></div><button type=\"button\" class=\"iconButton\" aria-label=\"分栏\" data-dockkit-split-button=\"pane-plan\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z\" stroke=\"currentColor\"/><path d=\"M8 1.5V14.5\" stroke=\"currentColor\"/></svg></button></div></div><div class=\"tabHostBody paneBody\"><div style=\"padding:12px\">计划：把停靠面与浮窗的标签轨收敛到同一套 38px 规格</div></div></section></div><div class=\"divider tabLayoutDivider\" data-dockkit-divider=\"split-root:0\" style=\"grid-column:2;grid-row:1\"></div><div class=\"tabCell floatingCell\" data-dockkit-host=\"float\" style=\"grid-column:1;grid-row:1;order:1\"><section class=\"tabHost float\" tabindex=\"-1\" data-dockkit-content=\"tab-review\" data-dockkit-float=\"pane-float\" data-dockkit-float-active=\"true\" style=\"width:320px;height:230px;margin:40px 0 0 30px\"><div class=\"tabHostHeader\"><header class=\"tabStrip floatHeader\" data-dockkit-float-grip=\"pane-float\"><div class=\"tab floatTitle\" data-dockkit-float-title=\"true\"><span class=\"tabTitle\" data-dockkit-tab-title>第 3 轮改动</span></div><div class=\"stripFill\"></div><button type=\"button\" class=\"iconButton\" aria-label=\"收回到侧边栏\" data-dockkit-float-dock=\"pane-float\"><svg class=\"dockGlyph\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z\" stroke=\"currentColor\"/><path d=\"M5.5 1.5V14.5\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"iconButton\" aria-label=\"关闭\" data-dockkit-float-close=\"pane-float\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></header></div><div class=\"tabHostBody floatBody\"><div style=\"padding:12px\">改动清单：packages/client/ui-dockkit/src/components/TabPanel.tsx</div></div><div class=\"floatResize\" data-dockkit-float-resize=\"pane-float\"></div></section></div></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "state",
+          "type": "LayoutState",
+          "default": "—",
+          "desc": "布局快照；根节点必须是一个窗格或一个 row 轴、恰好两个孩子的 split，否则渲染时抛错。"
+        },
+        {
+          "name": "keepMounted",
+          "type": "(tab: TabRecord) => boolean",
+          "default": "缺省按可见性挂载",
+          "desc": "访问过的 body 是否在隐藏后继续保留；保留的 body 只是 aria-hidden 加 inert，不会被卸载或搬走。"
+        },
+        {
+          "name": "active",
+          "type": "boolean",
+          "default": "true",
+          "desc": "这个布局所在的会话是否在屏上；false 时所有 body 都不渲染（连保留的也不渲染），但结构仍在。"
+        },
+        {
+          "name": "canSplit",
+          "type": "boolean",
+          "default": "—",
+          "desc": "窗格预算，转交给标签轨上的分栏按钮。"
+        },
+        {
+          "name": "hideSplitWhenBlocked",
+          "type": "boolean",
+          "default": "false",
+          "desc": "分栏被挡时隐藏按钮而不是画成禁用。"
+        },
+        {
+          "name": "dropZones",
+          "type": "'edges' | 'horizontal'",
+          "default": "'edges'",
+          "desc": "body 落点几何；右栏用 horizontal，分栏不可用时整块接受移动。"
+        },
+        {
+          "name": "minPaneFraction",
+          "type": "number",
+          "default": "MIN_PANE_FRACTION（0.12）",
+          "desc": "分隔条拖动预览的最小占比；右栏自己传 0.2。"
+        },
+        {
+          "name": "canAddTab",
+          "type": "(paneId: PaneId) => boolean",
+          "default": "每格都画",
+          "desc": "每个窗格是否画加号；右栏用它把「开始」这类占位 tab 的窗格排除掉。"
+        },
+        {
+          "name": "canCloseTab",
+          "type": "(tabId: TabId) => boolean",
+          "default": "每个 tab 都可关",
+          "desc": "是否画关闭控件与菜单关闭项；关掉后 chip 宽度不变，只有画上去的那个控件消失。"
+        },
+        {
+          "name": "renderTab / renderTabTitle / renderTabMenuItems",
+          "type": "TabRenderer / TabMenuExtras",
+          "default": "—",
+          "desc": "body、标题与右键菜单扩展三个渲染接缝，按 tab.kind 分派。"
+        },
+        {
+          "name": "chrome",
+          "type": "ReactNode",
+          "default": "—",
+          "desc": "整面控件，摆在右上窗格标签轨末端；右栏在这里放全屏与收起两个 28px 按钮。"
+        },
+        {
+          "name": "intents / labels / onRoom",
+          "type": "DockIntents / DockLabels / (fits) => void",
+          "default": "—",
+          "desc": "手势出口、文案与房间读数，含义同 DockSurface。"
+        }
+      ],
+      "notes": "这个组件本身不增加任何类名，观感完全由 <code>TabLayout</code> 与 <code>dockkit.module.css</code> 决定：外面一层 <code>.surface</code> 只负责 <code>flex:1 1 auto</code> 与 <code>min-width:0</code>。标本里 <code>position: fixed</code> 的浮层被拉回文档流只是为了静态展示——真实运行时它按视口坐标绘制，所以祖先不能建立 fixed 包含块（README 写明了这条约束）。标本右上角那两个 28px 控件是嵌入方 chrome：这里用 kit 的 <code>.iconButton</code> 与 <code>.dockGlyph</code> 摆位，产品里它们是 ui-sidebar-right 自己的按钮，收起字形是 <code>.collapseGlyph</code>（SidebarRight.module.css:146）——那是嵌入方控件，不是浮窗标题栏的 <code>.dockGlyph</code>（FloatLayer.tsx:136）。",
+      "keywords": [
+        "停靠布局",
+        "dock layout",
+        "右侧栏",
+        "grid",
+        "keepMounted",
+        "浮出"
+      ]
+    },
+    {
+      "id": "float-header",
+      "name": "FloatHeader",
+      "exportName": "FloatHeader",
+      "zh": "浮窗标题栏",
+      "group": "dock",
+      "summary": "浮出面板的标题行，本身不带内容容器：一条和停靠窗格同规格的 38px <code>.tabStrip.floatHeader</code>（28px 内容行 + 10px 上内边距），整行 <code>cursor:move</code>，是按住的移动抓柄。行里只有一个 <code>.tab.floatTitle</code> chip 显示标题（永不选中、无悬停底色、没有关闭控件），后面 <code>.stripFill</code> 把两个 28px 的 <code>.iconButton</code> 顶到末端：<code>.dockGlyph</code> 镜像过的「收回到侧边栏」和「关闭」，各自带 500ms 延迟的 Tooltip。两个控件都在 pointerdown 上 stopPropagation，按到它们不会开始移动手势；<code>canCloseTab</code> 返回 false 时关闭控件与它的 Tooltip 一起不渲染。",
+      "source": "packages/client/ui-dockkit/src/components/FloatLayer.tsx#L116",
+      "css": [
+        "packages/client/ui-dockkit/src/components/dockkit.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-layer-2",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-radius-sm",
+        "--dsw-radius-panel",
+        "--dsw-elevation-prominent",
+        "--dsw-elevation-stroke-color",
+        "--dsw-alias-border-l2"
+      ],
+      "specimens": [
+        {
+          "label": "浮窗标题栏：移动抓柄 + 收回 / 关闭",
+          "note": "整行都是抓柄；两个 28px 控件是 flex:none，窄面板里让位的只会是标题",
+          "bg": "layer2",
+          "pad": "lg",
+          "html": "<div style=\"width:340px\"><header class=\"tabStrip floatHeader\" data-dockkit-float-grip=\"pane-float\"><div class=\"tab floatTitle\" data-dockkit-float-title=\"true\"><span class=\"tabTitle\" data-dockkit-tab-title>第 3 轮改动</span></div><div class=\"stripFill\"></div><button type=\"button\" class=\"iconButton\" aria-label=\"收回到侧边栏\" data-dockkit-float-dock=\"pane-float\"><svg class=\"dockGlyph\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z\" stroke=\"currentColor\"/><path d=\"M5.5 1.5V14.5\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"iconButton\" aria-label=\"关闭\" data-dockkit-float-close=\"pane-float\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></header></div>"
+        },
+        {
+          "label": "长标题：data-dockkit-tab-clipped 的 16px 渐隐",
+          "note": "TabTitle 量出文字比盒子宽时自己写上这个属性（不用省略号）；快照直接写上它",
+          "bg": "layer2",
+          "pad": "lg",
+          "html": "<div style=\"width:220px\"><header class=\"tabStrip floatHeader\" data-dockkit-float-grip=\"pane-float\"><div class=\"tab floatTitle\" data-dockkit-float-title=\"true\"><span class=\"tabTitle\" data-dockkit-tab-title data-dockkit-tab-clipped=\"\">第 3 轮改动（packages/client/ui-dockkit）</span></div><div class=\"stripFill\"></div><button type=\"button\" class=\"iconButton\" aria-label=\"收回到侧边栏\" data-dockkit-float-dock=\"pane-float\"><svg class=\"dockGlyph\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z\" stroke=\"currentColor\"/><path d=\"M5.5 1.5V14.5\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"iconButton\" aria-label=\"关闭\" data-dockkit-float-close=\"pane-float\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></header></div>"
+        },
+        {
+          "label": "不可关闭：canCloseTab 返回 false",
+          "note": "关闭控件和它那条 Tooltip 一起消失，标题仍然从同一个起点排；收回按钮保持在原位",
+          "bg": "layer2",
+          "pad": "lg",
+          "html": "<div style=\"width:300px\"><header class=\"tabStrip floatHeader\" data-dockkit-float-grip=\"pane-float\"><div class=\"tab floatTitle\" data-dockkit-float-title=\"true\"><span class=\"tabTitle\" data-dockkit-tab-title>计划</span></div><div class=\"stripFill\"></div><button type=\"button\" class=\"iconButton\" aria-label=\"收回到侧边栏\" data-dockkit-float-dock=\"pane-float\"><svg class=\"dockGlyph\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z\" stroke=\"currentColor\"/><path d=\"M5.5 1.5V14.5\" stroke=\"currentColor\"/></svg></button></header></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "paneId",
+          "type": "PaneId",
+          "default": "—",
+          "desc": "这条标题栏属于哪个浮出窗格；作为三个 data-dockkit-float-* 钩子的值。"
+        },
+        {
+          "name": "tab",
+          "type": "TabRecord",
+          "default": "—",
+          "desc": "浮出窗格里那唯一的 tab（浮出窗格容量为一），标题与关闭意图都取自它。"
+        },
+        {
+          "name": "labels",
+          "type": "DockLabels",
+          "default": "—",
+          "desc": "已本地化的文案：dockFloat 作收回按钮的无障碍名，closeTab 作关闭按钮的名字。"
+        },
+        {
+          "name": "intents",
+          "type": "DockIntents",
+          "default": "—",
+          "desc": "unfloatPane 与 closeTab 两个出口；按下与点击都停在这里，不上报别的。"
+        },
+        {
+          "name": "renderTabTitle",
+          "type": "TabRenderer | undefined",
+          "default": "undefined",
+          "desc": "标题内容；缺省显示 tab.title。"
+        },
+        {
+          "name": "canCloseTab",
+          "type": "((tabId: TabId) => boolean) | undefined",
+          "default": "undefined（视为可关）",
+          "desc": "返回 false 时整个关闭按钮不渲染。"
+        },
+        {
+          "name": "drag",
+          "type": "useFloatGestures(...)['drag']",
+          "default": "—",
+          "desc": "由浮层给的移动手势：在 header 的 pointerdown 上用 move 模式起手，松手没动就是一次「提升到最上层」。"
+        }
+      ],
+      "notes": "它只画 header，不画面板也不画内容容器——同名的 <code>FloatLayer</code> 每次把 <code>FloatHeader</code> 作为面板第一行渲染，<code>DockLayout</code> 下的 <code>TabHost</code> 也用它给浮出的 tab 做标题行；包入口（<code>src/index.ts</code>）不导出它，它是包内的渲染件。浮出面板的整框（<code>.float</code> 的圆角、阴影、底色）不在这个组件里。",
+      "keywords": [
+        "浮窗标题栏",
+        "float header",
+        "抓手",
+        "移动",
+        "收回到侧边栏"
+      ]
+    },
+    {
+      "id": "float-layer",
+      "name": "FloatLayer",
+      "exportName": "FloatLayer",
+      "zh": "浮动层",
+      "group": "dock",
+      "summary": "把所有浮出窗格按 <code>state.floats</code> 从下到上画一遍：每块 <code>.float</code> 是 <code>position:fixed</code> 的视口面板（默认 <code>FLOAT_DEFAULT_SIZE</code> 380×300，最小 <code>FLOAT_MIN_SIZE</code> 220×140），<code>--dsw-alias-bg-layer-2</code> 底、<code>--dsw-radius-panel</code> 圆角、不画边框而由 <code>--dsw-elevation-prominent</code> 的阴影勾边，<code>z-index</code> 取它在栈里的深度 +1。里面依次是 <code>FloatHeader</code>（移动抓柄）、自己滚动的 <code>.floatBody</code>、右下角 20×20 的 <code>.floatResize</code>（4px 内缩的直角把手，悬停或拖动时出现）。按 body 提升面板，拖动中面板画在指针位置并提到最上层；层自己拥有手势，所以挂到哪里都行（嵌入方可以把它 portal 到别处）。",
+      "source": "packages/client/ui-dockkit/src/components/FloatLayer.tsx#L153",
+      "css": [
+        "packages/client/ui-dockkit/src/components/dockkit.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-layer-2",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-radius-sm",
+        "--dsw-radius-panel",
+        "--dsw-elevation-prominent",
+        "--dsw-elevation-stroke-color",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-scrollbar-bg-l2",
+        "--dsw-alias-scrollbar-hover-l2"
+      ],
+      "specimens": [
+        {
+          "label": "一块浮层（380×300）：标题栏 / 内容 / 右下角把手",
+          "note": "真实浮层是 fixed 的视口面板，快照拉回文档流；右下角把手按悬停态画出（悬停模拟）",
+          "bg": "platform",
+          "pad": "lg",
+          "css": "/* 静态快照：真实浮层是 position: fixed 的视口坐标面板，这里拉回文档流——\n   relative 让原本的 inset 失效但留住包含块；它同时从绝对定位变成 flex 项，\n   所以补一条 flex: none，免得 0×0 的浮层 cell 把它压扁。 */\n.float { position: relative; inset: auto; flex: none; }\n\n/* 状态模拟：把手只在面板 hover 或拖动时出现（.float:hover .floatResize::after），\n   静态快照没有指针，把那条规则照搬到同一个伪元素上。 */\n.floatResize::after { opacity: 1; }",
+          "html": "<div style=\"width:440px;height:340px;display:flex;align-items:flex-start\"><div class=\"float\" data-dockkit-float=\"pane-float\" tabindex=\"-1\" data-dockkit-float-active=\"true\" style=\"width:380px;height:300px\"><header class=\"tabStrip floatHeader\" data-dockkit-float-grip=\"pane-float\"><div class=\"tab floatTitle\" data-dockkit-float-title=\"true\"><span class=\"tabTitle\" data-dockkit-tab-title>第 3 轮改动</span></div><div class=\"stripFill\"></div><button type=\"button\" class=\"iconButton\" aria-label=\"收回到侧边栏\" data-dockkit-float-dock=\"pane-float\"><svg class=\"dockGlyph\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z\" stroke=\"currentColor\"/><path d=\"M5.5 1.5V14.5\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"iconButton\" aria-label=\"关闭\" data-dockkit-float-close=\"pane-float\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></header><div class=\"floatBody\"><div style=\"padding:12px\">改动清单：packages/client/ui-dockkit/src/components/TabPanel.tsx</div></div><div class=\"floatResize\" data-dockkit-float-resize=\"pane-float\"></div></div></div>"
+        },
+        {
+          "label": "两块浮层：按 state.floats 的 z 序叠放",
+          "note": "后开的在上面（z-index 深度 +1），拖动中的那块还会临时提到最上层；把手仍按悬停态出现",
+          "bg": "platform",
+          "pad": "lg",
+          "css": "/* 静态快照：真实浮层是 position: fixed 的视口坐标面板，这里拉回文档流——\n   relative 让原本的 inset 失效但留住包含块；它同时从绝对定位变成 flex 项，\n   所以补一条 flex: none，免得 0×0 的浮层 cell 把它压扁。 */\n.float { position: relative; inset: auto; flex: none; }\n\n/* 状态模拟：把「悬停/拖动时出现」的把手画在上层那块上，静态快照用 :last-child 选中它。 */\n.float:last-child .floatResize::after { opacity: 1; }",
+          "html": "<div style=\"width:540px;height:330px;display:flex;align-items:flex-start\"><div class=\"float\" data-dockkit-float=\"pane-files\" tabindex=\"-1\" style=\"width:300px;height:220px;margin-top:70px;z-index:1\"><header class=\"tabStrip floatHeader\" data-dockkit-float-grip=\"pane-files\"><div class=\"tab floatTitle\" data-dockkit-float-title=\"true\"><span class=\"tabTitle\" data-dockkit-tab-title>文件</span></div><div class=\"stripFill\"></div><button type=\"button\" class=\"iconButton\" aria-label=\"收回到侧边栏\" data-dockkit-float-dock=\"pane-files\"><svg class=\"dockGlyph\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z\" stroke=\"currentColor\"/><path d=\"M5.5 1.5V14.5\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"iconButton\" aria-label=\"关闭\" data-dockkit-float-close=\"pane-files\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></header><div class=\"floatBody\"><div style=\"padding:12px\">文件树：packages/client/ui-dockkit/src/components</div></div><div class=\"floatResize\" data-dockkit-float-resize=\"pane-files\"></div></div><div class=\"float\" data-dockkit-float=\"pane-plan\" tabindex=\"-1\" data-dockkit-float-active=\"true\" style=\"width:320px;height:240px;margin-left:-110px;z-index:2\"><header class=\"tabStrip floatHeader\" data-dockkit-float-grip=\"pane-plan\"><div class=\"tab floatTitle\" data-dockkit-float-title=\"true\"><span class=\"tabTitle\" data-dockkit-tab-title>计划</span></div><div class=\"stripFill\"></div><button type=\"button\" class=\"iconButton\" aria-label=\"收回到侧边栏\" data-dockkit-float-dock=\"pane-plan\"><svg class=\"dockGlyph\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z\" stroke=\"currentColor\"/><path d=\"M5.5 1.5V14.5\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"iconButton\" aria-label=\"关闭\" data-dockkit-float-close=\"pane-plan\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></header><div class=\"floatBody\"><div style=\"padding:12px\">计划：把停靠面与浮窗的标签轨收敛到同一套 38px 规格</div></div><div class=\"floatResize\" data-dockkit-float-resize=\"pane-plan\"></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "state",
+          "type": "LayoutState",
+          "default": "—",
+          "desc": "布局快照，只读 floats（从下到上的栈）与每个浮出窗格的 rect 和唯一 tab。"
+        },
+        {
+          "name": "intents",
+          "type": "DockIntents",
+          "default": "—",
+          "desc": "focusPane（提升面板）、moveFloat、resizeFloat、unfloatPane、closeTab —— 一次手势一个出口。"
+        },
+        {
+          "name": "labels",
+          "type": "DockLabels",
+          "default": "—",
+          "desc": "浮窗标题行上的文案：dockFloat 与 closeTab。"
+        },
+        {
+          "name": "renderTab",
+          "type": "TabRenderer",
+          "default": "—",
+          "desc": "画浮出 tab 的 body，和停靠时用同一个渲染器，所以内容不会因浮出而换实现。"
+        },
+        {
+          "name": "canCloseTab",
+          "type": "(tabId: TabId) => boolean",
+          "default": "undefined（视为可关）",
+          "desc": "是否给浮窗标题行画关闭控件。"
+        },
+        {
+          "name": "renderTabTitle",
+          "type": "TabRenderer",
+          "default": "undefined",
+          "desc": "浮窗标题的内容；缺省显示 tab.title。"
+        }
+      ],
+      "notes": "它和 <code>DockLayout</code> 里 <code>.floatingCell</code> 那条路径画的是同一块面板的两种形态：<code>FloatLayer</code> 是独立的覆盖层（可以 portal、可以没有停靠栏），<code>DockLayout</code> 把浮出的 tab 留在原来的网格里。Windows 上两者都用 <code>--dsh-dockkit-float-top</code> 把面板压到标题栏下方（20px 起步），新开与恢复的面板同样受这条约束。",
+      "keywords": [
+        "浮动层",
+        "float layer",
+        "浮窗",
+        "z 序",
+        "resize",
+        "viewport"
+      ]
+    },
+    {
+      "id": "pane-tree",
+      "name": "PaneTree",
+      "exportName": "PaneTree",
+      "zh": "分栏树",
+      "group": "dock",
+      "summary": "递归渲染一棵分栏树：split 节点是一条 <code>.split</code> 加 <code>.splitRow</code> 或 <code>.splitColumn</code> 的 flex 队列，每个孩子是一个 <code>.splitCell</code>，它的 <code>flex-grow</code> 就是这个 split 里那一份分数（拖动分隔条时换成预览分数，松手才落定成一次 <code>resizeSplit</code>）。相邻两个格子之间夹一条 <code>.divider</code>：本体占 0 宽或 0 高，<code>::before</code> 在缝上画 0.5px 发丝线，<code>::after</code> 往两边各伸 4px 撑出 8px 命中层，悬停时 120ms 淡入一根从两端渐隐的 1px 抓柄（取 <code>--dsw-alias-label-caption</code>）。叶子节点交给 <code>TabPanel</code>：38px 标签轨加自己滚动的内容区。",
+      "source": "packages/client/ui-dockkit/src/components/PaneTree.tsx#L31",
+      "css": [
+        "packages/client/ui-dockkit/src/components/dockkit.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-base",
+        "--dsw-alias-border-l4",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-markdown-tag",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-radius-sm",
+        "--dsw-alias-scrollbar-bg-l2",
+        "--dsw-alias-scrollbar-hover-l2"
+      ],
+      "specimens": [
+        {
+          "label": "左右二分（0.58 / 0.42）：flex-grow 的分数",
+          "note": "分隔条本体 0 宽，命中层往两侧各伸 4px；抓柄按悬停态画出（悬停模拟）",
+          "bg": "platform",
+          "pad": "lg",
+          "css": "/* 状态模拟：分隔条 hover 时抓柄淡入（.divider:hover::after { opacity: 1 }），\n   静态快照没有指针，把那条规则按同选择器照搬过来；渐变与 120ms 过渡仍由组件样式表提供。 */\n.divider::after { opacity: 1; }",
+          "html": "<div style=\"width:680px;height:250px;display:flex\"><div class=\"split splitRow\" data-dockkit-split=\"split-root\"><div class=\"splitCell\" data-dockkit-cell=\"split-root:0\" style=\"flex-grow:0.58\"><section class=\"pane\" data-dockkit-pane=\"pane-plan\" data-dockkit-pane-active=\"true\" tabindex=\"-1\"><div class=\"tabStrip\" role=\"tablist\" data-dockkit-strip=\"pane-plan\" data-window-drag=\"true\"><div class=\"stripTabs\" role=\"presentation\" data-dockkit-strip-tabs=\"pane-plan\"><div role=\"tab\" aria-selected=\"true\" tabindex=\"0\" class=\"tab tabActive\" data-dockkit-tab=\"tab-plan\"><span class=\"tabTitle\" data-dockkit-tab-title>计划</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭\" data-dockkit-tab-close=\"tab-plan\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"slot\"></div><div role=\"tab\" aria-selected=\"false\" tabindex=\"-1\" class=\"tab\" data-dockkit-tab=\"tab-review\"><span class=\"tabTitle\" data-dockkit-tab-title>第 3 轮改动</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭\" data-dockkit-tab-close=\"tab-review\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"slot\"></div><div role=\"tab\" aria-selected=\"false\" tabindex=\"-1\" class=\"tab\" data-dockkit-tab=\"tab-terminal\"><span class=\"tabTitle\" data-dockkit-tab-title>终端</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭\" data-dockkit-tab-close=\"tab-terminal\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div></div><button type=\"button\" class=\"addTab\" aria-label=\"新标签页\" data-dockkit-add-tab=\"pane-plan\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 2V14\" stroke=\"currentColor\"/><path d=\"M2 8H14\" stroke=\"currentColor\"/></svg></button><div class=\"stripFill\" data-dockkit-strip-fill=\"true\"></div><button type=\"button\" class=\"iconButton\" aria-label=\"分栏\" data-dockkit-split-button=\"pane-plan\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z\" stroke=\"currentColor\"/><path d=\"M8 1.5V14.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"paneBody\"><div style=\"padding:12px\">计划：把停靠面与浮窗的标签轨收敛到同一套 38px 规格</div></div></section></div><div class=\"divider\" data-dockkit-divider=\"split-root:0\"></div><div class=\"splitCell\" data-dockkit-cell=\"split-root:1\" style=\"flex-grow:0.42\"><section class=\"pane\" data-dockkit-pane=\"pane-files\" tabindex=\"-1\"><div class=\"tabStrip\" role=\"tablist\" data-dockkit-strip=\"pane-files\" data-window-drag=\"true\"><div class=\"stripTabs\" role=\"presentation\" data-dockkit-strip-tabs=\"pane-files\"><div role=\"tab\" aria-selected=\"true\" tabindex=\"0\" class=\"tab tabActive\" data-dockkit-tab=\"tab-files\"><span class=\"tabTitle\" data-dockkit-tab-title>文件</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭\" data-dockkit-tab-close=\"tab-files\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"slot\"></div><div role=\"tab\" aria-selected=\"false\" tabindex=\"-1\" class=\"tab\" data-dockkit-tab=\"tab-guide\"><span class=\"tabTitle\" data-dockkit-tab-title>开始</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭\" data-dockkit-tab-close=\"tab-guide\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div></div><button type=\"button\" class=\"addTab\" aria-label=\"新标签页\" data-dockkit-add-tab=\"pane-files\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 2V14\" stroke=\"currentColor\"/><path d=\"M2 8H14\" stroke=\"currentColor\"/></svg></button><div class=\"stripFill\" data-dockkit-strip-fill=\"true\"></div><button type=\"button\" class=\"iconButton\" aria-label=\"分栏\" data-dockkit-split-button=\"pane-files\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z\" stroke=\"currentColor\"/><path d=\"M8 1.5V14.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"paneBody\"><div style=\"padding:12px\">文件树：packages/client/ui-dockkit/src/components</div></div></section></div></div></div>"
+        },
+        {
+          "label": "嵌套：右栏再上下二分（splitColumn）",
+          "note": "同一个递归渲染器；列分栏的 ::before 是横向发丝线、cursor 是 row-resize，行分栏是竖向的",
+          "bg": "platform",
+          "pad": "lg",
+          "html": "<div style=\"width:640px;height:320px;display:flex\"><div class=\"split splitRow\" data-dockkit-split=\"split-root\"><div class=\"splitCell\" data-dockkit-cell=\"split-root:0\" style=\"flex-grow:0.45\"><section class=\"pane\" data-dockkit-pane=\"pane-plan\" data-dockkit-pane-active=\"true\" tabindex=\"-1\"><div class=\"tabStrip\" role=\"tablist\" data-dockkit-strip=\"pane-plan\" data-window-drag=\"true\"><div class=\"stripTabs\" role=\"presentation\" data-dockkit-strip-tabs=\"pane-plan\"><div role=\"tab\" aria-selected=\"true\" tabindex=\"0\" class=\"tab tabActive\" data-dockkit-tab=\"tab-plan\"><span class=\"tabTitle\" data-dockkit-tab-title>计划</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭\" data-dockkit-tab-close=\"tab-plan\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div></div><button type=\"button\" class=\"addTab\" aria-label=\"新标签页\" data-dockkit-add-tab=\"pane-plan\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 2V14\" stroke=\"currentColor\"/><path d=\"M2 8H14\" stroke=\"currentColor\"/></svg></button><div class=\"stripFill\" data-dockkit-strip-fill=\"true\"></div><button type=\"button\" class=\"iconButton\" aria-label=\"分栏\" data-dockkit-split-button=\"pane-plan\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z\" stroke=\"currentColor\"/><path d=\"M8 1.5V14.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"paneBody\"><div style=\"padding:12px\">计划：把停靠面与浮窗的标签轨收敛到同一套 38px 规格</div></div></section></div><div class=\"divider\" data-dockkit-divider=\"split-root:0\"></div><div class=\"splitCell\" data-dockkit-cell=\"split-root:1\" style=\"flex-grow:0.55\"><div class=\"split splitColumn\" data-dockkit-split=\"split-right\"><div class=\"splitCell\" data-dockkit-cell=\"split-right:0\" style=\"flex-grow:0.55\"><section class=\"pane\" data-dockkit-pane=\"pane-review\" tabindex=\"-1\"><div class=\"tabStrip\" role=\"tablist\" data-dockkit-strip=\"pane-review\" data-window-drag=\"true\"><div class=\"stripTabs\" role=\"presentation\" data-dockkit-strip-tabs=\"pane-review\"><div role=\"tab\" aria-selected=\"true\" tabindex=\"0\" class=\"tab tabActive\" data-dockkit-tab=\"tab-review\"><span class=\"tabTitle\" data-dockkit-tab-title>第 3 轮改动</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭\" data-dockkit-tab-close=\"tab-review\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div></div><button type=\"button\" class=\"addTab\" aria-label=\"新标签页\" data-dockkit-add-tab=\"pane-review\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 2V14\" stroke=\"currentColor\"/><path d=\"M2 8H14\" stroke=\"currentColor\"/></svg></button><div class=\"stripFill\" data-dockkit-strip-fill=\"true\"></div><button type=\"button\" class=\"iconButton\" aria-label=\"分栏\" data-dockkit-split-button=\"pane-review\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z\" stroke=\"currentColor\"/><path d=\"M8 1.5V14.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"paneBody\"><div style=\"padding:12px\">改动清单：packages/client/ui-dockkit/src/components/TabPanel.tsx</div></div></section></div><div class=\"divider\" data-dockkit-divider=\"split-right:0\"></div><div class=\"splitCell\" data-dockkit-cell=\"split-right:1\" style=\"flex-grow:0.45\"><section class=\"pane\" data-dockkit-pane=\"pane-files\" tabindex=\"-1\"><div class=\"tabStrip\" role=\"tablist\" data-dockkit-strip=\"pane-files\" data-window-drag=\"true\"><div class=\"stripTabs\" role=\"presentation\" data-dockkit-strip-tabs=\"pane-files\"><div role=\"tab\" aria-selected=\"true\" tabindex=\"0\" class=\"tab tabActive\" data-dockkit-tab=\"tab-files\"><span class=\"tabTitle\" data-dockkit-tab-title>文件</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭\" data-dockkit-tab-close=\"tab-files\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"slot\"></div><div role=\"tab\" aria-selected=\"false\" tabindex=\"-1\" class=\"tab\" data-dockkit-tab=\"tab-guide\"><span class=\"tabTitle\" data-dockkit-tab-title>开始</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭\" data-dockkit-tab-close=\"tab-guide\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div></div><button type=\"button\" class=\"addTab\" aria-label=\"新标签页\" data-dockkit-add-tab=\"pane-files\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 2V14\" stroke=\"currentColor\"/><path d=\"M2 8H14\" stroke=\"currentColor\"/></svg></button><div class=\"stripFill\" data-dockkit-strip-fill=\"true\"></div><button type=\"button\" class=\"iconButton\" aria-label=\"分栏\" data-dockkit-split-button=\"pane-files\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z\" stroke=\"currentColor\"/><path d=\"M8 1.5V14.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"paneBody\"><div style=\"padding:12px\">文件树：packages/client/ui-dockkit/src/components</div></div></section></div></div></div></div></div>"
+        },
+        {
+          "label": "拖到槽位：caret 标出落点，被拖起的 chip 半透明",
+          "note": "chip 之间 10px 的 slot 在命中时换成 2×20px 的强调色 caret（.slotCaret），所以两边的 chip 一个像素都不动",
+          "bg": "platform",
+          "pad": "lg",
+          "html": "<div style=\"width:560px;height:220px;display:flex\"><section class=\"pane\" data-dockkit-pane=\"pane-plan\" data-dockkit-pane-active=\"true\" tabindex=\"-1\"><div class=\"tabStrip\" role=\"tablist\" data-dockkit-strip=\"pane-plan\" data-window-drag=\"true\"><div class=\"stripTabs\" role=\"presentation\" data-dockkit-strip-tabs=\"pane-plan\"><div role=\"tab\" aria-selected=\"true\" tabindex=\"0\" class=\"tab tabActive tabDragging\" data-dockkit-tab=\"tab-plan\"><span class=\"tabTitle\" data-dockkit-tab-title>计划</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭\" data-dockkit-tab-close=\"tab-plan\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"slot slotCaret\" data-dockkit-caret=\"1\"></div><div role=\"tab\" aria-selected=\"false\" tabindex=\"-1\" class=\"tab\" data-dockkit-tab=\"tab-review\"><span class=\"tabTitle\" data-dockkit-tab-title>第 3 轮改动</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭\" data-dockkit-tab-close=\"tab-review\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"slot\"></div><div role=\"tab\" aria-selected=\"false\" tabindex=\"-1\" class=\"tab\" data-dockkit-tab=\"tab-files\"><span class=\"tabTitle\" data-dockkit-tab-title>文件</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭\" data-dockkit-tab-close=\"tab-files\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div></div><button type=\"button\" class=\"addTab\" aria-label=\"新标签页\" data-dockkit-add-tab=\"pane-plan\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 2V14\" stroke=\"currentColor\"/><path d=\"M2 8H14\" stroke=\"currentColor\"/></svg></button><div class=\"stripFill\" data-dockkit-strip-fill=\"true\"></div><button type=\"button\" class=\"iconButton\" aria-label=\"分栏\" data-dockkit-split-button=\"pane-plan\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z\" stroke=\"currentColor\"/><path d=\"M8 1.5V14.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"paneBody\"><div style=\"padding:12px\">计划：把停靠面与浮窗的标签轨收敛到同一套 38px 规格</div></div></section></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "state",
+          "type": "LayoutState",
+          "default": "—",
+          "desc": "整棵树的节点表；每个节点用 id 从这里取，叶子读它的 tabs 与 activeTabId。"
+        },
+        {
+          "name": "nodeId",
+          "type": "NodeId",
+          "default": "—",
+          "desc": "这一层要画的节点；DockSurface 从 rootId 起手，递归时换成每个孩子的 id。"
+        },
+        {
+          "name": "callbacks",
+          "type": "PaneCallbacks",
+          "default": "—",
+          "desc": "已绑定的窗格回调：焦点、分栏、加/关 tab、标签拖拽起手、分隔条起手、落点预览与全部文案。"
+        },
+        {
+          "name": "preview",
+          "type": "SizePreview | undefined",
+          "default": "undefined",
+          "desc": "拖动分隔条时的预览分数（splitId + sizes）；只作用于同一个 split，松手后回到记录值。"
+        }
+      ],
+      "notes": "包入口（<code>src/index.ts</code>）不导出它——它是 <code>DockSurface</code> 的内部渲染器，特点是把「分栏」写成两个方向共用的一套 DOM 规则：行分栏与列分栏只差 <code>.splitRow</code> / <code>.splitColumn</code> 一个类，分隔条的发丝线与命中层由方向选择器决定。已知限制：分隔条没有 <code>separator</code> 角色，也没有键盘调整分栏的路径。",
+      "keywords": [
+        "分栏树",
+        "pane tree",
+        "split",
+        "divider",
+        "分隔条",
+        "递归"
+      ]
+    },
+    {
+      "id": "tab-layout",
+      "name": "TabLayout",
+      "exportName": "TabLayout",
+      "zh": "标签布局",
+      "group": "dock",
+      "summary": "把「每个 tab 一格」写成 CSS Grid 的渲染器：<code>.tabLayout</code> 的行是 <code>minmax(0,1fr)</code>，列按分数展开成 <code>minmax(0, &lt;size&gt;fr) 0px …</code>，每个 tab 一个 <code>.tabCell</code>（<code>grid-column</code> 是栏号乘二加一），选中的那格才显示，没选中的挂 <code>hidden</code> 加 <code>inert</code> —— 切页、搬栏、浮出都不会搬动 DOM，已连接的 webview 祖先因此不变。窗格内容装在 <code>.tabHost</code> 里：<code>.tabHostHeader</code> 放标签轨或浮窗标题行，<code>.tabHostBody.paneBody</code> 自己滚动；空窗格进 <code>.emptyTabHost</code>，里面照常画一条带加号与分栏按钮的标签轨和一句「空面板」。浮出的 tab 是同树的 <code>.floatingCell</code>（0×0，<code>--dsh-dockkit-float-layer</code> 默认 60），面板本体仍是 <code>.tabHost.float</code>。",
+      "source": "packages/client/ui-dockkit/src/components/TabLayout.tsx#L118",
+      "css": [
+        "packages/client/ui-dockkit/src/components/dockkit.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-base",
+        "--dsw-alias-bg-layer-2",
+        "--dsw-alias-border-l4",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-markdown-tag",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-brand-primary-new-colorprimary-new-color",
+        "--dsw-radius-sm",
+        "--dsw-radius-md",
+        "--dsw-radius-lg",
+        "--dsw-radius-panel",
+        "--dsw-elevation-prominent",
+        "--dsw-elevation-stroke-color",
+        "--dsw-alias-scrollbar-bg-l2",
+        "--dsw-alias-scrollbar-hover-l2"
+      ],
+      "specimens": [
+        {
+          "label": "每个 tab 一格：未选中的 cell 挂 hidden，内层 tabHost 再设 inert",
+          "note": "未选中那格的 tabHostHeader 是空的（TabStrip 不渲染），body 也没挂载；它只占住网格位置",
+          "bg": "platform",
+          "pad": "lg",
+          "html": "<div style=\"width:560px;height:240px;display:flex\"><div class=\"tabLayout\" style=\"grid-template-columns:minmax(0,1fr)\"><div class=\"tabCell\" hidden data-dockkit-host=\"dock\" data-dockkit-column=\"0\" style=\"grid-column:1;grid-row:1;order:0\"><section class=\"tabHost pane\" tabindex=\"-1\" aria-hidden=\"true\" inert data-dockkit-content=\"tab-review\" data-dockkit-column=\"0\"><div class=\"tabHostHeader\"></div><div class=\"tabHostBody paneBody\"></div></section></div><div class=\"tabCell\" data-dockkit-host=\"dock\" data-dockkit-column=\"0\" style=\"grid-column:1;grid-row:1;order:0\"><section class=\"tabHost pane\" tabindex=\"-1\" data-dockkit-content=\"tab-plan\" data-dockkit-pane=\"pane-main\" data-dockkit-pane-active=\"true\" data-dockkit-column=\"0\"><div class=\"tabHostHeader\"><div class=\"tabStrip\" role=\"tablist\" data-dockkit-strip=\"pane-main\" data-window-drag=\"true\"><div class=\"stripTabs\" role=\"presentation\" data-dockkit-strip-tabs=\"pane-main\"><div role=\"tab\" aria-selected=\"true\" tabindex=\"0\" class=\"tab tabActive\" data-dockkit-tab=\"tab-plan\"><span class=\"tabTitle\" data-dockkit-tab-title>计划</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭\" data-dockkit-tab-close=\"tab-plan\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"slot\"></div><div role=\"tab\" aria-selected=\"false\" tabindex=\"-1\" class=\"tab\" data-dockkit-tab=\"tab-review\"><span class=\"tabTitle\" data-dockkit-tab-title>第 3 轮改动</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭\" data-dockkit-tab-close=\"tab-review\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div><div class=\"slot\"></div><div role=\"tab\" aria-selected=\"false\" tabindex=\"-1\" class=\"tab\" data-dockkit-tab=\"tab-files\"><span class=\"tabTitle\" data-dockkit-tab-title>文件</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭\" data-dockkit-tab-close=\"tab-files\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div></div><button type=\"button\" class=\"addTab\" aria-label=\"新标签页\" data-dockkit-add-tab=\"pane-main\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 2V14\" stroke=\"currentColor\"/><path d=\"M2 8H14\" stroke=\"currentColor\"/></svg></button><div class=\"stripFill\" data-dockkit-strip-fill=\"true\"></div><button type=\"button\" class=\"iconButton\" aria-label=\"分栏\" data-dockkit-split-button=\"pane-main\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z\" stroke=\"currentColor\"/><path d=\"M8 1.5V14.5\" stroke=\"currentColor\"/></svg></button></div></div><div class=\"tabHostBody paneBody\"><div style=\"padding:12px\">计划：把停靠面与浮窗的标签轨收敛到同一套 38px 规格</div></div></section></div></div></div>"
+        },
+        {
+          "label": "空栏位：.emptyTabHost 里的「空面板」",
+          "note": "空窗格仍画一条完整的标签轨（没有 chip，但有加号与分栏按钮）加一句 emptyPane 文案；中间轨的分隔条按悬停态画出",
+          "bg": "platform",
+          "pad": "lg",
+          "css": "/* 状态模拟：分隔条 hover 时抓柄淡入（.divider:hover::after { opacity: 1 }），\n   静态快照没有指针，把那条规则按同选择器照搬过来。 */\n.tabLayoutDivider::after { opacity: 1; }",
+          "html": "<div style=\"width:640px;height:250px;display:flex\"><div class=\"tabLayout\" data-dockkit-split=\"split-root\" style=\"grid-template-columns:minmax(0,0.55fr) 0px minmax(0,0.45fr)\"><div class=\"tabCell\" data-dockkit-host=\"dock\" data-dockkit-column=\"0\" style=\"grid-column:1;grid-row:1;order:0\"><section class=\"tabHost pane\" tabindex=\"-1\" data-dockkit-content=\"tab-plan\" data-dockkit-pane=\"pane-plan\" data-dockkit-pane-active=\"true\" data-dockkit-column=\"0\"><div class=\"tabHostHeader\"><div class=\"tabStrip\" role=\"tablist\" data-dockkit-strip=\"pane-plan\" data-window-drag=\"true\"><div class=\"stripTabs\" role=\"presentation\" data-dockkit-strip-tabs=\"pane-plan\"><div role=\"tab\" aria-selected=\"true\" tabindex=\"0\" class=\"tab tabActive\" data-dockkit-tab=\"tab-plan\"><span class=\"tabTitle\" data-dockkit-tab-title>计划</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭\" data-dockkit-tab-close=\"tab-plan\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div></div><button type=\"button\" class=\"addTab\" aria-label=\"新标签页\" data-dockkit-add-tab=\"pane-plan\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 2V14\" stroke=\"currentColor\"/><path d=\"M2 8H14\" stroke=\"currentColor\"/></svg></button><div class=\"stripFill\" data-dockkit-strip-fill=\"true\"></div><button type=\"button\" class=\"iconButton\" aria-label=\"分栏\" data-dockkit-split-button=\"pane-plan\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z\" stroke=\"currentColor\"/><path d=\"M8 1.5V14.5\" stroke=\"currentColor\"/></svg></button></div></div><div class=\"tabHostBody paneBody\"><div style=\"padding:12px\">计划：把停靠面与浮窗的标签轨收敛到同一套 38px 规格</div></div></section></div><div class=\"divider tabLayoutDivider\" data-dockkit-divider=\"split-root:0\" style=\"grid-column:2;grid-row:1\"></div><div class=\"emptyTabHost\" data-dockkit-empty=\"true\" style=\"grid-column:3;grid-row:1\"><section class=\"pane\" data-dockkit-pane=\"pane-empty\" tabindex=\"-1\"><div class=\"tabStrip\" role=\"tablist\" data-dockkit-strip=\"pane-empty\" data-window-drag=\"true\"><div class=\"stripTabs\" role=\"presentation\" data-dockkit-strip-tabs=\"pane-empty\"></div><button type=\"button\" class=\"addTab\" aria-label=\"新标签页\" data-dockkit-add-tab=\"pane-empty\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 2V14\" stroke=\"currentColor\"/><path d=\"M2 8H14\" stroke=\"currentColor\"/></svg></button><div class=\"stripFill\" data-dockkit-strip-fill=\"true\"></div><span tabindex=\"0\" aria-label=\"已达两格上限\"><button type=\"button\" class=\"iconButton\" aria-label=\"分栏\" disabled data-dockkit-split-button=\"pane-empty\" data-dockkit-split-blocked=\"budget\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V13.5C1.5 14.0523 1.94772 14.5 2.5 14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5Z\" stroke=\"currentColor\"/><path d=\"M8 1.5V14.5\" stroke=\"currentColor\"/></svg></button></span></div><div class=\"paneBody\"><p class=\"empty\">空面板</p></div></section></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "state",
+          "type": "LayoutState",
+          "default": "—",
+          "desc": "布局快照；根不是「一个窗格」或「两个水平窗格」时直接抛错（右栏自己保证两格上限）。"
+        },
+        {
+          "name": "callbacks",
+          "type": "PaneCallbacks",
+          "default": "—",
+          "desc": "窗格回调；本组件在外层换掉 onFocusTab，用来记账「这次选中是不是真的要换 body」，好把焦点交回 chip。"
+        },
+        {
+          "name": "preview",
+          "type": "SizePreview | undefined",
+          "default": "undefined",
+          "desc": "拖动中间分隔条时的预览分数，直接写进 grid-template-columns 的两条分数轨。"
+        },
+        {
+          "name": "intents",
+          "type": "DockIntents",
+          "default": "—",
+          "desc": "手势出口；浮出窗格的 drag / raise 也从这里走。"
+        },
+        {
+          "name": "keepMounted",
+          "type": "(tab: TabRecord) => boolean",
+          "default": "缺省按可见性挂载",
+          "desc": "访问过的 body 在隐藏后是否继续保留（保留时不卸载、不搬 DOM，只 aria-hidden 加 inert）。"
+        },
+        {
+          "name": "active",
+          "type": "boolean",
+          "default": "true",
+          "desc": "这个布局的会话是否在屏上；false 时连保留的 body 都不渲染。"
+        }
+      ],
+      "notes": "网格列数按 <code>sizes.map(size =&gt; `minmax(0, ${size}fr)`).join(' 0px ')</code> 拼出来，所以两栏时是「分数轨 + 0px + 分数轨」三条，分隔条自己占中间那条、由 <code>grid-column:2</code> 钉住。隐藏格用 <code>hidden</code> 属性而不卸载，是为了让 <code>&lt;webview&gt;</code> 这类外部内容的祖先保持同一个；<code>.tabCell[hidden] { display:none }</code> 负责不可见。",
+      "keywords": [
+        "标签布局",
+        "tab layout",
+        "grid",
+        "稳定 DOM",
+        "hidden",
+        "emptyTabHost"
+      ]
+    }
+  ]
+}

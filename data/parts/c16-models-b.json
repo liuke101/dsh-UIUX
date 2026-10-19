@@ -1,0 +1,1099 @@
+{
+ "schemaVersion": 1,
+ "note": "模型设置 B：模型目录/行的编辑控件、两个弹窗外壳（首启与预览版说明）、发布标记与密钥掩码，以及设置里的只读插件清单。弹窗外壳在真实产品里 portal 到 body 并用 fixed 铺满视口，这里以静态内联快照呈现，并在各自示例的 css 里把定位改回文档流。",
+ "entries": [
+  {
+   "id": "model-list-editor",
+   "name": "ModelListEditor",
+   "exportName": "ModelListEditor",
+   "zh": "模型列表编辑",
+   "group": "settings",
+   "summary": "手写路由（pi-ai）的模型目录编辑器。顶部是 12/18 二级色（<code>--dsw-alias-label-secondary</code>）的「模型目录」标题与一行 12/18 三级色的继承/自定义说明，右侧是 28px 高、R8 的幽灵按钮「恢复默认模型」「获取可用模型」（12/18，悬停换 <code>--dsw-alias-interactive-bg-hover</code>）。列表为空时显示一条虚线描边、R16、居中 12/18 的占位说明——空列表表示继承适配器目录，而不是「没有模型」。每行由 <code>ModelRow</code> 渲染，行距 8px；底部是 28px 的「添加模型」，探测失败时在它下面补一条 12/18 的红色 <code>.error</code>，已填的行照旧可编辑。点「获取可用模型」打开一张宽 <code>min(380px,100%)</code>（上限 520px）的 Modal：正文是 32px 搜索框加候选清单，每个候选 6/8 内边距、行距 2px、ID 用等宽 13px 加省略号，底部是「取消 / 添加所选」两个 36px 描边按钮。",
+   "source": "packages/client/ui-settings-models/src/client/ModelListEditor.tsx#L154",
+   "css": [
+    "packages/client/ui-settings-models/src/client/ModelsSection.module.css",
+    "packages/client/ui-primitives/src/Modal.module.css",
+    "packages/client/ui-primitives/src/Button.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-layer-1",
+    "--dsw-alias-bg-layer-2",
+    "--dsw-alias-bg-mask-1",
+    "--dsw-alias-bg-module-platform",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-border-l3",
+    "--dsw-alias-border-l4",
+    "--dsw-alias-button-primary-fill",
+    "--dsw-alias-button-primary-hover",
+    "--dsw-alias-button-tool-bar-fill",
+    "--dsw-alias-button-tool-bar-hover",
+    "--dsw-alias-interactive-bg-active",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-interactive-bg-hover-danger",
+    "--dsw-alias-interactive-bg-hover-solid",
+    "--dsw-alias-label-dimmed",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-primary-foreground",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-scrollbar-bg-l2",
+    "--dsw-alias-scrollbar-hover-l2",
+    "--dsw-alias-settings-card-fill",
+    "--dsw-alias-settings-card-stroke",
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-state-error-primary",
+    "--dsw-alias-state-success-primary",
+    "--dsw-alias-state-warn-label",
+    "--dsw-elevation-prominent",
+    "--dsw-focus-ring-color",
+    "--dsw-focus-ring-width",
+    "--dsw-mask-blur",
+    "--dsw-radius-lg",
+    "--dsw-radius-md",
+    "--dsw-radius-panel",
+    "--dsw-radius-sm",
+    "--dsw-radius-xl",
+    "--dsw-radius-xs"
+   ],
+   "specimens": [
+    {
+     "label": "继承态：空列表 + 获取可用模型",
+     "note": "空列表等于「用适配器自带目录」，只有 28px 的添加按钮",
+     "html": "<div style='width:620px'><section class=\"modelCatalog\" aria-label=\"模型目录\"><div class=\"modelListHead\"><div class=\"modelCatalogHeading\"><span class=\"modelCatalogTitle\">模型目录</span><span class=\"modelCatalogMeta\">正在使用适配器默认模型</span></div><button type=\"button\" class=\"linkButton\">获取可用模型</button></div><p class=\"modelEmpty\">模型选择器中将不显示任何模型；目录外 ID 仍可直接发送。</p><button type=\"button\" class=\"addModelButton\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M8 2V14' stroke='currentColor'/><path d='M2 8H14' stroke='currentColor'/></svg>添加模型</button></section></div>"
+    },
+    {
+     "label": "已自定义：两行模型 + 探测失败提示",
+     "note": "获取不到候选只多一条红字，行仍可手填",
+     "html": "<div style='width:620px'><section class=\"modelCatalog\" aria-label=\"模型目录\"><div class=\"modelListHead\"><div class=\"modelCatalogHeading\"><span class=\"modelCatalogTitle\">模型目录</span><span class=\"modelCatalogMeta\">已自定义模型目录</span></div><button type=\"button\" class=\"linkButton\">恢复默认模型</button><button type=\"button\" class=\"linkButton\">获取可用模型</button></div><div class=\"modelList\"><div class=\"modelEntry\"><div class=\"modelRow\"><input class=\"input\" type=\"text\" value=\"deepseek-chat\" aria-label=\"模型 ID 1\"><input class=\"input\" type=\"text\" placeholder=\"显示名称\" aria-label=\"显示名称 1\"><button type=\"button\" class=\"iconButton\" aria-label=\"模型选项 1\" aria-expanded=\"false\" title=\"模型选项\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4' stroke='currentColor'/></svg></button><button type=\"button\" class=\"iconButton iconButtonDanger\" aria-label=\"删除模型 1\" title=\"删除模型\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M1.28149 3.88831H14.7187' stroke='currentColor'/><path d='M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833' stroke='currentColor'/><path d='M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831' stroke='currentColor'/><path d='M6.44946 6.98926V11.1238' stroke='currentColor'/><path d='M9.55054 6.98926V11.1238' stroke='currentColor'/></svg></button></div></div><div class=\"modelEntry\"><div class=\"modelRow\"><input class=\"input\" type=\"text\" value=\"relay/DeepSeek-V4.1-Flash\" aria-label=\"模型 ID 2\"><input class=\"input\" type=\"text\" placeholder=\"显示名称\" aria-label=\"显示名称 2\"><button type=\"button\" class=\"iconButton\" aria-label=\"模型选项 2\" aria-expanded=\"false\" title=\"模型选项\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4' stroke='currentColor'/></svg></button><button type=\"button\" class=\"iconButton iconButtonDanger\" aria-label=\"删除模型 2\" title=\"删除模型\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M1.28149 3.88831H14.7187' stroke='currentColor'/><path d='M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833' stroke='currentColor'/><path d='M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831' stroke='currentColor'/><path d='M6.44946 6.98926V11.1238' stroke='currentColor'/><path d='M9.55054 6.98926V11.1238' stroke='currentColor'/></svg></button></div></div></div><button type=\"button\" class=\"addModelButton\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M8 2V14' stroke='currentColor'/><path d='M2 8H14' stroke='currentColor'/></svg>添加模型</button><p class=\"error\">该提供商没有列出任何模型，请手动添加。</p></section></div>"
+    },
+    {
+     "label": "获取候选：选择要添加的模型",
+     "note": "静态快照：把 portal 到 body 的 fixed 弹窗拉回文档流",
+     "html": "<div style='width:620px'><div class=\"c1-root snapshotStatic\" role='presentation'><div class=\"c1-mask\" aria-hidden=\"true\"></div><div class=\"c1-dialog fetchDialog\" role=\"dialog\" aria-modal=\"true\" aria-label=\"选择要添加的模型\"><div class=\"c1-content\"><div class=\"c1-header\"><h2 class=\"c1-title\">选择要添加的模型</h2><button type=\"button\" class=\"c1-close\" aria-label=\"关闭\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M2.5 2.5L13.5 13.5' stroke='currentColor'/><path d='M13.5 2.5L2.5 13.5' stroke='currentColor'/></svg></button></div><p class=\"c1-description\">以下是模型提供商的可用模型，勾选要添加的模型。</p><div class=\"c1-body\"><div class=\"candidateToolbar\"><input class=\"input candidateSearch\" type=\"search\" placeholder=\"搜索模型\" aria-label=\"搜索模型\"><button type=\"button\" class=\"button ghost sm\">全选</button></div><ul class=\"candidateList\"><li class=\"candidate\"><label class=\"candidateLabel\"><input type=\"checkbox\" checked><span class=\"candidateId\" title=\"deepseek-chat\">deepseek-chat</span></label></li><li class=\"candidate\"><label class=\"candidateLabel\"><input type=\"checkbox\" checked><span class=\"candidateId\" title=\"DeepSeek-V4.1-Flash\">DeepSeek-V4.1-Flash</span></label></li><li class=\"candidate\"><label class=\"candidateLabel\"><input type=\"checkbox\"><span class=\"candidateId\" title=\"deepseek-reasoner\">deepseek-reasoner</span></label></li></ul></div></div><div class=\"c1-footer\"><button type=\"button\" class=\"button outline md\">取消</button><button type=\"button\" class=\"button outline md\">添加所选</button></div></div></div></div>",
+     "css": "/* 静态快照：Modal 的 .root 在真实产品里 portal 到 body 并用 fixed 铺满视口。\n   这里改成文档流内的相对定位，同时保留它作为 .mask 绝对定位子层的包含块；\n   .fetchDialog 只抬高宽度上限，弹窗宽度仍由 Modal 的 min(380px,100%) 决定。 */\n.c1-root.snapshotStatic { position: relative; inset: auto; }"
+    }
+   ],
+   "props": [
+    {
+     "name": "models",
+     "type": "readonly ModelDraft[]",
+     "default": "—",
+     "desc": "当前草稿里的模型行；空数组表示继承适配器目录。"
+    },
+    {
+     "name": "catalogProvider",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "装有该提供商的目录名；有它时默认值来自注册表，不必发网络请求。"
+    },
+    {
+     "name": "reasoningLevels",
+     "type": "readonly string[] | undefined",
+     "default": "—",
+     "desc": "手写路由的行可以在 reasoningEfforts 里声明的档位（升序）；缺失或为空则整行不显示推理等级控件。"
+    },
+    {
+     "name": "defaultInput",
+     "type": "readonly string[] | undefined",
+     "default": "—",
+     "desc": "目录里没有的模型使用的输入类型。"
+    },
+    {
+     "name": "overridden",
+     "type": "boolean | undefined",
+     "default": "—",
+     "desc": "用户层是否拥有整个数组；新建卡片时缺省，此时不显示「恢复默认模型」。"
+    },
+    {
+     "name": "onChange",
+     "type": "(models: ModelDraft[]) => void",
+     "default": "—",
+     "desc": "替换草稿里的行（增删改都走这里）。"
+    },
+    {
+     "name": "onReset",
+     "type": "(() => void) | undefined",
+     "default": "—",
+     "desc": "删除用户层数组、回到继承；新建时缺省。"
+    },
+    {
+     "name": "probe",
+     "type": "ProbeTarget",
+     "default": "—",
+     "desc": "获取动作要问的端点事实：settingsNs、provider、baseURL、api 与刚输入未保存的 apiKey。"
+    },
+    {
+     "name": "probeBlocked",
+     "type": "keyof typeof en | undefined",
+     "default": "—",
+     "desc": "获取动作不可用的原因文案 key（例如密钥格式错误）；有值时按钮禁用并把它当 title。"
+    },
+    {
+     "name": "operations",
+     "type": "ModelsOperations",
+     "default": "—",
+     "desc": "向提供商发起模型探测的 Host 操作面。"
+    },
+    {
+     "name": "t",
+     "type": "(key: keyof typeof en) => string",
+     "default": "—",
+     "desc": "settings.models 文案。"
+    },
+    {
+     "name": "disabled",
+     "type": "boolean",
+     "default": "—",
+     "desc": "禁用全部控件（只读部署或写入进行中）。"
+    },
+    {
+     "name": "onBusyChange",
+     "type": "(busy: boolean) => void",
+     "default": "—",
+     "desc": "每次变化上报探测是否在飞行中，让外层卡片能定住自己的界面。"
+    }
+   ],
+   "notes": "列表里的每一项都会替换整个适配器目录，所以行只能由用户显式添加；获取候选时「已配置」的 ID 默认不勾选，避免覆盖用户手改过的容量。探测用的是表单当前显示的地址与刚键入、尚未保存的密钥，因此新建提供商可以一次填完；<code>fetchEmpty</code> 与 <code>refused</code> 都只把消息写进 <code>.error</code>，不关闭任何东西、也不改动草稿。候选弹窗的复选框是原生 input，没有额外类名。",
+   "keywords": [
+    "模型目录",
+    "获取可用模型",
+    "model list",
+    "pi-ai",
+    "fallback 目录",
+    "添加模型"
+   ]
+  },
+  {
+   "id": "model-reasoning-efforts",
+   "name": "ModelReasoningEfforts",
+   "exportName": "ModelReasoningEfforts",
+   "zh": "推理等级",
+   "group": "settings",
+   "summary": "手写路由一个模型的 <code>reasoningEfforts</code> 声明：头部一行是 12/18 三级色的「推理等级」标签加 16px 圆形问号（<code>cursor: help</code>，悬停变一级色），右侧是 36×20 的开关（<code>aria-checked</code> 决定轨道色，拇指 16px 位移 16px）。开启后按存储顺序列出每个档位：三列网格「档位 / API 参数值 / 删除」，行距 6px；档位是 32px 下拉（<code>.selectInput</code> 换掉系统箭头、右内边距 32px），参数值是 32px 等宽 13px 输入框，删除是 28px 图标按钮（悬停转红底）。表头只有在已有档位时才画；越界的存储值会补一条 12/18 红字；末尾是 28px、R8 的「添加档位」，四档齐全时它自己禁用（不透明度 0.4）。",
+   "source": "packages/client/ui-settings-models/src/client/ModelReasoningEfforts.tsx#L110",
+   "css": [
+    "packages/client/ui-settings-models/src/client/ModelsSection.module.css",
+    "packages/client/ui-primitives/src/Switch.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-layer-1",
+    "--dsw-alias-bg-module-platform",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-border-l3",
+    "--dsw-alias-border-l4",
+    "--dsw-alias-brand-primary",
+    "--dsw-alias-button-primary-fill",
+    "--dsw-alias-button-primary-hover",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-interactive-bg-hover-danger",
+    "--dsw-alias-interactive-bg-hover-solid",
+    "--dsw-alias-label-dimmed",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-primary-foreground",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-scrollbar-bg-l2",
+    "--dsw-alias-scrollbar-hover-l2",
+    "--dsw-alias-settings-card-fill",
+    "--dsw-alias-settings-card-stroke",
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-state-error-primary",
+    "--dsw-alias-state-success-primary",
+    "--dsw-alias-state-warn-label",
+    "--dsw-alias-switch-thumb",
+    "--dsw-focus-ring-color",
+    "--dsw-focus-ring-width",
+    "--dsw-radius-lg",
+    "--dsw-radius-md",
+    "--dsw-radius-sm",
+    "--dsw-radius-xl",
+    "--dsw-radius-xs"
+   ],
+   "specimens": [
+    {
+     "label": "开启：off / low / medium / high 四档",
+     "note": "四档都已声明，添加档位按钮禁用（不透明度 0.4）",
+     "html": "<div style='width:440px'><div class=\"modelReasoning\" role=\"group\" aria-label=\"推理等级 1\"><div class=\"modelReasoningHead\"><span class=\"modelFieldLabel modelReasoningLabel\">推理等级<button type=\"button\" class=\"helpButton\" aria-label=\"推理等级说明\">?</button></span><button type=\"button\" role=\"switch\" aria-checked=\"true\" aria-label=\"推理等级 1\" class=\"switch\"><span class=\"thumb\"></span></button></div><div class=\"modelReasoningRow\" aria-hidden=\"true\"><span class=\"modelFieldLabel\">档位</span><span class=\"modelFieldLabel\">API 参数值</span></div><div class=\"modelReasoningRow\"><select class=\"input selectInput\" aria-label=\"档位 1\"><option value=\"off\" selected>off</option><option value=\"low\">low</option><option value=\"medium\">medium</option><option value=\"high\">high</option></select><input class=\"input modelReasoningValueInput\" type=\"text\" value=\"\" placeholder=\"关闭思考\" aria-label=\"off API 参数值\" disabled><button type=\"button\" class=\"iconButton iconButtonDanger\" aria-label=\"删除档位 off\" title=\"删除档位\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M1.28149 3.88831H14.7187' stroke='currentColor'/><path d='M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833' stroke='currentColor'/><path d='M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831' stroke='currentColor'/><path d='M6.44946 6.98926V11.1238' stroke='currentColor'/><path d='M9.55054 6.98926V11.1238' stroke='currentColor'/></svg></button></div><div class=\"modelReasoningRow\"><select class=\"input selectInput\" aria-label=\"档位 2\"><option value=\"off\">off</option><option value=\"low\" selected>low</option><option value=\"medium\">medium</option><option value=\"high\">high</option></select><input class=\"input modelReasoningValueInput\" type=\"text\" value=\"low\" placeholder=\"low\" aria-label=\"low API 参数值\"><button type=\"button\" class=\"iconButton iconButtonDanger\" aria-label=\"删除档位 low\" title=\"删除档位\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M1.28149 3.88831H14.7187' stroke='currentColor'/><path d='M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833' stroke='currentColor'/><path d='M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831' stroke='currentColor'/><path d='M6.44946 6.98926V11.1238' stroke='currentColor'/><path d='M9.55054 6.98926V11.1238' stroke='currentColor'/></svg></button></div><div class=\"modelReasoningRow\"><select class=\"input selectInput\" aria-label=\"档位 3\"><option value=\"off\">off</option><option value=\"low\">low</option><option value=\"medium\" selected>medium</option><option value=\"high\">high</option></select><input class=\"input modelReasoningValueInput\" type=\"text\" value=\"medium\" placeholder=\"medium\" aria-label=\"medium API 参数值\"><button type=\"button\" class=\"iconButton iconButtonDanger\" aria-label=\"删除档位 medium\" title=\"删除档位\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M1.28149 3.88831H14.7187' stroke='currentColor'/><path d='M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833' stroke='currentColor'/><path d='M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831' stroke='currentColor'/><path d='M6.44946 6.98926V11.1238' stroke='currentColor'/><path d='M9.55054 6.98926V11.1238' stroke='currentColor'/></svg></button></div><div class=\"modelReasoningRow\"><select class=\"input selectInput\" aria-label=\"档位 4\"><option value=\"off\">off</option><option value=\"low\">low</option><option value=\"medium\">medium</option><option value=\"high\" selected>high</option></select><input class=\"input modelReasoningValueInput\" type=\"text\" value=\"xhigh\" placeholder=\"high\" aria-label=\"high API 参数值\"><button type=\"button\" class=\"iconButton iconButtonDanger\" aria-label=\"删除档位 high\" title=\"删除档位\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M1.28149 3.88831H14.7187' stroke='currentColor'/><path d='M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833' stroke='currentColor'/><path d='M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831' stroke='currentColor'/><path d='M6.44946 6.98926V11.1238' stroke='currentColor'/><path d='M9.55054 6.98926V11.1238' stroke='currentColor'/></svg></button></div><button type=\"button\" class=\"addModelButton\" disabled><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M8 2V14' stroke='currentColor'/><path d='M2 8H14' stroke='currentColor'/></svg>添加档位</button></div></div>"
+    },
+    {
+     "label": "关闭：只留开关",
+     "note": "关闭即把 reasoningEfforts 字段从配置里删掉",
+     "html": "<div style='width:440px'><div class=\"modelReasoning\" role=\"group\" aria-label=\"推理等级 1\"><div class=\"modelReasoningHead\"><span class=\"modelFieldLabel modelReasoningLabel\">推理等级<button type=\"button\" class=\"helpButton\" aria-label=\"推理等级说明\">?</button></span><button type=\"button\" role=\"switch\" aria-checked=\"false\" aria-label=\"推理等级 1\" class=\"switch\"><span class=\"thumb\"></span></button></div></div></div>"
+    },
+    {
+     "label": "校验失败：Off 以外的档位缺参数值",
+     "note": "空值输入框带 aria-invalid，下方补一条红字",
+     "html": "<div style='width:440px'><div class=\"modelReasoning\" role=\"group\" aria-label=\"推理等级 1\"><div class=\"modelReasoningHead\"><span class=\"modelFieldLabel modelReasoningLabel\">推理等级<button type=\"button\" class=\"helpButton\" aria-label=\"推理等级说明\">?</button></span><button type=\"button\" role=\"switch\" aria-checked=\"true\" aria-label=\"推理等级 1\" class=\"switch\"><span class=\"thumb\"></span></button></div><div class=\"modelReasoningRow\" aria-hidden=\"true\"><span class=\"modelFieldLabel\">档位</span><span class=\"modelFieldLabel\">API 参数值</span></div><div class=\"modelReasoningRow\"><select class=\"input selectInput\" aria-label=\"档位 1\"><option value=\"off\" selected>off</option><option value=\"low\">low</option></select><input class=\"input modelReasoningValueInput\" type=\"text\" value=\"\" placeholder=\"关闭思考\" aria-label=\"off API 参数值\" disabled><button type=\"button\" class=\"iconButton iconButtonDanger\" aria-label=\"删除档位 off\" title=\"删除档位\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M1.28149 3.88831H14.7187' stroke='currentColor'/><path d='M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833' stroke='currentColor'/><path d='M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831' stroke='currentColor'/><path d='M6.44946 6.98926V11.1238' stroke='currentColor'/><path d='M9.55054 6.98926V11.1238' stroke='currentColor'/></svg></button></div><div class=\"modelReasoningRow\"><select class=\"input selectInput\" aria-label=\"档位 2\"><option value=\"off\">off</option><option value=\"low\" selected>low</option></select><input class=\"input modelReasoningValueInput\" type=\"text\" value=\"\" placeholder=\"low\" aria-label=\"low API 参数值\" aria-invalid=\"true\"><button type=\"button\" class=\"iconButton iconButtonDanger\" aria-label=\"删除档位 low\" title=\"删除档位\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M1.28149 3.88831H14.7187' stroke='currentColor'/><path d='M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833' stroke='currentColor'/><path d='M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831' stroke='currentColor'/><path d='M6.44946 6.98926V11.1238' stroke='currentColor'/><path d='M9.55054 6.98926V11.1238' stroke='currentColor'/></svg></button></div><p class=\"error\">Off 以外的档位都需要填写 API 参数值，且参数值不能为空字符串。</p><button type=\"button\" class=\"addModelButton\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M8 2V14' stroke='currentColor'/><path d='M2 8H14' stroke='currentColor'/></svg>添加档位</button></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "model",
+     "type": "DeepSeekModelDraft",
+     "default": "—",
+     "desc": "生效中的模型行，含编辑器之外的字段；档位全部从它读出。"
+    },
+    {
+     "name": "levels",
+     "type": "readonly string[]",
+     "default": "—",
+     "desc": "适配器 schema 接受的 reasoningEfforts 键，按升级顺序给出。"
+    },
+    {
+     "name": "position",
+     "type": "number",
+     "default": "—",
+     "desc": "从 1 开始的行号，只用于无障碍名称。"
+    },
+    {
+     "name": "disabled",
+     "type": "boolean",
+     "default": "—",
+     "desc": "只读或保存中时禁止修改。"
+    },
+    {
+     "name": "t",
+     "type": "(key: ModelsKey) => string",
+     "default": "—",
+     "desc": "本节文案。"
+    },
+    {
+     "name": "onChange",
+     "type": "(model: DeepSeekModelDraft) => void",
+     "default": "—",
+     "desc": "替换这一行，保留其余配置。"
+    }
+   ],
+   "notes": "只有手写路由（<code>declared</code> 的 pi-ai 提供商）才读得到档位，因为那是唯一没有已装目录兜底的模型列表。开关关闭 = 从配置里删除 <code>reasoningEfforts</code> 字段，而不是写 <code>false</code>；Off 档的输入框始终禁用（Off 只表示关闭思考，不需要参数值），配置里已经写入的值仍会保留并发送。改档位时，只有「自定义拼写」会跟着搬过去（跨 Off 不搬），其余情况重置为档位名。两条校验错误互斥：只要有档位取值被适配器拒绝就显示前者，否则才是「至少一个 Off 以外的档位」。问号按钮是 <code>Tooltip</code> 的锚点，气泡 portal 到 body，本身不使用样式表。",
+   "keywords": [
+    "推理等级",
+    "reasoningEfforts",
+    "reasoning_effort",
+    "档位",
+    "思考等级",
+    "pi-ai"
+   ]
+  },
+  {
+   "id": "model-row",
+   "name": "ModelRow",
+   "exportName": "ModelRow",
+   "zh": "模型行",
+   "group": "settings",
+   "summary": "两种模型目录编辑器共用的一行。折叠时是一个四列网格（<code>minmax(0,1.4fr) minmax(0,1fr) auto auto</code>、行距 6px）：32px 的模型 ID 框、32px 的显示名称框，加上 28px 的展开箭头和 28px 的删除按钮（都是 R8 透明底、悬停换灰底，删除再叠一层红底红字）。展开区 <code>.modelAdvanced</code> 是两列网格（行距 8px、内边距 8/4/2）：上下文窗口与最大输出 token 两个 32px 文本框（占位 <code>256K</code> / <code>32K</code>），跨两列的输入类型 fieldset 放等距 16px 的复选框（至少留一项，只剩一项时该框禁用），以及声明路由才有的推理等级组。整行外壳是 0.5px <code>--dsw-alias-border-l4</code> 描边、R16、内边距 6px。",
+   "source": "packages/client/ui-settings-models/src/client/ModelRow.tsx#L47",
+   "css": [
+    "packages/client/ui-settings-models/src/client/ModelsSection.module.css",
+    "packages/client/ui-primitives/src/Checkbox.module.css",
+    "packages/client/ui-primitives/src/Switch.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-layer-1",
+    "--dsw-alias-bg-module-platform",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-border-l3",
+    "--dsw-alias-border-l4",
+    "--dsw-alias-brand-primary",
+    "--dsw-alias-button-primary-fill",
+    "--dsw-alias-button-primary-hover",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-interactive-bg-hover-danger",
+    "--dsw-alias-interactive-bg-hover-solid",
+    "--dsw-alias-label-dimmed",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-primary-foreground",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-scrollbar-bg-l2",
+    "--dsw-alias-scrollbar-hover-l2",
+    "--dsw-alias-settings-card-fill",
+    "--dsw-alias-settings-card-stroke",
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-state-error-primary",
+    "--dsw-alias-state-success-primary",
+    "--dsw-alias-state-warn-label",
+    "--dsw-alias-switch-thumb",
+    "--dsw-focus-ring-color",
+    "--dsw-focus-ring-width",
+    "--dsw-radius-lg",
+    "--dsw-radius-md",
+    "--dsw-radius-sm",
+    "--dsw-radius-xl",
+    "--dsw-radius-xs"
+   ],
+   "specimens": [
+    {
+     "label": "折叠态：模型 ID / 显示名称",
+     "note": "展开箭头走 aria-expanded，删除按钮带红色悬停",
+     "html": "<div style='width:520px'><div class=\"modelEntry\"><div class=\"modelRow\"><input class=\"input\" type=\"text\" value=\"deepseek-chat\" aria-label=\"模型 ID 1\"><input class=\"input\" type=\"text\" placeholder=\"显示名称\" aria-label=\"显示名称 1\"><button type=\"button\" class=\"iconButton\" aria-label=\"模型选项 1\" aria-expanded=\"false\" title=\"模型选项\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4' stroke='currentColor'/></svg></button><button type=\"button\" class=\"iconButton iconButtonDanger\" aria-label=\"删除模型 1\" title=\"删除模型\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M1.28149 3.88831H14.7187' stroke='currentColor'/><path d='M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833' stroke='currentColor'/><path d='M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831' stroke='currentColor'/><path d='M6.44946 6.98926V11.1238' stroke='currentColor'/><path d='M9.55054 6.98926V11.1238' stroke='currentColor'/></svg></button></div></div></div>"
+    },
+    {
+     "label": "展开态：容量 + 输入类型",
+     "note": "只剩一项输入类型时该项复选框禁用",
+     "html": "<div style='width:520px'><div class=\"modelEntry\"><div class=\"modelRow\"><input class=\"input\" type=\"text\" value=\"deepseek-chat\" aria-label=\"模型 ID 1\"><input class=\"input\" type=\"text\" placeholder=\"显示名称\" aria-label=\"显示名称 1\"><button type=\"button\" class=\"iconButton\" aria-label=\"模型选项 1\" aria-expanded=\"true\" title=\"模型选项\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button><button type=\"button\" class=\"iconButton iconButtonDanger\" aria-label=\"删除模型 1\" title=\"删除模型\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M1.28149 3.88831H14.7187' stroke='currentColor'/><path d='M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833' stroke='currentColor'/><path d='M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831' stroke='currentColor'/><path d='M6.44946 6.98926V11.1238' stroke='currentColor'/><path d='M9.55054 6.98926V11.1238' stroke='currentColor'/></svg></button></div><div class=\"modelAdvanced\"><label class=\"modelField\"><span class=\"modelFieldLabel\">上下文窗口</span><input class=\"input\" type=\"text\" inputmode=\"numeric\" value=\"256K\" placeholder=\"256K\" aria-label=\"上下文窗口 1\"></label><label class=\"modelField\"><span class=\"modelFieldLabel\">最大输出 token 数</span><input class=\"input\" type=\"text\" inputmode=\"numeric\" value=\"\" placeholder=\"32K\" aria-label=\"最大输出 token 数 1\"></label><fieldset class=\"modelInputTypes\" aria-label=\"输入类型 1\"><legend class=\"modelFieldLabel\">输入类型</legend><div class=\"modelInputChoices\"><label class=\"checkbox\"><input type=\"checkbox\" checked disabled><span>文本</span></label><label class=\"checkbox\"><input type=\"checkbox\"><span>图片</span></label></div></fieldset></div></div></div>"
+    },
+    {
+     "label": "展开态（声明路由）：附加推理等级",
+     "note": "只有 reasoningLevels 非空时才渲染最后这一组",
+     "html": "<div style='width:520px'><div class=\"modelEntry\"><div class=\"modelRow\"><input class=\"input\" type=\"text\" value=\"relay/DeepSeek-V4.1-Flash\" aria-label=\"模型 ID 1\"><input class=\"input\" type=\"text\" placeholder=\"显示名称\" aria-label=\"显示名称 1\"><button type=\"button\" class=\"iconButton\" aria-label=\"模型选项 1\" aria-expanded=\"true\" title=\"模型选项\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button><button type=\"button\" class=\"iconButton iconButtonDanger\" aria-label=\"删除模型 1\" title=\"删除模型\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M1.28149 3.88831H14.7187' stroke='currentColor'/><path d='M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833' stroke='currentColor'/><path d='M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831' stroke='currentColor'/><path d='M6.44946 6.98926V11.1238' stroke='currentColor'/><path d='M9.55054 6.98926V11.1238' stroke='currentColor'/></svg></button></div><div class=\"modelAdvanced\"><label class=\"modelField\"><span class=\"modelFieldLabel\">上下文窗口</span><input class=\"input\" type=\"text\" inputmode=\"numeric\" value=\"256K\" placeholder=\"256K\" aria-label=\"上下文窗口 1\"></label><label class=\"modelField\"><span class=\"modelFieldLabel\">最大输出 token 数</span><input class=\"input\" type=\"text\" inputmode=\"numeric\" value=\"64K\" placeholder=\"32K\" aria-label=\"最大输出 token 数 1\"></label><fieldset class=\"modelInputTypes\" aria-label=\"输入类型 1\"><legend class=\"modelFieldLabel\">输入类型</legend><div class=\"modelInputChoices\"><label class=\"checkbox\"><input type=\"checkbox\" checked><span>文本</span></label><label class=\"checkbox\"><input type=\"checkbox\" checked><span>图片</span></label></div></fieldset><div class=\"modelReasoning\" role=\"group\" aria-label=\"推理等级 1\"><div class=\"modelReasoningHead\"><span class=\"modelFieldLabel modelReasoningLabel\">推理等级<button type=\"button\" class=\"helpButton\" aria-label=\"推理等级说明\">?</button></span><button type=\"button\" role=\"switch\" aria-checked=\"true\" aria-label=\"推理等级 1\" class=\"switch\"><span class=\"thumb\"></span></button></div><div class=\"modelReasoningRow\" aria-hidden=\"true\"><span class=\"modelFieldLabel\">档位</span><span class=\"modelFieldLabel\">API 参数值</span></div><div class=\"modelReasoningRow\"><select class=\"input selectInput\" aria-label=\"档位 1\"><option value=\"off\" selected>off</option><option value=\"low\">low</option></select><input class=\"input modelReasoningValueInput\" type=\"text\" value=\"\" placeholder=\"关闭思考\" aria-label=\"off API 参数值\" disabled><button type=\"button\" class=\"iconButton iconButtonDanger\" aria-label=\"删除档位 off\" title=\"删除档位\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M1.28149 3.88831H14.7187' stroke='currentColor'/><path d='M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833' stroke='currentColor'/><path d='M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831' stroke='currentColor'/><path d='M6.44946 6.98926V11.1238' stroke='currentColor'/><path d='M9.55054 6.98926V11.1238' stroke='currentColor'/></svg></button></div><div class=\"modelReasoningRow\"><select class=\"input selectInput\" aria-label=\"档位 2\"><option value=\"off\">off</option><option value=\"low\" selected>low</option></select><input class=\"input modelReasoningValueInput\" type=\"text\" value=\"low\" placeholder=\"low\" aria-label=\"low API 参数值\"><button type=\"button\" class=\"iconButton iconButtonDanger\" aria-label=\"删除档位 low\" title=\"删除档位\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M1.28149 3.88831H14.7187' stroke='currentColor'/><path d='M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833' stroke='currentColor'/><path d='M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831' stroke='currentColor'/><path d='M6.44946 6.98926V11.1238' stroke='currentColor'/><path d='M9.55054 6.98926V11.1238' stroke='currentColor'/></svg></button></div><button type=\"button\" class=\"addModelButton\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M8 2V14' stroke='currentColor'/><path d='M2 8H14' stroke='currentColor'/></svg>添加档位</button></div></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "model",
+     "type": "DeepSeekModelDraft",
+     "default": "—",
+     "desc": "这一行的草稿字段，含本行不编辑但必须保住的键。"
+    },
+    {
+     "name": "position",
+     "type": "number",
+     "default": "—",
+     "desc": "从 1 开始的行号，用于每个控件的无障碍名称。"
+    },
+    {
+     "name": "inputField",
+     "type": "'inputModalities' | 'input'",
+     "default": "—",
+     "desc": "输入类型写回哪个字段名：DeepSeek 用 inputModalities，pi-ai 用 input。"
+    },
+    {
+     "name": "inputFallback",
+     "type": "readonly string[] | undefined",
+     "default": "—",
+     "desc": "行内没有声明输入类型时显示的继承值（已装目录或路由默认）。"
+    },
+    {
+     "name": "inputLoading",
+     "type": "boolean | undefined",
+     "default": "—",
+     "desc": "默认值还在取时禁用输入类型复选框。"
+    },
+    {
+     "name": "reasoningLevels",
+     "type": "readonly string[] | undefined",
+     "default": "—",
+     "desc": "可声明的推理档位；缺失或为空则不渲染推理等级组。"
+    },
+    {
+     "name": "expanded",
+     "type": "boolean",
+     "default": "—",
+     "desc": "是否展开高级区；箭头图标随它切换。"
+    },
+    {
+     "name": "disabled",
+     "type": "boolean",
+     "default": "—",
+     "desc": "只读或保存中时禁用全部控件。"
+    },
+    {
+     "name": "t",
+     "type": "(key: ModelsKey) => string",
+     "default": "—",
+     "desc": "本节文案。"
+    },
+    {
+     "name": "contextWindow",
+     "type": "CapacityInput",
+     "default": "—",
+     "desc": "上下文窗口的文本、占位与回调（K/M 后缀按 1000 计）。"
+    },
+    {
+     "name": "maxTokens",
+     "type": "CapacityInput",
+     "default": "—",
+     "desc": "最大输出 token 数的文本、占位与回调。"
+    },
+    {
+     "name": "onFieldChange",
+     "type": "(field: 'id' | 'name', value: string | undefined) => void",
+     "default": "—",
+     "desc": "改写 ID 或显示名称；显示名称清空时写 undefined（即删除字段）。"
+    },
+    {
+     "name": "onIdBlur",
+     "type": "((value: string) => void) | undefined",
+     "default": "—",
+     "desc": "ID 失焦时回调，用于按 ID 补默认值。"
+    },
+    {
+     "name": "onChange",
+     "type": "(model: DeepSeekModelDraft) => void",
+     "default": "—",
+     "desc": "替换整行（输入类型与推理等级走这里）。"
+    },
+    {
+     "name": "onToggle",
+     "type": "() => void",
+     "default": "—",
+     "desc": "展开/折叠高级区。"
+    },
+    {
+     "name": "onRemove",
+     "type": "() => void",
+     "default": "—",
+     "desc": "删除这一行。"
+    }
+   ],
+   "notes": "这一行是 DeepSeek 与 pi-ai 两个目录编辑器唯一的公共字段实现，差异靠 <code>inputField</code> 与 <code>reasoningLevels</code> 两个 prop 注入。输入类型至少保留一项：只剩一项时该复选框 <code>disabled</code>；DeepSeek 布局下取消「图片」会顺带删掉 <code>imagePixelBudget</code> 与 <code>imageMaxBytes</code>（它的请求上限只对图片模型成立）。容量字段按文本编辑，空值不写字段而是显示占位，占位只是提示（<code>256K</code> 存 256000，留空则沿用适配器的 262144）。展开区渲染与否由父级持有的 <code>expanded</code> 决定，行本身不存状态。",
+   "keywords": [
+    "模型行",
+    "模型 ID",
+    "上下文窗口",
+    "最大输出 token",
+    "输入类型",
+    "model row"
+   ]
+  },
+  {
+   "id": "onboarding-modal",
+   "name": "OnboardingModal",
+   "exportName": "OnboardingModal",
+   "zh": "首启弹窗",
+   "group": "settings",
+   "summary": "本插件每个首启步骤共用的弹窗外壳：遮罩、卡片与 Escape/遮罩关闭来自 <code>Modal</code>，但走 <code>headless</code> 模式，没有默认标题行与关闭按钮——卡片内容由本组件自己排版。卡片宽 <code>min(600px,100%)</code>、内边距 0、内容区 28px 内边距（≤560px 时 24px）并可纵向滚动；标题 20/28/500 一级色且 <code>outline: none</code>，正文与标题相隔 20px。挂载时把 <code>#root</code> 设为 <code>inert</code>（卸载恢复），所以这一步是真正阻塞的。示例里的正文是随包发布的官方 DeepSeek 步骤（说明 + 只收密钥的 <code>ProviderEditor</code>）。",
+   "source": "packages/client/ui-settings-models/src/client/OnboardingModal.tsx#L17",
+   "css": [
+    "packages/client/ui-settings-models/src/client/OnboardingModal.module.css",
+    "packages/client/ui-primitives/src/Modal.module.css",
+    "packages/client/ui-settings-models/src/client/DeepSeekOnboardingDialog.module.css",
+    "packages/client/ui-settings-models/src/client/ModelsSection.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-layer-1",
+    "--dsw-alias-bg-layer-2",
+    "--dsw-alias-bg-mask-1",
+    "--dsw-alias-bg-module-platform",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-border-l3",
+    "--dsw-alias-border-l4",
+    "--dsw-alias-button-primary-fill",
+    "--dsw-alias-button-primary-hover",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-interactive-bg-hover-danger",
+    "--dsw-alias-interactive-bg-hover-solid",
+    "--dsw-alias-label-dimmed",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-primary-foreground",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-scrollbar-bg-l2",
+    "--dsw-alias-scrollbar-hover-l2",
+    "--dsw-alias-settings-card-fill",
+    "--dsw-alias-settings-card-stroke",
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-state-error-primary",
+    "--dsw-alias-state-success-primary",
+    "--dsw-alias-state-warn-label",
+    "--dsw-elevation-prominent",
+    "--dsw-focus-ring-color",
+    "--dsw-focus-ring-width",
+    "--dsw-mask-blur",
+    "--dsw-radius-lg",
+    "--dsw-radius-md",
+    "--dsw-radius-panel",
+    "--dsw-radius-sm",
+    "--dsw-radius-xl",
+    "--dsw-radius-xs"
+   ],
+   "specimens": [
+    {
+     "label": "首启步骤：说明 + API 密钥编辑器",
+     "note": "静态快照；正文来自随包的 DeepSeek 步骤，密钥未填时显示环境凭据提示",
+     "html": "<div style='width:680px'><div class=\"c1-root snapshotStatic\" role='presentation'><div class=\"c1-mask\" aria-hidden=\"true\"></div><div class=\"c0-dialog c1-dialog\" role=\"dialog\" aria-modal=\"true\" aria-label=\"添加一个 API Key 开始使用\"><div class=\"c0-content\"><h2 class=\"c0-title\" tabindex=\"-1\">添加一个 API Key 开始使用</h2><div class=\"c0-body\"><p class=\"c2-description\">配置 DeepSeek 官方模型，即可开始使用。</p><div class=\"c2-editor\"><div class=\"addBlock\"><div class=\"field\"><span class=\"fieldLabel\">API 密钥<button type=\"button\" class=\"helpButton\" aria-label=\"认证说明\">?</button></span><div class=\"keyInput\"><input class=\"input\" type=\"password\" placeholder=\"输入 API 密钥\" aria-label=\"API 密钥\" aria-describedby=\"deepseek-official-credential-hint\" required></div><p id=\"deepseek-official-credential-hint\" class=\"savedNotice\">已检测到环境变量（DEEPSEEK_API_KEY）</p></div><div class=\"editorActions\"><button type=\"button\" class=\"secondaryButton\">稍后配置</button><button type=\"button\" class=\"primaryButton\" disabled>保存并继续</button></div></div></div></div></div></div></div></div>",
+     "css": "/* 静态快照：Modal 的 .root 在真实产品里 portal 到 body 并用 fixed 铺满视口。\n   这里改成文档流内的相对定位，同时保留它作为 .mask 绝对定位子层的包含块。\n   .content/.title/.body 在 Modal 与 OnboardingModal 里同名，headless 模式只渲染后者，\n   所以用 c0- 前缀把这三处钉在 OnboardingModal 自己的那份规则上。 */\n.c1-root.snapshotStatic { position: relative; inset: auto; }"
+    },
+    {
+     "label": "校验失败：密钥格式错误，保存禁用",
+     "note": "输入框 aria-invalid，主按钮在错误清除前保持禁用",
+     "html": "<div style='width:680px'><div class=\"c1-root snapshotStatic\" role='presentation'><div class=\"c1-mask\" aria-hidden=\"true\"></div><div class=\"c0-dialog c1-dialog\" role=\"dialog\" aria-modal=\"true\" aria-label=\"添加一个 API Key 开始使用\"><div class=\"c0-content\"><h2 class=\"c0-title\" tabindex=\"-1\">添加一个 API Key 开始使用</h2><div class=\"c0-body\"><p class=\"c2-description\">配置 DeepSeek 官方模型，即可开始使用。</p><div class=\"c2-editor\"><div class=\"addBlock\"><div class=\"field\"><span class=\"fieldLabel\">API 密钥<button type=\"button\" class=\"helpButton\" aria-label=\"认证说明\">?</button></span><div class=\"keyInput\"><input class=\"input keyInputFilled\" type=\"password\" value=\"sk-abc 123\" aria-label=\"API 密钥\" aria-invalid=\"true\" required><button type=\"button\" class=\"keyToggle\" aria-label=\"显示密钥\" aria-pressed=\"false\"><svg width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.3' stroke-linecap='round' aria-hidden='true'><path d='M1.5 8C2.9 5.25 5.25 3.5 8 3.5C10.75 3.5 13.1 5.25 14.5 8C13.1 10.75 10.75 12.5 8 12.5C5.25 12.5 2.9 10.75 1.5 8ZM10 8C10 9.1 9.1 10 8 10C6.9 10 6 9.1 6 8C6 6.9 6.9 6 8 6C9.1 6 10 6.9 10 8Z'/></svg></button></div><p class=\"error\">该 API 密钥格式错误，请检查。</p></div><div class=\"editorActions\"><button type=\"button\" class=\"secondaryButton\">稍后配置</button><button type=\"button\" class=\"primaryButton\" disabled>保存并继续</button></div></div></div></div></div></div></div></div>",
+     "css": "/* 静态快照：同上一例，Modal 的 .root 改回文档流内的相对定位。 */\n.c1-root.snapshotStatic { position: relative; inset: auto; }"
+    }
+   ],
+   "props": [
+    {
+     "name": "title",
+     "type": "string",
+     "default": "—",
+     "desc": "弹窗标题：既渲染成可见的 h2，也作为对话框的 aria-label。"
+    },
+    {
+     "name": "focusTitle",
+     "type": "boolean",
+     "default": "false",
+     "desc": "步骤没有表单控件时把标题设成 tabindex=-1 并聚焦它；标题本身没有可见焦点环。"
+    },
+    {
+     "name": "children",
+     "type": "ReactNode",
+     "default": "—",
+     "desc": "步骤自己的正文与动作行，渲染在标题下方 20px 处。"
+    }
+   ],
+   "notes": "弹窗不可隐式关闭：<code>onClose</code> 传的是空函数，遮罩点击与 Escape 都不会关掉它，所以只有步骤自己的动作能结束这一步（本包里的步骤会调 <code>complete()</code>）。挂载时把 <code>#root</code> 设为 <code>inert</code>，卸载时恢复原值——这是「阻塞」的实现方式，也意味着同一时刻只应有一个步骤在渲染。Escape 与遮罩仍会阻止背景滚动/点击；卡片高度上限是视口的 100%，内容区自己滚动，所以很长的说明不会把底部动作挤出屏幕。",
+   "keywords": [
+    "首启",
+    "引导弹窗",
+    "onboarding",
+    "inert",
+    "API Key",
+    "阻塞弹窗"
+   ]
+  },
+  {
+   "id": "provider-editor",
+   "name": "ProviderEditor",
+   "exportName": "ProviderEditor",
+   "zh": "提供商编辑卡",
+   "group": "settings",
+   "summary": "一个提供商的编辑卡：R16 的 <code>--dsw-alias-bg-module-platform</code> 内嵌面（内边距 14/16、行距 14px），首行是 14/22/500 的显示名加 12/18 三级色的路由 id。字段按家族给出——DeepSeek 是 API 密钥 + API 地址 + 模型目录，pi-ai 的手写路由还多显示名称与 API 协议；密钥输入是 32px 的密码框（填了内容时右内边距 40px，并长出一枚 32px 的眼睛按钮，可用时高度 <code>inset: 1px 1px 1px auto</code>）。「自定义设置」是真实的 <code>details/summary</code>：摘要 12/18/500 带一个用边框画的小箭头（打开时旋转 45°），展开区 <code>.customizedBody</code> 本身没有边框，先排字段；更靠里的模型目录 <code>.modelCatalog</code> 才带一条 0.5px <code>--dsw-alias-border-l2</code> 上边框。页脚是右对齐的两个 36px 按钮（取消 / 保存，R12（<code>--dsw-radius-md</code>）），保存按钮在只读、未知命名空间、模型行或密钥校验失败时禁用。",
+   "source": "packages/client/ui-settings-models/src/client/ProviderEditor.tsx#L179",
+   "css": [
+    "packages/client/ui-settings-models/src/client/ModelsSection.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-layer-1",
+    "--dsw-alias-bg-module-platform",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-border-l3",
+    "--dsw-alias-border-l4",
+    "--dsw-alias-button-primary-fill",
+    "--dsw-alias-button-primary-hover",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-interactive-bg-hover-danger",
+    "--dsw-alias-interactive-bg-hover-solid",
+    "--dsw-alias-label-dimmed",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-primary-foreground",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-scrollbar-bg-l2",
+    "--dsw-alias-scrollbar-hover-l2",
+    "--dsw-alias-settings-card-fill",
+    "--dsw-alias-settings-card-stroke",
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-state-error-primary",
+    "--dsw-alias-state-success-primary",
+    "--dsw-alias-state-warn-label",
+    "--dsw-focus-ring-color",
+    "--dsw-focus-ring-width",
+    "--dsw-radius-lg",
+    "--dsw-radius-md",
+    "--dsw-radius-sm",
+    "--dsw-radius-xl",
+    "--dsw-radius-xs"
+   ],
+   "specimens": [
+    {
+     "label": "DeepSeek 家族：密钥 + 展开的自定义设置",
+     "note": "真实 details[open]；密钥留空时继承已保存凭据",
+     "html": "<div style='width:640px'><div class=\"editor\"><div class=\"editorHeader\"><span class=\"editorTitle\">DeepSeek</span><span class=\"editorRoute\">deepseek-official</span></div><div class=\"field\"><span class=\"fieldLabel\">API 密钥<button type=\"button\" class=\"helpButton\" aria-label=\"认证说明\">?</button></span><div class=\"keyInput\"><input class=\"input\" type=\"password\" placeholder=\"留空使用已保存凭据\" aria-label=\"API 密钥\"></div><p class=\"savedNotice\">已检测到环境变量（DEEPSEEK_API_KEY）</p></div><details class=\"customized\" open><summary class=\"customizedSummary\">自定义设置</summary><div class=\"customizedBody\"><div class=\"field\"><span class=\"fieldLabel\">API 地址</span><input class=\"input\" type=\"text\" value=\"\" placeholder=\"https://api.deepseek.com/anthropic（默认使用环境 DEEPSEEK_BASE_URL）\" aria-label=\"API 地址\" aria-describedby=\"deepseek-official-endpoint-hint\"><span id=\"deepseek-official-endpoint-hint\" class=\"advancedHint\">请填写兼容 Anthropic Messages 协议的 API 地址。</span></div><section class=\"modelCatalog\" aria-label=\"模型目录\"><div class=\"modelListHead\"><div class=\"modelCatalogHeading\"><span class=\"modelCatalogTitle\">模型目录</span><span class=\"modelCatalogMeta\">正在使用适配器默认模型</span></div></div><p class=\"modelEmpty\">模型选择器中将不显示任何模型；目录外 ID 仍可直接发送。</p><button type=\"button\" class=\"addModelButton\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M8 2V14' stroke='currentColor'/><path d='M2 8H14' stroke='currentColor'/></svg>添加模型</button></section></div></details><div class=\"editorActions\"><button type=\"button\" class=\"secondaryButton\">取消</button><button type=\"button\" class=\"primaryButton\">保存</button></div></div></div>"
+    },
+    {
+     "label": "手写 pi-ai 路由：显示名称 / 协议 / 模型列表",
+     "note": "密钥一填就隐藏环境提示行；模型行校验失败时页脚给出「模型 N: …」并把保存禁用",
+     "html": "<div style='width:640px'><div class=\"editor\"><div class=\"editorHeader\"><span class=\"editorTitle\">中转站</span><span class=\"editorRoute\">relay-gateway</span></div><div class=\"field\"><span class=\"fieldLabel\">API 密钥<button type=\"button\" class=\"helpButton\" aria-label=\"认证说明\">?</button></span><div class=\"keyInput\"><input class=\"input keyInputFilled\" type=\"password\" value=\"sk-4f8c2a91b7de\" aria-label=\"API 密钥\"><button type=\"button\" class=\"keyToggle\" aria-label=\"显示密钥\" aria-pressed=\"false\"><svg width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.3' stroke-linecap='round' aria-hidden='true'><path d='M1.5 8C2.9 5.25 5.25 3.5 8 3.5C10.75 3.5 13.1 5.25 14.5 8C13.1 10.75 10.75 12.5 8 12.5C5.25 12.5 2.9 10.75 1.5 8ZM10 8C10 9.1 9.1 10 8 10C6.9 10 6 9.1 6 8C6 6.9 6.9 6 8 6C9.1 6 10 6.9 10 8Z'/></svg></button></div></div><details class=\"customized\" open><summary class=\"customizedSummary\">自定义设置</summary><div class=\"customizedBody\"><div class=\"field\"><span class=\"fieldLabel\">显示名称</span><input class=\"input\" type=\"text\" value=\"\" placeholder=\"relay-gateway\" aria-label=\"显示名称\"></div><div class=\"field\"><span class=\"fieldLabel\">API 地址</span><input class=\"input\" type=\"text\" value=\"https://gateway.example/v1\" aria-label=\"API 地址\"></div><div class=\"field\"><span class=\"fieldLabel\">API 协议</span><select class=\"input selectInput\" aria-label=\"API 协议\"><option value=\"openai-completions\" selected>OpenAI Chat Completions</option><option value=\"openai-responses\">OpenAI Responses</option><option value=\"anthropic-messages\">Anthropic Messages</option></select></div><section class=\"modelCatalog\" aria-label=\"模型目录\"><div class=\"modelListHead\"><div class=\"modelCatalogHeading\"><span class=\"modelCatalogTitle\">模型目录</span><span class=\"modelCatalogMeta\">已自定义模型目录</span></div><button type=\"button\" class=\"linkButton\">恢复默认模型</button><button type=\"button\" class=\"linkButton\">获取可用模型</button></div><div class=\"modelList\"><div class=\"modelEntry\"><div class=\"modelRow\"><input class=\"input\" type=\"text\" value=\"relay/DeepSeek-V4.1-Flash\" aria-label=\"模型 ID 1\"><input class=\"input\" type=\"text\" placeholder=\"显示名称\" aria-label=\"显示名称 1\"><button type=\"button\" class=\"iconButton\" aria-label=\"模型选项 1\" aria-expanded=\"false\" title=\"模型选项\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4' stroke='currentColor'/></svg></button><button type=\"button\" class=\"iconButton iconButtonDanger\" aria-label=\"删除模型 1\" title=\"删除模型\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M1.28149 3.88831H14.7187' stroke='currentColor'/><path d='M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833' stroke='currentColor'/><path d='M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831' stroke='currentColor'/><path d='M6.44946 6.98926V11.1238' stroke='currentColor'/><path d='M9.55054 6.98926V11.1238' stroke='currentColor'/></svg></button></div></div><div class=\"modelEntry\"><div class=\"modelRow\"><input class=\"input\" type=\"text\" value=\"\" aria-label=\"模型 ID 2\"><input class=\"input\" type=\"text\" placeholder=\"显示名称\" aria-label=\"显示名称 2\"><button type=\"button\" class=\"iconButton\" aria-label=\"模型选项 2\" aria-expanded=\"false\" title=\"模型选项\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4' stroke='currentColor'/></svg></button><button type=\"button\" class=\"iconButton iconButtonDanger\" aria-label=\"删除模型 2\" title=\"删除模型\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M1.28149 3.88831H14.7187' stroke='currentColor'/><path d='M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833' stroke='currentColor'/><path d='M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831' stroke='currentColor'/><path d='M6.44946 6.98926V11.1238' stroke='currentColor'/><path d='M9.55054 6.98926V11.1238' stroke='currentColor'/></svg></button></div></div></div><button type=\"button\" class=\"addModelButton\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M8 2V14' stroke='currentColor'/><path d='M2 8H14' stroke='currentColor'/></svg>添加模型</button></section></div></details><p class=\"advancedHint\">模型 2: 模型 ID 不能为空。</p><div class=\"editorActions\"><button type=\"button\" class=\"secondaryButton\">取消</button><button type=\"button\" class=\"primaryButton\" disabled>保存</button></div></div></div>"
+    },
+    {
+     "label": "未知命名空间：只留一行提示",
+     "note": "没有可编辑字段时保存按钮始终禁用",
+     "html": "<div style='width:640px'><div class=\"editor\"><div class=\"editorHeader\"><span class=\"editorTitle\">第三方提供商</span><span class=\"editorRoute\">llm-third-party</span></div><p class=\"advancedHint\">其余字段在 cordis.patch.yml 中，请直接编辑对应段。(llm-third-party)</p><div class=\"editorActions\"><button type=\"button\" class=\"secondaryButton\">取消</button><button type=\"button\" class=\"primaryButton\" disabled>保存</button></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "provider",
+     "type": "string",
+     "default": "—",
+     "desc": "提供商路由 id。"
+    },
+    {
+     "name": "displayName",
+     "type": "string",
+     "default": "—",
+     "desc": "卡片标题；与 provider 不同时右侧补一行路由 id。"
+    },
+    {
+     "name": "hideTitle",
+     "type": "boolean",
+     "default": "—",
+     "desc": "隐藏标题行（新建卡片自己画提供商选择器时用）。"
+    },
+    {
+     "name": "declared",
+     "type": "boolean",
+     "default": "—",
+     "desc": "适配器是否把这路由报告为手写路由；手写 pi-ai 路由才有显示名称与 API 协议两个字段。"
+    },
+    {
+     "name": "namespace",
+     "type": "SettingsNamespaceView",
+     "default": "—",
+     "desc": "所属命名空间视图：schema、各层值与 revision。"
+    },
+    {
+     "name": "schema",
+     "type": "SettingsSchemaOperations",
+     "default": "—",
+     "desc": "同步的 schema 读取与不可变路径操作。"
+    },
+    {
+     "name": "settingsPath",
+     "type": "readonly string[]",
+     "default": "—",
+     "desc": "从段根到这个提供商配置的路径。"
+    },
+    {
+     "name": "operations",
+     "type": "ModelsOperations",
+     "default": "—",
+     "desc": "写设置、写凭据与探测模型用的 Host 操作面。"
+    },
+    {
+     "name": "defaultBaseURL",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "配置没写 baseURL 时路由实际使用的地址。"
+    },
+    {
+     "name": "baseURLEnv",
+     "type": "readonly string[] | undefined",
+     "default": "—",
+     "desc": "提供方用来构造地址的环境变量名。"
+    },
+    {
+     "name": "nativeAuth",
+     "type": "LlmNativeAuth | undefined",
+     "default": "—",
+     "desc": "配置没指定凭据引用时路由自己的鉴权方式。"
+    },
+    {
+     "name": "credential",
+     "type": "CredentialInfo | undefined",
+     "default": "—",
+     "desc": "配置引用的那枚凭据的脱敏状态。"
+    },
+    {
+     "name": "credentialChecks",
+     "type": "Readonly<Record<string, CredentialInfo>> | undefined",
+     "default": "—",
+     "desc": "按引用名或原生变量名给出的脱敏检查结果。"
+    },
+    {
+     "name": "t",
+     "type": "(key: keyof typeof en) => string",
+     "default": "—",
+     "desc": "settings.models 文案。"
+    },
+    {
+     "name": "readOnly",
+     "type": "boolean",
+     "default": "—",
+     "desc": "部署是否只读；为真时禁用全部写入。"
+    },
+    {
+     "name": "credentialOnly",
+     "type": "boolean",
+     "default": "—",
+     "desc": "只渲染凭据字段与动作（首启步骤复用这张卡时用）。"
+    },
+    {
+     "name": "credentialRequired",
+     "type": "boolean",
+     "default": "—",
+     "desc": "必须在本次提交里新输入一枚凭据才允许保存。"
+    },
+    {
+     "name": "autoFocusCredential",
+     "type": "boolean",
+     "default": "—",
+     "desc": "挂载时给凭据字段初始焦点。"
+    },
+    {
+     "name": "cancelLabelKey",
+     "type": "keyof typeof en | undefined",
+     "default": "'cancel'",
+     "desc": "覆盖取消动作文案（首启用「稍后配置」）。"
+    },
+    {
+     "name": "submitLabelKey",
+     "type": "keyof typeof en | undefined",
+     "default": "'apply'",
+     "desc": "覆盖提交文案。"
+    },
+    {
+     "name": "submitBusyLabelKey",
+     "type": "keyof typeof en | undefined",
+     "default": "'applying'",
+     "desc": "覆盖提交中的文案。"
+    },
+    {
+     "name": "onClose",
+     "type": "(changed: boolean) => void",
+     "default": "—",
+     "desc": "关闭卡片；changed 表示本次是否真的保存过。"
+    },
+    {
+     "name": "onSubmitCredential",
+     "type": "(() => void) | undefined",
+     "default": "—",
+     "desc": "保存开始前回调（用于埋点）。"
+    },
+    {
+     "name": "onBusyChange",
+     "type": "((busy: boolean) => void) | undefined",
+     "default": "—",
+     "desc": "上报保存或目录探测是否在飞行中。"
+    }
+   ],
+   "notes": "密钥是 write-only：已保存的凭据从不回显到输入框，留空即表示沿用已存的那枚；输入框下方那行提示按凭据状态换三套颜色（<code>.notice</code> 缺失、<code>.advancedHint</code> 未确认、<code>.savedNotice</code> 已确认）。写设置走的是路径级 <code>set</code>/<code>unset</code>，只提交这张卡看得见的字段，其余仍归 <code>cordis.patch.yml</code>；pi-ai 路由只有在本次真的要存密钥时才会补写 <code>apiKeyEnv</code>。配置路径解析不出来时整张卡换成一行错误 <code>「{provider}: 无法解析设置路径」</code>，而不是空白卡。提供商级别的推理强度是刻意没有的（它是每个模型各自的能力），所以这一层不出现相关控件。",
+   "keywords": [
+    "提供商",
+    "provider",
+    "API 密钥",
+    "自定义设置",
+    "baseURL",
+    "API 协议",
+    "cordis.patch.yml"
+   ]
+  },
+  {
+   "id": "welcome-notice",
+   "name": "WelcomeNotice",
+   "exportName": "WelcomeNotice",
+   "zh": "预览版说明",
+   "group": "settings",
+   "summary": "产品级的版本化预览说明，作为 <code>settings.onboarding</code> 的一个步骤由 shell 挂载：它自己包一层 <code>OnboardingModal</code>，所以外观就是那张 600px 弹窗——标题 20/28/500，正文 14/24 二级色、段间距 12px，底部右对齐一枚主按钮（<code>min-width: 120px</code>，≤560px 时整宽）。正文按 <code>\\n\\n</code> 拆成多个 <code>&lt;p&gt;</code>。保存失败时在按钮上方 16px 处补一条 <code>role=\"alert\"</code> 的红色错误；保存中主按钮禁用（不透明度 0.4）。确认状态按文案版本记录，没有确认过就让 shell 一直把这一步留在最前。",
+   "source": "packages/client/ui-settings-models/src/client/WelcomeNotice.tsx#L34",
+   "css": [
+    "packages/client/ui-settings-models/src/client/WelcomeNotice.module.css",
+    "packages/client/ui-settings-models/src/client/OnboardingModal.module.css",
+    "packages/client/ui-primitives/src/Modal.module.css",
+    "packages/client/ui-primitives/src/Button.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-layer-2",
+    "--dsw-alias-bg-mask-1",
+    "--dsw-alias-border-l3",
+    "--dsw-alias-button-primary-fill",
+    "--dsw-alias-button-primary-hover",
+    "--dsw-alias-button-tool-bar-fill",
+    "--dsw-alias-button-tool-bar-hover",
+    "--dsw-alias-interactive-bg-active",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-primary-foreground",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-state-error-primary",
+    "--dsw-elevation-prominent",
+    "--dsw-mask-blur",
+    "--dsw-radius-md",
+    "--dsw-radius-panel",
+    "--dsw-radius-sm"
+   ],
+   "specimens": [
+    {
+     "label": "默认态：两段说明 + 继续",
+     "note": "静态快照；标题即 aria-label，步骤未确认前不会被跳过",
+     "html": "<div style='width:680px'><div class=\"c2-root snapshotStatic\" role='presentation'><div class=\"c2-mask\" aria-hidden=\"true\"></div><div class=\"c1-dialog c2-dialog\" role=\"dialog\" aria-modal=\"true\" aria-label=\"预览版说明\"><div class=\"c1-content\"><h2 class=\"c1-title\" tabindex=\"-1\">预览版说明</h2><div class=\"c1-body\"><div class=\"copy\"><p>DeepSeek Harness 目前的 0.2 版本仍处于预览阶段，还有许多地方需要持续改进和打磨，希望听取广大开发者和用户的反馈建议。现在，新的桌面端面向广泛用户，开发者相关的进阶功能可在配置中开启使用。预计 DeepSeek Harness 的产品功能以及插件 API 都会继续快速迭代、持续演化，并逐渐趋于稳定。</p><p>我们期待与全球用户和开发者一起，在开源、可复用、可组合的基础设施之上，共同探索智能上限。欢迎大家用 DeepSeek Harness 将想法变成现实，与社区一起丰富插件生态。</p></div><div class=\"actions\"><button type=\"button\" class=\"button c0-primary c3-primary md\">继续</button></div></div></div></div></div></div>",
+     "css": "/* 静态快照：Modal 的 .root 在真实产品里 portal 到 body 并用 fixed 铺满视口。\n   这里改成文档流内的相对定位，同时保留它作为 .mask 绝对定位子层的包含块；\n   .content/.title/.body 在 Modal 与 OnboardingModal 里同名，headless 模式只用后者。\n   .primary 同时来自 WelcomeNotice（min-width:120px）与 Button（主色填充），\n   两处前缀都写上，等于生产环境里两个哈希类名同时挂在一个元素上。 */\n.c2-root.snapshotStatic { position: relative; inset: auto; }"
+    },
+    {
+     "label": "保存中：继续按钮禁用",
+     "note": "写入在飞行中时按钮禁用，避免重复确认",
+     "html": "<div style='width:680px'><div class=\"c2-root snapshotStatic\" role='presentation'><div class=\"c2-mask\" aria-hidden=\"true\"></div><div class=\"c1-dialog c2-dialog\" role=\"dialog\" aria-modal=\"true\" aria-label=\"预览版说明\"><div class=\"c1-content\"><h2 class=\"c1-title\" tabindex=\"-1\">预览版说明</h2><div class=\"c1-body\"><div class=\"copy\"><p>DeepSeek Harness 目前的 0.2 版本仍处于预览阶段，还有许多地方需要持续改进和打磨，希望听取广大开发者和用户的反馈建议。</p><p>我们期待与全球用户和开发者一起，在开源、可复用、可组合的基础设施之上，共同探索智能上限。</p></div><div class=\"actions\"><button type=\"button\" class=\"button c0-primary c3-primary md\" disabled>继续</button></div></div></div></div></div></div>",
+     "css": "/* 静态快照：同上一例，Modal 的 .root 改回文档流内的相对定位。 */\n.c2-root.snapshotStatic { position: relative; inset: auto; }"
+    },
+    {
+     "label": "保存失败：错误提示保留弹窗",
+     "note": "role=alert 的红字，弹窗保持打开等用户重试",
+     "html": "<div style='width:680px'><div class=\"c2-root snapshotStatic\" role='presentation'><div class=\"c2-mask\" aria-hidden=\"true\"></div><div class=\"c1-dialog c2-dialog\" role=\"dialog\" aria-modal=\"true\" aria-label=\"预览版说明\"><div class=\"c1-content\"><h2 class=\"c1-title\" tabindex=\"-1\">预览版说明</h2><div class=\"c1-body\"><div class=\"copy\"><p>DeepSeek Harness 目前的 0.2 版本仍处于预览阶段，还有许多地方需要持续改进和打磨，希望听取广大开发者和用户的反馈建议。</p></div><p class=\"error\" role=\"alert\">暂时无法保存确认状态，请重试。</p><div class=\"actions\"><button type=\"button\" class=\"button c0-primary c3-primary md\">继续</button></div></div></div></div></div></div>",
+     "css": "/* 静态快照：同上一例，Modal 的 .root 改回文档流内的相对定位。 */\n.c2-root.snapshotStatic { position: relative; inset: auto; }"
+    }
+   ],
+   "props": [
+    {
+     "name": "complete",
+     "type": "() => void",
+     "default": "—",
+     "desc": "结束这一步并把所有权交给下一个步骤；确认成功或状态已确认时调用（幂等，只生效一次）。"
+    },
+    {
+     "name": "useWelcome",
+     "type": "(select) => WelcomeNoticeState",
+     "default": "—",
+     "desc": "注入的快照选择器，读取 status / acknowledged / error。"
+    },
+    {
+     "name": "controller",
+     "type": "WelcomeNoticeStore",
+     "default": "—",
+     "desc": "确认状态控制器：加载、写入确认、跟踪 Host 段。"
+    },
+    {
+     "name": "t",
+     "type": "(key: keyof typeof en) => string",
+     "default": "—",
+     "desc": "settings.models 文案（标题、正文、按钮与错误都取自它）。"
+    }
+   ],
+   "notes": "只有 <code>status</code> 为 <code>ready</code>/<code>error</code>/<code>saving</code> 且尚未确认时才渲染，<code>idle</code>、<code>loading</code> 与已确认都返回 <code>null</code>（shell 不画自己的外壳，所以决定期间屏幕上什么都没有）。确认成功、或读回来的状态本来就是已确认，都会立刻 <code>complete()</code>；失败则保留弹窗并把 <code>state.error</code> 摆出来重试。它复用了 <code>OnboardingModal</code>，所以 <code>focusTitle</code> 为真、<code>#root</code> 在这期间是 <code>inert</code>。文案按版本号确认：正文改了版本号就会重新弹一次。",
+   "keywords": [
+    "预览版说明",
+    "欢迎提示",
+    "welcome notice",
+    "版本化确认",
+    "首启"
+   ]
+  },
+  {
+   "id": "deepseek-model-label",
+   "name": "DeepSeekModelLabel",
+   "exportName": "DeepSeekModelLabel",
+   "zh": "模型发布标记",
+   "group": "settings",
+   "summary": "模型选择器里的一行显示文本：认得出的官方 Flash 条目会把名称与一枚 <code>Tag</code>（<code>tone=\"info\"</code>，11/17 胶囊、内边距 1/8、圆角 999px、底色是主色 10% 的 <code>color-mix</code>）并排放，外层 <code>.label</code> 用 inline-flex、4px 间距、<code>white-space: nowrap</code> 保证换行时不拆开。其余情况直接返回目录里的名称字符串——没有包装元素、也没有徽标。判定条件三件事同时成立：提供商 id 是 <code>deepseek-account</code> 或 <code>deepseek-official</code>、模型 id 是 <code>deepseek-flash</code>、且名称恰好是 <code>DeepSeek-V4.1-Flash</code>。",
+   "source": "packages/client/ui-deepseek-model-label-1017/src/client/DeepSeekModelLabel.tsx#L14",
+   "css": [
+    "packages/client/ui-deepseek-model-label-1017/src/client/DeepSeekModelLabel.module.css",
+    "packages/client/ui-primitives/src/Tag.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-layer-3",
+    "--dsw-alias-bg-module-platform",
+    "--dsw-alias-border-l4",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-state-error-primary",
+    "--dsw-alias-state-success-primary",
+    "--dsw-alias-state-warn-primary"
+   ],
+   "specimens": [
+    {
+     "label": "官方 Flash 条目：名称 + 1017 徽标",
+     "note": "徽标文案来自本命名空间字典，中英都是「1017」",
+     "html": "<div style='width:320px'><span class=\"label\"><span>DeepSeek-V4.1-Flash</span> <span class=\"tag\" data-tone=\"info\">1017</span></span></div>"
+    },
+    {
+     "label": "未命中：原样返回名称字符串",
+     "note": "非官方路由、或其他模型 id / 名称：没有包装元素，也没有徽标",
+     "html": "<div style='width:320px'><span>DeepSeek-V4.1-Flash</span></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "provider",
+     "type": "{ id: string }",
+     "default": "—",
+     "desc": "当前提供商身份；id 必须是 deepseek-account 或 deepseek-official 才会加徽标。"
+    },
+    {
+     "name": "model",
+     "type": "{ id: string; name: string }",
+     "default": "—",
+     "desc": "当前模型的身份与目录名称；id 为 deepseek-flash 且名称恰为 DeepSeek-V4.1-Flash 才命中。"
+    },
+    {
+     "name": "t",
+     "type": "(key: 'badge.label') => string",
+     "default": "—",
+     "desc": "deepseek-model-label-1017 命名空间的徽标文案。"
+    }
+   ],
+   "notes": "纯展示：宿主目录与当前选中的路由都不受影响，它只改这一行的渲染结果。名称判断是精确相等——目录改了名、或用户在 <code>cordis.patch.yml</code> 里覆盖过显示名，就不会再出现徽标，这是刻意的（徽标只属于这一个发布版本）。未命中时返回的是字符串，因此它不会在 DOM 里留下任何元素，父级排版完全不受影响。回答只在官方提供商上出现，中转站即使模型 id 相同也不打标。",
+   "keywords": [
+    "发布标记",
+    "1017",
+    "DeepSeek-V4.1-Flash",
+    "模型徽标",
+    "release label"
+   ]
+  },
+  {
+   "id": "secret-text",
+   "name": "SecretText",
+   "exportName": "SecretText",
+   "zh": "密钥掩码",
+   "group": "settings",
+   "summary": "会话文本里的一段凭据：外框 <code>.secret</code> 是 inline-flex、等宽字体 <code>0.875em</code>、左右各 2px 外边距。<code>.value</code> 里的掩码字符保留在 DOM 中（可复制、可被读屏读出），但字色透明，改用一张 1ch 宽的星号 SVG 作遮罩平铺——因为字体自带的 <code>*</code> 位置偏高。前缀型密钥前 8 个字符照常可见。可交互文本会在右侧长出一枚 1em 的眼睛按钮（<code>top: -0.125em</code> 与掩码一起抬到行框中线），悬停转一级色，聚焦时是 2px 的 <code>--dsw-focus-ring-color</code> 圆环。",
+   "source": "packages/client/ui-secret-mask/src/client/SecretText.tsx#L48",
+   "css": [
+    "packages/client/ui-secret-mask/src/client/SecretText.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-state-business-primary",
+    "--dsw-focus-ring-color",
+    "--dsw-focus-ring-width",
+    "--dsw-radius-xs"
+   ],
+   "specimens": [
+    {
+     "label": "掩码态：前缀可见 + 显示按钮",
+     "note": "星号块是 1ch 宽的遮罩平铺，字符本身仍在 DOM 里",
+     "html": "<div style='width:420px'>已保存的密钥：<span class=\"secret\" data-secret=\"\"><span class=\"value\"><span>sk-4f8c2a</span><span class=\"mask\">************************</span></span><button type=\"button\" class=\"toggle\" aria-pressed=\"false\" aria-label=\"显示密钥\"><svg class=\"icon\" viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.3\" stroke-linecap=\"round\" aria-hidden=\"true\"><path d=\"M1.5 8C2.9 5.25 5.25 3.5 8 3.5C10.75 3.5 13.1 5.25 14.5 8C13.1 10.75 10.75 12.5 8 12.5C5.25 12.5 2.9 10.75 1.5 8ZM10 8C10 9.1 9.1 10 8 10C6.9 10 6 9.1 6 8C6 6.9 6.9 6 8 6C9.1 6 10 6.9 10 8Z\"/></svg></button></span></div>"
+    },
+    {
+     "label": "已显示：原文 + 隐藏按钮",
+     "note": "眼睛加一道斜杠；同一位置换成另一枚密钥会重新掩码",
+     "html": "<div style='width:420px'>已保存的密钥：<span class=\"secret\" data-secret=\"\"><span class=\"value\">sk-4f8c2a91b7de4c05f18a7b2d93e6c410</span><button type=\"button\" class=\"toggle\" aria-pressed=\"true\" aria-label=\"隐藏密钥\"><svg class=\"icon\" viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.3\" stroke-linecap=\"round\" aria-hidden=\"true\"><path d=\"M1.5 8C2.9 5.25 5.25 3.5 8 3.5C10.75 3.5 13.1 5.25 14.5 8C13.1 10.75 10.75 12.5 8 12.5C5.25 12.5 2.9 10.75 1.5 8ZM2.5 2.5L13.5 13.5\"/></svg></button></span></div>"
+    },
+    {
+     "label": "纯文本内联：没有显示按钮",
+     "note": "interactive 为假时只渲染 .value，掩码规则相同",
+     "html": "<div style='width:420px'>运行时使用的密钥是 <span class=\"secret\" data-secret=\"\"><span class=\"value\"><span>sk-4f8c2a</span><span class=\"mask\">************************</span></span></span>，它来自环境变量 DEEPSEEK_API_KEY。</div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "node",
+     "type": "UserTextNodeProps<'secret'>['node']",
+     "default": "—",
+     "desc": "扫描器给出的密钥节点，data.masked 就是渲染用的掩码文本。"
+    },
+    {
+     "name": "raw",
+     "type": "string",
+     "default": "—",
+     "desc": "这个位置的原文；显示态渲染它，也用它判断是否已换了一枚密钥。"
+    },
+    {
+     "name": "interactive",
+     "type": "boolean",
+     "default": "—",
+     "desc": "是否渲染显示/隐藏按钮；只读文本里为假。"
+    },
+    {
+     "name": "t",
+     "type": "(key: 'secret.reveal' | 'secret.hide') => string",
+     "default": "—",
+     "desc": "secretMask 命名空间的两条无障碍文案。"
+    }
+   ],
+   "notes": "掩码是「每挂载一次、以及同一位置上换成另一个原值」都会重置，因此翻页时不会意外保留显示态——它保存的是当前被显示的那枚原值，而不是一个布尔开关。掩码用 <code>-webkit-text-fill-color: transparent</code> 加 CSS mask 实现，字符本身仍在 DOM 里，复制出来是真实字符。多行密钥的换行会原样保留（每个码点一个星号，换行不遮）。按钮 <code>aria-pressed</code> 反映显示态，无障碍名称在 <code>secretMask</code> 字典的「显示密钥 / 隐藏密钥」之间切换。",
+   "keywords": [
+    "密钥掩码",
+    "脱敏",
+    "secret",
+    "mask",
+    "显示密钥",
+    "凭据"
+   ]
+  },
+  {
+   "id": "plugin-inventory-settings-tab",
+   "name": "PluginInventorySettingsTab",
+   "exportName": "PluginInventorySettingsTab",
+   "zh": "插件清单页",
+   "group": "settings",
+   "summary": "设置里的只读插件清单：宽 100%、上限 760px，先「会话插件」组（按选中的 Agent 预设），再「全局插件」组，两组之间一条 0.5px 分隔线。顶部是 36px 的搜索框（左侧 12px 处一枚放大镜，内边距 0/34/0/36，聚焦时叠 2px 焦点环），组头是 36px 行——箭头 + 14/22 组名，右侧一枚 36px 的预设切换胶囊（<code>--dsw-alias-bg-module-platform</code> 填充，R12（<code>--dsw-radius-md</code>），内边距 0/14）。卡片是两列网格（间距 10px）：0.5px <code>--dsw-alias-settings-card-stroke</code> 描边、R20、<code>--dsw-alias-settings-card-fill</code> 填充，每张卡是 <code>li.card</code> 外壳（<code>data-plugin-entry</code> / <code>data-plugin-module</code>，展开时 <code>data-open</code>、启动失败时 <code>data-failed</code>），里面才是 <code>button.cardContent</code>（内边距 12/14，标题 14/20/500 + 最多两行（<code>-webkit-line-clamp: 2</code>）的灰色描述，底部左侧是等宽 12/18 的 Loader 条目 id 芯片）。展开后换成 <code>--dsw-alias-bg-module-platform</code> 的明细区，里面的 <code>dl</code> 是 76px 标签列 + 值列。宽度 ≤520px（容器查询）时卡片塌成一列。",
+   "source": "packages/client/ui-settings-plugin-inventory/src/client/PluginInventorySettingsTab.tsx#L252",
+   "css": [
+    "packages/client/ui-settings-plugin-inventory/src/client/PluginInventorySettingsTab.module.css",
+    "packages/client/ui-primitives/src/Tag.module.css",
+    "packages/client/ui-primitives/src/StateDot.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-layer-1",
+    "--dsw-alias-bg-layer-3",
+    "--dsw-alias-bg-module-platform",
+    "--dsw-alias-bg-skeleton",
+    "--dsw-alias-border-l2",
+    "--dsw-alias-border-l3",
+    "--dsw-alias-border-l4",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-primary-foreground",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-settings-card-fill",
+    "--dsw-alias-settings-card-stroke",
+    "--dsw-alias-state-business-primary",
+    "--dsw-alias-state-error-primary",
+    "--dsw-alias-state-idle-primary",
+    "--dsw-alias-state-success-primary",
+    "--dsw-alias-state-warn-primary",
+    "--dsw-focus-ring-color",
+    "--dsw-focus-ring-width",
+    "--dsw-radius-lg",
+    "--dsw-radius-md",
+    "--dsw-radius-sm",
+    "--dsw-radius-xl",
+    "--dsw-radius-xs"
+   ],
+   "specimens": [
+    {
+     "label": "就绪：会话插件组（默认预设）+ 全局插件组",
+     "note": "已启用的行不带标签；加载中的行只多一个转圈点",
+     "html": "<div style='width:720px'><div class=\"section\"><div class=\"catalog\"><label class=\"search\"><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M6.58727 11.8586C9.55061 11.8586 11.9529 9.45637 11.9529 6.49304C11.9529 3.5297 9.55061 1.12744 6.58727 1.12744C3.62394 1.12744 1.22168 3.5297 1.22168 6.49304C1.22168 9.45637 3.62394 11.8586 6.58727 11.8586Z' stroke='currentColor'/><path d='M10.2991 10.3933L14.7783 14.8725' stroke='currentColor'/></svg><span class=\"visuallyHidden\">搜索插件</span><input type=\"search\" placeholder=\"搜索插件\" aria-label=\"搜索插件\"></label><section class=\"group\" data-plugin-scope=\"preset\"><div class=\"groupTitleRow\"><button type=\"button\" class=\"groupToggle\" aria-expanded=\"true\"><svg class=\"chevron\" width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg><span class=\"groupTitle\">会话插件</span></button><div class=\"headerEnd\"><button type=\"button\" class=\"switcher\" aria-haspopup=\"menu\" aria-expanded=\"false\"><span class=\"switcherLabel\">默认（默认）</span><svg class=\"chevron\" width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button></div></div><p class=\"groupSub\">由 Agent 预设按会话组成</p><div class=\"groupBody\"><ul class=\"cards\"><li class=\"card\" data-plugin-entry=\"cordis:ui-chat\" data-plugin-module=\"@deepseek-ai/dsh-client-ui-chat\"><button class=\"cardContent\" type=\"button\" aria-expanded=\"false\" aria-label=\"ui-chat, cordis:ui-chat, 已启用\"><span class=\"cardMainRow\"><strong class=\"cardTitle\" title=\"@deepseek-ai/dsh-client-ui-chat\">ui-chat</strong><span class=\"cardTrailing\"><svg class=\"chevron\" width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></span></span><span class=\"cardDescription\">会话与回合的渲染：消息、工具调用与流式输出。</span><span class=\"cardMeta\"><code class=\"cardIdentity\" title=\"cordis:ui-chat\">cordis:ui-chat</code></span></button></li><li class=\"card\" data-plugin-entry=\"cordis:ui-goal\" data-plugin-module=\"@deepseek-ai/dsh-client-ui-goal\"><button class=\"cardContent\" type=\"button\" aria-expanded=\"false\" aria-label=\"ui-goal, cordis:ui-goal, 已停用\"><span class=\"cardMainRow\"><strong class=\"cardTitle\" title=\"@deepseek-ai/dsh-client-ui-goal\">ui-goal</strong><span class=\"cardTrailing\"><span class=\"tag\" data-tone=\"neutral\">已停用</span><svg class=\"chevron\" width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></span></span><span class=\"cardDescription\">目标条与进度上报。</span><span class=\"cardMeta\"><code class=\"cardIdentity\" title=\"cordis:ui-goal\">cordis:ui-goal</code></span></button></li><li class=\"card\" data-plugin-entry=\"cordis:ui-subagent\" data-plugin-module=\"@deepseek-ai/dsh-client-ui-subagent\"><button class=\"cardContent\" type=\"button\" aria-expanded=\"false\" aria-label=\"ui-subagent, cordis:ui-subagent, 已启用\"><span class=\"cardMainRow\"><strong class=\"cardTitle\" title=\"@deepseek-ai/dsh-client-ui-subagent\">ui-subagent</strong><span class=\"cardTrailing\"><span class=\"phaseDot\" role=\"img\" aria-label=\"加载中\" title=\"加载中\"><svg class=\"spinner\" data-state=\"ongoing\" width='14' height='14' viewBox='0 0 24 24' aria-hidden=\"true\"><g class=\"spinnerMotion\"><circle class=\"spinnerTrack\" cx='12' cy='12' r='9.5'/><circle class=\"spinnerArc\" cx='12' cy='12' r='9.5'/></g></svg></span><svg class=\"chevron\" width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></span></span><span class=\"cardDescription\">子智能体会话视图与轨迹。</span><span class=\"cardMeta\"><code class=\"cardIdentity\" title=\"cordis:ui-subagent\">cordis:ui-subagent</code></span></button></li></ul></div></section><section class=\"group\" data-plugin-scope=\"global\"><div class=\"groupTitleRow\"><button type=\"button\" class=\"groupToggle\" aria-expanded=\"false\"><svg class=\"chevron\" width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg><span class=\"groupTitle\">全局插件</span></button></div><p class=\"groupSub\">系统与所有会话共用</p></section></div></div></div>"
+    },
+    {
+     "label": "展开卡片：Loader 身份 + 明细表",
+     "note": "失败卡排在最前，描边转红并另起一条包元信息错误（错误行按 readPluginMeta 的「Plugin metadata for <specifier>: …」格式示意）",
+     "html": "<div style='width:720px'><div class=\"section\"><div class=\"catalog\"><ul class=\"cards\"><li class=\"card\" data-plugin-entry=\"cordis:ui-chat\" data-plugin-module=\"@deepseek-ai/dsh-client-ui-chat\" data-open=\"true\"><button class=\"cardContent\" type=\"button\" aria-expanded=\"true\" aria-label=\"ui-chat, cordis:ui-chat, 已启用\"><span class=\"cardMainRow\"><strong class=\"cardTitle\" title=\"@deepseek-ai/dsh-client-ui-chat\">ui-chat</strong><span class=\"cardTrailing\"><svg class=\"chevron\" width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></span></span><span class=\"cardDescription\">会话与回合的渲染：消息、工具调用与流式输出。</span><span class=\"cardMeta\"><code class=\"cardIdentity\" title=\"cordis:ui-chat\">cordis:ui-chat</code></span></button><div class=\"cardDetails\" id=\"plugin-details-cordis%3Aui-chat\"><code class=\"entryValue\" data-loader-entry>cordis:ui-chat</code><dl class=\"details\"><div><dt>完整名称</dt><dd>@deepseek-ai/dsh-client-ui-chat</dd></div><div><dt>来自</dt><dd>默认</dd></div><div><dt>配置状态</dt><dd>已启用</dd></div><div><dt>运行状态</dt><dd>运行中</dd></div></dl></div></li><li class=\"card\" data-plugin-entry=\"cordis:auto-review\" data-plugin-module=\"@deepseek-ai/dsh-experimental-auto-review\" data-failed=\"true\" data-open=\"true\"><button class=\"cardContent\" type=\"button\" aria-expanded=\"true\" aria-label=\"自动授权审查, cordis:auto-review, 启动失败\"><span class=\"cardMainRow\"><strong class=\"cardTitle\" title=\"@deepseek-ai/dsh-experimental-auto-review\">自动授权审查</strong><span class=\"cardTrailing\"><span class=\"tag\" data-tone=\"danger\">启动失败</span><svg class=\"chevron\" width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></span></span><span class=\"cardDescription\">提供自动审查权限模式，由模型在每次工具调用前判断是否授权。</span><span class=\"cardMeta\"><code class=\"cardIdentity\" title=\"cordis:auto-review\">cordis:auto-review</code></span></button><p class=\"brokenNote\" role=\"status\" data-package-meta-error>包元信息错误：Plugin metadata for @deepseek-ai/dsh-experimental-auto-review: /home/lk/deepseek-harness/packages/experimental/auto-review/package.json: icon must be a relative file path</p><div class=\"cardDetails\" id=\"plugin-details-cordis%3Aauto-review\"><code class=\"entryValue\" data-loader-entry>cordis:auto-review</code><dl class=\"details\"><div><dt>完整名称</dt><dd>@deepseek-ai/dsh-experimental-auto-review</dd></div><div><dt>配置状态</dt><dd>已启用</dd></div><div><dt>运行状态</dt><dd>启动失败</dd></div></dl></div></li></ul></div></div></div>"
+    },
+    {
+     "label": "加载中：四张骨架卡 + 本页同步状态",
+     "note": "骨架条用 --dsw-alias-bg-skeleton 呼吸，读屏读的是 visuallyHidden 文案",
+     "html": "<div style='width:720px'><div class=\"section\" aria-busy=\"true\"><p class=\"status statusWithDot\" role=\"status\"><svg class=\"spinner\" data-state=\"ongoing\" width='14' height='14' viewBox='0 0 24 24' aria-hidden=\"true\"><g class=\"spinnerMotion\"><circle class=\"spinnerTrack\" cx='12' cy='12' r='9.5'/><circle class=\"spinnerArc\" cx='12' cy='12' r='9.5'/></g></svg>正在同步本页面的插件…</p><div class=\"cards\" role=\"status\"><span class=\"visuallyHidden\">正在读取插件…</span><div class=\"skeletonCard\" aria-hidden=\"true\"><span class=\"skeletonBar\"></span><span class=\"skeletonBar\"></span></div><div class=\"skeletonCard\" aria-hidden=\"true\"><span class=\"skeletonBar\"></span><span class=\"skeletonBar\"></span></div><div class=\"skeletonCard\" aria-hidden=\"true\"><span class=\"skeletonBar\"></span><span class=\"skeletonBar\"></span></div><div class=\"skeletonCard\" aria-hidden=\"true\"><span class=\"skeletonBar\"></span><span class=\"skeletonBar\"></span></div></div></div></div>"
+    },
+    {
+     "label": "搜索态：两组强制展开 + 其他预设匹配",
+     "note": "搜索期间两组都展开，命中其他预设时给出可点的跳转",
+     "html": "<div style='width:720px'><div class=\"section\"><div class=\"catalog\"><label class=\"search\"><svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M6.58727 11.8586C9.55061 11.8586 11.9529 9.45637 11.9529 6.49304C11.9529 3.5297 9.55061 1.12744 6.58727 1.12744C3.62394 1.12744 1.22168 3.5297 1.22168 6.49304C1.22168 9.45637 3.62394 11.8586 6.58727 11.8586Z' stroke='currentColor'/><path d='M10.2991 10.3933L14.7783 14.8725' stroke='currentColor'/></svg><span class=\"visuallyHidden\">搜索插件</span><input type=\"search\" value=\"deepseek\" placeholder=\"搜索插件\" aria-label=\"搜索插件\"></label><section class=\"group\" data-plugin-scope=\"preset\"><div class=\"groupTitleRow\"><button type=\"button\" class=\"groupToggle\" aria-expanded=\"true\"><svg class=\"chevron\" width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg><span class=\"groupTitle\">会话插件</span></button><div class=\"headerEnd\"><button type=\"button\" class=\"switcher\" aria-haspopup=\"menu\" aria-expanded=\"false\"><span class=\"switcherLabel\">默认（默认）</span><svg class=\"chevron\" width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button></div></div><p class=\"groupSub\">由 Agent 预设按会话组成</p><div class=\"groupBody\"><ul class=\"cards\"><li class=\"card\" data-plugin-entry=\"cordis:ui-model-selection\" data-plugin-module=\"@deepseek-ai/dsh-client-ui-model-selection\"><button class=\"cardContent\" type=\"button\" aria-expanded=\"false\" aria-label=\"ui-model-selection, cordis:ui-model-selection, 条件启用\"><span class=\"cardMainRow\"><strong class=\"cardTitle\" title=\"@deepseek-ai/dsh-client-ui-model-selection\">ui-model-selection</strong><span class=\"cardTrailing\"><span class=\"tag\" data-tone=\"warning\">条件启用</span><svg class=\"chevron\" width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></span></span><span class=\"cardDescription\">输入框里的模型选择器。</span><span class=\"cardMeta\"><code class=\"cardIdentity\" title=\"cordis:ui-model-selection\">cordis:ui-model-selection</code></span></button></li></ul><p class=\"hint\">其他预设中还有 2 个匹配：<button type=\"button\" class=\"jumpLink\">代码助手</button><button type=\"button\" class=\"jumpLink\">文档写作</button></p></div></section></div></div></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "list",
+     "type": "() => Promise<PluginInventorySnapshot>",
+     "default": "—",
+     "desc": "读取一份当前 Host 清单快照；被拒时整页转错误态。"
+    },
+    {
+     "name": "presetName",
+     "type": "(preset: AgentPresetGroup) => string",
+     "default": "—",
+     "desc": "一个预设的显示名：内置预设走 agent-preset 字典，用户自写的保留自己的元信息。"
+    },
+    {
+     "name": "resolveText",
+     "type": "(text: LocalizedText) => string",
+     "default": "—",
+     "desc": "按当前语言解析包里的本地化文本。"
+    },
+    {
+     "name": "t",
+     "type": "(key: PluginInventoryLocaleKey, params?) => string",
+     "default": "—",
+     "desc": "settings.pluginInventory 文案。"
+    },
+    {
+     "name": "useClientSync",
+     "type": "(select) => ClientEntryState",
+     "default": "—",
+     "desc": "页面自身的模块同步状态（syncing / failures），与 Host 清单相互独立。"
+    },
+    {
+     "name": "retryClient",
+     "type": "() => void",
+     "default": "—",
+     "desc": "重试本页面的模块图，不改动 Host 组成。"
+    }
+   ],
+   "notes": "只读：这一页不提供开关，启用状态来自组合与预设。搜索会同时匹配模块名、entryId、标题与描述，并在搜索期间强制展开两组；「全局已停用、由预设按会话提供」的条目换成蓝色「预设中启用」标签并列出启用的预设名。阶段点只给 <code>pending</code>（灰点）、<code>loading</code> / <code>unloading</code>（转圈）三种活动态，<code>active</code> 与 <code>failed</code> 不带点——失败由红色标签与红色描边表达。启动失败的条目排在全局组最前，元信息坏掉的包仍然列出并额外显示一条 <code>.brokenNote</code>。卡片宽度靠容器查询（<code>container: plugin-inventory / inline-size</code>）在 520px 以下塌成一列，所以它嵌在哪一栏都自洽。",
+   "keywords": [
+    "插件清单",
+    "插件列表",
+    "plugin inventory",
+    "Agent 预设",
+    "启用状态",
+    "启动失败"
+   ]
+  }
+ ]
+}

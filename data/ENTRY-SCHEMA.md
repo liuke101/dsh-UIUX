@@ -26,7 +26,7 @@
 | `name` | 是 | 组件英文名，与源码导出一致。 |
 | `exportName` | 是 | 导出变量名（通常等于 `name`）。这是目录里的"变量名"列。 |
 | `zh` | 是 | 中文短名，2–6 字，例如 `回合错误`。 |
-| `group` | 是 | 分组键，只能用任务里指定的键。 |
+| `group` | 是 | 分组键，决定条目落在哪张页面、哪一节。基础组件库页用 `controls` `display` `input` `overlay` `output` `settings` `brand`；产品组件五页用 `conversation` `shell` `preview` `dock` `tools` `panels` `overlays` `agent`（页面映射见 `tools/build.mjs` 的 `PRODUCT_PAGES`）。 |
 | `summary` | 是 | 中文说明，2–4 句。写清楚"长什么样、用在哪、关键尺寸"；可含 `<code>` 标签。 |
 | `source` | 是 | `仓库相对路径#L行号`，行号取导出语句所在行。 |
 | `css` | 是 | 该组件真实使用的 CSS Module 路径数组（仓库相对路径）。没有样式表时给 `[]`。 |
@@ -90,6 +90,9 @@
 ```
 
 同一条规则也适用于 `specimen.css` 里的选择器。
+
+`class` 属性用单引号还是双引号都可以：构建脚本两种引号都会改写（早期只改了双引号，单引号写法的示例会整块失去样式）。
+写了 `c<下标>-` 前缀的类名保持不变，其余裸类名按上表的归属规则自动加前缀。
 
 ## 图标类条目的合并约定
 

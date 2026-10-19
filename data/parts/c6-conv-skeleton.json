@@ -1,0 +1,773 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "id": "conversation-main-panel",
+      "name": "ConversationMainPanel",
+      "exportName": "ConversationMainPanel",
+      "zh": "会话主面板",
+      "group": "conversation",
+      "summary": "常驻会话列的根盒子：一个 <code>data-phase</code> 取 <code>settling / hero / active</code> 的纵向 flex <code>.root</code>（<code>height:100%</code>、底色 <code>--dsw-alias-bg-base</code>），内部只有两个座位——<code>conversation.header</code> 槽（默认占用者是 76px 高的 <code>.header</code>）与 <code>conversation.content</code> 工厂槽（默认渲染 ConversationContent 的 <code>.body</code> 滚动区、输入座位与宽度手柄）。相位由会话快照推导：会话仍在回放时取 <code>settling</code>（<code>.composerSeat</code> 只是 <code>visibility: hidden</code>，不卸载），无会话或空白会话取 <code>hero</code>（输入区居中），其余取 <code>active</code>（输入座位贴底）。组件自身不定义任何外观，观感全部来自根样式表与槽内子组件。",
+      "source": "packages/client/ui-conversation/src/client/skeleton/ConversationMainPanel.tsx#L13",
+      "css": [
+        "packages/client/ui-conversation/src/client/skeleton/ConversationRoot.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-base",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-scrollbar-bg-l1",
+        "--dsw-alias-state-business-primary",
+        "--dsw-radius-md"
+      ],
+      "specimens": [
+        {
+          "label": "active：76px 头部（标题 + 页签）+ 滚动正文 + 贴底输入座位",
+          "html": "<div style='width:900px;height:440px'><div data-slot='main.conversation' style='display:contents'><div class=\"root\" data-phase=\"active\"><div data-slot='conversation.header' style='display:contents'><header class=\"header\" data-window-drag=\"\"><div class=\"headerLeading\" data-conversation-header-leading=\"\"></div><div data-slot='conversation.session.header' style='display:contents'><div class=\"titleRow\"><div class=\"titleCluster\"><nav class=\"crumbs\" aria-label='会话层级'><span class=\"crumbSeg\"><span class=\"crumb crumbCurrent\">把会话骨架的输入座位重构完</span></span></nav><div class=\"headerActions\"></div></div><div class=\"headerUtilities\"></div><div class=\"headerCorner\" data-conversation-header-corner=\"\"></div></div><div class=\"tabs\" role='tablist' data-conversation-tabs=\"\"><button type='button' role='tab' aria-selected='true' class=\"tab tabActive\">对话</button><button type='button' role='tab' aria-selected='false' class=\"tab\">轨迹</button></div></div></header></div><div class=\"body\" data-conversation-content=\"\" data-conversation-region='chat' data-content-phase=\"active\"><div class=\"scrollBody\" data-conversation-scroll=\"\"><div data-slot='conversation.session' style='display:contents'><div class=\"viewArea\"><div data-slot='conversation.view' style='display:contents'><div style='padding:16px'>会话视图（ChatView）：转录行、过程组与回到底部控件</div></div></div></div><div class=\"composerSeat\" data-composer-seat=\"\" data-conversation-region='composer'><div class=\"composerStack\"><div style='height:104px;display:flex;align-items:center;justify-content:center'>输入卡（InputBar）：编辑区、工具行与发送键</div></div></div></div></div></div></div></div>",
+          "note": "头部与正文都由槽内子组件渲染，这里按默认组合装配"
+        },
+        {
+          "label": "hero：无会话时头部只剩导航位，输入区在列里居中",
+          "html": "<div style='width:900px;height:380px'><div data-slot='main.conversation' style='display:contents'><div class=\"root\" data-phase=\"hero\"><div data-slot='conversation.header' style='display:contents'><header class=\"header headerBlank headerSessionless\" data-window-drag=\"\"><div class=\"headerLeading\" data-conversation-header-leading=\"\"></div><div class=\"titleRow\"></div></header></div><div class=\"body\" data-conversation-content=\"\" data-conversation-region='chat' data-content-phase=\"hero\"><div class=\"scrollBody\" data-conversation-scroll=\"\"><div data-slot='conversation.session' style='display:contents'></div><div class=\"composerSeat\" data-composer-seat=\"\" data-conversation-region='composer'><div class=\"composerStack composerHero\"><div style='height:64px;display:flex;align-items:center;justify-content:center'>hero 标题块（HeroShell）＋ 工作区芯片（WorkspaceChip）</div><div style='height:104px;display:flex;align-items:center;justify-content:center'>输入卡（InputBar）</div></div></div></div></div></div></div></div>",
+          "note": "hero 相位：<code>.composerHero</code> 居中、<code>padding-bottom:32px</code>，头部无标题无页签"
+        }
+      ],
+      "props": [
+        {
+          "name": "sessionId",
+          "type": "SessionId | undefined",
+          "default": "—",
+          "desc": "当前会话；undefined 时相位固定为 hero（无会话）。"
+        },
+        {
+          "name": "useSession",
+          "type": "SnapshotSelectorHook<SessionSnapshot | undefined>",
+          "default": "—",
+          "desc": "会话快照选择器；配合 useConversation 推导 settling / hero / active 三个相位。"
+        },
+        {
+          "name": "useConversation",
+          "type": "UseConversation",
+          "default": "—",
+          "desc": "当前会话的 Conversation 快照；undefined 视为 blank。"
+        },
+        {
+          "name": "useSessions",
+          "type": "SnapshotSelectorHook<SessionListState>",
+          "default": "—",
+          "desc": "会话列表：读取摘要里的 blank 标记与 subagent 可续跑状态，决定是否进入 settling。"
+        },
+        {
+          "name": "renderSlot",
+          "type": "PropsRenderSlots<'conversation.header'>['renderSlot']",
+          "default": "—",
+          "desc": "渲染 conversation.header 槽（默认占用者是 ConversationHeader）。"
+        },
+        {
+          "name": "renderFactorySlot",
+          "type": "PropsRenderFactories['renderFactorySlot']",
+          "default": "—",
+          "desc": "渲染 conversation.content 工厂槽，并把 widthControls 局部组件（ConversationWidthControls）作为 slot 注入。"
+        }
+      ],
+      "notes": "<code>settling</code> 是防闪烁的第三态：会话正在回放且列表摘要还没证明它是空会话时，输入座位只隐藏不卸载，避免 hero 与贴底输入卡互相闪一下；摘要已证明 blank 的会话例外，直接落到 hero。子智能体为 <code>continuable</code> 且父会话可用性未定时也走 settling——不渲染父会话离线的接管界面。窗口拖拽由头部自己声明 <code>data-window-drag</code>，不属于这一层。",
+      "keywords": [
+        "会话主面板",
+        "conversation",
+        "main panel",
+        "常驻骨架",
+        "相位"
+      ]
+    },
+    {
+      "id": "conversation-root",
+      "name": "ConversationRoot",
+      "exportName": "ConversationRoot",
+      "zh": "会话根骨架",
+      "group": "conversation",
+      "summary": "常驻会话骨架对外的注册名：<code>ConversationRootProps</code> 就是 <code>ConversationSlotProps</code>，实现只有一行 <code>return &lt;ConversationMainPanel {...props} /&gt;</code>，因此观感与 ConversationMainPanel 完全一致——一个 <code>.root</code> 加头部与正文两个槽。它存在的意义是给 <code>main.conversation</code> 槽一个稳定入口：无会话 → 空白会话 → 已打开会话的布局切换都发生在同一棵树里，输入框的 textarea 不会因为换相位而重建。",
+      "source": "packages/client/ui-conversation/src/client/skeleton/ConversationRoot.tsx#L11",
+      "css": [
+        "packages/client/ui-conversation/src/client/skeleton/ConversationRoot.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-base",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-scrollbar-bg-l1",
+        "--dsw-alias-state-business-primary",
+        "--dsw-radius-md"
+      ],
+      "specimens": [
+        {
+          "label": "同一棵树的两个相位：左 hero（无会话）/ 右 active（已打开会话）",
+          "note": "两帧并排，宽度压到 440px 看降级",
+          "html": "<div style='display:flex;gap:16px'><div style='width:440px;height:320px'><div class=\"root\" data-phase=\"hero\"><div data-slot='conversation.header' style='display:contents'><header class=\"header headerBlank headerSessionless\" data-window-drag=\"\"><div class=\"headerLeading\" data-conversation-header-leading=\"\"></div><div class=\"titleRow\"></div></header></div><div class=\"body\" data-conversation-content=\"\" data-content-phase=\"hero\"><div class=\"scrollBody\" data-conversation-scroll=\"\"><div data-slot='conversation.session' style='display:contents'></div><div class=\"composerSeat\" data-composer-seat=\"\"><div class=\"composerStack composerHero\"><div style='height:56px;display:flex;align-items:center;justify-content:center'>hero 标题块</div><div style='height:88px;display:flex;align-items:center;justify-content:center'>输入卡</div></div></div></div></div></div></div><div style='width:440px;height:320px'><div class=\"root\" data-phase=\"active\"><div data-slot='conversation.header' style='display:contents'><header class=\"header\" data-window-drag=\"\"><div class=\"headerLeading\" data-conversation-header-leading=\"\"></div><div data-slot='conversation.session.header' style='display:contents'><div class=\"titleRow\"><div class=\"titleCluster\"><nav class=\"crumbs\" aria-label='会话层级'><span class=\"crumbSeg\"><span class=\"crumb crumbCurrent\">重构会话骨架的输入座</span></span></nav><div class=\"headerActions\"></div></div><div class=\"headerUtilities\"></div><div class=\"headerCorner\" data-conversation-header-corner=\"\"></div></div><div class=\"tabs\" role='tablist' data-conversation-tabs=\"\"><button type='button' role='tab' aria-selected='true' class=\"tab tabActive\">对话</button><button type='button' role='tab' aria-selected='false' class=\"tab\">轨迹</button></div></div></header></div><div class=\"body\" data-conversation-content=\"\" data-content-phase=\"active\"><div class=\"scrollBody\" data-conversation-scroll=\"\"><div data-slot='conversation.session' style='display:contents'><div class=\"viewArea\"><div style='padding:12px'>当前视图</div></div></div><div class=\"composerSeat\" data-composer-seat=\"\"><div class=\"composerStack\"><div style='height:88px;display:flex;align-items:center;justify-content:center'>输入卡</div></div></div></div></div></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "sessionId",
+          "type": "SessionId | undefined",
+          "default": "—",
+          "desc": "当前会话；undefined 就是 hero 相位（直接透传给 ConversationMainPanel）。"
+        },
+        {
+          "name": "useSession",
+          "type": "SnapshotSelectorHook<SessionSnapshot | undefined>",
+          "default": "—",
+          "desc": "会话快照选择器，原样透传。"
+        },
+        {
+          "name": "useSessions",
+          "type": "SnapshotSelectorHook<SessionListState>",
+          "default": "—",
+          "desc": "会话列表选择器，原样透传（用于 blank 摘要与 settling 判定）。"
+        },
+        {
+          "name": "useConversation",
+          "type": "UseConversation",
+          "default": "—",
+          "desc": "Conversation 快照选择器，原样透传。"
+        },
+        {
+          "name": "renderSlot",
+          "type": "PropsRenderSlots<'conversation.header'>['renderSlot']",
+          "default": "—",
+          "desc": "头部槽渲染座位，原样透传。"
+        },
+        {
+          "name": "renderFactorySlot",
+          "type": "PropsRenderFactories['renderFactorySlot']",
+          "default": "—",
+          "desc": "正文工厂槽渲染座位，原样透传。"
+        }
+      ],
+      "notes": "这一条与 <code>conversation-main-panel</code> 是同一个外观：前者是契约名（<code>main.conversation</code> 槽的注册入口），后者是它委托的实现。两者都列同一张根样式表，<code>props</code> 也相同（<code>ConversationRootProps = ConversationSlotProps</code>）。",
+      "keywords": [
+        "常驻骨架",
+        "conversation root",
+        "根容器",
+        "不重挂载"
+      ]
+    },
+    {
+      "id": "conversation-session-header",
+      "name": "ConversationSessionHeader",
+      "exportName": "ConversationSessionHeader",
+      "zh": "会话头部",
+      "group": "conversation",
+      "summary": "会话头部 chrome：一行最小 30px 的 <code>.titleRow</code>，左边是面包屑 <code>.crumbs</code>——每段一个 <code>.crumbSeg</code>、段间 <code>.crumbSep</code> 斜杠（14/20 caption 灰）、非当前段是可点的 <code>.crumb</code>（14/20 tertiary、圆角 <code>--dsw-radius-md</code>）、当前段 <code>.crumbCurrent</code> 加粗改主色且不导航，子智能体段 <code>.crumbSubagent</code> 降到 12/18——右边依次是 actions、utilities（左侧 20px 外边距）与角落位（右移 16px）。视图多于一个且 <code>hideChrome</code> 为假时，下面再挂一条 35px 的 <code>.tabs</code> 页签条（gap 36px、13/16、选中项 <code>.tabActive</code> 用 business 蓝画 2px 下划线）。",
+      "source": "packages/client/ui-conversation/src/client/skeleton/ConversationSession.tsx#L58",
+      "css": [
+        "packages/client/ui-conversation/src/client/skeleton/ConversationRoot.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-base",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-scrollbar-bg-l1",
+        "--dsw-alias-state-business-primary",
+        "--dsw-radius-md"
+      ],
+      "specimens": [
+        {
+          "label": "普通会话：当前标题 + 三个右侧座位 + 两个视图页签",
+          "html": "<div style='width:820px'><header class=\"header\" data-window-drag=\"\"><div class=\"headerLeading\" data-conversation-header-leading=\"\"></div><div data-slot='conversation.session.header' style='display:contents'><div class=\"titleRow\"><div class=\"titleCluster\"><nav class=\"crumbs\" aria-label='会话层级'><span class=\"crumbSeg\"><span class=\"crumb crumbCurrent\">把会话骨架的输入座位重构完</span></span></nav><div class=\"headerActions\"></div></div><div class=\"headerUtilities\"></div><div class=\"headerCorner\" data-conversation-header-corner=\"\"></div></div><div class=\"tabs\" role='tablist' data-conversation-tabs=\"\"><button type='button' role='tab' aria-selected='true' class=\"tab tabActive\">对话</button><button type='button' role='tab' aria-selected='false' class=\"tab\">轨迹</button></div></div></header></div>",
+          "note": "actions / utilities / corner 三个槽在当前组合里为空，<code>:empty</code> 时不占位"
+        },
+        {
+          "label": "子智能体层级：面包屑链、小字号子段与「/」分隔",
+          "note": "悬停模拟：按钮式面包屑的底色",
+          "html": "<div style='width:820px'><header class=\"header\" data-window-drag=\"\"><div class=\"headerLeading\" data-conversation-header-leading=\"\"></div><div data-slot='conversation.session.header' style='display:contents'><div class=\"titleRow\"><div class=\"titleCluster\"><nav class=\"crumbs\" aria-label='会话层级'><span class=\"crumbSeg\"><button type='button' class=\"crumb\">重构会话骨架的输入座</button></span><span class=\"crumbSeg\"><span class=\"crumbSep\">/</span><button type='button' class=\"crumb crumbSubagent crumbHover\">ui-conversation 骨架</button></span><span class=\"crumbSeg\"><span class=\"crumbSep\">/</span><span class=\"crumb crumbSubagent crumbCurrent\">核对输入座的类名</span></span></nav><div class=\"headerActions\"></div></div><div class=\"headerUtilities\"></div><div class=\"headerCorner\" data-conversation-header-corner=\"\"></div></div><div class=\"tabs\" role='tablist' data-conversation-tabs=\"\"><button type='button' role='tab' aria-selected='true' class=\"tab tabActive\">对话</button><button type='button' role='tab' aria-selected='false' class=\"tab\">轨迹</button></div></div></header></div>",
+          "css": "/* 状态模拟：按钮式面包屑的悬停底色。原规则是 button.crumb:hover { background: var(--dsw-alias-interactive-bg-hover) }，静态快照无法触发 :hover，这里把同一效果挂到 .crumbHover 上。 */\n.crumb.crumbHover { background: var(--dsw-alias-interactive-bg-hover); }"
+        },
+        {
+          "label": "单视图会话：没有页签，头部塌成一行标题（min-height 归零）",
+          "html": "<div style='width:820px'><header class=\"header\" data-window-drag=\"\"><div class=\"headerLeading\" data-conversation-header-leading=\"\"></div><div data-slot='conversation.session.header' style='display:contents'><div class=\"titleRow\"><div class=\"titleCluster\"><nav class=\"crumbs\" aria-label='会话层级'><span class=\"crumbSeg\"><span class=\"crumb crumbCurrent\">检查 pnpm run test:gui 输出</span></span></nav><div class=\"headerActions\"></div></div><div class=\"headerUtilities\"></div><div class=\"headerCorner\" data-conversation-header-corner=\"\"></div></div></div></header></div>",
+          "note": "真实规则 <code>.header:where(:not(:has(.tabs)))</code> 把 76px 压回内容高"
+        }
+      ],
+      "props": [
+        {
+          "name": "sessionId",
+          "type": "SessionId",
+          "default": "—",
+          "desc": "当前会话 id：面包屑链的起点，也是链为空时显示的字面 id。"
+        },
+        {
+          "name": "hideChrome",
+          "type": "boolean",
+          "default": "—",
+          "desc": "空白会话为真：标题块、工具位与页签全部不渲染，只留角落座位。"
+        },
+        {
+          "name": "useSessions",
+          "type": "SnapshotSelectorHook<SessionListState>",
+          "default": "—",
+          "desc": "会话列表选择器，用来向上回溯 subagent 的祖先链（deriveAncestry）。"
+        },
+        {
+          "name": "useConversationViews",
+          "type": "UseConversationViews",
+          "default": "—",
+          "desc": "已注册视图名册；长度大于 1 才渲染页签条。"
+        },
+        {
+          "name": "useStore",
+          "type": "PropsStore<ConversationStore>['useStore']",
+          "default": "—",
+          "desc": "Conversation store 选择器，读当前选中的视图 id。"
+        },
+        {
+          "name": "renderSlot",
+          "type": "PropsRenderSlots<'conversation.session.header.lineage' | '...actions' | '...utilities' | '...corner'>['renderSlot']",
+          "default": "—",
+          "desc": "四个头部槽：lineage（面包屑段里的血缘标记）、actions、utilities、corner。"
+        },
+        {
+          "name": "open",
+          "type": "(sessionId: SessionId) => void",
+          "default": "—",
+          "desc": "点击祖先面包屑时经会话控制器切换会话。"
+        },
+        {
+          "name": "selectView",
+          "type": "(view: string) => void",
+          "default": "—",
+          "desc": "点击页签时切换当前视图。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'conversation'>",
+          "default": "—",
+          "desc": "conversation 命名空间翻译座位，目前用于 <code>session.hierarchy</code> 的导航名。"
+        }
+      ],
+      "notes": "当前段故意用 <code>&lt;span&gt;</code> 而不是 disabled 按钮：macOS 桌面上按钮会把自己从窗口拖拽行里减掉，标题就跟着失去拖拽能力。祖先链只在 <code>origin === 'subagent'</code> 时继续向上走，并用 <code>seen</code> 集合防环；链为空时直接显示 <code>sessionId</code>。子智能体段的字号差异来自 <code>.crumbSubagent</code>，与当前段的加粗可以叠加。",
+      "keywords": [
+        "会话头部",
+        "面包屑",
+        "breadcrumb",
+        "页签",
+        "tabs",
+        "session header"
+      ]
+    },
+    {
+      "id": "conversation-session",
+      "name": "ConversationSession",
+      "exportName": "ConversationSession",
+      "zh": "会话正文",
+      "group": "conversation",
+      "summary": "严格会话正文的槽入口：<code>ConversationSessionProps</code> 即 <code>ConversationSessionSlotProps</code>，实现是 <code>&lt;DefaultConversationViews {...props} /&gt;</code>。它注册在 <code>conversation.session</code> 槽上，DOM 落在常驻滚动区 <code>.scrollBody</code> 里、输入座位 <code>.composerSeat</code> 之前，内容是一个 <code>flex:1</code> 的 <code>.viewArea</code>。会话仍为空白（<code>session.blank</code> 且会话快照相位为 blank）时整块返回 null——滚动区里只剩输入座位，页面不会为一条还不存在的转录预留空白。",
+      "source": "packages/client/ui-conversation/src/client/skeleton/ConversationSession.tsx#L168",
+      "css": [
+        "packages/client/ui-conversation/src/client/skeleton/ConversationRoot.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-base",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-scrollbar-bg-l1",
+        "--dsw-alias-state-business-primary",
+        "--dsw-radius-md"
+      ],
+      "specimens": [
+        {
+          "label": "已开始会话：正文占满滚动区，输入座位压在下面",
+          "html": "<div style='width:860px'><div class=\"body\" data-conversation-content=\"\" data-content-phase=\"active\" style='height:320px'><div class=\"scrollBody\" data-conversation-scroll=\"\"><div data-slot='conversation.session' style='display:contents'><div class=\"viewArea\"><div data-slot='conversation.view' style='display:contents'><div style='padding:16px'>当前视图（ChatView）：转录行 + 回到底部</div></div></div></div><div class=\"composerSeat\" data-composer-seat=\"\"><div class=\"composerStack\"><div style='height:88px;display:flex;align-items:center;justify-content:center'>输入卡</div></div></div></div></div></div>",
+          "note": "active 相位下 <code>.viewArea</code> 是 <code>flex: 1 0 auto</code>，由内容撑高"
+        },
+        {
+          "label": "空白会话：整块返回 null，滚动区里只剩输入座位",
+          "html": "<div style='width:860px'><div class=\"body\" data-conversation-content=\"\" data-content-phase=\"hero\" style='height:280px'><div class=\"scrollBody\" data-conversation-scroll=\"\"><div data-slot='conversation.session' style='display:contents'></div><div class=\"composerSeat\" data-composer-seat=\"\"><div class=\"composerStack composerHero\"><div style='height:64px;display:flex;align-items:center;justify-content:center'>hero 标题块</div><div style='height:88px;display:flex;align-items:center;justify-content:center'>输入卡</div></div></div></div></div></div>",
+          "note": "槽锚点仍在（<code>data-slot</code> 是渲染器的），组件本身不产生 DOM"
+        }
+      ],
+      "props": [
+        {
+          "name": "view",
+          "type": "string | undefined",
+          "default": "—",
+          "desc": "指定要激活的视图 id；缺省时用 store 里选中的视图。"
+        },
+        {
+          "name": "useSession",
+          "type": "SnapshotSelectorHook<SessionSnapshot>",
+          "default": "—",
+          "desc": "会话快照选择器：读 blank 与生命周期状态。"
+        },
+        {
+          "name": "useConversation",
+          "type": "UseConversation",
+          "default": "—",
+          "desc": "Conversation 快照选择器，与会话快照一起判定 blank 相位。"
+        },
+        {
+          "name": "useConversationViews",
+          "type": "UseConversationViews",
+          "default": "—",
+          "desc": "视图名册，用来解析当前应该挂哪个视图。"
+        },
+        {
+          "name": "inputActions",
+          "type": "SessionInputActions",
+          "default": "—",
+          "desc": "输入框动作座位：挂载时立即 persistDraft 一次。"
+        },
+        {
+          "name": "useStore",
+          "type": "PropsStore<ConversationStore>['useStore']",
+          "default": "—",
+          "desc": "Conversation store 选择器：当前视图 id 与待处理视图请求。"
+        },
+        {
+          "name": "actions",
+          "type": "ConversationStoreActions",
+          "default": "—",
+          "desc": "store 动作（setDraft / completeViewRequest），由组件转交或直接调用。"
+        },
+        {
+          "name": "renderSlot",
+          "type": "PropsRenderSlots<'conversation.view'>['renderSlot']",
+          "default": "—",
+          "desc": "渲染 conversation.view 键控槽，只挂当前视图。"
+        },
+        {
+          "name": "bindDraftPersistence",
+          "type": "(write: (draft: DraftSnapshot) => void) => () => void",
+          "default": "—",
+          "desc": "把输入草稿持久化绑到本会话的 store 实例上，卸载时解绑。"
+        },
+        {
+          "name": "openView",
+          "type": "(view: string, focus: string) => void",
+          "default": "—",
+          "desc": "切换视图并附带一个不透明焦点请求。"
+        },
+        {
+          "name": "useInspectCall",
+          "type": "SnapshotSelectorHook<ConvViewOwnerProps['inspectCall']>",
+          "default": "—",
+          "desc": "调用详情的检查入口，随视图 owner props 一起下发。"
+        }
+      ],
+      "notes": "草稿持久化绑定的依赖只有 <code>inputActions</code>：会话输入框在本组件挂载前就拥有内容，所以绑定后要补一次 <code>persistDraft()</code>。空白判定与首条消息的落点是同一个：会话快照说是 blank 且 Conversation 相位也是 blank，视图区就完全不渲染。",
+      "keywords": [
+        "会话正文",
+        "conversation session",
+        "视图区",
+        "空白会话"
+      ]
+    },
+    {
+      "id": "conversation-width-controls",
+      "name": "ConversationWidthControls",
+      "exportName": "ConversationWidthControls",
+      "zh": "宽度手柄",
+      "group": "conversation",
+      "summary": "转录列的宽度轴与两条拖拽手柄：<code>container</code> 就是 <code>.body</code>，组件用 ResizeObserver 把列宽发布成 <code>--dsh-conversation-column-width</code>，并按 <code>localStorage</code> 里的偏好写入 <code>--dsh-chat-user-width</code>（无偏好时 clamp：列宽 64%，下限 680、上限 920；有偏好时同样夹在 640 与「列宽减 176」之间）。只有 active 相位才渲染左右两条 <code>.widthHandle</code>：10px 宽的 col-resize 命中区，内缘离内容列 24px、外缘再留 24px 安全区，公式算成负数时宽度归零。拖动中 <code>data-dragging</code> 把 z-index 抬到 8，并用 <code>--dsh-width-handle-pointer-y</code> 把一条 2px、上下各 36px 渐隐的光带贴在指针高度上。",
+      "source": "packages/client/ui-conversation/src/client/skeleton/ConversationWidthControls.tsx#L136",
+      "css": [
+        "packages/client/ui-conversation/src/client/skeleton/ConversationRoot.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-base",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-scrollbar-bg-l1",
+        "--dsw-alias-state-business-primary",
+        "--dsw-radius-md"
+      ],
+      "specimens": [
+        {
+          "label": "静止：正文两侧各一条 10px 命中区，光带隐藏",
+          "html": "<div style='width:900px'><div class=\"body\" data-conversation-content=\"\" data-content-phase=\"active\" style='height:240px'><div class=\"scrollBody\" data-conversation-scroll=\"\"><div style='padding:16px'>转录正文：握到两侧 10px 的条上就能拖宽度</div></div><div class=\"widthHandle\" data-side=\"left\" data-width-handle=\"left\"></div><div class=\"widthHandle\" data-side=\"right\" data-width-handle=\"right\"></div></div></div>",
+          "note": "静止态 <code>.widthHandle::after</code> 是 <code>opacity: 0</code>，所以看不到光带"
+        },
+        {
+          "label": "悬停模拟：右侧光带亮起（opacity 1）",
+          "note": "悬停模拟",
+          "html": "<div style='width:900px'><div class=\"body\" data-conversation-content=\"\" data-content-phase=\"active\" style='height:240px'><div class=\"scrollBody\" data-conversation-scroll=\"\"><div style='padding:16px'>转录正文：指针附近浮出一条 2px 光带</div></div><div class=\"widthHandle\" data-side=\"left\" data-width-handle=\"left\"></div><div class=\"widthHandle\" data-side=\"right\" data-width-handle=\"right\"></div></div></div>",
+          "css": "/* 状态模拟：拖动/悬停光带。原规则是 .widthHandle:hover::after, .widthHandle[data-dragging]::after { opacity: 1 }，静态快照无法触发 :hover，这里直接把两条 ::after 点亮（指针 Y 缺省落在 50% 高）。 */\n.widthHandle::after { opacity: 1; }"
+        },
+        {
+          "label": "拖动中：data-dragging 抬升层级，光带跟着指针 Y（38%）",
+          "html": "<div style='width:900px'><div class=\"body\" data-conversation-content=\"\" data-content-phase=\"active\" style='height:240px'><div class=\"scrollBody\" data-conversation-scroll=\"\"><div style='padding:16px'>转录正文：拖到更宽后写回 localStorage 偏好</div></div><div class=\"widthHandle\" data-side=\"left\" data-width-handle=\"left\"></div><div class=\"widthHandle\" data-side=\"right\" data-width-handle=\"right\" data-dragging=\"\" style='--dsh-width-handle-pointer-y:38%'></div></div></div>",
+          "note": "拖动中"
+        }
+      ],
+      "props": [
+        {
+          "name": "container",
+          "type": "HTMLDivElement | null",
+          "default": "—",
+          "desc": "要测量的会话正文元素（<code>.body</code>）；null 或非 active 相位时不渲染手柄。"
+        },
+        {
+          "name": "phase",
+          "type": "'settling' | 'hero' | 'active'",
+          "default": "—",
+          "desc": "当前呈现相位；只有 active 会给出两条手柄。"
+        }
+      ],
+      "notes": "手柄的宽度公式是 <code>min(10px, (100% - var(--dsh-chat-content-width)) / 2 - 48px)</code>，列太窄时算出负数、宽度归零——不会留下错位的命中区。拖动时向外拖 = 变宽：位移量乘 2 再加到按下时的宽度上，位移为 0 的「只按一下」不会把更宽的偏好覆盖成当前显示值；pointercancel 放弃持久化并由 <code>onEnd</code> 还原。手柄同时接管滚轮：把纵向滚轮转成 <code>:scope &gt; [data-conversation-scroll]</code> 的滚动（支持 line/page 两种 deltaMode，Ctrl+滚轮除外）。示例里的 <code>--dsh-width-handle-pointer-y</code> 是组件在 pointermove 里自己写的本地自定义属性。",
+      "keywords": [
+        "宽度手柄",
+        "拖拽",
+        "col-resize",
+        "width handle",
+        "转录宽度"
+      ]
+    },
+    {
+      "id": "default-conversation-views",
+      "name": "DefaultConversationViews",
+      "exportName": "DefaultConversationViews",
+      "zh": "默认视图区",
+      "group": "conversation",
+      "summary": "默认的会话视图容器：一个 <code>flex:1</code> 的纵向 <code>.viewArea</code>，里面只挂 <code>conversation.view</code> 键控槽的当前占用者；<code>view</code> 为空时按 store 里选中的视图 id 解析（<code>view ?? active?.id</code>）。active 相位下 <code>.viewArea</code> 变成 <code>flex:1 0 auto</code> 由内容撑高，会话仍是空白时整个组件返回 null。它还负责在挂载期间把输入草稿的持久化写到会话 store 上，所以视图切换不会丢掉草稿。",
+      "source": "packages/client/ui-conversation/src/client/skeleton/DefaultConversationViews.tsx#L13",
+      "css": [
+        "packages/client/ui-conversation/src/client/skeleton/ConversationRoot.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-base",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-scrollbar-bg-l1",
+        "--dsw-alias-state-business-primary",
+        "--dsw-radius-md"
+      ],
+      "specimens": [
+        {
+          "label": "活动视图：viewArea 包住当前视图槽（对话）",
+          "html": "<div style='width:760px'><div class=\"viewArea\" style='height:200px'><div data-slot='conversation.view' style='display:contents'><div style='padding:16px'>对话视图占用者（ChatView）：转录列</div></div></div></div>",
+          "note": "槽占位者由视图名册决定，viewArea 本身不变"
+        },
+        {
+          "label": "切到另一个视图：同一个 viewArea 换成轨迹视图",
+          "html": "<div style='width:760px'><div class=\"viewArea\" style='height:200px'><div data-slot='conversation.view' style='display:contents'><div style='padding:16px'>轨迹视图占用者：工具调用与时间线</div></div></div></div>",
+          "note": "换的是键控槽占用者，不是容器"
+        }
+      ],
+      "props": [
+        {
+          "name": "view",
+          "type": "string | undefined",
+          "default": "—",
+          "desc": "显式指定激活视图；缺省用 store 中选中的视图 id。"
+        },
+        {
+          "name": "useConversationViews",
+          "type": "UseConversationViews",
+          "default": "—",
+          "desc": "视图名册来源，配合 resolveActiveView 解析当前视图。"
+        },
+        {
+          "name": "useInspectCall",
+          "type": "SnapshotSelectorHook<ConvViewOwnerProps['inspectCall']>",
+          "default": "—",
+          "desc": "检查调用的入口，作为 owner props 下发给视图。"
+        },
+        {
+          "name": "useStore",
+          "type": "PropsStore<ConversationStore>['useStore']",
+          "default": "—",
+          "desc": "Conversation store 选择器：选中视图与 viewRequest。"
+        },
+        {
+          "name": "renderSlot",
+          "type": "PropsRenderSlots<'conversation.view'>['renderSlot']",
+          "default": "—",
+          "desc": "渲染 conversation.view 槽，并用 <code>only: viewId</code> 限定键。"
+        },
+        {
+          "name": "bindDraftPersistence",
+          "type": "(write: (draft: DraftSnapshot) => void) => () => void",
+          "default": "—",
+          "desc": "绑定/解绑输入草稿的持久化写入。"
+        },
+        {
+          "name": "inputActions",
+          "type": "SessionInputActions",
+          "default": "—",
+          "desc": "输入框动作座位；挂载时补一次 persistDraft。"
+        },
+        {
+          "name": "openView",
+          "type": "(view: string, focus: string) => void",
+          "default": "—",
+          "desc": "切换视图并带上不透明焦点请求。"
+        },
+        {
+          "name": "actions",
+          "type": "ConversationStoreActions",
+          "default": "—",
+          "desc": "store 动作：completeViewRequest 随 owner props 下发给视图。"
+        }
+      ],
+      "notes": "它和 <code>conversation-session</code> 是一对：后者是槽契约名，本组件是默认实现。空白会话下 <code>session.blank &amp;&amp; conversationPhase(...) === 'blank'</code> 直接返回 null，连 <code>.viewArea</code> 都不进 DOM；挂载时 <code>bindDraftPersistence(actions.setDraft)</code> 的清理函数在卸载时解绑，依赖只有 <code>inputActions</code>。",
+      "keywords": [
+        "视图区",
+        "view area",
+        "默认视图",
+        "conversation.view"
+      ]
+    },
+    {
+      "id": "workspace-chip",
+      "name": "WorkspaceChip",
+      "exportName": "WorkspaceChip",
+      "zh": "工作区芯片",
+      "group": "conversation",
+      "summary": "空会话 hero 里的工作区选择芯片：最小 28px 高、左右 8px 内边距的透明按钮，内容依次是 16px 文件夹图标、13/20 的标签与 12px 下箭头，最大宽度 <code>min(100%, 360px)</code>、标签超出即省略。有标签时用打开态文件夹图标，<code>label === undefined</code> 时换闭合图标并显示「选择工作区」，所以它永远可点：首条消息之前切换工作区会把新会话流程挪到那个工作区的空白会话。悬停与菜单展开（<code>aria-expanded='true'</code>）共用同一个 <code>--dsw-alias-interactive-bg-hover</code> 底色，锁定时只剩 <code>cursor: default</code>。",
+      "source": "packages/client/ui-conversation/src/client/skeleton/EmptyHero.tsx#L38",
+      "css": [
+        "packages/client/ui-conversation/src/client/skeleton/HeroShell.module.css",
+        "packages/client/ui-conversation/src/client/skeleton/ConversationRoot.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-primary",
+        "--dsw-radius-sm"
+      ],
+      "specimens": [
+        {
+          "label": "占位态：闭合文件夹 + 「选择工作区」",
+          "html": "<div style='width:520px'><div class=\"heroWorkspaceRow\"><button type='button' class=\"workspace\" aria-label='选择工作区' aria-haspopup='menu' aria-expanded='false'><svg class=\"folder\" width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M1.50439 3.11059C1.50439 2.55831 1.95211 2.1106 2.50439 2.1106H5.43389C5.67773 2.1106 5.91318 2.19969 6.09593 2.36113L7.71649 3.79265C7.89924 3.95409 8.1347 4.04319 8.3785 4.04319H13.4958C14.0481 4.04319 14.4958 4.4909 14.4958 5.04319V12.8894C14.4958 13.4417 14.0481 13.8894 13.4958 13.8894H2.50439C1.95211 13.8894 1.50439 13.4417 1.50439 12.8894V4.04319V3.11059Z' stroke='currentColor'></path><path d='M3.63501 7.66614H12.3647' stroke='currentColor'></path></svg><span class=\"workspaceLabel\">选择工作区</span><svg class=\"chevron\" width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'></path></svg></button></div></div>"
+        },
+        {
+          "label": "已选工作区且菜单展开：aria-expanded 给出底色",
+          "note": "展开态；与悬停同色",
+          "html": "<div style='width:520px'><div class=\"heroWorkspaceRow\"><button type='button' class=\"workspace\" aria-label='选择工作区' aria-haspopup='menu' aria-expanded='true'><svg class=\"folder\" width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M2.55912 7.93683C2.67584 7.49906 3.0723 7.19446 3.52536 7.19446H13.6491C14.3061 7.19446 14.7846 7.81725 14.6153 8.45209L13.4411 12.856C13.3244 13.2938 12.9279 13.5984 12.4748 13.5984H2.35113C1.69411 13.5984 1.21562 12.9756 1.38489 12.3407L2.55912 7.93683Z' fill='currentColor' opacity='0.16'></path><path d='M13.6491 6.69446C14.6346 6.69453 15.3522 7.62895 15.0983 8.58118L13.9245 12.9845C13.7494 13.6412 13.1539 14.0988 12.4743 14.0988H2.35126C1.36574 14.0988 0.648153 13.1643 0.902044 12.212L2.07587 7.80774C2.25102 7.15128 2.84567 6.69455 3.52509 6.69446H13.6491ZM3.52509 7.69446C3.29865 7.69455 3.10004 7.84674 3.04169 8.06555L1.86786 12.4698C1.78345 12.7872 2.02285 13.0988 2.35126 13.0988H12.4743C12.7007 13.0988 12.8992 12.9463 12.9577 12.7277L14.1325 8.32336C14.2171 8.00598 13.9776 7.69453 13.6491 7.69446H3.52509Z' fill='currentColor'></path><path d='M4.7666 1.90137C5.13227 1.90144 5.48571 2.03525 5.75977 2.27734L7.27246 3.61328C7.36379 3.69382 7.48174 3.73828 7.60352 3.73828H12.3994C13.2276 3.73841 13.8993 4.41005 13.8994 5.23828V6.7168C13.8183 6.70327 13.735 6.69436 13.6494 6.69434H12.8994V5.23828C12.8993 4.96233 12.6754 4.73841 12.3994 4.73828H7.60352C7.23781 4.73828 6.88446 4.60438 6.61035 4.3623L5.09766 3.02637C5.00636 2.94576 4.88838 2.90144 4.7666 2.90137H2.0498C1.77366 2.90137 1.5498 3.12523 1.5498 3.40137V9.78223L0.902344 12.2119C0.648452 13.1642 1.36604 14.0986 2.35156 14.0986H2.0498C1.2214 14.0986 0.549838 13.427 0.549805 12.5986V3.40137C0.549805 2.57294 1.22138 1.90137 2.0498 1.90137H4.7666Z' fill='currentColor'></path></svg><span class=\"workspaceLabel\">deepseek-harness</span><svg class=\"chevron\" width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'></path></svg></button></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "buttonRef",
+          "type": "RefObject<HTMLButtonElement> | undefined",
+          "default": "—",
+          "desc": "按钮引用，交给工作区菜单当作锚点。"
+        },
+        {
+          "name": "label",
+          "type": "string | undefined",
+          "default": "—",
+          "desc": "芯片文案（见 workspaceLabel）；undefined 即占位态：闭合文件夹 + 「选择工作区」。"
+        },
+        {
+          "name": "menuOpen",
+          "type": "boolean",
+          "default": "false",
+          "desc": "菜单展开回显，写进 aria-expanded 并决定底色。"
+        },
+        {
+          "name": "onClick",
+          "type": "(() => void) | undefined",
+          "default": "—",
+          "desc": "切换菜单展开状态。"
+        },
+        {
+          "name": "t",
+          "type": "ConversationContentProps['t']",
+          "default": "—",
+          "desc": "conversation 命名空间翻译座位，提供 hero.chooseWorkspace 文案与 aria-label。"
+        }
+      ],
+      "notes": "标签由 <code>workspaceLabel(cwd)</code> 取路径 basename，纯分隔符路径回落到原始 cwd；上层 ConversationContent 还会把自动标题过一遍 <code>workspaceDisplayTitle</code>，所以自动名会跟随界面语言。芯片在 hero 行里由 <code>.heroWorkspaceRow</code>（左右 16/20px 内边距、gap 2px）承载，行里的其他座位是工作区菜单、预设与插件选项三个槽。锁定表单是 <code>:disabled</code>，只去掉 hover 反馈与指针手势，标签保持全对比度。图标颜色分别走 <code>.folder</code>（主色）与 <code>.chevron</code>（caption 灰）。",
+      "keywords": [
+        "工作区",
+        "workspace chip",
+        "选择工作区",
+        "文件夹"
+      ]
+    },
+    {
+      "id": "hero-shell",
+      "name": "HeroShell",
+      "exportName": "HeroShell",
+      "zh": "空态标题块",
+      "group": "conversation",
+      "summary": "空会话 hero 的标题块（只有标题，不含输入框与工作区行）：<code>.root</code> 把 <code>.stack</code> 在列里居中、左右各留 24px，宽度上限 <code>--dsh-composer-card-max-width</code>（与输入卡同一顶宽）；<code>.headline</code> 里是 34px 宽的鲸鱼标记（高按 23.16:17.04 换算 ≈25px）+ 26/32 主色标题 + 右上角 12/18 等宽字体的预览徽章（底色 <code>--dsw-alias-state-business-tertiary</code>、0.5px 描边、全圆角）。<code>.headline</code> 用 flex-wrap 做无断点降级：挤不下时鲸鱼整只换到标题上方一行，徽章再换到标题下方；<code>.body</code> 是留给输入卡的空位。",
+      "source": "packages/client/ui-conversation/src/client/skeleton/EmptyHero.tsx#L132",
+      "css": [
+        "packages/client/ui-conversation/src/client/skeleton/HeroShell.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-primary-bluish",
+        "--dsw-alias-state-business-tertiary"
+      ],
+      "specimens": [
+        {
+          "label": "默认：34px 鲸鱼 + 标题 + 预览版徽章（顶宽 712px）",
+          "html": "<div style='width:900px;height:220px;--dsh-composer-card-max-width:712px'><div class=\"root\"><div class=\"stack\"><div class=\"headline\"><span class=\"fishHitbox\"><svg class=\"fish\" width='34' height='25.01554404145078' viewBox='0 0 23.16 17.04' fill='none' aria-hidden='true'><path d='M22.9168 1.43018C22.6713 1.31018 22.5658 1.53918 22.4223 1.65519C22.3733 1.69269 22.3318 1.74169 22.2903 1.78669C21.9317 2.1697 21.5127 2.42121 20.9657 2.39121C20.1657 2.34621 19.4827 2.59771 18.8787 3.20973C18.7502 2.45521 18.3236 2.0047 17.6746 1.71569C17.3351 1.56568 16.9916 1.41518 16.7536 1.08867C16.5876 0.856163 16.5421 0.597155 16.4591 0.341647C16.4061 0.187643 16.3536 0.0301382 16.1761 0.00363739C15.9836 -0.0263635 15.9081 0.135141 15.8326 0.270145C15.5306 0.822162 15.4136 1.43018 15.4251 2.0462C15.4516 3.43174 16.0366 4.53527 17.1991 5.3203C17.3311 5.4103 17.3651 5.5003 17.3236 5.63181C17.2441 5.90231 17.1501 6.16482 17.0671 6.43533C17.0141 6.60784 16.9351 6.64584 16.7501 6.57033C16.1121 6.30383 15.5611 5.90931 15.074 5.4328C14.2475 4.63328 13.5 3.75075 12.568 3.05973C12.349 2.89822 12.13 2.74822 11.9034 2.60522C10.9524 1.68169 12.028 0.923165 12.277 0.833162C12.5375 0.739159 12.3675 0.41615 11.5259 0.42015C10.6844 0.42365 9.91439 0.705658 8.93286 1.08117C8.78935 1.13767 8.63835 1.17867 8.48384 1.21267C7.59332 1.04367 6.66829 1.00617 5.70226 1.11517C3.88321 1.31768 2.43016 2.1777 1.36213 3.64575C0.0790928 5.4103 -0.222916 7.41536 0.146595 9.50642C0.535106 11.7105 1.66014 13.535 3.38869 14.9616C5.18125 16.4406 7.24581 17.1657 9.60138 17.0266C11.0319 16.9441 12.6245 16.7526 14.421 15.2321C14.874 15.4576 15.3496 15.5476 16.1381 15.6151C16.7456 15.6716 17.3306 15.5851 17.7836 15.4911C18.4931 15.3411 18.4441 14.6841 18.1876 14.5636C16.1081 13.595 16.5646 13.9891 16.1496 13.67C17.2061 12.42 18.8202 10.1979 19.3182 7.17235C19.3672 6.83834 19.4297 6.36783 19.4222 6.09732C19.4182 5.93231 19.4562 5.86831 19.6447 5.84931C20.1657 5.78931 20.6712 5.64681 21.1357 5.3913C22.4833 4.65528 23.0268 3.44624 23.1548 1.9972C23.1738 1.77569 23.1508 1.54668 22.9168 1.43018ZM11.1749 14.4736C9.15936 12.889 8.18184 12.3675 7.77832 12.39C7.40081 12.4125 7.46881 12.8445 7.55182 13.126C7.63882 13.404 7.75182 13.5955 7.91033 13.8396C8.01983 14.0011 8.09533 14.2411 7.80083 14.4216C7.15181 14.8231 6.02327 14.2866 5.97027 14.2601C4.65673 13.4865 3.5587 12.4655 2.78467 11.069C2.03715 9.72493 1.60314 8.28289 1.53164 6.74384C1.51264 6.37233 1.62214 6.24082 1.99215 6.17332C2.47916 6.08332 2.98118 6.06432 3.46769 6.13582C5.52476 6.43633 7.27581 7.35586 8.74385 8.8129C9.58188 9.64243 10.2159 10.634 10.8689 11.6025C11.5634 12.631 12.3105 13.611 13.262 14.4146C13.598 14.6961 13.866 14.9101 14.1225 15.0681C13.349 15.1546 12.058 15.1731 11.1749 14.4746L11.1749 14.4736ZM12.141 8.25988C12.141 8.09488 12.273 7.96338 12.439 7.96338C12.4765 7.96338 12.5105 7.97088 12.541 7.98188C12.5825 7.99688 12.6205 8.01938 12.6505 8.05338C12.7035 8.10588 12.7335 8.18088 12.7335 8.25988C12.7335 8.42489 12.6015 8.55639 12.4355 8.55639C12.2695 8.55639 12.141 8.42489 12.141 8.25988ZM15.1415 9.79893C14.949 9.87793 14.7565 9.94544 14.5715 9.95294C14.2845 9.96794 13.9715 9.85143 13.8015 9.70893C13.5375 9.48742 13.3485 9.36342 13.2695 8.97691C13.2355 8.8119 13.2545 8.55639 13.2845 8.40989C13.3525 8.09438 13.277 7.89187 13.0545 7.70787C12.8735 7.55786 12.643 7.51636 12.39 7.51636C12.2955 7.51636 12.209 7.47486 12.1445 7.44136C12.039 7.38886 11.9519 7.25735 12.035 7.09585C12.0615 7.04335 12.19 6.91584 12.22 6.89334C12.5635 6.69784 12.9595 6.76184 13.326 6.90834C13.6655 7.04735 13.9225 7.30236 14.292 7.66287C14.6695 8.09838 14.7375 8.21838 14.9525 8.54539C15.1225 8.8009 15.277 9.06341 15.3831 9.36392C15.4471 9.55142 15.3641 9.70493 15.1415 9.79893Z' fill='currentColor'></path></svg></span><span class=\"titleGroup\"><span>探索未至之境</span><span class=\"previewBadge\">预览版</span></span></div><div class=\"body\"></div></div></div></div>",
+          "note": "输入卡与工作区行是它的兄弟节点，不在这一层"
+        },
+        {
+          "label": "窄容器（300px）：鲸鱼换到上一行，徽章换到标题下一行",
+          "html": "<div style='width:300px;height:260px;--dsh-composer-card-max-width:712px'><div class=\"root\"><div class=\"stack\"><div class=\"headline\"><span class=\"fishHitbox\"><svg class=\"fish\" width='34' height='25.01554404145078' viewBox='0 0 23.16 17.04' fill='none' aria-hidden='true'><path d='M22.9168 1.43018C22.6713 1.31018 22.5658 1.53918 22.4223 1.65519C22.3733 1.69269 22.3318 1.74169 22.2903 1.78669C21.9317 2.1697 21.5127 2.42121 20.9657 2.39121C20.1657 2.34621 19.4827 2.59771 18.8787 3.20973C18.7502 2.45521 18.3236 2.0047 17.6746 1.71569C17.3351 1.56568 16.9916 1.41518 16.7536 1.08867C16.5876 0.856163 16.5421 0.597155 16.4591 0.341647C16.4061 0.187643 16.3536 0.0301382 16.1761 0.00363739C15.9836 -0.0263635 15.9081 0.135141 15.8326 0.270145C15.5306 0.822162 15.4136 1.43018 15.4251 2.0462C15.4516 3.43174 16.0366 4.53527 17.1991 5.3203C17.3311 5.4103 17.3651 5.5003 17.3236 5.63181C17.2441 5.90231 17.1501 6.16482 17.0671 6.43533C17.0141 6.60784 16.9351 6.64584 16.7501 6.57033C16.1121 6.30383 15.5611 5.90931 15.074 5.4328C14.2475 4.63328 13.5 3.75075 12.568 3.05973C12.349 2.89822 12.13 2.74822 11.9034 2.60522C10.9524 1.68169 12.028 0.923165 12.277 0.833162C12.5375 0.739159 12.3675 0.41615 11.5259 0.42015C10.6844 0.42365 9.91439 0.705658 8.93286 1.08117C8.78935 1.13767 8.63835 1.17867 8.48384 1.21267C7.59332 1.04367 6.66829 1.00617 5.70226 1.11517C3.88321 1.31768 2.43016 2.1777 1.36213 3.64575C0.0790928 5.4103 -0.222916 7.41536 0.146595 9.50642C0.535106 11.7105 1.66014 13.535 3.38869 14.9616C5.18125 16.4406 7.24581 17.1657 9.60138 17.0266C11.0319 16.9441 12.6245 16.7526 14.421 15.2321C14.874 15.4576 15.3496 15.5476 16.1381 15.6151C16.7456 15.6716 17.3306 15.5851 17.7836 15.4911C18.4931 15.3411 18.4441 14.6841 18.1876 14.5636C16.1081 13.595 16.5646 13.9891 16.1496 13.67C17.2061 12.42 18.8202 10.1979 19.3182 7.17235C19.3672 6.83834 19.4297 6.36783 19.4222 6.09732C19.4182 5.93231 19.4562 5.86831 19.6447 5.84931C20.1657 5.78931 20.6712 5.64681 21.1357 5.3913C22.4833 4.65528 23.0268 3.44624 23.1548 1.9972C23.1738 1.77569 23.1508 1.54668 22.9168 1.43018ZM11.1749 14.4736C9.15936 12.889 8.18184 12.3675 7.77832 12.39C7.40081 12.4125 7.46881 12.8445 7.55182 13.126C7.63882 13.404 7.75182 13.5955 7.91033 13.8396C8.01983 14.0011 8.09533 14.2411 7.80083 14.4216C7.15181 14.8231 6.02327 14.2866 5.97027 14.2601C4.65673 13.4865 3.5587 12.4655 2.78467 11.069C2.03715 9.72493 1.60314 8.28289 1.53164 6.74384C1.51264 6.37233 1.62214 6.24082 1.99215 6.17332C2.47916 6.08332 2.98118 6.06432 3.46769 6.13582C5.52476 6.43633 7.27581 7.35586 8.74385 8.8129C9.58188 9.64243 10.2159 10.634 10.8689 11.6025C11.5634 12.631 12.3105 13.611 13.262 14.4146C13.598 14.6961 13.866 14.9101 14.1225 15.0681C13.349 15.1546 12.058 15.1731 11.1749 14.4746L11.1749 14.4736ZM12.141 8.25988C12.141 8.09488 12.273 7.96338 12.439 7.96338C12.4765 7.96338 12.5105 7.97088 12.541 7.98188C12.5825 7.99688 12.6205 8.01938 12.6505 8.05338C12.7035 8.10588 12.7335 8.18088 12.7335 8.25988C12.7335 8.42489 12.6015 8.55639 12.4355 8.55639C12.2695 8.55639 12.141 8.42489 12.141 8.25988ZM15.1415 9.79893C14.949 9.87793 14.7565 9.94544 14.5715 9.95294C14.2845 9.96794 13.9715 9.85143 13.8015 9.70893C13.5375 9.48742 13.3485 9.36342 13.2695 8.97691C13.2355 8.8119 13.2545 8.55639 13.2845 8.40989C13.3525 8.09438 13.277 7.89187 13.0545 7.70787C12.8735 7.55786 12.643 7.51636 12.39 7.51636C12.2955 7.51636 12.209 7.47486 12.1445 7.44136C12.039 7.38886 11.9519 7.25735 12.035 7.09585C12.0615 7.04335 12.19 6.91584 12.22 6.89334C12.5635 6.69784 12.9595 6.76184 13.326 6.90834C13.6655 7.04735 13.9225 7.30236 14.292 7.66287C14.6695 8.09838 14.7375 8.21838 14.9525 8.54539C15.1225 8.8009 15.277 9.06341 15.3831 9.36392C15.4471 9.55142 15.3641 9.70493 15.1415 9.79893Z' fill='currentColor'></path></svg></span><span class=\"titleGroup\"><span>探索未至之境</span><span class=\"previewBadge\">预览版</span></span></div><div class=\"body\"></div></div></div></div>",
+          "note": "溢出驱动的降级，没有断点"
+        }
+      ],
+      "props": [
+        {
+          "name": "t",
+          "type": "ConversationContentProps['t']",
+          "default": "—",
+          "desc": "conversation 命名空间翻译座位：hero.headline 与 hero.preview 两句文案。"
+        },
+        {
+          "name": "renderSlot",
+          "type": "ConversationContentProps['renderSlot']",
+          "default": "—",
+          "desc": "渲染 conversation.hero.brand.mark 槽（收到 size:34 与 .fish 类名），缺省时回落到内置鲸鱼 SVG。"
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "default": "—",
+          "desc": "stack 之后的浮层内容（弹窗等），正常为空。"
+        }
+      ],
+      "notes": "鲸鱼静止就是一条填充路径；鼠标进入 <code>.fishHitbox</code> 时（<code>(hover: hover) and (prefers-reduced-motion: no-preference)</code>）挂上 1.6s 的 <code>hero-fish-swim</code> 摆动，同时（仅在允许动效时）SMIL 在静止路径与两段变形路径之间插值 <code>d</code>，造成尾鳍摆动的形变——目录里给的是静止快照。徽章是产品自加的角标（figma 源里没有），字体走 <code>--ds-font-family-code</code>，配色用 business tertiary 底 + bluish 主色字。整套 hero 里 <code>.modalInput</code> / <code>.modalAction</code> / <code>.modalError</code> 三条规则不属于本组件的 DOM（是同一张样式表里的工作区弹窗遗留），示例未使用。",
+      "keywords": [
+        "hero",
+        "空态",
+        "标题块",
+        "鲸鱼",
+        "预览版"
+      ]
+    },
+    {
+      "id": "todo-dock",
+      "name": "TodoDock",
+      "exportName": "TodoDock",
+      "zh": "待办停靠条",
+      "group": "conversation",
+      "summary": "输入卡上方的待办停靠条：读 <code>todos</code> 投影，空数组时返回 null；否则渲染一条菜单材质的卡片（底色 <code>--dsw-specific-menu</code> + <code>--dsw-elevation-panel</code> 与 <code>backdrop-filter</code>、圆角 <code>--dsw-radius-lg</code>，宽度由 <code>--dsh-composer-card-max-width</code> 与 dock inset 算成「比输入卡窄 32px」（4 × <code>--dsh-composer-dock-inset</code>，缺省 8px）后水平居中）。默认折叠成一行 13px 头部：清单字形、标题「任务」、U+2002 分隔的进度摘要（0 计数段整段省略）、右侧向上箭头；展开后 <code>.list</code> 最高 180px 内滚动，每行 16px 图标槽里放 <code>StateDot</code>（completed→done 绿点、in_progress→ongoing 转环、pending→idle 灰点），正文 13/20 单行省略。",
+      "source": "packages/client/ui-conversation/src/client/skeleton/TodoPanel.tsx#L106",
+      "css": [
+        "packages/client/ui-conversation/src/client/skeleton/TodoPanel.module.css",
+        "packages/client/ui-primitives/src/StateDot.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l1",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-primary-foreground",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-scrollbar-bg-l2",
+        "--dsw-alias-scrollbar-hover-l2",
+        "--dsw-alias-state-error-primary",
+        "--dsw-alias-state-idle-primary",
+        "--dsw-alias-state-success-primary",
+        "--dsw-alias-state-warn-primary",
+        "--dsw-elevation-panel",
+        "--dsw-menu-backdrop-filter",
+        "--dsw-radius-lg",
+        "--dsw-specific-menu"
+      ],
+      "specimens": [
+        {
+          "label": "折叠（默认）：标题 + 「·」分隔的进度摘要 + 向上箭头",
+          "html": "<div style='width:800px;--dsh-composer-side-clearance:16px;--dsh-composer-dock-inset:8px;--dsh-composer-card-max-width:712px'><section class=\"root\" data-testid='todo-panel' aria-label='任务'><div class=\"body\"><button type='button' class=\"header\" aria-expanded='false'><span class=\"lead\" aria-hidden='true'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' stroke-width='1'><path d='M3.75 6.25C4.7165 6.25 5.5 5.4665 5.5 4.5C5.5 3.5335 4.7165 2.75 3.75 2.75C2.7835 2.75 2 3.5335 2 4.5C2 5.4665 2.7835 6.25 3.75 6.25Z' stroke='currentColor'></path><path d='M7.5 4.5H13.5' stroke='currentColor'></path><path d='M3.75 13.25C4.7165 13.25 5.5 12.4665 5.5 11.5C5.5 10.5335 4.7165 9.75 3.75 9.75C2.7835 9.75 2 10.5335 2 11.5C2 12.4665 2.7835 13.25 3.75 13.25Z' stroke='currentColor'></path><path d='M7.5 11.5H13.5' stroke='currentColor'></path></svg></span><span class=\"title\">任务</span><span class=\"progress\">3 已完成&ensp;·&ensp;1 进行中&ensp;·&ensp;2 待处理</span><span class=\"chevron\" aria-hidden='true'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' stroke-width='1'><path d='M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10' stroke='currentColor'></path></svg></span></button></div></section></div>",
+          "note": "宽度公式读的是会话正文里的 <code>--dsh-composer-*</code>，示例用布局内联补齐这条链"
+        },
+        {
+          "label": "展开：done / ongoing / idle 三种状态标记",
+          "html": "<div style='width:800px;--dsh-composer-side-clearance:16px;--dsh-composer-dock-inset:8px;--dsh-composer-card-max-width:712px'><section class=\"root\" data-testid='todo-panel' aria-label='任务'><div class=\"body\"><button type='button' class=\"header\" aria-expanded='true'><span class=\"lead\" aria-hidden='true'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' stroke-width='1'><path d='M3.75 6.25C4.7165 6.25 5.5 5.4665 5.5 4.5C5.5 3.5335 4.7165 2.75 3.75 2.75C2.7835 2.75 2 3.5335 2 4.5C2 5.4665 2.7835 6.25 3.75 6.25Z' stroke='currentColor'></path><path d='M7.5 4.5H13.5' stroke='currentColor'></path><path d='M3.75 13.25C4.7165 13.25 5.5 12.4665 5.5 11.5C5.5 10.5335 4.7165 9.75 3.75 9.75C2.7835 9.75 2 10.5335 2 11.5C2 12.4665 2.7835 13.25 3.75 13.25Z' stroke='currentColor'></path><path d='M7.5 11.5H13.5' stroke='currentColor'></path></svg></span><span class=\"title\">任务</span><span class=\"progress\">1 已完成&ensp;·&ensp;1 进行中&ensp;·&ensp;1 待处理</span><span class=\"chevron\" aria-hidden='true'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'></path></svg></span></button><ul class=\"list\"><li class=\"item\" data-status='completed'><span class=\"glyph\" role='img' aria-label='已完成'><span class=\"dot\" data-state='done' style='width:10px;height:10px' aria-hidden='true'></span></span><span class=\"content\">读完 InputBar 与 HeroShell 的样式表</span></li><li class=\"item\" data-status='in_progress'><span class=\"glyph\" role='img' aria-label='进行中'><svg class=\"spinner\" data-state='ongoing' width='14' height='14' viewBox='0 0 24 24' aria-hidden='true'><g class=\"spinnerMotion\"><circle class=\"spinnerTrack\" cx='12' cy='12' r='9.5'></circle><circle class=\"spinnerArc\" cx='12' cy='12' r='9.5'></circle></g></svg></span><span class=\"content\">重构 ConversationMainPanel 的两个座位</span></li><li class=\"item\" data-status='pending'><span class=\"glyph\" role=\"img\" aria-label='待处理'><span class=\"dot\" data-state='idle' style='width:10px;height:10px' aria-hidden='true'></span></span><span class=\"content\">跑一遍 pnpm run test:gui</span></li></ul></div></section></div>",
+          "note": "列表最高 180px，超出在卡内滚动"
+        }
+      ],
+      "props": [
+        {
+          "name": "useProjection",
+          "type": "PropsRuntime<'conversation.input.dock'>['useProjection']",
+          "default": "—",
+          "desc": "投影读取座位：<code>useProjection('todos')</code> 取当前会话的任务清单。"
+        },
+        {
+          "name": "t",
+          "type": "PropsLocale<'conversation'>['t']",
+          "default": "—",
+          "desc": "dock entry 的会话字典座：标题、进度模板与状态名。"
+        }
+      ],
+      "notes": "这是 <code>conversation.input.dock</code> 槽里 <code>id: todo</code>、<code>order: 0</code> 的占用者，本体是 <code>TodoPanel</code>：<code>todos ?? []</code> 直接喂给它，空清单就什么都不渲染。状态映射是闭集：<code>completed → done</code>、<code>in_progress → ongoing</code>、<code>pending → idle</code>，越界用 <code>assertNever</code> 抛错。每个状态标记都是装饰性的（<code>aria-hidden</code>），语义由外层 <code>role='img'</code> 的 <code>aria-label</code> 承担；进度摘要用 U+2002 宽空格加 <code>·</code>，因为 HTML 会折叠连续半角空格。卡片的滚动条颜色被重绑到 l2（<code>--dsh-scrollbar-thumb</code> 系列在 <code>.root</code> 上声明、继承进 <code>.list</code>）。",
+      "keywords": [
+        "待办",
+        "任务",
+        "todo dock",
+        "todo panel",
+        "进度"
+      ]
+    },
+    {
+      "id": "plain-user-text",
+      "name": "PlainUserText",
+      "exportName": "PlainUserText",
+      "zh": "纯文本片段",
+      "group": "conversation",
+      "summary": "用户文本里「普通子串」的渲染器：把一个没有匹配上任何业务规则的片段原样包进 <code>.plainRun</code>（<code>font-size: inherit; line-height: inherit</code>），整段不截断、不做引用识别，因此 <code>@</code>、<code>/</code>、反引号都按字面显示。节点带 <code>data.display</code> 时显示替换文案而不是原始子串（<code>display ?? text</code>）。它自己不产生盒子，行内流完全交给宿主（气泡或队列行），所以同一段落里的其他业务节点可以继续按各自的规则渲染。",
+      "source": "packages/client/ui-conversation/src/client/user-text/UserText.tsx#L53",
+      "css": [
+        "packages/client/ui-primitives/src/user-text.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-state-business-primary",
+        "--dsw-font-markdown-code-font-family"
+      ],
+      "specimens": [
+        {
+          "label": "原样回显：未匹配的子串按普通字符输出",
+          "note": "宿主只给宽度，字号/行高都继承",
+          "html": "<div style='width:560px'><span class=\"plainRun\">把 packages/client/ui-conversation 的 README 读完，@ 与 / 都按普通字符显示</span></div>"
+        },
+        {
+          "label": "带 display 覆盖：显示替换文案而不是原始子串",
+          "html": "<div style='width:560px'><span class=\"plainRun\">队列里还有 2 条待发送消息</span></div>",
+          "note": "同一 DOM，只是 node.data.display 有值"
+        }
+      ],
+      "props": [
+        {
+          "name": "node",
+          "type": "UserTextNode<'text'>",
+          "default": "—",
+          "desc": "解析器产出的纯文本节点：<code>start/end</code> 是原文半开区间，<code>data.text</code> 是原始子串、<code>data.display</code> 是可选的显示替换。"
+        }
+      ],
+      "notes": "它只负责「显示」，匹配与切分都在数据层的规则里：规则返回 <code>text</code> 节点且带 <code>display</code> 时（例如把多行草稿压成一行摘要），本组件就显示那句替换文案。行内样式来自 ui-primitives 的 <code>user-text.module.css</code>：<code>.plainRun</code> 只声明继承字号与行高，不做任何块级化，所以它永远跟着宿主行盒走；需要单行省略时由宿主的 <code>.ellipsis</code>（UserText 的根）或队列行样式负责，与本组件无关。",
+      "keywords": [
+        "纯文本",
+        "plain text",
+        "未匹配",
+        "user text node",
+        "原样"
+      ]
+    }
+  ]
+}

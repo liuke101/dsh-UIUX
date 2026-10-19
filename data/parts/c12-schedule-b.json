@@ -1,0 +1,686 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "id": "session-schedule-hover",
+      "name": "SessionScheduleHover",
+      "exportName": "SessionScheduleHover",
+      "zh": "任务悬浮段",
+      "group": "panels",
+      "summary": "侧栏会话行悬浮卡里的「本会话自动化任务」段，落在卡片标题与相对时间之下、状态行之上：<code>.tasks</code> 是 8px 间距的列，只显示前 <code>SESSION_HOVER_TASK_LIMIT = 2</code> 条（逾期优先），多出来的折成一行 12px/16px 的「另有 N 个任务」。一行由 12px 时钟字形（<code>.taskIcon</code>，<code>#CFD3D6</code>）、12px/16px 的任务名（白色、可折行）和时刻行组成——时刻行是「频率 · 绝对时刻 相对距离」，相对距离再降一档到 <code>#ADB2B8</code>。卡片表面在明暗两种主题下都是固定的 <code>#2C2C2E</code>，所以行内用卡片自己的字面灰阶，而不是会随表面翻转的主题变量。参考时钟只在挂载时取一次，长悬停时倒计时不跳动；读不到活跃任务时整段不渲染。",
+      "source": "packages/client/ui-schedule/src/client/SessionScheduleHover.tsx#L44",
+      "css": [
+        "packages/client/ui-schedule/src/client/SessionScheduleMark.module.css",
+        "packages/client/ui-workspace/src/client/rows/Rows.module.css",
+        "packages/client/ui-primitives/src/HoverCard.module.css"
+      ],
+      "tokens": [
+        "--dsw-radius-lg",
+        "--dsw-shadow-lv3"
+      ],
+      "specimens": [
+        {
+          "label": "悬浮卡里的任务段：两条任务 + 省略行",
+          "note": "静态快照：门户卡片由 fixed 拉回文档流；卡片表面两种主题下都是 <code>#2C2C2E</code>，所以文字用固定灰阶而不是主题变量",
+          "html": "<div style=\"width:280px\"><span class=\"root\"><div class=\"card snapshotStatic\" role=\"button\" tabindex=\"0\" aria-label=\"复制: 修复 ui-schedule 的回归用例\"><div class=\"hoverContent\"><div class=\"hoverTitle\">修复 ui-schedule 的回归用例</div><div class=\"hoverTime\">2 小时前</div><div class=\"tasks\" data-session-schedule-tasks=\"\"><div class=\"task\" data-session-schedule-task=\"\"><span class=\"taskIcon\" aria-hidden=\"true\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z\" stroke=\"currentColor\"/><path d=\"M8 4.31V8.46L11 10.08\" stroke=\"currentColor\"/></svg></span><span class=\"taskBody\"><span class=\"taskName\">每天 09:30 运行 pnpm run test:gui</span><span class=\"taskTiming\">每天 09:30 · <time datetime=\"2026-10-19T01:30:00.000Z\">2026年10月19日 09:30</time> <span class=\"taskRelative\">(14小时后)</span></span></span></div><div class=\"task\" data-session-schedule-task=\"\"><span class=\"taskIcon\" aria-hidden=\"true\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z\" stroke=\"currentColor\"/><path d=\"M8 4.31V8.46L11 10.08\" stroke=\"currentColor\"/></svg></span><span class=\"taskBody\"><span class=\"taskName\">每周五 17:00 回顾 lint 报告</span><span class=\"taskTiming\">每周五 17:00 · <time datetime=\"2026-10-23T09:00:00.000Z\">2026年10月23日 17:00</time> <span class=\"taskRelative\">(4天后)</span></span></span></div><div class=\"omitted\">另有 1 个任务</div></div></div></div></span></div>",
+          "css": "/* 状态模拟 / 静态快照：门户卡片在真实产品里是 HoverCard.module.css 的 .card\n   （position: fixed，left/top 由 JS 写入）；这里拉回文档流，同时保留它作为卡片内容的\n   包含块。 */\n.card.snapshotStatic { position: relative; inset: auto; }"
+        },
+        {
+          "label": "逾期优先：已逾期的一次性任务排在最前",
+          "note": "<code>orderScheduleRecords</code> 把逾期目标排在前面；参考时钟挂载时取一次，长悬停时倒计时不跳动。这一例恰好两条任务，所以没有省略行",
+          "html": "<div style=\"width:280px\"><span class=\"root\"><div class=\"card snapshotStatic\" role=\"button\" tabindex=\"0\" aria-label=\"复制: 修复 ui-schedule 的回归用例\"><div class=\"hoverContent\"><div class=\"hoverTitle\">修复 ui-schedule 的回归用例</div><div class=\"hoverTime\">2 小时前</div><div class=\"tasks\" data-session-schedule-tasks=\"\"><div class=\"task\" data-session-schedule-task=\"\"><span class=\"taskIcon\" aria-hidden=\"true\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z\" stroke=\"currentColor\"/><path d=\"M8 4.31V8.46L11 10.08\" stroke=\"currentColor\"/></svg></span><span class=\"taskBody\"><span class=\"taskName\">今天 18:00 提醒我提交 PR</span><span class=\"taskTiming\">仅一次 · <time datetime=\"2026-10-18T10:00:00.000Z\">2026年10月18日 18:00</time> <span class=\"taskRelative\">(已逾期 2小时)</span></span></span></div><div class=\"task\" data-session-schedule-task=\"\"><span class=\"taskIcon\" aria-hidden=\"true\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z\" stroke=\"currentColor\"/><path d=\"M8 4.31V8.46L11 10.08\" stroke=\"currentColor\"/></svg></span><span class=\"taskBody\"><span class=\"taskName\">每天 09:30 运行 pnpm run test:gui</span><span class=\"taskTiming\">每天 09:30 · <time datetime=\"2026-10-19T01:30:00.000Z\">2026年10月19日 09:30</time> <span class=\"taskRelative\">(14小时后)</span></span></span></div></div></div></div></span></div>",
+          "css": "/* 状态模拟 / 静态快照：门户卡片在真实产品里是 HoverCard.module.css 的 .card\n   （position: fixed，left/top 由 JS 写入）；这里拉回文档流，同时保留它作为卡片内容的\n   包含块。 */\n.card.snapshotStatic { position: relative; inset: auto; }"
+        }
+      ],
+      "props": [
+        {
+          "name": "sessionId",
+          "type": "SessionId",
+          "default": "—",
+          "desc": "这一行显示的会话；共享目录按它过滤出本会话的活跃任务。"
+        },
+        {
+          "name": "useCatalog",
+          "type": "SessionScheduleCatalogHook",
+          "default": "—",
+          "desc": "共享 Host 任务目录上的 selector hook；行、省略计数与 hasActive 都从它派生。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<typeof NS>",
+          "default": "—",
+          "desc": "schedule 词典：频率文案、绝对时刻的语言，以及省略行的「另有 {count} 个任务」。"
+        }
+      ],
+      "notes": "它挂在 <code>sidebar.session.row.hover</code> 座位上，只在卡片打开时挂载；任务行的样式表与 <code>SessionScheduleMark</code> 共用（<code>SessionScheduleMark.module.css</code>）。示例里的卡片外壳（<code>HoverCard.module.css</code> 的 <code>.card</code>、<code>Rows.module.css</code> 的 <code>.hoverContent</code>/<code>.hoverTitle</code>/<code>.hoverTime</code>）由承载这个座位的会话行绘制，一并列进 <code>css</code>——少了它，固定的浅灰文字会落在明亮底上，看不出真实观感。时刻行里的 <code>time[datetime]</code> 带机器可读的 UTC 时刻，括号里是共享时钟算出的相对距离（未来向上取整、逾期向下取整）。",
+      "keywords": [
+        "会话悬浮卡",
+        "session hover card",
+        "自动化任务",
+        "Scheduled tasks",
+        "sidebar seat"
+      ]
+    },
+    {
+      "id": "session-schedule-mark",
+      "name": "SessionScheduleMark",
+      "exportName": "SessionScheduleMark",
+      "zh": "任务时钟标记",
+      "group": "panels",
+      "summary": "侧栏会话行前导格里的时钟标记：<code>.mark</code> 是 16×20 的 inline-flex 居中方格，颜色 <code>--dsw-alias-label-tertiary</code>，里面是 14px 时钟字形加一段视觉隐藏的计数文案（<code>{count} 个自动化任务</code>）。宽度与状态点占的 16px 格完全一致，所以有没有标记，标题都对齐在同一列。只有这一行的主状态是 idle 时，行才把这个格子交给它；待处理的交互、新消息或进行中的活动会让状态点占着同一格，标记根本不挂载。字形是 <code>aria-hidden</code>，计数只靠那段隐藏文案到达读屏。",
+      "source": "packages/client/ui-schedule/src/client/SessionScheduleMark.tsx#L40",
+      "css": [
+        "packages/client/ui-schedule/src/client/SessionScheduleMark.module.css",
+        "packages/client/ui-workspace/src/client/rows/Rows.module.css",
+        "packages/client/ui-primitives/src/StateDot.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-state-warn-primary"
+      ],
+      "specimens": [
+        {
+          "label": "会话行的前导格：16px 时钟标记",
+          "note": "行 32px 高、前导格 16×20；标记只在行处于 idle 时挂载，计数在视觉上隐藏",
+          "html": "<div style=\"width:300px\"><div class=\"sessionRow\" role=\"treeitem\" aria-selected=\"false\"><span class=\"slot\"><span class=\"mark\" data-session-schedule-mark=\"\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z\" stroke=\"currentColor\"/><path d=\"M8 4.31V8.46L11 10.08\" stroke=\"currentColor\"/></svg><span class=\"c0-visuallyHidden\">2 个自动化任务</span></span></span><span class=\"title\">修复 ui-schedule 的回归用例</span><span class=\"time\">2 小时前</span></div></div>",
+          "bg": "sidebar"
+        },
+        {
+          "label": "对照：行不是 idle 时同一格换回状态点（本组件不挂载）",
+          "note": "等待确认的行把前导格留给状态点，因此时钟标记不出现；两行只在前导格上不同",
+          "html": "<div style=\"width:300px\"><div class=\"sessionRow\" role=\"treeitem\" aria-selected=\"false\"><span class=\"slot\"><span class=\"mark\" data-session-schedule-mark=\"\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z\" stroke=\"currentColor\"/><path d=\"M8 4.31V8.46L11 10.08\" stroke=\"currentColor\"/></svg><span class=\"c0-visuallyHidden\">2 个自动化任务</span></span></span><span class=\"title\">修复 ui-schedule 的回归用例</span><span class=\"time\">2 小时前</span></div><div class=\"sessionRow selected\" role=\"treeitem\" aria-selected=\"true\"><span class=\"slot\"><span class=\"c2-dot\" data-state=\"warning\" style=\"width:10px;height:10px\" aria-hidden=\"true\"></span><span class=\"c1-visuallyHidden\">等待你的确认</span></span><span class=\"title\">把 lint 报告整理成清单</span><span class=\"time\">5 分钟前</span></div></div>",
+          "bg": "sidebar"
+        }
+      ],
+      "props": [
+        {
+          "name": "sessionId",
+          "type": "SessionId",
+          "default": "—",
+          "desc": "这一行显示的会话；目录按它解析出活跃任务与计数。"
+        },
+        {
+          "name": "useCatalog",
+          "type": "SessionScheduleCatalogHook",
+          "default": "—",
+          "desc": "共享 Host 任务目录上的 selector hook；读取未落定、失败、已结束或为空时不渲染。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<typeof NS>",
+          "default": "—",
+          "desc": "schedule 词典：隐藏文案「{count} 个自动化任务」。"
+        }
+      ],
+      "notes": "点击标记会被 <code>stopPropagation</code> 吃掉，不会顺带激活会话——行仍保留其余格子的点击区。它不激活、不保留、也不取消归档任务，并且从不读会话日志。示例里的行（<code>Rows.module.css</code> 的 <code>.sessionRow</code>/<code>.slot</code>/<code>.title</code>/<code>.time</code>）由会话列表绘制，一并列进 <code>css</code>；第二例前导格里的状态点来自 <code>StateDot.module.css</code> 的 <code>.dot</code>，正是本组件让位的情形。",
+      "keywords": [
+        "时钟标记",
+        "clock mark",
+        "会话行",
+        "session row leading",
+        "自动化任务"
+      ]
+    },
+    {
+      "id": "task-detail",
+      "name": "TaskDetail",
+      "exportName": "TaskDetail",
+      "zh": "任务详情",
+      "group": "panels",
+      "summary": "任务页右栏与右栏「任务」标签页共用的详情面板 <code>&lt;aside class=\"detail\"&gt;</code>：左缘一条 0.5px <code>--dsw-alias-border-l4</code>、<code>flex: 0 0 47%</code>（放进任务标签页时由 <code>.tabBody &gt; .detail</code> 改成 <code>flex:1 1 auto</code> 并去掉左缘）。顶部是 44px（标签页里 37px）的 <code>.detailTabsBar</code>：左侧「规则 / 任务运行记录」两个 13px/16px 标签（选中态品牌色加 2px 下划线，方向键切换），右端是 28×28 的图标按钮与「关联会话 ›」胶囊（28px 高、14px 圆角）。下面 <code>.detailScroll</code> 自己滚动（内边距 <code>24px var(--detail-gutter) 28px</code>，gutter 随断点取 24/20/16px）：20px/28px 的 <code>.editName</code>（悬停才出一条下划线，已结束的任务换成 <code>.readonlyName</code> 纯文本）、13px tertiary 的「下次运行 + 绝对时刻 + 倒计时」、112–160px 高且 <code>field-sizing:content</code> 的指令框（只读时是 <code>.readonlyPrompt</code>），最后是 <code>.ruleCard</code>「运行时间」卡。",
+      "source": "packages/client/ui-schedule/src/client/TaskDetail.tsx#L291",
+      "css": [
+        "packages/client/ui-schedule/src/client/TaskManagerPage.module.css",
+        "packages/client/ui-primitives/src/Button.module.css",
+        "packages/client/ui-primitives/src/Modal.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-base",
+        "--dsw-alias-bg-layer-1",
+        "--dsw-alias-bg-layer-2",
+        "--dsw-alias-bg-module-platform",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-border-l4",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-label-primary-foreground",
+        "--dsw-alias-state-business-primary",
+        "--dsw-alias-state-error-primary",
+        "--dsw-alias-button-primary-fill",
+        "--dsw-alias-button-primary-hover",
+        "--dsw-alias-bg-mask-1",
+        "--dsw-alias-scrollbar-bg-l2",
+        "--dsw-alias-scrollbar-hover-l2",
+        "--dsw-elevation-prominent",
+        "--dsw-mask-blur",
+        "--dsw-focus-ring-color",
+        "--dsw-focus-ring-width",
+        "--dsw-radius-md",
+        "--dsw-radius-sm",
+        "--dsw-radius-panel"
+      ],
+      "specimens": [
+        {
+          "label": "「规则」视图：启用中的任务，名称与指令都可编辑",
+          "note": "右栏任务标签页里的呈现（<code>.tabBody &gt; .detail</code>，标签条 37px）；运行时间卡的每个值控件都是 32px 高、18px 圆角的胶囊悬停底",
+          "pad": "sm",
+          "html": "<div class=\"tabBody\" style=\"width:620px;height:560px\"><aside class=\"detail\" id=\"task-detail\" tabindex=\"-1\" aria-label=\"任务详情\"><div class=\"detailTabsBar\"><div class=\"detailTabs\" role=\"tablist\" aria-label=\"任务详情视图\"><button type=\"button\" class=\"detailTab\" role=\"tab\" id=\"detail-rule-tab\" data-detail-tab=\"rule\" aria-controls=\"detail-rule-panel\" aria-selected=\"true\" tabindex=\"0\">规则</button><button type=\"button\" class=\"detailTab\" role=\"tab\" id=\"detail-records-tab\" data-detail-tab=\"records\" aria-controls=\"detail-records-panel\" aria-selected=\"false\" tabindex=\"-1\">任务运行记录</button></div><div class=\"detailActions\"><span class=\"detailContext\"><button type=\"button\" class=\"button ghost md linkedSession\" aria-label=\"关联会话 修复 ui-schedule 的回归用例：打开原会话\" aria-describedby=\"detail-session\"><span class=\"linkedSessionLabel\">关联会话</span><span class=\"linkedSessionTarget\"><span class=\"linkedSessionName\" id=\"detail-session\">修复 ui-schedule 的回归用例</span><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4\" stroke=\"currentColor\"/></svg></span></button></span><span class=\"menuGuard\"><button type=\"button\" class=\"button ghost sm detailIconButton\" aria-label=\"自动化任务操作\" title=\"自动化任务操作\" aria-haspopup=\"menu\" aria-expanded=\"false\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z\" fill=\"currentColor\"/><path d=\"M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z\" fill=\"currentColor\"/><path d=\"M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z\" fill=\"currentColor\"/></svg></button></span><button type=\"button\" class=\"button ghost sm detailIconButton\" aria-label=\"关闭详情\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></div></div><div class=\"detailScroll\"><header class=\"detailHeader\"><input class=\"editName\" aria-label=\"自动化任务名称\" value=\"每天 09:30 运行 pnpm run test:gui\"></header><div class=\"nextRun\"><p>下次运行 <time datetime=\"2026-10-19T01:30:00.000Z\">2026年10月19日 09:30</time> <span class=\"nextRunRelative\">(14小时后)</span></p></div><div role=\"tabpanel\" id=\"detail-rule-panel\" aria-labelledby=\"detail-rule-tab\" tabindex=\"0\"><textarea class=\"instruction\" aria-label=\"自动化任务内容\">每天 09:30 运行 pnpm run test:gui 的 GUI 回归用例，把失败的用例名、首个错误堆栈和终端输出末尾 40 行贴回本会话。</textarea><section class=\"ruleCard\" aria-label=\"运行时间\"><h3>运行时间</h3><div class=\"ruleRows\"><span class=\"menuGuard\"><span class=\"ruleRowMenu\"><button type=\"button\" class=\"ruleValue\" aria-haspopup=\"menu\" aria-expanded=\"false\"><span class=\"ruleLabel\">重复</span><span class=\"ruleValueFace ruleControl\"><span class=\"ruleCurrent\">每天</span><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></span></button></span></span><div class=\"ruleRow\"><label class=\"ruleLabel\" for=\"detail-time\">时间</label><span class=\"menuGuard\"><button type=\"button\" id=\"detail-time\" class=\"ruleInput ruleControl pickerTrigger\" aria-label=\"时间\" aria-haspopup=\"dialog\" aria-expanded=\"false\"><span>09:30</span><svg width=\"16\" height=\"16\" class=\"pickerIcon\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z\" stroke=\"currentColor\"/><path d=\"M8 4.31V8.46L11 10.08\" stroke=\"currentColor\"/></svg></button></span></div><span class=\"menuGuard\"><span class=\"ruleRowMenu\"><button type=\"button\" class=\"ruleValue\" aria-haspopup=\"menu\" aria-expanded=\"false\"><span class=\"ruleLabel\">时区</span><span class=\"ruleValueFace ruleControl\"><span class=\"ruleCurrent\">Asia/Shanghai（系统）</span><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></span></button></span></span></div></section></div></div></aside></div>"
+        },
+        {
+          "label": "已结束的任务：名称与指令只读、值控件禁用",
+          "note": "已结束的任务把值降到 tertiary 而不是变淡；原会话归档时，标签条下方另起一行 12px 的状态说明",
+          "pad": "sm",
+          "html": "<div class=\"tabBody\" style=\"width:620px;height:560px\"><aside class=\"detail\" id=\"task-detail\" tabindex=\"-1\" aria-label=\"任务详情\"><div class=\"detailTabsBar\"><div class=\"detailTabs\" role=\"tablist\" aria-label=\"任务详情视图\"><button type=\"button\" class=\"detailTab\" role=\"tab\" id=\"detail-rule-tab\" data-detail-tab=\"rule\" aria-controls=\"detail-rule-panel\" aria-selected=\"true\" tabindex=\"0\">规则</button><button type=\"button\" class=\"detailTab\" role=\"tab\" id=\"detail-records-tab\" data-detail-tab=\"records\" aria-controls=\"detail-records-panel\" aria-selected=\"false\" tabindex=\"-1\">任务运行记录</button></div><div class=\"detailActions\"><span class=\"detailContext\"><button type=\"button\" class=\"button ghost md linkedSession\" aria-label=\"关联会话 修复 ui-schedule 的回归用例：打开原会话\" aria-describedby=\"detail-session\"><span class=\"linkedSessionLabel\">关联会话</span><span class=\"linkedSessionTarget\"><span class=\"linkedSessionName\" id=\"detail-session\">修复 ui-schedule 的回归用例</span><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4\" stroke=\"currentColor\"/></svg></span></button></span><span class=\"menuGuard\"><button type=\"button\" class=\"button ghost sm detailIconButton\" aria-label=\"自动化任务操作\" title=\"自动化任务操作\" aria-haspopup=\"menu\" aria-expanded=\"false\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z\" fill=\"currentColor\"/><path d=\"M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z\" fill=\"currentColor\"/><path d=\"M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z\" fill=\"currentColor\"/></svg></button></span><button type=\"button\" class=\"button ghost sm detailIconButton\" aria-label=\"关闭详情\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></div></div><div class=\"detailScroll\"><header class=\"detailHeader\"><h2 class=\"readonlyName\">每天 09:30 运行 pnpm run test:gui</h2></header><div class=\"nextRun\"><p>已结束</p></div><div role=\"tabpanel\" id=\"detail-rule-panel\" aria-labelledby=\"detail-rule-tab\" tabindex=\"0\"><p class=\"readonlyPrompt\">每天 09:30 运行 pnpm run test:gui 的 GUI 回归用例，把失败的用例名、首个错误堆栈和终端输出末尾 40 行贴回本会话。</p><section class=\"ruleCard\" aria-label=\"运行时间\"><h3>运行时间</h3><div class=\"ruleRows\"><span class=\"menuGuard\"><span class=\"ruleRowMenu\"><button type=\"button\" class=\"ruleValue\" disabled aria-haspopup=\"menu\" aria-expanded=\"false\"><span class=\"ruleLabel\">重复</span><span class=\"ruleValueFace ruleControl\"><span class=\"ruleCurrent\">每天</span><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></span></button></span></span><div class=\"ruleRow\"><label class=\"ruleLabel\" for=\"detail-time\">时间</label><span class=\"menuGuard\"><button type=\"button\" id=\"detail-time\" class=\"ruleInput ruleControl pickerTrigger\" disabled aria-label=\"时间\" aria-haspopup=\"dialog\" aria-expanded=\"false\"><span>09:30</span><svg width=\"16\" height=\"16\" class=\"pickerIcon\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z\" stroke=\"currentColor\"/><path d=\"M8 4.31V8.46L11 10.08\" stroke=\"currentColor\"/></svg></button></span></div><span class=\"menuGuard\"><span class=\"ruleRowMenu\"><button type=\"button\" class=\"ruleValue\" disabled aria-haspopup=\"menu\" aria-expanded=\"false\"><span class=\"ruleLabel\">时区</span><span class=\"ruleValueFace ruleControl\"><span class=\"ruleCurrent\">Asia/Shanghai（系统）</span><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></span></button></span></span></div></section></div></div><p id=\"detail-session-state\" class=\"detailNotice\" role=\"status\">原会话已归档</p></aside></div>"
+        },
+        {
+          "label": "未保存的间隔改动：行内拒绝 + 底部保存条",
+          "note": "单位是秒、值 30 低于 60 秒下限，提示槽换成错误文案（<code>role=\"alert\"</code>）；箭头列平时 <code>opacity:0</code>，这里用状态附加样式模拟悬停，减小箭头因为已到下限而禁用",
+          "pad": "sm",
+          "html": "<div class=\"tabBody\" style=\"width:620px;height:560px\"><aside class=\"detail\" id=\"task-detail\" tabindex=\"-1\" aria-label=\"任务详情\"><div class=\"detailTabsBar\"><div class=\"detailTabs\" role=\"tablist\" aria-label=\"任务详情视图\"><button type=\"button\" class=\"detailTab\" role=\"tab\" id=\"detail-rule-tab\" data-detail-tab=\"rule\" aria-controls=\"detail-rule-panel\" aria-selected=\"true\" tabindex=\"0\">规则</button><button type=\"button\" class=\"detailTab\" role=\"tab\" id=\"detail-records-tab\" data-detail-tab=\"records\" aria-controls=\"detail-records-panel\" aria-selected=\"false\" tabindex=\"-1\">任务运行记录</button></div><div class=\"detailActions\"><span class=\"detailContext\"><button type=\"button\" class=\"button ghost md linkedSession\" aria-label=\"关联会话 修复 ui-schedule 的回归用例：打开原会话\" aria-describedby=\"detail-session\"><span class=\"linkedSessionLabel\">关联会话</span><span class=\"linkedSessionTarget\"><span class=\"linkedSessionName\" id=\"detail-session\">修复 ui-schedule 的回归用例</span><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4\" stroke=\"currentColor\"/></svg></span></button></span><span class=\"menuGuard\"><button type=\"button\" class=\"button ghost sm detailIconButton\" aria-label=\"自动化任务操作\" title=\"自动化任务操作\" aria-haspopup=\"menu\" aria-expanded=\"false\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M3 9C3.55228 9 4 8.55228 4 8C4 7.44772 3.55228 7 3 7C2.44772 7 2 7.44772 2 8C2 8.55228 2.44772 9 3 9Z\" fill=\"currentColor\"/><path d=\"M8 9C8.55228 9 9 8.55228 9 8C9 7.44772 8.55228 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55228 7.44772 9 8 9Z\" fill=\"currentColor\"/><path d=\"M13 9C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7C12.4477 7 12 7.44772 12 8C12 8.55228 12.4477 9 13 9Z\" fill=\"currentColor\"/></svg></button></span><button type=\"button\" class=\"button ghost sm detailIconButton\" aria-label=\"关闭详情\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></div></div><div class=\"detailScroll\"><header class=\"detailHeader\"><input class=\"editName\" aria-label=\"自动化任务名称\" value=\"每 30 秒检查一次 lint 报告\"></header><div class=\"nextRun\"><p>下次运行 <time datetime=\"2026-10-19T02:00:00.000Z\">2026年10月19日 10:00</time> <span class=\"nextRunRelative\">(30分钟后)</span></p></div><div role=\"tabpanel\" id=\"detail-rule-panel\" aria-labelledby=\"detail-rule-tab\" tabindex=\"0\"><textarea class=\"instruction\" aria-label=\"自动化任务内容\">每 30 秒检查一次 packages/client/ui-schedule 的 lint 报告，出现新错误就贴回本会话。</textarea><section class=\"ruleCard\" aria-label=\"运行时间\"><h3>运行时间</h3><div class=\"ruleRows\"><span class=\"menuGuard\"><span class=\"ruleRowMenu\"><button type=\"button\" class=\"ruleValue\" aria-haspopup=\"menu\" aria-expanded=\"false\"><span class=\"ruleLabel\">重复</span><span class=\"ruleValueFace ruleControl\"><span class=\"ruleCurrent\">每 N 秒</span><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></span></button></span></span><div class=\"ruleRow\"><label class=\"ruleLabel\" for=\"detail-interval\">重复间隔</label><span class=\"ruleInterval\"><span class=\"ruleIntervalStepper forceArrows\" style=\"--interval-digits:2\"><input id=\"detail-interval\" class=\"ruleInput ruleControl ruleIntervalInput\" type=\"number\" min=\"60\" step=\"any\" value=\"30\" aria-describedby=\"detail-interval-hint\"><span class=\"ruleIntervalArrows\"><button type=\"button\" class=\"ruleIntervalArrow\" aria-label=\"增大间隔\"><svg width=\"9\" height=\"9\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10\" stroke=\"currentColor\"/></svg></button><button type=\"button\" class=\"ruleIntervalArrow\" aria-label=\"减小间隔\" disabled><svg width=\"9\" height=\"9\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"/></svg></button></span></span><span class=\"ruleIntervalUnit\">秒</span></span></div></div><p id=\"detail-interval-hint\" role=\"alert\" class=\"ruleHint ruleHintError\">请输入至少 60 秒的间隔</p></section></div></div><footer class=\"saveFooter\"><span class=\"saveNotice\">有未保存的修改</span><button type=\"button\" class=\"button ghost md\">取消</button><button type=\"button\" class=\"button primary md\">保存修改</button></footer></aside></div>",
+          "css": "/* 状态模拟：.ruleIntervalArrows 平时 opacity:0，只在步进器 :hover / :focus-within\n   时显现；静态快照把那条规则原样搬到 .forceArrows 上。 */\n.ruleIntervalStepper.forceArrows .ruleIntervalArrows { opacity: 1; }"
+        },
+        {
+          "label": "删除确认：Modal 弹窗（确认优先）",
+          "note": "静态快照：Modal 的 <code>.root</code> 在真实产品里是 fixed 全屏层，这里拉回文档流；卡片同时承载 Modal 的 <code>.dialog</code> 与本组件的 <code>.confirmDialog</code>",
+          "html": "<div style=\"width:560px\"><div class=\"root snapshotStatic\" role=\"presentation\"><div class=\"mask\" aria-hidden=\"true\"></div><div class=\"dialog confirmDialog\" role=\"dialog\" aria-modal=\"true\" aria-label=\"删除此任务？\" tabindex=\"-1\"><div class=\"content confirmContent\"><div class=\"header\"><h2 class=\"title\">删除此任务？</h2><button type=\"button\" class=\"close\" aria-label=\"关闭删除确认\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.5 2.5L13.5 13.5\" stroke=\"currentColor\"/><path d=\"M13.5 2.5L2.5 13.5\" stroke=\"currentColor\"/></svg></button></div><p class=\"description\">任务将停止触发，并连同其已保存的任务运行记录一并删除。原会话及其消息仍然保留；已排队的消息不会被撤回。</p><div class=\"body\"><p class=\"confirmTitle\">每天 09:30 运行 pnpm run test:gui</p></div></div><div class=\"footer\"><div class=\"confirmActions\"><button type=\"button\" class=\"button outline md\">取消</button><button type=\"button\" class=\"button ghost md deleteButton\">确认删除</button></div></div></div></div></div>",
+          "css": "/* 静态快照：Modal 的 .root 是 body 上的 fixed 全屏遮罩层，这里改成文档流内的\n   相对定位，同时保留它作为 .mask 绝对定位的父级。 */\n.root.snapshotStatic { position: relative; inset: auto; }"
+        }
+      ],
+      "props": [
+        {
+          "name": "task",
+          "type": "ScheduleCatalogEntry",
+          "default": "—",
+          "desc": "显示的这条任务：权威目录行，或一次待定/失败改动保留的草稿。"
+        },
+        {
+          "name": "authoritative",
+          "type": "boolean",
+          "default": "—",
+          "desc": "背后是否有权威目录行；只有草稿时禁止删除。"
+        },
+        {
+          "name": "status / deleting",
+          "type": "'loading' | 'ready' | 'error' / readonly ScheduleId[]",
+          "default": "—",
+          "desc": "目录查询状态与删除在途的任务 id；展示中这一条命中任一个都进入 busy（控件可见但禁用）。"
+        },
+        {
+          "name": "tab / onTabChange",
+          "type": "TaskDetailTab / (tab: TaskDetailTab) => void",
+          "default": "'rule'",
+          "desc": "当前视图（规则或运行记录）；选中另一条任务时上层会重置回规则。"
+        },
+        {
+          "name": "confirmId / onConfirm",
+          "type": "ScheduleId | null / (id: ScheduleId | null) => void",
+          "default": "null",
+          "desc": "删除确认弹窗打开的是哪一条；null 表示没有打开。"
+        },
+        {
+          "name": "onDelete",
+          "type": "(id: ScheduleId) => Promise<CatalogDeleteOutcome>",
+          "default": "—",
+          "desc": "经原会话绑定删除任务；刷新后的目录报出该行消失时组件才调 onDeleted。"
+        },
+        {
+          "name": "onRetry",
+          "type": "(since?: number) => Promise<void>",
+          "default": "—",
+          "desc": "查询失败或时间改动确认之后重读目录；失败仍留在目录状态里。"
+        },
+        {
+          "name": "onUpdateTiming",
+          "type": "TaskTimingInjected",
+          "default": "—",
+          "desc": "把名称、指令与 <code>schedule.update</code> 时间变更作为一整条预期记录提交。"
+        },
+        {
+          "name": "loadHistory",
+          "type": "DeliveryHistoryInjected[\"loadHistory\"]",
+          "default": "—",
+          "desc": "运行记录视图按游标分页读取已保存的投递记录。"
+        },
+        {
+          "name": "onOpenSession",
+          "type": "(id: SessionId) => void",
+          "default": "—",
+          "desc": "重新核对元数据后打开仍然可用的原会话。"
+        },
+        {
+          "name": "onDeleted / onClose",
+          "type": "() => void",
+          "default": "—",
+          "desc": "目录确认删除后离开这条任务；onClose 只在有列表可回的视图里才给。"
+        },
+        {
+          "name": "withinSession",
+          "type": "SessionId",
+          "default": "—",
+          "desc": "宿主会话；与任务的原会话相同时省略那颗重复的「关联会话」入口。"
+        },
+        {
+          "name": "onEditState",
+          "type": "(task: ScheduleCatalogEntry | null) => void",
+          "default": "—",
+          "desc": "把显示中的任务报给上层，让它在改动待定或失败期间保留这一行。"
+        },
+        {
+          "name": "useSessions / useWorkspaces",
+          "type": "PropsRuntime<'main'>",
+          "default": "—",
+          "desc": "框架读取器：解析原会话的名称、归档与可用状态。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'schedule.manager'>",
+          "default": "—",
+          "desc": "schedule.manager 词典：标签、提示、保存条与删除确认的全部文案。"
+        }
+      ],
+      "notes": "菜单锚点都包在 <code>.menuGuard</code>（<code>display:contents</code>）里，下拉列表自身 portal 到 body，所以卡片的 Escape 处理器不会顺带关掉整个详情；行菜单的 wrapper 另外带 <code>.ruleRowMenu</code>（整宽、0.5px 分隔线），最后一行由 <code>.ruleRows &gt; :last-child &gt; .ruleRowMenu</code> 去掉分隔线。删除结果不生在这张面板里，由 shell 的全局 Toast 播报；确认删除后，目录刷新一旦报出该行消失，详情就调 <code>onDeleted</code> 离开。保存失败有两个落点：规则视图在运行时间卡的提示槽（<code>.ruleHintError</code>，<code>role=\"alert\"</code>），记录视图在保存条上方的 <code>.saveFailure</code>。间隔输入框的 <code>--interval-digits</code> 是组件自己按草稿位数写上的内部变量，用来把 36px 高的步进器胶囊撑到合适宽度。",
+      "keywords": [
+        "任务详情",
+        "task detail",
+        "自动化任务",
+        "运行时间",
+        "删除确认",
+        "schedule.update"
+      ]
+    },
+    {
+      "id": "task-manager-icon",
+      "name": "TaskManagerIcon",
+      "exportName": "TaskManagerIcon",
+      "zh": "任务面板图标",
+      "group": "panels",
+      "summary": "左侧栏面板列表里「自动化任务」那一行的字形：把 <code>IconClockOutlineRegular</code> 按侧栏给的尺寸直接渲染成装饰性时钟——宽侧栏 16px、折叠轨道 18px——本身不产生任何包装元素，因为行要求它是直接图标子节点，行里的 <code>.panelGlyph</code> 内联槽才会让字形居中在标题的行盒上。它跟着 <code>.panelRow</code> 出现：整行最小 36px 高、12px 圆角、悬停与选中都用 <code>--dsw-alias-interactive-bg-hover</code> 底，折叠时那一行收成 36×36 的居中方格，只剩下这颗 18px 字形。行的可访问导航名由侧栏自己给（「自动化任务」），所以字形始终不带标签。",
+      "source": "packages/client/ui-schedule/src/client/TaskManagerIcon.tsx#L14",
+      "css": [
+        "packages/client/ui-sidebar/src/client/SidebarRoot.module.css"
+      ],
+      "tokens": [
+        "--dsw-radius-md",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-specific-sidebar-fill",
+        "--dsw-focus-ring-width",
+        "--dsw-focus-ring-color",
+        "--dsw-alias-state-business-primary",
+        "--dsw-alias-scrollbar-bg-l2",
+        "--dsw-alias-scrollbar-hover-l2"
+      ],
+      "specimens": [
+        {
+          "label": "宽侧栏的面板行：16px 时钟 + 标题",
+          "note": "选中行与悬停同一档底色；行本身是 <code>&lt;button&gt;</code>，<code>aria-current=\"page\"</code> 表示当前面板",
+          "html": "<div style=\"width:240px\"><div class=\"root\"><div class=\"panelList\"><button type=\"button\" class=\"panelRow panelActive\" aria-label=\"自动化任务\" aria-current=\"page\"><span class=\"panelGlyph\" aria-hidden=\"true\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z\" stroke=\"currentColor\"/><path d=\"M8 4.31V8.46L11 10.08\" stroke=\"currentColor\"/></svg></span><span class=\"panelTitle wide\">自动化任务</span></button></div></div></div>"
+        },
+        {
+          "label": "折叠轨道：18px 字形放进 36×36 的方格",
+          "note": "<code>.collapsed .panelRow</code> 把行收成 36×36 的居中盒；标题整块不渲染，字形是这一格唯一的内容",
+          "html": "<div style=\"width:56px\"><div class=\"root collapsed\"><div class=\"panelList\"><button type=\"button\" class=\"panelRow\" aria-label=\"自动化任务\"><span class=\"panelGlyph\" aria-hidden=\"true\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z\" stroke=\"currentColor\"/><path d=\"M8 4.31V8.46L11 10.08\" stroke=\"currentColor\"/></svg></span></button></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "size",
+          "type": "number",
+          "default": "16",
+          "desc": "字形的方形边长：宽侧栏传 16，折叠轨道传 18；由 <code>sidebar.panellist</code> 座位按 <code>wide</code> 给出，组件原样透传给图标。"
+        },
+        {
+          "name": "active",
+          "type": "boolean",
+          "default": "—",
+          "desc": "座位同时给出的面板选中态；字形是装饰性的，选中观感由行的 <code>.panelActive</code> 底表达，这个值不参与渲染。"
+        }
+      ],
+      "notes": "它是 <code>sidebar.panellist</code> 座位：行的可访问名与 <code>aria-current</code> 都由 <code>SidebarRoot</code> 拥有，字形保持 <code>aria-hidden</code>。示例里的行与侧栏外壳（<code>SidebarRoot.module.css</code>）由 ui-sidebar 绘制，一并列进 <code>css</code>——没有载体，这颗字形只是一个没有尺寸语境的小图标。折叠态在真实产品里要等收起动画落定后才切换到轨道布局，这里直接以 <code>.root.collapsed</code> 呈现落定后的静态形状。",
+      "keywords": [
+        "自动化任务图标",
+        "scheduled task icon",
+        "侧栏面板",
+        "sidebar panel glyph",
+        "clock"
+      ]
+    },
+    {
+      "id": "goal-command-input-view",
+      "name": "GoalCommandInputView",
+      "exportName": "GoalCommandInputView",
+      "zh": "目标指令气泡",
+      "group": "panels",
+      "summary": "右对齐的 <code>/goal</code> 指令回显气泡：<code>.row</code> 是列向 flex、右对齐，<code>.stack</code> 把宽度限制在会话列宽 <code>--dsh-chat-content-width</code> 的 70.2%（兜底 748px）与 82% 中较小的那个；<code>.bubble</code> 是 <code>10px 16px</code> 内边距、<code>--dsw-radius-xl</code> 圆角、底色 <code>--dsw-specific-bubble</code> 的气泡，字号跟随 Settings 的内容字号轴（默认 14px/22px）并保持 <code>pre-wrap</code>。开头的 <code>/goal</code> 由共享的用户文本投影渲染成命令芯片（等宽字体、品牌色、500 字重），其余目标——包括文中再次出现的 <code>/goal</code> 提及——都是纯文本。它没有普通用户消息的悬停操作条，外层只有 <code>role=\"group\"</code> 与「指令输入」标签。",
+      "source": "packages/client/ui-goal/src/client/GoalCommandInputView.tsx#L19",
+      "css": [
+        "packages/client/ui-goal/src/client/GoalCommandInputView.module.css",
+        "packages/client/ui-conversation/src/client/user-text/UserText.module.css",
+        "packages/client/ui-primitives/src/user-text.module.css"
+      ],
+      "tokens": [
+        "--dsw-radius-xl",
+        "--dsw-specific-bubble",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-state-business-primary"
+      ],
+      "specimens": [
+        {
+          "label": "一条 /goal 指令：命令芯片 + 目标文本",
+          "note": "节点数据只有 <code>commandId</code>/<code>text</code>/<code>time</code>；<code>facts.commands</code> 只圈出开头 5 个字符是一条命令，所以芯片与纯文本来自同一个投影",
+          "html": "<div style=\"width:520px\"><div class=\"row\" data-command-input=\"\" role=\"group\" aria-label=\"指令输入\"><div class=\"stack\"><div class=\"bubble\"><span class=\"root\"><span class=\"refChip slashChip\" data-ref-chip=\"command\" title=\"/goal\">/goal</span><span class=\"plainRun\"> 把 packages/client/ui-schedule 的 lint 报告整理成清单，逐条给出文件、行号与修法，最后附上还需要我确认的三件事。</span></span></div></div></div></div>"
+        },
+        {
+          "label": "多行目标：pre-wrap 保留换行，后文再次出现的 /goal 仍是纯文本",
+          "note": "<code>white-space: pre-wrap</code> 让目标里的换行原样保留；只有开头那段 token 是命令芯片",
+          "html": "<div style=\"width:520px\"><div class=\"row\" data-command-input=\"\" role=\"group\" aria-label=\"指令输入\"><div class=\"stack\"><div class=\"bubble\"><span class=\"root\"><span class=\"refChip slashChip\" data-ref-chip=\"command\" title=\"/goal\">/goal</span><span class=\"plainRun\"> 把 lint 报告整理成清单：\n1. 每条给出文件与行号\n2. 说明修法与影响面\n不要再执行 /goal 之外的命令，也不要把结果写回仓库。</span></span></div></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "node",
+          "type": "PropsRuntime<'conversation.chat.node', 'command-input'>['node']",
+          "default": "—",
+          "desc": "这条 command-input 节点；<code>data.text</code> 是 <code>/命令名 + 参数</code> 的回显文本，另带 <code>commandId</code> 与 <code>time</code>。"
+        },
+        {
+          "name": "renderFactorySlot",
+          "type": "PropsRenderFactories",
+          "default": "—",
+          "desc": "渲染 <code>conversation.user.text</code> 工厂：传入文本与 <code>facts.commands</code>，非交互（<code>interactive: false</code>）地投影出芯片与纯文本。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'goal'>",
+          "default": "—",
+          "desc": "goal 词典：外层的「指令输入」可访问名。"
+        }
+      ],
+      "notes": "节点由 <code>goalCommandInputDefinition</code> 从 <code>command/run</code> 事件投影而来，文本是 <code>/${name}${args.trimEnd()}</code>；因为命令芯片本身不解释命令，执行始终留在原始输入处。示例里的用户文本投影（<code>UserText.module.css</code> 的 <code>.root</code> 是 <code>display:contents</code>、<code>user-text.module.css</code> 的 <code>.refChip.slashChip</code>/<code>.plainRun</code>）是气泡内容的真实来源，一并列进 <code>css</code>。",
+      "keywords": [
+        "/goal",
+        "指令回显",
+        "command input",
+        "command chip",
+        "气泡"
+      ]
+    },
+    {
+      "id": "goal-command-reference",
+      "name": "GoalCommandReference",
+      "exportName": "GoalCommandReference",
+      "zh": "命令芯片",
+      "group": "panels",
+      "summary": "只读的命令芯片：一个 inline 的 <code>.refChip.slashChip</code>（<code>data-ref-chip=\"command\"</code>），文字是 <code>/</code> 加命令名，<code>title</code> 保留用户原始拼写。等宽字体、品牌色 <code>--dsw-alias-state-business-primary</code>、500 字重、左右各 2px 外边距；因为不传 <code>onActivate</code>，它渲染成 <code>&lt;span&gt;</code> 而不是按钮——点击、连点与选中都不会触发命令，命令的执行留在原始输入处。它由 <code>conversation.user.text.node</code> 的 <code>command</code> 键注册，凡是把已确认命令 token 当普通文本回显的地方都用它。",
+      "source": "packages/client/ui-goal/src/client/GoalCommandReference.tsx#L10",
+      "css": [
+        "packages/client/ui-primitives/src/user-text.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-state-business-primary",
+        "--dsw-font-markdown-code-font-family"
+      ],
+      "specimens": [
+        {
+          "label": "句子里的命令芯片",
+          "note": "inline 而不是 inline-flex，所以它跟周围文字共用同一条基线；字号与行高都继承消费方",
+          "html": "<div style=\"width:460px\"><span class=\"plainRun\">把 </span><span class=\"refChip slashChip\" data-ref-chip=\"command\" title=\"/goal\">/goal</span><span class=\"plainRun\"> 的目标整理成清单，标出还没完成的两项。</span></div>"
+        },
+        {
+          "label": "多个已确认的命令 token",
+          "note": "每个 token 一颗芯片，<code>title</code> 里是原始拼写；没有激活动作时它们都是不可点的文本",
+          "html": "<div style=\"width:460px\"><span class=\"plainRun\">已确认的命令：</span><span class=\"refChip slashChip\" data-ref-chip=\"command\" title=\"/goal\">/goal</span><span class=\"plainRun\">、</span><span class=\"refChip slashChip\" data-ref-chip=\"command\" title=\"/plan\">/plan</span><span class=\"plainRun\">、</span><span class=\"refChip slashChip\" data-ref-chip=\"command\" title=\"/compact\">/compact</span></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "node",
+          "type": "UserTextNodeProps<'command'>['node']",
+          "default": "—",
+          "desc": "已确认的命令节点；<code>node.data.name</code> 是命令名，渲染成 <code>/{name}</code>。"
+        },
+        {
+          "name": "raw",
+          "type": "UserTextNodeProps<'command'>['raw']",
+          "default": "—",
+          "desc": "这段 token 在原文里的拼写，原样放进 <code>title</code>，不改变芯片标签。"
+        },
+        {
+          "name": "interactive",
+          "type": "boolean",
+          "default": "false",
+          "desc": "由用户文本所有者传入；本组件忽略它——命令引用永远不添加激活动作。"
+        }
+      ],
+      "notes": "它继承消费方的字号与行高（<code>.refChip</code> 不设 font-size/line-height），所以同一颗芯片在 <code>/goal</code> 回显气泡里是 14px、在队列预览的固定行里是 13px。等宽只作用于 <code>.slashChip</code>（<code>@</code> 文件与会话引用用正文字体，因为那是标签而不是代码）。",
+      "keywords": [
+        "命令芯片",
+        "command chip",
+        "reference chip",
+        "/goal",
+        "只读引用"
+      ]
+    },
+    {
+      "id": "plan-cards",
+      "name": "PlanCards",
+      "exportName": "PlanCards",
+      "zh": "计划卡片",
+      "group": "panels",
+      "summary": "回合收尾处「已提交计划」的卡片组：<code>.cards</code> 是 10px 间距的列，按调用顺序一张卡一份计划。一张卡是整宽 60px 高的按钮（<code>8px 10px</code> 内边距、0.5px <code>--dsw-alias-border-l1</code>、<code>--dsw-radius-lg</code> 圆角，浅色底 <code>--dsw-static-neutral-50</code>、深色 <code>850</code>，悬停各换一档），左侧 40×40、10px 圆角的图标砖里放 20px 的 Markdown 文件字形，中间标题 13px/20px/500、下一行 10px/16px tertiary 的「计划 · Markdown」，右端 28px 高的「打开」小胶囊（0.5px <code>--dsw-alias-border-l3</code>、<code>--dsw-radius-sm</code>）。键盘焦点带 3px 偏移的品牌色外环；这个回合没有计划时整个组件返回 <code>null</code>。",
+      "source": "packages/client/ui-plan/src/client/PlanCard.tsx#L43",
+      "css": [
+        "packages/client/ui-plan/src/client/PlanPreview.module.css",
+        "packages/client/ui-primitives/src/FileTypeIcon.module.css"
+      ],
+      "tokens": [
+        "--dsw-static-neutral-50",
+        "--dsw-static-neutral-100",
+        "--dsw-static-neutral-800",
+        "--dsw-static-neutral-850",
+        "--dsw-static-neutral-00",
+        "--dsw-static-deepseek-500",
+        "--dsw-alias-border-l1",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-button-floating-fill",
+        "--dsw-radius-lg",
+        "--dsw-radius-sm",
+        "--dsw-focus-ring-color",
+        "--dsw-focus-ring-width",
+        "--dsw-alias-state-business-primary"
+      ],
+      "specimens": [
+        {
+          "label": "一个回合里的两份计划，按调用顺序排列",
+          "note": "整卡是一个按钮：键盘焦点落在这 60px 的卡片上，点任意位置都在右栏打开对应计划",
+          "html": "<div style=\"width:520px\"><div class=\"cards\" data-plan-artifacts=\"\"><button type=\"button\" class=\"card\" data-plan-card=\"call-1\" aria-label=\"打开计划：把 ui-schedule 的 lint 报告整理成清单\"><span class=\"cardIcon\"><svg width=\"20\" height=\"20\" class=\"icon markdown\" viewBox=\"0 0 28 28\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M8.48924 28H19.5108C21.6479 28 22.7165 28 23.5594 27.6509C24.6833 27.1853 25.5762 26.2924 26.0417 25.1685C26.3909 24.3256 26.3909 23.257 26.3909 21.1199V8.79443C26.3909 8.32877 26.3909 8.09593 26.3471 7.87507C26.2887 7.58058 26.173 7.30042 26.0067 7.05048C25.882 6.86303 25.7177 6.69799 25.3893 6.36792L20.0611 1.01354C19.7304 0.681235 19.5651 0.515081 19.3769 0.38885C19.126 0.220541 18.8443 0.103463 18.5481 0.0443412C18.3259 0 18.0915 0 17.6226 0H8.48924C6.35209 0 5.28351 0 4.4406 0.349145C3.31672 0.814671 2.4238 1.70759 1.95828 2.83147C1.60913 3.67438 1.60913 4.74296 1.60913 6.88011V21.1199C1.60913 23.257 1.60913 24.3256 1.95828 25.1685C2.4238 26.2924 3.31672 27.1853 4.4406 27.6509C5.28351 28 6.35209 28 8.48924 28Z\" fill=\"currentColor\"/><path d=\"M26.3909 7.37445L19.0525 0V3.77445C19.0525 4.89271 19.0525 5.45184 19.2352 5.89289C19.4788 6.48096 19.946 6.94818 20.5341 7.19176C20.9751 7.37445 21.5342 7.37445 22.6525 7.37445H26.3909Z\" fill=\"var(--dsw-static-neutral-00)\" fill-opacity=\".7\"/><g color=\"var(--dsw-static-neutral-00)\" data-file-type-mark transform=\"translate(14 16) scale(1.22) translate(-14 -16)\"><path d=\"M8.7588 19.5V14.6H9.8998L11.9298 17.932H11.3278L13.3018 14.6H14.4428L14.4568 19.5H13.1828L13.1688 16.539H13.3858L11.9088 19.017H11.2928L9.7738 16.539H10.0398V19.5H8.7588ZM15.4375 19.5V14.6H17.7545C18.2958 14.6 18.7718 14.7003 19.1825 14.901C19.5932 15.1017 19.9128 15.384 20.1415 15.748C20.3748 16.112 20.4915 16.546 20.4915 17.05C20.4915 17.5493 20.3748 17.9833 20.1415 18.352C19.9128 18.716 19.5932 18.9983 19.1825 19.199C18.7718 19.3997 18.2958 19.5 17.7545 19.5H15.4375ZM16.8235 18.394H17.6985C17.9785 18.394 18.2212 18.3427 18.4265 18.24C18.6365 18.1327 18.7998 17.9787 18.9165 17.778C19.0332 17.5727 19.0915 17.33 19.0915 17.05C19.0915 16.7653 19.0332 16.5227 18.9165 16.322C18.7998 16.1213 18.6365 15.9697 18.4265 15.867C18.2212 15.7597 17.9785 15.706 17.6985 15.706H16.8235V18.394Z\" fill=\"currentColor\"/></g></svg></span><span class=\"cardDetails\"><span class=\"cardTitle\">把 ui-schedule 的 lint 报告整理成清单</span><span class=\"cardDescription\">计划 · Markdown</span></span><span class=\"cardOpen\">打开</span></button><button type=\"button\" class=\"card\" data-plan-card=\"call-2\" aria-label=\"打开计划：给 ui-plan 的卡片补一版暗色主题截图\"><span class=\"cardIcon\"><svg width=\"20\" height=\"20\" class=\"icon markdown\" viewBox=\"0 0 28 28\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M8.48924 28H19.5108C21.6479 28 22.7165 28 23.5594 27.6509C24.6833 27.1853 25.5762 26.2924 26.0417 25.1685C26.3909 24.3256 26.3909 23.257 26.3909 21.1199V8.79443C26.3909 8.32877 26.3909 8.09593 26.3471 7.87507C26.2887 7.58058 26.173 7.30042 26.0067 7.05048C25.882 6.86303 25.7177 6.69799 25.3893 6.36792L20.0611 1.01354C19.7304 0.681235 19.5651 0.515081 19.3769 0.38885C19.126 0.220541 18.8443 0.103463 18.5481 0.0443412C18.3259 0 18.0915 0 17.6226 0H8.48924C6.35209 0 5.28351 0 4.4406 0.349145C3.31672 0.814671 2.4238 1.70759 1.95828 2.83147C1.60913 3.67438 1.60913 4.74296 1.60913 6.88011V21.1199C1.60913 23.257 1.60913 24.3256 1.95828 25.1685C2.4238 26.2924 3.31672 27.1853 4.4406 27.6509C5.28351 28 6.35209 28 8.48924 28Z\" fill=\"currentColor\"/><path d=\"M26.3909 7.37445L19.0525 0V3.77445C19.0525 4.89271 19.0525 5.45184 19.2352 5.89289C19.4788 6.48096 19.946 6.94818 20.5341 7.19176C20.9751 7.37445 21.5342 7.37445 22.6525 7.37445H26.3909Z\" fill=\"var(--dsw-static-neutral-00)\" fill-opacity=\".7\"/><g color=\"var(--dsw-static-neutral-00)\" data-file-type-mark transform=\"translate(14 16) scale(1.22) translate(-14 -16)\"><path d=\"M8.7588 19.5V14.6H9.8998L11.9298 17.932H11.3278L13.3018 14.6H14.4428L14.4568 19.5H13.1828L13.1688 16.539H13.3858L11.9088 19.017H11.2928L9.7738 16.539H10.0398V19.5H8.7588ZM15.4375 19.5V14.6H17.7545C18.2958 14.6 18.7718 14.7003 19.1825 14.901C19.5932 15.1017 19.9128 15.384 20.1415 15.748C20.3748 16.112 20.4915 16.546 20.4915 17.05C20.4915 17.5493 20.3748 17.9833 20.1415 18.352C19.9128 18.716 19.5932 18.9983 19.1825 19.199C18.7718 19.3997 18.2958 19.5 17.7545 19.5H15.4375ZM16.8235 18.394H17.6985C17.9785 18.394 18.2212 18.3427 18.4265 18.24C18.6365 18.1327 18.7998 17.9787 18.9165 17.778C19.0332 17.5727 19.0915 17.33 19.0915 17.05C19.0915 16.7653 19.0332 16.5227 18.9165 16.322C18.7998 16.1213 18.6365 15.9697 18.4265 15.867C18.2212 15.7597 17.9785 15.706 17.6985 15.706H16.8235V18.394Z\" fill=\"currentColor\"/></g></svg></span><span class=\"cardDetails\"><span class=\"cardTitle\">给 ui-plan 的卡片补一版暗色主题截图</span><span class=\"cardDescription\">计划 · Markdown</span></span><span class=\"cardOpen\">打开</span></button></div></div>"
+        },
+        {
+          "label": "悬停模拟：整卡换一档底色 + 长标题省略",
+          "note": "悬停模拟；<code>.cardTitle</code> 超出一行就省略号截断，文件名不会把「打开」挤出卡片",
+          "html": "<div style=\"width:520px\"><div class=\"cards\" data-plan-artifacts=\"\"><button type=\"button\" class=\"card\" data-plan-card=\"call-3\" aria-label=\"打开计划：把 packages/client/ui-schedule 的 lint 报告按文件与规则分组整理成清单并标出修复顺序\"><span class=\"cardIcon\"><svg width=\"20\" height=\"20\" class=\"icon markdown\" viewBox=\"0 0 28 28\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M8.48924 28H19.5108C21.6479 28 22.7165 28 23.5594 27.6509C24.6833 27.1853 25.5762 26.2924 26.0417 25.1685C26.3909 24.3256 26.3909 23.257 26.3909 21.1199V8.79443C26.3909 8.32877 26.3909 8.09593 26.3471 7.87507C26.2887 7.58058 26.173 7.30042 26.0067 7.05048C25.882 6.86303 25.7177 6.69799 25.3893 6.36792L20.0611 1.01354C19.7304 0.681235 19.5651 0.515081 19.3769 0.38885C19.126 0.220541 18.8443 0.103463 18.5481 0.0443412C18.3259 0 18.0915 0 17.6226 0H8.48924C6.35209 0 5.28351 0 4.4406 0.349145C3.31672 0.814671 2.4238 1.70759 1.95828 2.83147C1.60913 3.67438 1.60913 4.74296 1.60913 6.88011V21.1199C1.60913 23.257 1.60913 24.3256 1.95828 25.1685C2.4238 26.2924 3.31672 27.1853 4.4406 27.6509C5.28351 28 6.35209 28 8.48924 28Z\" fill=\"currentColor\"/><path d=\"M26.3909 7.37445L19.0525 0V3.77445C19.0525 4.89271 19.0525 5.45184 19.2352 5.89289C19.4788 6.48096 19.946 6.94818 20.5341 7.19176C20.9751 7.37445 21.5342 7.37445 22.6525 7.37445H26.3909Z\" fill=\"var(--dsw-static-neutral-00)\" fill-opacity=\".7\"/><g color=\"var(--dsw-static-neutral-00)\" data-file-type-mark transform=\"translate(14 16) scale(1.22) translate(-14 -16)\"><path d=\"M8.7588 19.5V14.6H9.8998L11.9298 17.932H11.3278L13.3018 14.6H14.4428L14.4568 19.5H13.1828L13.1688 16.539H13.3858L11.9088 19.017H11.2928L9.7738 16.539H10.0398V19.5H8.7588ZM15.4375 19.5V14.6H17.7545C18.2958 14.6 18.7718 14.7003 19.1825 14.901C19.5932 15.1017 19.9128 15.384 20.1415 15.748C20.3748 16.112 20.4915 16.546 20.4915 17.05C20.4915 17.5493 20.3748 17.9833 20.1415 18.352C19.9128 18.716 19.5932 18.9983 19.1825 19.199C18.7718 19.3997 18.2958 19.5 17.7545 19.5H15.4375ZM16.8235 18.394H17.6985C17.9785 18.394 18.2212 18.3427 18.4265 18.24C18.6365 18.1327 18.7998 17.9787 18.9165 17.778C19.0332 17.5727 19.0915 17.33 19.0915 17.05C19.0915 16.7653 19.0332 16.5227 18.9165 16.322C18.7998 16.1213 18.6365 15.9697 18.4265 15.867C18.2212 15.7597 17.9785 15.706 17.6985 15.706H16.8235V18.394Z\" fill=\"currentColor\"/></g></svg></span><span class=\"cardDetails\"><span class=\"cardTitle\">把 packages/client/ui-schedule 的 lint 报告按文件与规则分组整理成清单并标出修复顺序</span><span class=\"cardDescription\">计划 · Markdown</span></span><span class=\"cardOpen\">打开</span></button></div></div>",
+          "css": "/* 状态模拟：把 .card:hover 的那条规则原样搬到 .forceHover 上（悬停模拟）。 */\n.card.forceHover { background: var(--plan-card-hover); }"
+        }
+      ],
+      "props": [
+        {
+          "name": "turn",
+          "type": "PropsRuntime<'conversation.chat.turnTail'>['turn']",
+          "default": "—",
+          "desc": "这一条收尾所挂的回合；用它取出该回合提交过的计划。"
+        },
+        {
+          "name": "usePlans",
+          "type": "(turn: string) => ObservableSnapshot<readonly SubmittedPlan[]>",
+          "default": "—",
+          "desc": "注入的 keyed hook：只解析这一个回合的计划，未落定或为空时组件返回 null。"
+        },
+        {
+          "name": "openPlan",
+          "type": "(callId: ToolCallId) => void",
+          "default": "—",
+          "desc": "在右栏打开或聚焦这次调用提交的那份计划。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'plan'>",
+          "default": "—",
+          "desc": "plan 词典：「计划 · Markdown」「打开」与卡片的可访问名「打开计划：{title}」。"
+        }
+      ],
+      "notes": "暗色主题通过 <code>body[data-ds-dark-theme]</code> 把 <code>--plan-card-fill</code>/<code>--plan-card-hover</code> 换成 850/800 两档（在目录的 Shadow DOM 里这条选择器改写成 <code>:host([data-ds-dark-theme])</code>；构建脚本给每个示例的 <code>.stage</code> 同步打上同一个属性，所以示例跟随页面主题切换，浅深两档都能看到）。卡片里的文件字形是 <code>FileTypeIcon kind=\"markdown\"</code>，它的 <code>.icon</code>/<code>.markdown</code> 类来自 <code>FileTypeIcon.module.css</code>，一并列进 <code>css</code>，否则那条 20px 的蓝色 Markdown 字形会退成当前文字色。",
+      "keywords": [
+        "计划卡片",
+        "plan card",
+        "turn tail",
+        "Markdown 文件",
+        "提交计划"
+      ]
+    },
+    {
+      "id": "plan-review-open",
+      "name": "PlanReviewOpen",
+      "exportName": "PlanReviewOpen",
+      "zh": "计划全文入口",
+      "group": "panels",
+      "summary": "计划审批卡片动作行里的「查看全文 ›」文字链接：<code>.reviewLink</code> 是 inline-flex 加 4px 间距，无边框、无内边距，文字与 14px 右箭共用 <code>--dsw-alias-label-secondary</code>，悬停转 <code>--dsw-alias-label-primary</code>，键盘焦点带 3px 偏移的品牌色外环。它自己不是那张卡片：组件在会话回到屏幕后自动打开一次待审计划（<code>opened</code> 记在 <code>createPlanReviewStore</code> 里，同一份只开一次），同时保留这枚手动入口。有日志调用时打开那份计划，否则打开请求里的临时文档。",
+      "source": "packages/client/ui-plan/src/client/PlanCard.tsx#L72",
+      "css": [
+        "packages/client/ui-plan/src/client/PlanPreview.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-primary",
+        "--dsw-focus-ring-width",
+        "--dsw-focus-ring-color"
+      ],
+      "specimens": [
+        {
+          "label": "默认态：动作行末端的「查看全文 ›」",
+          "note": "它是审批卡片动作行里的一枚链接，不占自己的底色；<code>title</code> 与可访问名都是「在侧边栏打开计划」",
+          "html": "<div style=\"width:360px;display:flex;justify-content:flex-end\"><button type=\"button\" class=\"reviewLink\" title=\"在侧边栏打开计划\" aria-label=\"在侧边栏打开计划\">查看全文<svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4\" stroke=\"currentColor\"/></svg></button></div>"
+        },
+        {
+          "label": "悬停模拟：文字升到 primary",
+          "note": "悬停模拟（把 <code>.reviewLink:hover</code> 的颜色规则搬到 <code>.forceHover</code> 上）",
+          "html": "<div style=\"width:360px;display:flex;justify-content:flex-end\"><button type=\"button\" class=\"reviewLink forceHover\" title=\"在侧边栏打开计划\" aria-label=\"在侧边栏打开计划\">查看全文<svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4\" stroke=\"currentColor\"/></svg></button></div>",
+          "css": "/* 状态模拟：悬停模拟，原样搬 .reviewLink:hover 的规则。 */\n.reviewLink.forceHover { color: var(--dsw-alias-label-primary); }"
+        }
+      ],
+      "props": [
+        {
+          "name": "review",
+          "type": "PropsRuntime<'conversation.plan-review.actions'>['review']",
+          "default": "—",
+          "desc": "这次待审的计划：有 <code>callId</code> 就指日志里的那份计划，否则只有临时文档。"
+        },
+        {
+          "name": "requestKey",
+          "type": "string",
+          "default": "—",
+          "desc": "没有 callId 时的请求标识，用于拼出这次打开的临时地址与去重键。"
+        },
+        {
+          "name": "openReview",
+          "type": "(review, requestKey) => void",
+          "default": "—",
+          "desc": "打开日志里的计划，或请求里的临时文档。"
+        },
+        {
+          "name": "useSidebarMounted",
+          "type": "HostObservable<SessionId | undefined>",
+          "default": "—",
+          "desc": "屏幕上当前会话；为空时不自动打开——<code>ctx.sidebarRight</code> 会在会话真正渲染前就报出名字，所以要等挂载它的那次提交。"
+        },
+        {
+          "name": "useStore / actions",
+          "type": "createPlanReviewStore",
+          "default": "—",
+          "desc": "记录哪一份已经自动打开过（<code>opened[identity]</code>），并通过 <code>actions.markOpened</code> 落记，避免重复打开。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'plan'>",
+          "default": "—",
+          "desc": "plan 词典：链接文字「查看全文」与可访问名「在侧边栏打开计划」。"
+        }
+      ],
+      "notes": "自动打开是一次性的：<code>identity</code> 由 <code>call:{callId}</code> 或 <code>review:{requestKey}</code> 拼出，已经记过就不再打开，手动入口始终留在原地，而且它不给这次审批任何答复。",
+      "keywords": [
+        "查看全文",
+        "plan review",
+        "审批卡片",
+        "侧边栏打开计划",
+        "opener"
+      ]
+    },
+    {
+      "id": "plan-title",
+      "name": "PlanTitle",
+      "exportName": "PlanTitle",
+      "zh": "计划标签标题",
+      "group": "panels",
+      "summary": "右侧边栏计划标签页的标签文字：一颗 16px 的「其他文件」字形（<code>.titleIcon</code>，<code>flex:none</code>，颜色来自 <code>FileTypeIcon</code> 的 <code>.other</code> 档）加计划标题。标题从资源里恢复，读不到时退回标签自己给的本地化标题（「计划」）。字形与文字之间没有自己的间距——芯片里那 5px 来自 dockkit 的 <code>.tabTitle</code>（flex 行、<code>gap:5px</code>），而 13px 字号、<code>--dsw-radius-sm</code> 圆角与激活态的 <code>--dsw-alias-markdown-tag</code> 底色都在承载它的标签芯片上。字形是装饰性的，计划名由标签芯片自己的可访问名带出。",
+      "source": "packages/client/ui-plan/src/client/PlanPreview.tsx#L47",
+      "css": [
+        "packages/client/ui-plan/src/client/PlanPreview.module.css",
+        "packages/client/ui-primitives/src/FileTypeIcon.module.css",
+        "packages/client/ui-dockkit/src/components/dockkit.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-markdown-tag",
+        "--dsw-static-neutral-bluish-300",
+        "--dsw-radius-sm",
+        "--dsw-focus-ring-width",
+        "--dsw-focus-ring-color",
+        "--dsw-alias-state-business-primary"
+      ],
+      "specimens": [
+        {
+          "label": "资源已恢复：字形 + 计划标题",
+          "note": "芯片与标签轨由 ui-dockkit 绘制；左边那颗未激活的「会话」芯片只有文字",
+          "bg": "platform",
+          "pad": "lg",
+          "html": "<div style=\"width:420px\"><div class=\"tabStrip\" role=\"tablist\" aria-label=\"右栏标签\"><div class=\"stripTabs\"><div class=\"tab\" role=\"tab\" aria-selected=\"false\" tabindex=\"-1\" data-dockkit-tab=\"session\"><span class=\"tabTitle\" data-dockkit-tab-title>会话</span></div><div class=\"slot\"></div><div class=\"tab tabActive\" role=\"tab\" aria-selected=\"true\" tabindex=\"0\" data-dockkit-tab=\"plan\"><span class=\"tabTitle\" data-dockkit-tab-title><svg width=\"16\" height=\"16\" class=\"icon other titleIcon\" viewBox=\"0 0 28 28\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M8.48924 28H19.5108C21.6479 28 22.7165 28 23.5594 27.6509C24.6833 27.1853 25.5762 26.2924 26.0417 25.1685C26.3909 24.3256 26.3909 23.257 26.3909 21.1199V8.79443C26.3909 8.32877 26.3909 8.09593 26.3471 7.87507C26.2887 7.58058 26.173 7.30042 26.0067 7.05048C25.882 6.86303 25.7177 6.69799 25.3893 6.36792L20.0611 1.01354C19.7304 0.681235 19.5651 0.515081 19.3769 0.38885C19.126 0.220541 18.8443 0.103463 18.5481 0.0443412C18.3259 0 18.0915 0 17.6226 0H8.48924C6.35209 0 5.28351 0 4.4406 0.349145C3.31672 0.814671 2.4238 1.70759 1.95828 2.83147C1.60913 3.67438 1.60913 4.74296 1.60913 6.88011V21.1199C1.60913 23.257 1.60913 24.3256 1.95828 25.1685C2.4238 26.2924 3.31672 27.1853 4.4406 27.6509C5.28351 28 6.35209 28 8.48924 28Z\" fill=\"currentColor\"/><path d=\"M26.3909 7.37445L19.0525 0V3.77445C19.0525 4.89271 19.0525 5.45184 19.2352 5.89289C19.4788 6.48096 19.946 6.94818 20.5341 7.19176C20.9751 7.37445 21.5342 7.37445 22.6525 7.37445H26.3909Z\" fill=\"var(--dsw-static-neutral-400)\"/></svg>把 ui-schedule 的 lint 报告整理成清单</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭计划\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div></div><div class=\"stripFill\"></div></div></div>"
+        },
+        {
+          "label": "资源还没恢复：退回标签自己的本地化标题「计划」",
+          "note": "文字取 <code>preview.title</code>，字形照旧；宽度由内容决定，超过芯片的 170px 上限才渐隐",
+          "bg": "platform",
+          "pad": "lg",
+          "html": "<div style=\"width:420px\"><div class=\"tabStrip\" role=\"tablist\" aria-label=\"右栏标签\"><div class=\"stripTabs\"><div class=\"tab\" role=\"tab\" aria-selected=\"false\" tabindex=\"-1\" data-dockkit-tab=\"session\"><span class=\"tabTitle\" data-dockkit-tab-title>会话</span></div><div class=\"slot\"></div><div class=\"tab tabActive\" role=\"tab\" aria-selected=\"true\" tabindex=\"0\" data-dockkit-tab=\"plan\"><span class=\"tabTitle\" data-dockkit-tab-title><svg width=\"16\" height=\"16\" class=\"icon other titleIcon\" viewBox=\"0 0 28 28\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M8.48924 28H19.5108C21.6479 28 22.7165 28 23.5594 27.6509C24.6833 27.1853 25.5762 26.2924 26.0417 25.1685C26.3909 24.3256 26.3909 23.257 26.3909 21.1199V8.79443C26.3909 8.32877 26.3909 8.09593 26.3471 7.87507C26.2887 7.58058 26.173 7.30042 26.0067 7.05048C25.882 6.86303 25.7177 6.69799 25.3893 6.36792L20.0611 1.01354C19.7304 0.681235 19.5651 0.515081 19.3769 0.38885C19.126 0.220541 18.8443 0.103463 18.5481 0.0443412C18.3259 0 18.0915 0 17.6226 0H8.48924C6.35209 0 5.28351 0 4.4406 0.349145C3.31672 0.814671 2.4238 1.70759 1.95828 2.83147C1.60913 3.67438 1.60913 4.74296 1.60913 6.88011V21.1199C1.60913 23.257 1.60913 24.3256 1.95828 25.1685C2.4238 26.2924 3.31672 27.1853 4.4406 27.6509C5.28351 28 6.35209 28 8.48924 28Z\" fill=\"currentColor\"/><path d=\"M26.3909 7.37445L19.0525 0V3.77445C19.0525 4.89271 19.0525 5.45184 19.2352 5.89289C19.4788 6.48096 19.946 6.94818 20.5341 7.19176C20.9751 7.37445 21.5342 7.37445 22.6525 7.37445H26.3909Z\" fill=\"var(--dsw-static-neutral-400)\"/></svg>计划</span><button type=\"button\" class=\"tabClose\" aria-label=\"关闭计划\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M3.5 3.5L12.5 12.5\" stroke=\"currentColor\"/><path d=\"M12.5 3.5L3.5 12.5\" stroke=\"currentColor\"/></svg></button></div></div><div class=\"stripFill\"></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "useTabInfo",
+          "type": "PropsRuntime<'sidebar.right.pane.tab.title'>['useTabInfo']",
+          "default": "—",
+          "desc": "框架绑定的标签身份：拿 <code>navigation.address</code> 与 <code>navigation.params</code>。"
+        },
+        {
+          "name": "useResource",
+          "type": "PropsRuntime<'sidebar.right.pane.tab.title'>['useResource']",
+          "default": "—",
+          "desc": "按地址读取 <code>'plan'</code> 资源；只有它在 <code>value</code> 里给出计划时才显示真实标题。"
+        }
+      ],
+      "notes": "用 <code>kind=\"other\"</code> 而不是从路径分类：计划文档没有文件名可推断，身份完全来自资源或标签参数。临时预览（<code>isReviewPreviewAddress</code>）从 <code>params.planReview</code> 取计划，与日志计划的区别只在地址来源。示例里的标签芯片（<code>dockkit.module.css</code>）与文件字形（<code>FileTypeIcon.module.css</code>）都是本组件真实 DOM 的载体，一并列进 <code>css</code>。",
+      "keywords": [
+        "标签标题",
+        "tab title",
+        "计划预览",
+        "Markdown 字形",
+        "sidebar-right"
+      ]
+    }
+  ]
+}

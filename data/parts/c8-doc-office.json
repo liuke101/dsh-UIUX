@@ -1,0 +1,887 @@
+{
+  "schemaVersion": 1,
+  "note": "预览类条目：表格（FortuneSheet）、Office 转换与 PDF（pdf.js）正文，以及两者共用的缩放视口与浮动控件。css 数组列出各条目真实渲染路径上的 CSS Module（含主 bundle 的 LoadingIndicator/StateDot、原子 Button，以及 PDF 槽位里的 ZoomViewport/ZoomControls/Menu），构建时逐字内联进该条目的 shadow root；两张以上时构建脚本按文件加 c<下标>- 前缀还原模块隔离，条目里对同名类按归属显式写前缀（如 OfficeBody 的 c0-body 与 PDF 正文的 c6-body）。",
+  "entries": [
+    {
+      "id": "excel-body",
+      "name": "ExcelBody",
+      "exportName": "ExcelBody",
+      "zh": "表格正文",
+      "group": "preview",
+      "summary": "只读表格预览的正文外壳：<code>.body</code> 是 <code>height:100%</code> 的纵向 flex（<code>overflow:hidden</code>、<code>white-space:normal</code>、字体走 <code>--dsw-font</code>），顶部可选的 <code>.notice</code> 横条用 8px 12px 内边距、13px/1.5、<code>--dsw-alias-state-warn-label</code> 文字配 <code>--dsw-alias-state-warn-tertiary</code> 底色，列出本工作簿里未展示的图表、图片、形状与条件格式；<code>.workbook</code> 占满剩余高度并强制 <code>color-scheme:light</code>，好让 FortuneSheet 的浅色控件在深色主题里仍读深色文字。含公式时它左上 <code>left:142px; top:4px</code> 处浮出 20×20 的 <code>.formulaWarning</code> 按钮（warn 色三角、<code>--dsw-radius-sm</code>、悬停与聚焦铺 warn-tertiary 底），公式栏同时让出 24px 左内边距。解析失败、超限或编码无效时换成居中的 <code>.status</code>（16px 内边距、secondary 文字、8px 间距）加一个 28px「重试」按钮；网格本身由惰性 chunk 里的 FortuneSheet 画布绘制。",
+      "source": "packages/client/ui-sidebar-documentpreview/src/client/excel/excel.tsx#L21",
+      "css": [
+        "packages/client/ui-sidebar-documentpreview/src/client/excel/ExcelBody.module.css",
+        "packages/client/ui-primitives/src/Button.module.css"
+      ],
+      "tokens": [
+        "--dsw-font",
+        "--dsw-alias-state-warn-label",
+        "--dsw-alias-state-warn-tertiary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-primary",
+        "--dsw-radius-sm",
+        "--dsw-radius-md",
+        "--dsw-alias-interactive-bg-hover"
+      ],
+      "specimens": [
+        {
+          "label": "打开态：不支持特性提示条 + 公式提示按钮",
+          "note": "网格由 FortuneSheet 的 canvas 绘制，那份第三方样式表不在检出内、未内联，所以这里只呈现本包自己的外壳；公式按钮固定落在公式栏左侧 142px、距顶 4px",
+          "pad": "lg",
+          "html": "<div style='width:760px;height:380px'><section class=\"body\" data-excel-preview aria-label=\"表格\"><div class=\"notice\" role=\"note\" data-excel-unsupported-notice><svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'><path d='M6.87 2.6a1.33 1.33 0 0 1 2.26 0l5.34 9.33A1.33 1.33 0 0 1 13.33 14H2.67a1.33 1.33 0 0 1-1.14-2.07Z' stroke='currentColor'/><path d='M8 6v3m0 2.33h.01' stroke='currentColor'/></svg><span>当前预览不支持此工作簿中的图表、条件格式。请使用系统应用打开，以获得完整体验。</span></div><div class=\"workbook withFormulaWarning\"><button type=\"button\" class=\"formulaWarning\" aria-label=\"此工作簿包含公式，显示结果可能缺失或不准确。\" data-excel-formula-warning><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'><path d='M6.87 2.6a1.33 1.33 0 0 1 2.26 0l5.34 9.33A1.33 1.33 0 0 1 13.33 14H2.67a1.33 1.33 0 0 1-1.14-2.07Z' stroke='currentColor'/><path d='M8 6v3m0 2.33h.01' stroke='currentColor'/></svg></button></div></section></div>"
+        },
+        {
+          "label": "解析失败 / 超限：状态行 + 重试",
+          "note": "解析 Worker 只会给出 invalid、tooLarge、timeout、encoding 四类文案；按钮重跑一次解析（attempt 加一），文件字节不变",
+          "html": "<div style='width:560px;height:200px'><div class=\"status\" role=\"alert\"><span>此表格超过预览大小限制。</span><button type=\"button\" class=\"button ghost sm\">重试</button></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "content",
+          "type": "DocumentContent",
+          "default": "—",
+          "desc": "文档 owner 给的内容；只有 {kind:'bytes'} 会打开工作簿，其余形态直接落到 .status 的「无法打开此表格」。"
+        },
+        {
+          "name": "resourceAddress",
+          "type": "string",
+          "default": "—",
+          "desc": "完整文件资源地址（dsh-resource://file/session/<sessionId>/<path>），既是 tab 与依赖 Resource 的身份，也用来取后缀判格式。"
+        },
+        {
+          "name": "format",
+          "type": "ExcelFormat",
+          "default": "—",
+          "desc": "由 excelFormat(hostFileOf(resourceAddress).path) 判定的 xlsx、xls、csv 或 tsv，决定走 ExcelJS、SheetJS CE 还是 PapaParse。"
+        },
+        {
+          "name": "limits",
+          "type": "ExcelLimits",
+          "default": "—",
+          "desc": "maxBytes、maxCells 与 timeoutMs 三项上限（配置默认 16 MiB、250000 格、15000 ms）；越过任一项会换成 tooLarge 或 timeout 文案。"
+        },
+        {
+          "name": "loading",
+          "type": "ReactNode",
+          "default": "—",
+          "desc": "主 bundle 里已本地化的加载帧（LazyExcelBody 传进来的 LoadingIndicator）；解析 Promise 未落地、或字节换了 revision 时原样返回。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'sidebarExcel'>",
+          "default": "—",
+          "desc": "sidebarExcel 词典：表格标题、公式警告、不支持特性名、重试与各类失败文案。"
+        },
+        {
+          "name": "addResource / setResources / wrap / scrollportRef / useTabInfo",
+          "type": "DocumentPreviewProps",
+          "default": "—",
+          "desc": "DocumentPreviewProps 的共享座位；工作簿自带内部滚动，因此不接管 scrollportRef。"
+        }
+      ],
+      "notes": "工作簿固定只读：<code>allowEdit={false}</code>、<code>showToolbar={false}</code>、<code>forceCalculation={false}</code>，右键菜单只留 copy，也别指望重算公式——缺失的结果留空并由公式提示说明。第三方样式以 <code>@scope ([data-excel-preview])</code> 内联注入，所以 FortuneSheet 的样式只作用于预览区域；<code>.workbook</code> 上挂 ResizeObserver 转发 window resize，因为 FortuneSheet 只在窗口 resize 时重新测量画布，而分栏缩放不会触发该事件。<code>@scope</code> 不支持的浏览器由主题侧兜底，画布尺寸则靠 <code>.workbook</code> 的 <code>flex:1;min-height:0</code>。",
+      "keywords": [
+        "表格",
+        "工作簿",
+        "Excel",
+        "xlsx",
+        "csv",
+        "FortuneSheet",
+        "只读表格"
+      ]
+    },
+    {
+      "id": "lazy-excel-body",
+      "name": "LazyExcelBody",
+      "exportName": "LazyExcelBody",
+      "zh": "表格懒加载",
+      "group": "preview",
+      "summary": "表格渲染器的门闩：<code>lazy(() =&gt; import('./excel.tsx'))</code> 包一层 <code>Suspense</code>，chunk 未到时先渲染主 bundle 的加载帧（28px ongoing <code>StateDot</code> 加「文档渲染中...」，居中、24px 内边距、12px 间距），到达后原样换成 <code>ExcelBody</code>。它自己用 <code>excelFormat(hostFileOf(resourceAddress).path)</code> 从后缀判定解析路径，所以 .xlsx、.xls、.csv、.tsv 共用同一个入口，并把同一个 loading 节点继续传给正文，作为解析期的占位。",
+      "source": "packages/client/ui-sidebar-documentpreview/src/client/excel/LazyExcelBody.tsx#L23",
+      "css": [
+        "packages/client/ui-sidebar-documentpreview/src/client/LoadingIndicator.module.css",
+        "packages/client/ui-primitives/src/StateDot.module.css",
+        "packages/client/ui-sidebar-documentpreview/src/client/excel/ExcelBody.module.css",
+        "packages/client/ui-primitives/src/Button.module.css"
+      ],
+      "tokens": [
+        "--dsw-font",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-state-warn-label",
+        "--dsw-alias-state-warn-tertiary",
+        "--dsw-alias-label-primary",
+        "--dsw-radius-sm",
+        "--dsw-radius-md",
+        "--dsw-alias-interactive-bg-hover"
+      ],
+      "specimens": [
+        {
+          "label": "等待表格 chunk：居中加载帧",
+          "note": "这一帧完全来自主 bundle：28px 的 ongoing 转圈加一行本地化状态，role=status 与 aria-label 让读屏读出同一条文案",
+          "html": "<div style='width:560px;height:240px'><span class=\"loading\" role=\"status\" aria-label=\"文档渲染中...\" data-document-loading><svg class=\"spinner\" data-state=\"ongoing\" width='28' height='28' viewBox='0 0 24 24' aria-hidden='true'><g class=\"spinnerMotion\"><circle class=\"spinnerTrack\" cx='12' cy='12' r='9.5' /><circle class=\"spinnerArc\" cx='12' cy='12' r='9.5' /></g></svg><span>文档渲染中...</span></span></div>"
+        },
+        {
+          "label": "chunk 到达：工作簿外壳接管",
+          "note": "替换后 DOM 里是 ExcelBody 自己的 .body、.workbook 与公式提示按钮；网格仍由 FortuneSheet 画布绘制",
+          "pad": "lg",
+          "html": "<div style='width:760px;height:320px'><section class=\"body\" data-excel-preview aria-label=\"表格\"><div class=\"workbook withFormulaWarning\"><button type=\"button\" class=\"formulaWarning\" aria-label=\"此工作簿包含公式，显示结果可能缺失或不准确。\" data-excel-formula-warning><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'><path d='M6.87 2.6a1.33 1.33 0 0 1 2.26 0l5.34 9.33A1.33 1.33 0 0 1 13.33 14H2.67a1.33 1.33 0 0 1-1.14-2.07Z' stroke='currentColor'/><path d='M8 6v3m0 2.33h.01' stroke='currentColor'/></svg></button></div></section></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "content",
+          "type": "DocumentContent",
+          "default": "—",
+          "desc": "完整文件字节或文本分页；表格只认 {kind:'bytes'}，其它形态由正文给出「无法打开此表格」。"
+        },
+        {
+          "name": "resourceAddress",
+          "type": "string",
+          "default": "—",
+          "desc": "完整文件资源地址；后缀决定 xlsx、xls、csv、tsv 哪条解析路径。"
+        },
+        {
+          "name": "limits",
+          "type": "ExcelLimits",
+          "default": "—",
+          "desc": "maxBytes、maxCells、timeoutMs，随 props 一起透传给惰性正文。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'sidebarExcel'>",
+          "default": "—",
+          "desc": "sidebarExcel 词典；loading 文案先在这里取出，作为 Suspense 回退与正文占位共用。"
+        },
+        {
+          "name": "addResource / setResources / wrap / scrollportRef / useTabInfo",
+          "type": "DocumentPreviewProps",
+          "default": "—",
+          "desc": "DocumentPreviewProps 的共享座位，原样透传。"
+        }
+      ],
+      "notes": "惰性 chunk 打包 FortuneSheet、用于 XLSX 的 ExcelJS、用于 XLS 的 SheetJS CE 与用于 CSV/TSV 的 PapaParse，因此打开其它文件时这些依赖都不在启动 bundle 里；chunk 未落地前 <code>ExcelBody</code> 根本不在 DOM 中，首帧只有加载指示。每次解析会起一个可释放的 Worker 并传输所保留字节的副本，替换内容、卸载、失败或超时都会终止它。",
+      "keywords": [
+        "表格懒加载",
+        "Excel chunk",
+        "Suspense",
+        "加载指示"
+      ]
+    },
+    {
+      "id": "font-notice",
+      "name": "FontNotice",
+      "exportName": "FontNotice",
+      "zh": "字体提示",
+      "group": "preview",
+      "summary": "文档工具条上的「缺失字体」警告与详情卡：<code>fonts</code> 为空时返回 null，否则先给一个 28×28 的圆角图标按钮（TextPreview 的 <code>.tool</code>：<code>--dsw-radius-sm</code>、15px 字形、悬停铺 interactive-bg-hover，三角用 warn 色，带 <code>aria-expanded</code> 与 <code>aria-haspopup=\"dialog\"</code>）。点击后经 portal 挂到 <code>document.body</code>，得到一张 <code>position:fixed</code> 的 <code>.panel</code>：宽 <code>min(340px, calc(100vw - 24px))</code>、16px 内边距、<code>--dsw-radius-lg</code> 圆角、<code>--dsw-elevation-prominent</code> 投影、13px/1.6。卡内头部是 14px/600 标题加右侧 28px 关闭按钮，往下依次是 secondary 说明、12px tertiary 计数与字体列表（每项 <code>8px 0</code>、0.5px <code>--dsw-alias-border-l2</code> 分隔线、<code>overflow-wrap:anywhere</code>）。",
+      "source": "packages/client/ui-sidebar-documentpreview/src/client/office/FontNotice.tsx#L20",
+      "css": [
+        "packages/client/ui-sidebar-documentpreview/src/client/office/FontNotice.module.css",
+        "packages/client/ui-sidebar-documentpreview/src/client/TextPreview.module.css",
+        "packages/client/ui-primitives/src/Button.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-state-warn-label",
+        "--dsw-alias-state-warn-tertiary",
+        "--dsw-alias-bg-layer-2",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-scrollbar-bg-l2",
+        "--dsw-alias-scrollbar-hover-l2",
+        "--dsw-elevation-prominent",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-radius-sm",
+        "--dsw-radius-md",
+        "--dsw-radius-lg"
+      ],
+      "specimens": [
+        {
+          "label": "工具条上的警告按钮（收起）",
+          "note": "真实位置在文档工具条的刷新按钮之前；悬停 500ms 出现「缺失 3 种字体，点击查看」气泡",
+          "html": "<div style='display:flex;align-items:center;gap:12px;width:320px;padding:6px 0'><span class=\"anchor\" data-office-font-warning><button type=\"button\" class=\"tool warning\" aria-label=\"缺失 3 种字体，点击查看\" aria-expanded=\"false\" aria-haspopup=\"dialog\"><svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'><path d='M6.87 2.6a1.33 1.33 0 0 1 2.26 0l5.34 9.33A1.33 1.33 0 0 1 13.33 14H2.67a1.33 1.33 0 0 1-1.14-2.07Z' stroke='currentColor'/><path d='M8 6v3m0 2.33h.01' stroke='currentColor'/></svg></button></span></div>"
+        },
+        {
+          "label": "打开态：缺字体详情卡",
+          "note": "打开态；真实卡片是 portal 浮层，锚在按钮下方 8px、视口边距 12px，打开时卡片自己拿焦点",
+          "pad": "lg",
+          "html": "<div style='width:380px;height:300px'><div class=\"panel snapshotStatic\" role=\"dialog\" aria-labelledby=\"font-notice-title\" aria-describedby=\"font-notice-desc\" tabindex=\"-1\"><div class=\"panelHeader\"><h3 id=\"font-notice-title\">缺失的字体</h3><button type=\"button\" class=\"button ghost sm\" aria-label=\"关闭字体详情\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M2.5 2.5L13.5 13.5' stroke='currentColor'/><path d='M13.5 2.5L2.5 13.5' stroke='currentColor'/></svg></button></div><p id=\"font-notice-desc\" class=\"description\">本次预览无法使用以下字体，预览中的文字和排版可能与原文档不同。</p><p class=\"count\">3 种字体</p><ul class=\"fonts\"><li>SimSun</li><li>Microsoft YaHei</li><li>Cambria Math</li></ul></div></div>",
+          "css": "/* 状态模拟：真实卡片是 createPortal 挂到 document.body 的 position:fixed 浮层，坐标由 useAnchoredPosition 写入。\n   snapshotStatic 把它拉回文档流；写 relative 而不是 static，是为了留住包含块，卡片内以后的 inset:0 子层才不会以初始包含块为参照。 */\n.panel.snapshotStatic { position: relative; inset: auto; }"
+        }
+      ],
+      "props": [
+        {
+          "name": "fonts",
+          "type": "readonly string[]",
+          "default": "—",
+          "desc": "当前预览缺的字体族（来自转换结果的 missingFonts）；空数组时组件返回 null，工具条上不出现任何东西。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'sidebarOffice'>",
+          "default": "—",
+          "desc": "sidebarOffice 词典：viewMissingFonts（按钮名，带 count）、missingFontsTitle、missingFontsDescription、missingFontsCount 与 closeDetails。"
+        }
+      ],
+      "notes": "卡片是 <code>role=\"dialog\"</code> 并带 <code>aria-labelledby</code> 与 <code>aria-describedby</code>；打开后 <code>panel.focus()</code>，只有 Escape 与关闭按钮走 <code>closeDetails()</code> 收起并把焦点还给警告按钮；点击外部与卡片 <code>onBlur</code> 只 <code>setExpanded(false)</code>，不动焦点。展开时 <code>aria-expanded=\"true\"</code> 让按钮保持 warn-tertiary 底色，同时把 Tooltip 关掉，避免气泡与卡片重叠。收起状态不记忆——重新打开预览仍只是那个警告图标。",
+      "keywords": [
+        "缺失字体",
+        "字体提示",
+        "Office 字体",
+        "missing fonts",
+        "警告浮层"
+      ]
+    },
+    {
+      "id": "office-body",
+      "name": "OfficeBody",
+      "exportName": "OfficeBody",
+      "zh": "Office 正文",
+      "group": "preview",
+      "summary": "Word 与 PowerPoint 的转换正文：它自己不画文档，而是按 tab 保留一次转换结果（<code>store.byTab[tab.id]</code>），转换完成后把 PDF 字节交给嵌套的 <code>sidebar.right.tab.document.office.pdf</code> 槽位，外面只套一层 <code>.body</code>（<code>height:100%</code> 的纵向 flex、<code>min-height:0</code>）。转换中显示主 bundle 的居中加载帧（28px ongoing <code>StateDot</code> 加「文档渲染中...」）；失败时换成 TextPreview 的 <code>.empty</code> 空态列（居中、16px 间距、secondary 文字，<code>::after</code> 再抬 12% 高度），里面是 36px 的 <code>FileTypeIcon</code>（按后缀取 word 或 ppt 字形）、失败说明与 28px「重试」按钮，容器带 <code>data-textpreview-failed=&lt;code&gt;</code>。转换完成后用户看到的仍是 PDF 正文：12px 页间距与四周留白、文档背景色、未渲染页的 3:4 占位块，以及底部按需滑入的缩放控件。",
+      "source": "packages/client/ui-sidebar-documentpreview/src/client/office/OfficeBody.tsx#L44",
+      "css": [
+        "packages/client/ui-sidebar-documentpreview/src/client/office/OfficeBody.module.css",
+        "packages/client/ui-sidebar-documentpreview/src/client/TextPreview.module.css",
+        "packages/client/ui-primitives/src/Button.module.css",
+        "packages/client/ui-primitives/src/FileTypeIcon.module.css",
+        "packages/client/ui-sidebar-documentpreview/src/client/LoadingIndicator.module.css",
+        "packages/client/ui-primitives/src/StateDot.module.css",
+        "packages/client/ui-sidebar-documentpreview/src/client/pdf/PdfBody.module.css",
+        "packages/client/ui-sidebar-documentpreview/src/client/zoom/ZoomViewport.module.css"
+      ],
+      "tokens": [
+        "--dsw-font",
+        "--dsw-font-family",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-document-preview",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-bg-document-preview",
+        "--dsw-alias-bg-skeleton",
+        "--dsw-elevation-prominent",
+        "--dsw-static-deepseek-450",
+        "--dsw-static-neutral-00",
+        "--dsw-radius-sm",
+        "--dsw-radius-md"
+      ],
+      "specimens": [
+        {
+          "label": "转换中：加载帧",
+          "note": "转换在 Host 上跑，正文只等 store 落定；这一帧与首次读取共用同一个组件",
+          "html": "<div style='width:560px;height:220px'><span class=\"loading\" role=\"status\" aria-label=\"文档渲染中...\" data-document-loading><svg class=\"spinner\" data-state=\"ongoing\" width='28' height='28' viewBox='0 0 24 24' aria-hidden='true'><g class=\"spinnerMotion\"><circle class=\"spinnerTrack\" cx='12' cy='12' r='9.5' /><circle class=\"spinnerArc\" cx='12' cy='12' r='9.5' /></g></svg><span>文档渲染中...</span></span></div>"
+        },
+        {
+          "label": "转换失败：空态 + 重试",
+          "note": "图标按资源地址后缀取字形（这里是 .docx 的 word 字形）；失败码是转换回调 rejection 分支的 gateway/internal，说明行由 describeFailure 套「读取失败：{message}」模板、内层是 sidebarOffice 的 failed 文案；重试走 request.reload，revision 加一后重新转换",
+          "pad": "lg",
+          "html": "<div style='width:560px;height:280px'><div class=\"empty\" data-textpreview-failed=\"gateway/internal\"><svg width='36' height='36' class=\"c3-icon word\" viewBox='0 0 28 28' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'><path d='M8.48924 28H19.5108C21.6479 28 22.7165 28 23.5594 27.6509C24.6833 27.1853 25.5762 26.2924 26.0417 25.1685C26.3909 24.3256 26.3909 23.257 26.3909 21.1199V8.79443C26.3909 8.32877 26.3909 8.09593 26.3471 7.87507C26.2887 7.58058 26.173 7.30042 26.0067 7.05048C25.882 6.86303 25.7177 6.69799 25.3893 6.36792L20.0611 1.01354C19.7304 0.681235 19.5651 0.515081 19.3769 0.38885C19.126 0.220541 18.8443 0.103463 18.5481 0.0443412C18.3259 0 18.0915 0 17.6226 0H8.48924C6.35209 0 5.28351 0 4.4406 0.349145C3.31672 0.814671 2.4238 1.70759 1.95828 2.83147C1.60913 3.67438 1.60913 4.74296 1.60913 6.88011V21.1199C1.60913 23.257 1.60913 24.3256 1.95828 25.1685C2.4238 26.2924 3.31672 27.1853 4.4406 27.6509C5.28351 28 6.35209 28 8.48924 28Z' fill='currentColor'/><path d='M26.3909 7.37445L19.0525 0V3.77445C19.0525 4.89271 19.0525 5.45184 19.2352 5.89289C19.4788 6.48096 19.946 6.94818 20.5341 7.19176C20.9751 7.37445 21.5342 7.37445 22.6525 7.37445H26.3909Z' fill='var(--dsw-static-neutral-00)' fill-opacity='.7'/><g color='var(--dsw-static-neutral-00)' data-file-type-mark transform='translate(14 16) scale(1.22) translate(-14 -16)'><path d='M10.5118 20.5L8.24179 13.5H10.2818L12.1918 19.56H11.1618L13.1718 13.5H14.9918L16.8918 19.56H15.9018L17.8718 13.5H19.7618L17.4918 20.5H15.3718L13.7518 15.35H14.3218L12.6318 20.5H10.5118Z' fill='currentColor'/></g></svg><p class=\"emptyLine\">读取失败：Office 转换失败，未生成可用的 PDF。请检查该文件后重试。</p><button type=\"button\" class=\"button ghost sm\">重试</button></div></div>"
+        },
+        {
+          "label": "转换完成：.body 里交给 PDF 槽位",
+          "note": "静态快照；转出来的就是 PDF 正文，这里停在首页还没画完的一帧——3:4 占位块撑着位置，画布仍 hidden",
+          "pad": "lg",
+          "html": "<div style='width:560px;height:360px'><div class=\"c0-body\"><section class=\"frame\" data-document-zoom-frame data-document-zoom-mode=\"fit-width\" style='--document-zoom:1;--document-zoom-reveal-height:72px'><div class=\"scrollport\" data-document-zoom-scrollport><section class=\"c6-body\" data-pdf-preview><div class=\"c6-page\" data-pdf-page=\"1\"><div class=\"placeholder\" role=\"status\" aria-label=\"正在绘制页面…\"></div><div class=\"surface\" data-document-zoom-surface style='--document-zoom-width:0px' hidden><canvas class=\"canvas\" role=\"img\" aria-label=\"PDF 第 1 页\"></canvas><div class=\"text\" data-pdf-text></div></div></div><div class=\"c6-page\" data-pdf-page=\"2\"><div class=\"placeholder\"></div><div class=\"surface\" data-document-zoom-surface style='--document-zoom-width:0px' hidden><canvas class=\"canvas\" role=\"img\" aria-label=\"PDF 第 2 页\"></canvas><div class=\"text\" data-pdf-text></div></div></div></section></div><div class=\"revealZone\" data-document-zoom-reveal-zone aria-hidden=\"true\"></div></section></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "content",
+          "type": "DocumentContent",
+          "default": "—",
+          "desc": "必须是 {kind:'renderer'}；其它形态时正文返回 null，转换只由这一条 renderer 请求驱动。"
+        },
+        {
+          "name": "load",
+          "type": "(tabId, revision, file, signal, loaded, failed) => void",
+          "default": "—",
+          "desc": "注入的转换回调：走 Host 的 Office 转 PDF 服务，把结果写进 store，并上报已展示的源版本或失败。"
+        },
+        {
+          "name": "retainTab",
+          "type": "(tab: TabId, signal: AbortSignal) => void",
+          "default": "—",
+          "desc": "把转换缓存绑到 tab 记录而不是正文挂载：隐藏、重挂载期间已完成的 PDF 都保留，tab 关闭才释放。"
+        },
+        {
+          "name": "useStore",
+          "type": "PropsStore<OfficeStore>",
+          "default": "—",
+          "desc": "按 tab 读 {revision, file?, failure?}；只有 held.revision 与当前 content.revision 一致时才复用，旧 revision 不显示。"
+        },
+        {
+          "name": "useTabInfo",
+          "type": "UseSidebarRightTabInfo",
+          "default": "—",
+          "desc": "框架注入的 tab 读取器：取 tab.id 分桶、取 tab.signal 取消转换。"
+        },
+        {
+          "name": "renderSlot",
+          "type": "PropsRenderSlots<'sidebar.right.tab.document.office.pdf'>",
+          "default": "—",
+          "desc": "把转换后的字节连同 resourceAddress、wrap、scrollportRef 等座位交给嵌套 PDF 槽位（同一份惰性 PDF 正文）。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'sidebarOffice'>",
+          "default": "—",
+          "desc": "sidebarOffice 词典：loading、retry 与各类转换失败文案（由 describeFailure 在注入侧先本地化）。"
+        },
+        {
+          "name": "resourceAddress / wrap / scrollportRef / addResource / setResources",
+          "type": "DocumentPreviewProps",
+          "default": "—",
+          "desc": "DocumentPreviewProps 的共享座位，随字节一起下传给 PDF 槽位；滚动职责由 PDF 视口持有。"
+        }
+      ],
+      "notes": "转换请求由正文触发：<code>load(tab.id, request.revision, hostFileOf(resourceAddress), AbortSignal.any([controller.signal, tab.signal]), …)</code>，取消同时绑住这次请求与 tab 生命周期，同一 revision 一旦结算（有 file 或 failure）就不再重发。缓存以渲染 generation、Session、源绝对路径与源版本为身份，按 LRU 保留最多 8 份、64 MiB；PDF 从不持久化，刷新页面即失效。Host 渲染器缺失时注册仍然可用，只显示配置引导；正文与工具栏动作共享同一 store，后者只读当前 revision 的 <code>missingFonts</code>。",
+      "keywords": [
+        "Office 正文",
+        "Word 预览",
+        "PowerPoint 预览",
+        "docx",
+        "pptx",
+        "转换 PDF"
+      ]
+    },
+    {
+      "id": "office-font-action",
+      "name": "OfficeFontAction",
+      "exportName": "OfficeFontAction",
+      "zh": "字体警告按钮",
+      "group": "preview",
+      "summary": "文档工具条的动作槽实现（keyed slot <code>sidebar.right.tab.document.action</code>）：只有当前 tab 的转换结果与工具栏 revision 一致、且转换已经拿到文件时才渲染 <code>&lt;FontNotice fonts={held.file.missingFonts} /&gt;</code>，否则返回 null——转换中、转换失败、revision 已被替换这些时刻，工具条上什么都不出现。它自己不产生任何 DOM，外观、状态与交互全部是 FontNotice 的：28×28 warn 色三角按钮，加 portal 出来的 <code>min(340px, calc(100vw - 24px))</code> 详情卡。",
+      "source": "packages/client/ui-sidebar-documentpreview/src/client/office/OfficeFontAction.tsx#L16",
+      "css": [
+        "packages/client/ui-sidebar-documentpreview/src/client/office/FontNotice.module.css",
+        "packages/client/ui-sidebar-documentpreview/src/client/TextPreview.module.css",
+        "packages/client/ui-primitives/src/Button.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-state-warn-label",
+        "--dsw-alias-state-warn-tertiary",
+        "--dsw-alias-bg-layer-2",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-scrollbar-bg-l2",
+        "--dsw-alias-scrollbar-hover-l2",
+        "--dsw-elevation-prominent",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-radius-sm",
+        "--dsw-radius-md",
+        "--dsw-radius-lg"
+      ],
+      "specimens": [
+        {
+          "label": "转换完成后：工具条上的警告按钮",
+          "note": "该组件本身没有独立外观，这里展示它渲染的内容；没有缺失字体时 FontNotice 也返回 null，按钮同样不出现",
+          "html": "<div style='display:flex;align-items:center;gap:12px;width:320px;padding:6px 0'><span class=\"anchor\" data-office-font-warning><button type=\"button\" class=\"tool warning\" aria-label=\"缺失 2 种字体，点击查看\" aria-expanded=\"false\" aria-haspopup=\"dialog\"><svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'><path d='M6.87 2.6a1.33 1.33 0 0 1 2.26 0l5.34 9.33A1.33 1.33 0 0 1 13.33 14H2.67a1.33 1.33 0 0 1-1.14-2.07Z' stroke='currentColor'/><path d='M8 6v3m0 2.33h.01' stroke='currentColor'/></svg></button></span></div>"
+        },
+        {
+          "label": "点开警告：缺字体详情卡",
+          "note": "打开态；同一张 FontNotice 卡片，这里由工具条动作触发",
+          "pad": "lg",
+          "html": "<div style='width:380px;height:260px'><div class=\"panel snapshotStatic\" role=\"dialog\" aria-labelledby=\"office-font-title\" aria-describedby=\"office-font-desc\" tabindex=\"-1\"><div class=\"panelHeader\"><h3 id=\"office-font-title\">缺失的字体</h3><button type=\"button\" class=\"button ghost sm\" aria-label=\"关闭字体详情\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M2.5 2.5L13.5 13.5' stroke='currentColor'/><path d='M13.5 2.5L2.5 13.5' stroke='currentColor'/></svg></button></div><p id=\"office-font-desc\" class=\"description\">本次预览无法使用以下字体，预览中的文字和排版可能与原文档不同。</p><p class=\"count\">2 种字体</p><ul class=\"fonts\"><li>FangSong</li><li>Calibri Light</li></ul></div></div>",
+          "css": "/* 状态模拟：详情卡真实态是 createPortal 到 document.body 的 position:fixed 浮层；\n   snapshotStatic 把它拉回文档流，保留 relative 以留住包含块。 */\n.panel.snapshotStatic { position: relative; inset: auto; }"
+        }
+      ],
+      "props": [
+        {
+          "name": "content",
+          "type": "DocumentContent",
+          "default": "—",
+          "desc": "工具栏 revision 的载体；不是 renderer、或 store 里的 revision 与它不一致、或还没拿到 file 时返回 null。"
+        },
+        {
+          "name": "useTabInfo",
+          "type": "UseSidebarRightTabInfo",
+          "default": "—",
+          "desc": "取 tab.id 去 store 里找这一次转换的结果。"
+        },
+        {
+          "name": "useStore",
+          "type": "PropsStore<OfficeStore>",
+          "default": "—",
+          "desc": "与 Office 正文共享同一份转换结果，这里只读字体元数据 held.file.missingFonts。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'sidebarOffice'>",
+          "default": "—",
+          "desc": "sidebarOffice 词典，原样透传给 FontNotice。"
+        }
+      ],
+      "notes": "工具栏动作与正文共享 store，但读的是各自 revision 的字体元数据，所以重新加载后旧的详情不会残留：<code>key={content.revision}</code> 在 revision 变化时重建 FontNotice，展开态与锚点位置都不跨 revision。这个槽位在刷新按钮之前渲染，因此带缺失字体的预览里，用户先看到警告、再看到重载。",
+      "keywords": [
+        "字体警告",
+        "工具条动作",
+        "Office 字体",
+        "action slot"
+      ]
+    },
+    {
+      "id": "lazy-pdf-body",
+      "name": "LazyPdfBody",
+      "exportName": "LazyPdfBody",
+      "zh": "PDF 懒加载",
+      "group": "preview",
+      "summary": "PDF 正文的门闩：<code>lazy(() =&gt; import('./pdf.tsx'))</code> 包一层 <code>Suspense</code>，chunk 未到时渲染主 bundle 的居中加载帧（28px ongoing <code>StateDot</code> 加「文档渲染中...」），到达后换成 <code>PdfBody</code>。同一个 <code>loading</code> 节点还会交给 PdfBody 当文档解析期的占位，所以从打开文件到第一页画出来之间画面不会跳。chunk 就绪后用户看到的是共享缩放视口：<code>height:100%</code> 的 <code>.frame</code> 里是滚动区，未渲染页以 3:4 占位块撑着位置，底部 72px 揭示区唤起浮动控件。",
+      "source": "packages/client/ui-sidebar-documentpreview/src/client/pdf/LazyPdfBody.tsx#L13",
+      "css": [
+        "packages/client/ui-sidebar-documentpreview/src/client/LoadingIndicator.module.css",
+        "packages/client/ui-primitives/src/StateDot.module.css",
+        "packages/client/ui-sidebar-documentpreview/src/client/pdf/PdfBody.module.css",
+        "packages/client/ui-sidebar-documentpreview/src/client/zoom/ZoomViewport.module.css",
+        "packages/client/ui-sidebar-documentpreview/src/client/zoom/ZoomControls.module.css",
+        "packages/client/ui-primitives/src/Button.module.css",
+        "packages/client/ui-primitives/src/Menu.module.css"
+      ],
+      "tokens": [
+        "--dsw-font",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-document-preview",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-bg-document-preview",
+        "--dsw-alias-bg-skeleton",
+        "--dsw-alias-bg-layer-1",
+        "--dsw-elevation-prominent",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-radius-sm",
+        "--dsw-radius-md",
+        "--dsw-radius-lg"
+      ],
+      "specimens": [
+        {
+          "label": "等待 PDF chunk：居中加载帧",
+          "note": "pdf.js、Worker 源码和内嵌数据都在包内独立 chunk 里，所以首帧只有这个主 bundle 的加载指示",
+          "html": "<div style='width:560px;height:240px'><span class=\"loading\" role=\"status\" aria-label=\"文档渲染中...\" data-document-loading><svg class=\"spinner\" data-state=\"ongoing\" width='28' height='28' viewBox='0 0 24 24' aria-hidden='true'><g class=\"spinnerMotion\"><circle class=\"spinnerTrack\" cx='12' cy='12' r='9.5' /><circle class=\"spinnerArc\" cx='12' cy='12' r='9.5' /></g></svg><span>文档渲染中...</span></span></div>"
+        },
+        {
+          "label": "chunk 到达：PDF 滚动区 + 浮动控件",
+          "note": "静态快照；容器给的是确定高度，真实环境里 .frame 撑满分栏，控件由指针进入底部揭示区唤起",
+          "pad": "lg",
+          "html": "<div style='width:600px;height:360px'><section class=\"frame\" data-document-zoom-frame data-document-zoom-mode=\"fit-width\" style='--document-zoom:1;--document-zoom-reveal-height:72px'><div class=\"scrollport\" data-document-zoom-scrollport><section class=\"body\" data-pdf-preview><div class=\"page\" data-pdf-page=\"1\"><div class=\"placeholder\" role=\"status\" aria-label=\"正在绘制页面…\"></div><div class=\"surface\" data-document-zoom-surface style='--document-zoom-width:0px' hidden><canvas class=\"canvas\" role=\"img\" aria-label=\"PDF 第 1 页\"></canvas><div class=\"text\" data-pdf-text></div></div></div><div class=\"page\" data-pdf-page=\"2\"><div class=\"placeholder\"></div><div class=\"surface\" data-document-zoom-surface style='--document-zoom-width:0px' hidden><canvas class=\"canvas\" role=\"img\" aria-label=\"PDF 第 2 页\"></canvas><div class=\"text\" data-pdf-text></div></div></div></section></div><div class=\"revealZone\" data-document-zoom-reveal-zone aria-hidden=\"true\"></div><div class=\"panel visible\" role=\"toolbar\" aria-label=\"缩放控件\" data-document-zoom-controls data-document-zoom-visible=\"true\"><span class=\"controlAnchor\"><button type=\"button\" class=\"button ghost sm zoomButton\" aria-label=\"缩小\"><svg width='14' height='14' viewBox='0 0 16 16' aria-hidden='true'><path d='M2 8h12' fill='none' stroke='currentColor' stroke-width='1.5'/></svg></button></span><span class=\"root\"><button type=\"button\" class=\"button ghost sm percent\" aria-label=\"选择缩放比例\" aria-expanded=\"false\"><span>100%</span><svg width='12' height='12' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button></span><span class=\"controlAnchor\"><button type=\"button\" class=\"button ghost sm zoomButton\" aria-label=\"放大\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M8 2V14' stroke='currentColor'/><path d='M2 8H14' stroke='currentColor'/></svg></button></span></div></section></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "content",
+          "type": "DocumentContent",
+          "default": "—",
+          "desc": "完整文件字节；只有 {kind:'bytes'} 会画页面，其它形态由正文给出「PDF 预览需要完整文件内容」。"
+        },
+        {
+          "name": "resourceAddress",
+          "type": "string",
+          "default": "—",
+          "desc": "完整文件资源地址，透传给正文作为依赖 Resource 的根。"
+        },
+        {
+          "name": "retainTab",
+          "type": "(tabId: TabId, signal: AbortSignal) => void",
+          "default": "—",
+          "desc": "把页码与缩放偏好保留到 tab 关闭，正文卸载重挂不丢。"
+        },
+        {
+          "name": "ZoomViewport",
+          "type": "ComponentType<ZoomViewportProps>",
+          "default": "—",
+          "desc": "主 bundle 传入的视口实现，惰性 chunk 不再自带一份滚动与手势逻辑。"
+        },
+        {
+          "name": "zoomSurfaceClass",
+          "type": "string",
+          "default": "—",
+          "desc": "主 bundle 的 ZoomViewport.module.css 里的 .surface 类名，让 chunk 里的页面接上适应宽度与固定缩放的宽度规则。"
+        },
+        {
+          "name": "useStore",
+          "type": "PropsStore<PdfStore>",
+          "default": "—",
+          "desc": "按 tab 读 {page, zoom?}，缺省是第 1 页加适应宽度；打开页与缩放档随 tab 记录一起消失。"
+        },
+        {
+          "name": "useTabInfo",
+          "type": "UseSidebarRightTabInfo",
+          "default": "—",
+          "desc": "取 tab.id 分桶、取 tab.signal 取消解析与页面渲染。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'sidebarPdf'>",
+          "default": "—",
+          "desc": "sidebarPdf 词典（含 zoomZh 的缩放文案）：页面标签、渲染中、失败、重试与百分比。"
+        },
+        {
+          "name": "loading",
+          "type": "ReactNode",
+          "default": "—",
+          "desc": "LazyPdfBody 传进来的加载帧；文档解析期间正文原样返回它。"
+        },
+        {
+          "name": "wrap / scrollportRef / addResource / setResources",
+          "type": "DocumentPreviewProps",
+          "default": "—",
+          "desc": "共享座位；scrollportRef 交给 ZoomViewport 的内部滚动区，卸载时传 null 还原。"
+        }
+      ],
+      "notes": "包内独立 chunk 才含 pdf.js、Worker 源码与内嵌支持数据，不进启动 <code>client.js</code>；chunk 加载失败由外层注册的 Suspense 边界处理，这里没有自己的错误界面。首帧的加载指示同时被正文复用，所以用户不会看到「加载—空白—加载」的抖动。",
+      "keywords": [
+        "PDF 懒加载",
+        "pdf.js chunk",
+        "Suspense",
+        "PDF 视口"
+      ]
+    },
+    {
+      "id": "pdf-body",
+      "name": "PdfBody",
+      "exportName": "PdfBody",
+      "zh": "PDF 正文",
+      "group": "preview",
+      "summary": "PDF 阅读器：页面画在 canvas 上，纵向排列、页间距与四周留白都是 12px，底色是 <code>--dsw-alias-bg-document-preview</code>、字体走 <code>--dsw-font</code>；未渲染的页用 3:4 的 <code>.placeholder</code> 静默块占位（<code>--dsw-alias-bg-skeleton</code>），页面就绪后换成带 <code>--dsw-elevation-prominent</code> 投影的 <code>.surface</code>，上面盖一层做选区与复制的文字层。它把滚动与缩放交给主 bundle 的 <code>ZoomViewport</code>：默认适应宽度，固定档 25%–400%、按 25% 步进，100% 等于 PDF 的 96 DPI 页面尺寸。解析失败、需要密码或 Worker 挂掉时，正文换成 <code>.status</code>（10px 内边距、13px、8px 间距）加 28px「重试」按钮。",
+      "source": "packages/client/ui-sidebar-documentpreview/src/client/pdf/pdf.tsx#L45",
+      "css": [
+        "packages/client/ui-sidebar-documentpreview/src/client/pdf/PdfBody.module.css",
+        "packages/client/ui-sidebar-documentpreview/src/client/zoom/ZoomViewport.module.css",
+        "packages/client/ui-sidebar-documentpreview/src/client/zoom/ZoomControls.module.css",
+        "packages/client/ui-primitives/src/Button.module.css",
+        "packages/client/ui-primitives/src/Menu.module.css"
+      ],
+      "tokens": [
+        "--dsw-font",
+        "--dsw-alias-bg-document-preview",
+        "--dsw-alias-bg-skeleton",
+        "--dsw-alias-bg-document-selection",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-document-preview",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-border-l3",
+        "--dsw-elevation-prominent",
+        "--dsw-radius-sm",
+        "--dsw-radius-md",
+        "--dsw-radius-lg"
+      ],
+      "specimens": [
+        {
+          "label": "适应宽度：两页占位 + 底部控件",
+          "note": "首页已经请求，占位块带 role=status；第二页还没进入视口，只是安静的 3:4 方块。控件是揭示区唤起后的状态",
+          "pad": "lg",
+          "html": "<div style='width:600px;height:380px'><section class=\"frame\" data-document-zoom-frame data-document-zoom-mode=\"fit-width\" style='--document-zoom:1;--document-zoom-reveal-height:72px'><div class=\"scrollport\" data-document-zoom-scrollport><section class=\"body\" data-pdf-preview><div class=\"page\" data-pdf-page=\"1\"><div class=\"placeholder\" role=\"status\" aria-label=\"正在绘制页面…\"></div><div class=\"surface\" data-document-zoom-surface style='--document-zoom-width:0px' hidden><canvas class=\"canvas\" role=\"img\" aria-label=\"PDF 第 1 页\"></canvas><div class=\"text\" data-pdf-text></div></div></div><div class=\"page\" data-pdf-page=\"2\"><div class=\"placeholder\"></div><div class=\"surface\" data-document-zoom-surface style='--document-zoom-width:0px' hidden><canvas class=\"canvas\" role=\"img\" aria-label=\"PDF 第 2 页\"></canvas><div class=\"text\" data-pdf-text></div></div></div></section></div><div class=\"revealZone\" data-document-zoom-reveal-zone aria-hidden=\"true\"></div><div class=\"panel visible\" role=\"toolbar\" aria-label=\"缩放控件\" data-document-zoom-controls data-document-zoom-visible=\"true\"><span class=\"controlAnchor\"><button type=\"button\" class=\"button ghost sm zoomButton\" aria-label=\"缩小\"><svg width='14' height='14' viewBox='0 0 16 16' aria-hidden='true'><path d='M2 8h12' fill='none' stroke='currentColor' stroke-width='1.5'/></svg></button></span><span class=\"root\"><button type=\"button\" class=\"button ghost sm percent\" aria-label=\"选择缩放比例\" aria-expanded=\"false\"><span>100%</span><svg width='12' height='12' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button></span><span class=\"controlAnchor\"><button type=\"button\" class=\"button ghost sm zoomButton\" aria-label=\"放大\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M8 2V14' stroke='currentColor'/><path d='M2 8H14' stroke='currentColor'/></svg></button></span></div></section></div>"
+        },
+        {
+          "label": "固定 150%：.surface 按 --document-zoom 放大",
+          "note": "静态快照；--document-zoom-width 是页面固有宽（JS 从第一页量得），固定模式下 .surface 宽 = 固有宽 × --document-zoom，画布内容由 pdf.js 绘制、这里未复现",
+          "pad": "lg",
+          "html": "<div style='width:600px;height:380px'><section class=\"frame\" data-document-zoom-frame data-document-zoom-mode=\"fixed\" style='--document-zoom:1.5;--document-zoom-reveal-height:72px'><div class=\"scrollport\" data-document-zoom-scrollport><section class=\"body\" data-pdf-preview><div class=\"page\" data-pdf-page=\"1\"><div class=\"surface\" data-document-zoom-surface style='--document-zoom-width:320px'><canvas class=\"canvas\" width='320' height='453' role=\"img\" aria-label=\"PDF 第 1 页\"></canvas><div class=\"text\" data-pdf-text></div></div></div></section></div><div class=\"revealZone\" data-document-zoom-reveal-zone aria-hidden=\"true\"></div><div class=\"panel visible\" role=\"toolbar\" aria-label=\"缩放控件\" data-document-zoom-controls data-document-zoom-visible=\"true\"><span class=\"controlAnchor\"><button type=\"button\" class=\"button ghost sm zoomButton\" aria-label=\"缩小\"><svg width='14' height='14' viewBox='0 0 16 16' aria-hidden='true'><path d='M2 8h12' fill='none' stroke='currentColor' stroke-width='1.5'/></svg></button></span><span class=\"root\"><button type=\"button\" class=\"button ghost sm percent\" aria-label=\"选择缩放比例\" aria-expanded=\"false\"><span>150%</span><svg width='12' height='12' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button></span><span class=\"controlAnchor\"><button type=\"button\" class=\"button ghost sm zoomButton\" aria-label=\"放大\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M8 2V14' stroke='currentColor'/><path d='M2 8H14' stroke='currentColor'/></svg></button></span></div></section></div>"
+        },
+        {
+          "label": "打开失败：状态行 + 重试",
+          "note": "密码保护与 Worker 失败有各自的文案；按钮重跑一次解析（attempt 加一），字节不变",
+          "html": "<div style='width:560px;height:120px'><div class=\"status\" role=\"alert\"><span>无法显示 PDF：Invalid PDF structure.</span><button type=\"button\" class=\"button ghost sm\">重试</button></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "content",
+          "type": "DocumentContent",
+          "default": "—",
+          "desc": "完整文件字节；不是 {kind:'bytes'} 时返回 .status role=alert 的「PDF 预览需要完整文件内容」。"
+        },
+        {
+          "name": "resourceAddress",
+          "type": "string",
+          "default": "—",
+          "desc": "完整文件资源地址，随载荷一起下传给嵌套的 PDF 槽位与依赖 Resource。"
+        },
+        {
+          "name": "retainTab",
+          "type": "(tabId: TabId, signal: AbortSignal) => void",
+          "default": "—",
+          "desc": "保留 tab 的浏览页码与缩放偏好，直到 tab 记录结束；正文重挂载继续用同一份。"
+        },
+        {
+          "name": "ZoomViewport",
+          "type": "ComponentType<ZoomViewportProps>",
+          "default": "—",
+          "desc": "主 bundle 的视口组件：滚动、触控板捏合、适应宽度测量与浮动控件都由它持有。"
+        },
+        {
+          "name": "zoomSurfaceClass",
+          "type": "string",
+          "default": "—",
+          "desc": "ZoomViewport 的 .surface 类名，加在每一页的 .surface 上，接住 fit-width 与 fixed 两种宽度规则。"
+        },
+        {
+          "name": "useStore",
+          "type": "PropsStore<PdfStore>",
+          "default": "—",
+          "desc": "按 tab 读 {page, zoom?}，默认 {page:1} 加适应宽度；只有可见页与首页会被请求渲染。"
+        },
+        {
+          "name": "useTabInfo",
+          "type": "UseSidebarRightTabInfo",
+          "default": "—",
+          "desc": "取 tab.id 与 tab.signal；tab 关闭时中止解析、页面渲染与文字层任务。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'sidebarPdf'>",
+          "default": "—",
+          "desc": "sidebarPdf 词典（含 zoomZh）：页面标签、正在绘制页面、失败、密码、Worker 失败、重试与缩放文案。"
+        },
+        {
+          "name": "loading",
+          "type": "ReactNode",
+          "default": "—",
+          "desc": "主 bundle 的加载帧；文档解析（load.data !== data）期间原样返回它。"
+        },
+        {
+          "name": "wrap / scrollportRef / addResource / setResources",
+          "type": "DocumentPreviewProps",
+          "default": "—",
+          "desc": "共享座位；scrollportRef 交给 ZoomViewport 的滚动区，让文档工具条知道现在的滚动主体。"
+        }
+      ],
+      "notes": "渲染按需发生：IntersectionObserver 以 <code>rootMargin:100% 0px</code> 提前一屏请求，缩放静止或适应宽度变化后按 <code>devicePixelRatio × zoom</code> 重绘，重绘期间旧位图与文字层都留着。文字层用 pdf.js 官方的 TextLayerBuilder 规则管理选区，选中色是 <code>--dsw-alias-bg-document-selection</code>，空白换行不高亮。缩放偏好与页码只活在 tab store 里，tab 关闭即忘；PDF.js 的文档对象与 canvas 始终是组件局部的。",
+      "keywords": [
+        "PDF 正文",
+        "PDF 阅读器",
+        "pdf.js",
+        "页面占位",
+        "文字层"
+      ]
+    },
+    {
+      "id": "zoom-controls",
+      "name": "ZoomControls",
+      "exportName": "ZoomControls",
+      "zh": "缩放控件",
+      "group": "preview",
+      "summary": "PDF 与图片共用的浮动缩放工具条：<code>.panel</code> 绝对定位在视口底部 <code>bottom:14px</code>、水平居中（<code>inset-inline-start:50%</code> 配 <code>translate(-50%, …)</code>），4px 6px 内边距、2px 间距、0.5px <code>--dsw-alias-border-l3</code> 描边、<code>--dsw-radius-lg</code> 圆角、12px/18px 与两层投影。默认 <code>opacity:0; pointer-events:none</code> 下沉 16px，<code>.visible</code> 才滑入；悬停、聚焦、菜单展开或手势进行期间都保持可见。里面是三个原子的 28px 按钮：<code>.zoomButton</code> 的减号与加号（到 25% 或 400% 时 <code>disabled</code>，整体降到 40% 不透明），以及 <code>.percent</code> 的百分比按钮（58px 起、等宽数字），点它向上弹出 112px 起的比例菜单：适应宽度、分隔线，再是 25% / 50% / 100% / 150% / 200%。",
+      "source": "packages/client/ui-sidebar-documentpreview/src/client/zoom/ZoomControls.tsx#L24",
+      "css": [
+        "packages/client/ui-sidebar-documentpreview/src/client/zoom/ZoomControls.module.css",
+        "packages/client/ui-primitives/src/Button.module.css",
+        "packages/client/ui-primitives/src/Menu.module.css",
+        "packages/client/ui-primitives/src/MenuSurface.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-layer-1",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-label-primary",
+        "--dsw-radius-lg",
+        "--dsw-radius-sm",
+        "--dsw-radius-md",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-caption",
+        "--dsw-elevation-prominent",
+        "--dsw-alias-border-l1",
+        "--dsw-menu-surface-fill",
+        "--dsw-menu-backdrop-filter"
+      ],
+      "specimens": [
+        {
+          "label": "工具条（可见态）：适应宽度停在 100%",
+          "note": "状态模拟；.panel 真实态绝对定位于视口底部，这里拉回文档流。它是 tooltip 的锚点，按钮悬停时向上出气泡",
+          "html": "<div style='width:320px;padding:8px 0'><div class=\"panel visible snapshotStatic\" role=\"toolbar\" aria-label=\"缩放控件\" data-document-zoom-controls data-document-zoom-visible=\"true\"><span class=\"controlAnchor\"><button type=\"button\" class=\"button ghost sm zoomButton\" aria-label=\"缩小\"><svg width='14' height='14' viewBox='0 0 16 16' aria-hidden='true'><path d='M2 8h12' fill='none' stroke='currentColor' stroke-width='1.5'/></svg></button></span><span class=\"root\"><button type=\"button\" class=\"button ghost sm percent\" aria-label=\"选择缩放比例\" aria-expanded=\"false\"><span>100%</span><svg width='12' height='12' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button></span><span class=\"controlAnchor\"><button type=\"button\" class=\"button ghost sm zoomButton\" aria-label=\"放大\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M8 2V14' stroke='currentColor'/><path d='M2 8H14' stroke='currentColor'/></svg></button></span></div></div>",
+          "css": "/* 状态模拟：真实面板是 absolute 定位在视口底部 14px、水平居中的浮层，且只在指针进入底部揭示区 / 悬停 / 聚焦 / 手势时由 .visible 滑入\n   （opacity 0 → 1，translate(-50%,16px) scale(.98) → translate(-50%,0) scale(1)）。\n   这里保留 .visible 表示「控件可见」，再用 snapshotStatic 把它拉回文档流；写 relative 而不是 static 以留住包含块。 */\n.panel.snapshotStatic { position: relative; inset: auto; transform: none; }"
+        },
+        {
+          "label": "打开比例菜单：适应宽度选中",
+          "note": "打开态；菜单是 portal 卡片（side=top，落在锚点上方），这里用 order 把它排到工具条前面，宽度是 .zoomMenu 的 112px 起",
+          "pad": "lg",
+          "html": "<div style='display:flex;flex-direction:column;align-items:center;gap:4px;width:260px;padding:8px 0'><div class=\"panel visible snapshotStatic\" role=\"toolbar\" aria-label=\"缩放控件\" data-document-zoom-controls data-document-zoom-visible=\"true\"><span class=\"controlAnchor\"><button type=\"button\" class=\"button ghost sm zoomButton\" aria-label=\"缩小\"><svg width='14' height='14' viewBox='0 0 16 16' aria-hidden='true'><path d='M2 8h12' fill='none' stroke='currentColor' stroke-width='1.5'/></svg></button></span><span class=\"root\"><button type=\"button\" class=\"button ghost sm percent\" aria-label=\"选择缩放比例\" aria-expanded=\"true\"><span>100%</span><svg width='12' height='12' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button></span><span class=\"controlAnchor\"><button type=\"button\" class=\"button ghost sm zoomButton\" aria-label=\"放大\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M8 2V14' stroke='currentColor'/><path d='M2 8H14' stroke='currentColor'/></svg></button></span></div><div class=\"surface compact list zoomMenu compactList scrollable portal snapshotMenu\" data-menu-material=\"translucent\" role=\"menu\" style='--dsh-menu-anchor:--dsh-menu-demo'><div class=\"material\" aria-hidden=\"true\"></div><div class=\"viewport\" role=\"presentation\"><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item selected\"><span class=\"itemLabel\">适应宽度</span><svg class=\"check\" width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4' stroke='currentColor'/></svg></button></div><div class=\"separator\" role=\"separator\"></div><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item\"><span class=\"itemLabel\">25%</span></button></div><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item\"><span class=\"itemLabel\">50%</span></button></div><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item\"><span class=\"itemLabel\">100%</span></button></div><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item\"><span class=\"itemLabel\">150%</span></button></div><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item\"><span class=\"itemLabel\">200%</span></button></div></div></div></div>",
+          "css": "/* 状态模拟：面板与菜单都是浮层——面板 absolute 定位于视口底部、只在可见态滑入，菜单是 createPortal 到 document.body 的 fixed 卡片（side=top，落在锚点上方）。\n   snapshotStatic / snapshotMenu 把它们拉回文档流，菜单再用 order 排到工具条之前、宽度取 .zoomMenu 的 112px 起。\n   两者都写 relative 而不是 static，是为了留住包含块，MenuSurface 的 .material 是 inset:0 的绝对定位层。 */\n.panel.snapshotStatic { position: relative; inset: auto; transform: none; }\n.list.snapshotMenu { position: relative; top: auto; left: auto; order: -1; width: 168px; }"
+        },
+        {
+          "label": "到达上限 400%：放大键禁用",
+          "note": "显示缩放由手势或菜单推进，减号在 25%、加号在 400% 处 disabled：光标变 not-allowed、整体 40% 不透明",
+          "html": "<div style='width:320px;padding:8px 0'><div class=\"panel visible snapshotStatic\" role=\"toolbar\" aria-label=\"缩放控件\" data-document-zoom-controls data-document-zoom-visible=\"true\"><span class=\"controlAnchor\"><button type=\"button\" class=\"button ghost sm zoomButton\" aria-label=\"缩小\"><svg width='14' height='14' viewBox='0 0 16 16' aria-hidden='true'><path d='M2 8h12' fill='none' stroke='currentColor' stroke-width='1.5'/></svg></button></span><span class=\"root\"><button type=\"button\" class=\"button ghost sm percent\" aria-label=\"选择缩放比例\" aria-expanded=\"false\"><span>400%</span><svg width='12' height='12' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button></span><span class=\"controlAnchor\"><button type=\"button\" class=\"button ghost sm zoomButton\" aria-label=\"放大\" disabled><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M8 2V14' stroke='currentColor'/><path d='M2 8H14' stroke='currentColor'/></svg></button></span></div></div>",
+          "css": "/* 状态模拟：同一条 .panel 的静态补位（真实态是视口底部的绝对定位浮层）。 */\n.panel.snapshotStatic { position: relative; inset: auto; transform: none; }"
+        }
+      ],
+      "props": [
+        {
+          "name": "zoom",
+          "type": "number",
+          "default": "—",
+          "desc": "当前生效的缩放倍数（适应宽度算出的或固定档位）；百分比显示四舍五入到整数。"
+        },
+        {
+          "name": "fitWidth",
+          "type": "boolean",
+          "default": "—",
+          "desc": "是否处于适应宽度：决定菜单里选中 fit-width 行还是某个百分比档。"
+        },
+        {
+          "name": "labels",
+          "type": "ZoomLabels",
+          "default": "—",
+          "desc": "controls、menu、out、into、fitWidth 与 value(percent)；由渲染器用 sidebarPdf 或 sidebarDocumentPreview 的词典拼出来。"
+        },
+        {
+          "name": "visible",
+          "type": "boolean",
+          "default": "—",
+          "desc": "揭示区、悬停、焦点或手势成立时为 true，加 .visible 滑入；否则面板透明且不接指针事件。"
+        },
+        {
+          "name": "onZoom",
+          "type": "(zoom: number) => void",
+          "default": "—",
+          "desc": "固定档位选择或加减步进；步进按 ZOOM_STEP=0.25 取整并夹在 0.25–4 之间。"
+        },
+        {
+          "name": "onFitWidth",
+          "type": "() => void",
+          "default": "—",
+          "desc": "菜单里选「适应宽度」时回到跟随面板宽度的模式。"
+        },
+        {
+          "name": "onActiveChange",
+          "type": "(active: boolean) => void",
+          "default": "—",
+          "desc": "悬停、聚焦、菜单展开任一成立时通知视口保持显示；全部结束后视口再推迟 420ms 隐藏。"
+        },
+        {
+          "name": "ref",
+          "type": "ZoomControlsHandle",
+          "default": "—",
+          "desc": "showZoom(zoom)：手势进行中只改百分比文字，不重渲染文档树。"
+        }
+      ],
+      "notes": "菜单复用共享 <code>Menu</code>（portal、<code>compact</code>、<code>side=\"top\"</code>），卡片是 MenuSurface 的半透明材质，<code>.zoomMenu</code> 把最小宽度提到 112px；选中行用尾部对勾而不是填色。± 按钮在 <code>onMouseDown</code> 里 <code>preventDefault()</code>，避免按下时抢走锚点焦点。可触屏设备（<code>hover:none</code> 或 <code>pointer:coarse</code>）上面板始终可见；<code>prefers-reduced-motion</code> 时只把过渡压到 0.01ms。",
+      "keywords": [
+        "缩放控件",
+        "百分比菜单",
+        "适应宽度",
+        "zoom toolbar"
+      ]
+    },
+    {
+      "id": "zoom-viewport",
+      "name": "ZoomViewport",
+      "exportName": "ZoomViewport",
+      "zh": "缩放视口",
+      "group": "preview",
+      "summary": "可缩放文档共用的视口：<code>.frame</code>（<code>height:100%</code>、<code>overflow:hidden</code>、<code>position:relative</code>）里是 <code>.scrollport</code>（<code>height:100%</code>、<code>overflow:auto</code>）与一条贴在底部的 <code>.revealZone</code>（高 <code>--document-zoom-reveal-height</code>，即 72px，纯命中区、不接收指针）。缩放倍率写在 frame 的 <code>--document-zoom</code> 上，适应宽度模式把带 <code>zoomSurfaceClass</code> 的 <code>.surface</code> 收成 <code>min(var(--document-zoom-width), 100%)</code>，固定模式则是 <code>calc(var(--document-zoom-width) × var(--document-zoom))</code>，所以加号、菜单或触控板捏合只改一个自定义属性。控件只在 <code>intrinsicWidth</code> 已知时渲染，指针进入底部 72px 内即滑入，离开 420ms 后退出。",
+      "source": "packages/client/ui-sidebar-documentpreview/src/client/zoom/ZoomViewport.tsx#L55",
+      "css": [
+        "packages/client/ui-sidebar-documentpreview/src/client/zoom/ZoomViewport.module.css",
+        "packages/client/ui-sidebar-documentpreview/src/client/pdf/PdfBody.module.css",
+        "packages/client/ui-sidebar-documentpreview/src/client/zoom/ZoomControls.module.css",
+        "packages/client/ui-primitives/src/Button.module.css",
+        "packages/client/ui-primitives/src/Menu.module.css"
+      ],
+      "tokens": [
+        "--dsw-font",
+        "--dsw-alias-bg-document-preview",
+        "--dsw-alias-bg-skeleton",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-document-preview",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-border-l3",
+        "--dsw-elevation-prominent",
+        "--dsw-alias-bg-layer-1",
+        "--dsw-radius-sm",
+        "--dsw-radius-md",
+        "--dsw-radius-lg"
+      ],
+      "specimens": [
+        {
+          "label": "适应宽度：控件隐藏（指针不在揭示区）",
+          "note": "静态快照；内容用 PDF 页面的真实类名填入——视口本身不认识文档，只负责滚动、测量与缩放",
+          "pad": "lg",
+          "html": "<div style='width:600px;height:360px'><section class=\"frame\" data-document-zoom-frame data-document-zoom-mode=\"fit-width\" style='--document-zoom:1;--document-zoom-reveal-height:72px'><div class=\"scrollport\" data-document-zoom-scrollport><section class=\"body\" data-pdf-preview><div class=\"page\" data-pdf-page=\"1\"><div class=\"placeholder\" role=\"status\" aria-label=\"正在绘制页面…\"></div><div class=\"surface\" data-document-zoom-surface style='--document-zoom-width:0px' hidden><canvas class=\"canvas\" role=\"img\" aria-label=\"PDF 第 1 页\"></canvas><div class=\"text\" data-pdf-text></div></div></div><div class=\"page\" data-pdf-page=\"2\"><div class=\"placeholder\"></div><div class=\"surface\" data-document-zoom-surface style='--document-zoom-width:0px' hidden><canvas class=\"canvas\" role=\"img\" aria-label=\"PDF 第 2 页\"></canvas><div class=\"text\" data-pdf-text></div></div></div></section></div><div class=\"revealZone\" data-document-zoom-reveal-zone aria-hidden=\"true\"></div></section></div>"
+        },
+        {
+          "label": "指针进入底部 72px：浮动控件滑入",
+          "note": "状态模拟；控件在 .frame 里绝对定位，这里呈现 controlsVisible=true 的一帧（揭示区、悬停、聚焦或手势都会触发）",
+          "pad": "lg",
+          "html": "<div style='width:600px;height:360px'><section class=\"frame\" data-document-zoom-frame data-document-zoom-mode=\"fit-width\" style='--document-zoom:1;--document-zoom-reveal-height:72px'><div class=\"scrollport\" data-document-zoom-scrollport><section class=\"body\" data-pdf-preview><div class=\"page\" data-pdf-page=\"1\"><div class=\"placeholder\" role=\"status\" aria-label=\"正在绘制页面…\"></div><div class=\"surface\" data-document-zoom-surface style='--document-zoom-width:0px' hidden><canvas class=\"canvas\" role=\"img\" aria-label=\"PDF 第 1 页\"></canvas><div class=\"text\" data-pdf-text></div></div></div><div class=\"page\" data-pdf-page=\"2\"><div class=\"placeholder\"></div><div class=\"surface\" data-document-zoom-surface style='--document-zoom-width:0px' hidden><canvas class=\"canvas\" role=\"img\" aria-label=\"PDF 第 2 页\"></canvas><div class=\"text\" data-pdf-text></div></div></div></section></div><div class=\"revealZone\" data-document-zoom-reveal-zone aria-hidden=\"true\"></div><div class=\"panel visible\" role=\"toolbar\" aria-label=\"缩放控件\" data-document-zoom-controls data-document-zoom-visible=\"true\"><span class=\"controlAnchor\"><button type=\"button\" class=\"button ghost sm zoomButton\" aria-label=\"缩小\"><svg width='14' height='14' viewBox='0 0 16 16' aria-hidden='true'><path d='M2 8h12' fill='none' stroke='currentColor' stroke-width='1.5'/></svg></button></span><span class=\"root\"><button type=\"button\" class=\"button ghost sm percent\" aria-label=\"选择缩放比例\" aria-expanded=\"false\"><span>100%</span><svg width='12' height='12' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button></span><span class=\"controlAnchor\"><button type=\"button\" class=\"button ghost sm zoomButton\" aria-label=\"放大\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M8 2V14' stroke='currentColor'/><path d='M2 8H14' stroke='currentColor'/></svg></button></span></div></section></div>"
+        },
+        {
+          "label": "固定 150%：surface 按 --document-zoom 放大",
+          "note": "静态快照；同一份内容只改了 frame 的 data-document-zoom-mode 与 --document-zoom，宽度规则即从 min(固有宽,100%) 换成 固有宽 × 1.5",
+          "pad": "lg",
+          "html": "<div style='width:600px;height:360px'><section class=\"frame\" data-document-zoom-frame data-document-zoom-mode=\"fixed\" style='--document-zoom:1.5;--document-zoom-reveal-height:72px'><div class=\"scrollport\" data-document-zoom-scrollport><section class=\"body\" data-pdf-preview><div class=\"page\" data-pdf-page=\"1\"><div class=\"surface\" data-document-zoom-surface style='--document-zoom-width:320px'><canvas class=\"canvas\" width='320' height='453' role=\"img\" aria-label=\"PDF 第 1 页\"></canvas><div class=\"text\" data-pdf-text></div></div></div></section></div><div class=\"revealZone\" data-document-zoom-reveal-zone aria-hidden=\"true\"></div><div class=\"panel visible\" role=\"toolbar\" aria-label=\"缩放控件\" data-document-zoom-controls data-document-zoom-visible=\"true\"><span class=\"controlAnchor\"><button type=\"button\" class=\"button ghost sm zoomButton\" aria-label=\"缩小\"><svg width='14' height='14' viewBox='0 0 16 16' aria-hidden='true'><path d='M2 8h12' fill='none' stroke='currentColor' stroke-width='1.5'/></svg></button></span><span class=\"root\"><button type=\"button\" class=\"button ghost sm percent\" aria-label=\"选择缩放比例\" aria-expanded=\"false\"><span>150%</span><svg width='12' height='12' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></button></span><span class=\"controlAnchor\"><button type=\"button\" class=\"button ghost sm zoomButton\" aria-label=\"放大\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M8 2V14' stroke='currentColor'/><path d='M2 8H14' stroke='currentColor'/></svg></button></span></div></section></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "preference",
+          "type": "ZoomPreference",
+          "default": "—",
+          "desc": "{kind:'fit-width'} 或 {kind:'fixed', scale}；固定档夹在 0.25–4，适应宽度是默认模式。"
+        },
+        {
+          "name": "intrinsicWidth",
+          "type": "number | undefined",
+          "default": "undefined",
+          "desc": "内容固有宽度（PDF 首页的 CSS 像素宽）；为 undefined 时不渲染缩放控件，也就没有百分比可看。"
+        },
+        {
+          "name": "horizontalInset",
+          "type": "number",
+          "default": "0",
+          "desc": "适应宽度计算时预留的水平留白（PDF 传 24，等于两侧 12px 页边距）。"
+        },
+        {
+          "name": "labels",
+          "type": "ZoomLabels",
+          "default": "—",
+          "desc": "浮动控件的本地化标签；视口只在 intrinsicWidth 已知时把它转交给 ZoomControls。"
+        },
+        {
+          "name": "signal",
+          "type": "AbortSignal",
+          "default": "—",
+          "desc": "tab 生命周期；中止时摘掉滚轮监听并清掉待结算的捏合计时器。"
+        },
+        {
+          "name": "scrollportRef",
+          "type": "RefCallback<HTMLElement>",
+          "default": "—",
+          "desc": "把内部滚动区交给文档 owner 做导航与滚动位置记录；卸载时传 null 还原共享正文的滚动职责。"
+        },
+        {
+          "name": "onPreference",
+          "type": "(preference: ZoomPreference) => void",
+          "default": "—",
+          "desc": "手势静止 120ms 后把最终倍率写回 tab store；选项与加号也走这里。"
+        },
+        {
+          "name": "onRenderZoom",
+          "type": "(zoom: number) => void",
+          "default": "—",
+          "desc": "把结算后的倍率告诉渲染器，让它按 devicePixelRatio × zoom 重绘视口附近的页面。"
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "default": "—",
+          "desc": "渲染器自己的内容（PDF 的页面序列）；视口不解释它，只提供滚动、测量与缩放。"
+        }
+      ],
+      "notes": "缩放锚点：手势结束时用 <code>document.elementFromPoint</code> 找回指针下的 <code>[data-document-zoom-surface]</code>，按指针相对页面的位置同时修正 <code>scrollLeft</code> 与 <code>scrollTop</code>，所以捏合时手指下的内容不动。Chromium 把 macOS 触控板捏合映射成带 <code>ctrlKey</code> 的滚轮，这条路径与 Ctrl+滚轮共用；隐藏计时器在揭示区、控件活跃或手势进行期间不会启动。frame 上的 <code>data-document-zoom-mode</code> 与 <code>--document-zoom</code> 由组件自己写入，<code>--document-zoom-reveal-height</code> 是它的本地自定义属性，不是主题变量。",
+      "keywords": [
+        "缩放视口",
+        "适应宽度",
+        "触控板捏合",
+        "scrollport",
+        "zoom viewport"
+      ]
+    }
+  ]
+}

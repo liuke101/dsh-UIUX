@@ -1,0 +1,542 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "id": "cordis-action-row",
+      "name": "CordisActionRow",
+      "exportName": "CordisActionRow",
+      "zh": "插件操作行",
+      "group": "panels",
+      "summary": "<code>cordis_stop</code> / <code>cordis_undefine</code> 两张操作卡的会话行：32px 行高里是一只业务色图标（停止是实心方块、移除是垃圾桶；<code>CordisActionRow.tsx</code> 按 <code>size={14}</code> 渲染成 14px 字形，<code>.icon</code> 只给 8px 右外边距、没有固定尺寸），14px/24px 的「停止 Cordis 插件 / 移除 Cordis 插件」标题、2px 圆点分隔符，以及一条 13px/24px 摘要——成功时显示 <code>pluginId</code>，失败时整条换成错误色首行。行尾 24px 圆形「查看」按钮平时 <code>opacity: 0</code>，悬停或聚焦才浮现；<code>output</code> 非空时下方追加一条 8px 圆角、<code>--dsw-alias-markdown-code-block</code> 底色的等宽输出块。它自己没有样式表，上面的版式全部来自 <code>CordisRunRow.module.css</code>；<code>phase === 'preparing'</code> 时不画这套行，而是把 <code>card / row / title</code> 三个类名转交给 <code>CordisPreparingRow</code> 的扫光前缀行；那条前缀行由 <code>DisclosureRow</code> 绘制，16×16 的图标槽位只属于它（<code>.leading</code> 定宽高、把里面的 14px 字形居中）。",
+      "source": "packages/extensions/ui-cordis/src/client/CordisActionRow.tsx#L16",
+      "css": [
+        "packages/extensions/ui-cordis/src/client/CordisRunRow.module.css",
+        "packages/client/ui-primitives/src/DisclosureRow.module.css",
+        "packages/client/ui-primitives/src/TextShimmer.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-state-business-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-state-error-primary",
+        "--dsw-alias-border-l4",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-markdown-code-block",
+        "--dsw-font-markdown-code-block-small",
+        "--dsw-alias-label-shimmer"
+      ],
+      "specimens": [
+        {
+          "label": "已结算：停止插件（悬停模拟出「查看」）",
+          "note": "「查看」按钮真实规则是 .card:hover .inspect，这里用 .forceHover 静态近似",
+          "html": "<div style='width:720px'><div class=\"c0-card forceHover\" data-tool='cordis_stop' data-state='ok'><div class=\"c0-row\"><span class=\"c0-icon\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M12.5 2.5H3.5C2.94772 2.5 2.5 2.94772 2.5 3.5V12.5C2.5 13.0523 2.94772 13.5 3.5 13.5H12.5C13.0523 13.5 13.5 13.0523 13.5 12.5V3.5C13.5 2.94772 13.0523 2.5 12.5 2.5Z' fill='currentColor'/></svg></span><span class=\"c0-title\">停止 Cordis 插件</span><span class=\"c0-separator\" aria-hidden='true'></span><span class=\"c0-summary\">pdf-export</span><button type='button' class=\"c0-inspect\" aria-label='查看'><svg width='12' height='12' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4.67398 4.25061L1.36094 7.86484C1.29085 7.9413 1.29085 8.05866 1.36094 8.13513L4.67398 11.7494' stroke='currentColor'/><path d='M11.3262 4.25061L14.6392 7.86484C14.7093 7.9413 14.7093 8.05866 14.6392 8.13513L11.3262 11.7494' stroke='currentColor'/><path d='M9.56222 3.62573L6.43774 12.3743' stroke='currentColor'/></svg></button></div><pre class=\"c0-output\">已停止 pdf-export，1.4.0 的包定义仍然保留</pre></div></div>",
+          "css": "/* 状态模拟：真实规则是 .card:hover .inspect（CordisRunRow.module.css），\n   悬停无法静态触发，这里把那条规则原样搬到 .forceHover 上。 */\n.c0-card.forceHover .c0-inspect { opacity: 1; }"
+        },
+        {
+          "label": "失败：摘要换成错误色首行",
+          "note": "errorSummary 是结果文本的首行；成功时同一位置显示 pluginId，颜色回到 label-secondary",
+          "html": "<div style='width:720px'><div class=\"c0-card\" data-tool='cordis_undefine' data-state='error'><div class=\"c0-row\"><span class=\"c0-icon\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M1.28149 3.88831H14.7187' stroke='currentColor'/><path d='M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833' stroke='currentColor'/><path d='M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831' stroke='currentColor'/><path d='M6.44946 6.98926V11.1238' stroke='currentColor'/><path d='M9.55054 6.98926V11.1238' stroke='currentColor'/></svg></span><span class=\"c0-title\">移除 Cordis 插件</span><span class=\"c0-separator\" aria-hidden='true'></span><span class=\"c0-error\">插件 pdf-export 正在运行，无法移除</span></div><pre class=\"c0-output\">Error: cannot remove a running plugin (run 7f3c1a)</pre></div></div>"
+        },
+        {
+          "label": "准备态：转交 CordisPreparingRow 的扫光前缀行",
+          "note": "phase 为 preparing 时只传 card / row / title 三个类名；扫光层在预览里持续播放",
+          "html": "<div style='width:720px'><div data-tool='cordis_undefine' data-state='preparing' aria-label='准备调用 Cordis 工具'><div class=\"c1-root c0-card\"><div class=\"c1-header\" data-disclosure-header='true'><div class=\"c1-row c0-row\" data-disclosure-row='true'><span class=\"c1-leading\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M1.28149 3.88831H14.7187' stroke='currentColor'/><path d='M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833' stroke='currentColor'/><path d='M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831' stroke='currentColor'/><path d='M6.44946 6.98926V11.1238' stroke='currentColor'/><path d='M9.55054 6.98926V11.1238' stroke='currentColor'/></svg></span><span class=\"c2-root\" data-shimmer='true'><span class=\"c2-content\"><span class=\"c2-text c1-title c0-title\">移除 Cordis 插件</span></span><span class=\"c2-decoration\" aria-hidden='true' inert=''><span class=\"c2-sweep\"><span class=\"c2-content c2-highlight\"><span class=\"c2-text c1-title c0-title\" data-shimmer-text=\"移除 Cordis 插件\"></span></span></span></span></span></div></div></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "phase",
+          "type": "'preparing' | 'start' | 'result'",
+          "default": "—",
+          "desc": "工具调用阶段；<code>preparing</code> 时整条卡换成 <code>CordisPreparingRow</code> 的扫光前缀行。"
+        },
+        {
+          "name": "block",
+          "type": "PreparingToolCall | StartedToolCall | ToolResultNode",
+          "default": "—",
+          "desc": "<code>cordisActionCard(block)</code> 的数据源：读出 pluginId、output、errorSummary 与 state（running / ok / error / stopped）。"
+        },
+        {
+          "name": "toolName",
+          "type": "string",
+          "default": "—",
+          "desc": "<code>cordis_stop</code> 或 <code>cordis_undefine</code>：决定图标、标题键与 <code>data-tool</code>。"
+        },
+        {
+          "name": "callId",
+          "type": "string",
+          "default": "—",
+          "desc": "调用标识；既没有 pluginId 也没有错误时充当摘要兜底。"
+        },
+        {
+          "name": "inspect",
+          "type": "(() => void) | undefined",
+          "default": "undefined",
+          "desc": "给出后行尾渲染 24px 的圆形「查看」按钮（跳到轨迹视图）；缺省时按钮不存在。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'cordis'>",
+          "default": "—",
+          "desc": "Cordis 字典：<code>row.stopTitle</code> / <code>row.removeTitle</code> / <code>action.inspect</code>。"
+        }
+      ],
+      "notes": "状态色只在标题、图标与分隔符上（<code>--dsw-alias-state-business-primary</code>），摘要与输出的错误色来自 <code>--dsw-alias-state-error-primary</code>。它同时接收 <code>cwd</code>、<code>home</code>、<code>openFile</code>、<code>loadImage</code>、<code>useDisclosure</code> 等共享工具卡 props，但本组件一个都没读。易混：<code>CordisRunRow</code> 多一个右侧状态词与输出/业务视图分支，<code>CordisPreparingRow</code> 是两者的准备态。",
+      "keywords": [
+        "Cordis",
+        "cordis_stop",
+        "cordis_undefine",
+        "停止插件",
+        "移除插件",
+        "动态插件"
+      ]
+    },
+    {
+      "id": "cordis-define-row",
+      "name": "CordisDefineRow",
+      "exportName": "CordisDefineRow",
+      "zh": "插件注册卡",
+      "group": "panels",
+      "summary": "<code>cordis_define</code> 的只读定义卡：折叠时是 24px 的 process 行——14px 业务色代码图标、14px/24px/500 的「注册 Cordis 插件」、2px 圆点分隔符，后面跟 40% 上限省略的插件名（secondary）、吸收剩余宽度的用途句（13px tertiary）与 12px 的状态词（待激活 / Client 待激活 / 运行中 / 已移除）。展开体是 Client / Host 页签加一只共享代码卡（<code>toolbarLabels</code> 形态：11px 语言名 + 24px 换行/复制图标按钮），可选再接「结果」段（8px 圆角 <code>pre</code>）与「运行控制在左下角设置上方的 Cordis 面板」提示，行尾再挂一枚「查看」药丸。插件被卸载或宿主重启丢掉后，整卡靠 <code>data-terminal</code> 转成 caption 灰继续留在流里，不留回放空洞。",
+      "source": "packages/extensions/ui-cordis/src/client/CordisDefineRow.tsx#L39",
+      "css": [
+        "packages/extensions/ui-cordis/src/client/CordisDefineRow.module.css",
+        "packages/client/ui-primitives/src/DisclosureRow.module.css",
+        "packages/client/ui-primitives/src/TextShimmer.module.css",
+        "packages/client/ui-primitives/src/markdown/CodeBlock.module.css",
+        "packages/client/ui-primitives/src/CodeCard.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-state-business-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-state-error-primary",
+        "--dsw-alias-border-l1",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l4",
+        "--dsw-alias-bg-base",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-interactive-bg-hover-solid",
+        "--dsw-alias-markdown-code-block",
+        "--dsw-alias-markdown-code-block-banner",
+        "--dsw-font-xs-13",
+        "--dsw-font-markdown-code-block",
+        "--dsw-font-markdown-code-block-small",
+        "--dsw-font-family",
+        "--dsw-radius-lg",
+        "--dsw-radius-sm",
+        "--dsw-alias-label-shimmer"
+      ],
+      "specimens": [
+        {
+          "label": "折叠：已定义的包，名字 + 用途 + 状态词",
+          "note": "折叠时图标槽里是 14px 代码字形，悬停才会淡入 chevron（.row:hover .iconIdle / .chevronHover）",
+          "html": "<div style='width:760px'><div class=\"c0-card\" data-tool='cordis_define' data-state='ok' data-cordis-plugin-id='pdf-export' data-cordis-package-id='1.4.0' data-cordis-status='running'><div class=\"c1-root\"><div class=\"c1-header\" data-disclosure-header='true'><div class=\"c0-row c1-row\" data-disclosure-row='true' data-expandable='true' role='button' tabindex='0' aria-expanded='false'><span class=\"c1-leading\"><span class=\"c1-iconIdle\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M6.27612 1.5L4.52612 14.5' stroke='currentColor'/><path d='M11.4739 1.5L9.72388 14.5' stroke='currentColor'/><path d='M2.39868 5.5H14.0681' stroke='currentColor'/><path d='M1.93188 10.5H13.6013' stroke='currentColor'/></svg></span><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' class='c0-chevron c1-chevronHover' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></span><span class=\"c2-root\"><span class=\"c2-content\"><span class=\"c2-text c1-title c0-title\">注册 Cordis 插件</span><span class=\"c0-separator\" aria-hidden='true'></span><span class=\"c0-name\">PDF 导出</span><span class=\"c0-purpose\">把当前会话导出成 PDF，并在侧边栏挂一个导出按钮</span><span class=\"c0-readout\"><span class=\"c0-statusLabel\">运行中</span></span></span></span></div></div></div></div></div>"
+        },
+        {
+          "label": "折叠：定义失败，摘要整条换成红色首行",
+          "note": "失败时不再显示用途与状态词，行首有一条 visuallyHidden 的「定义失败」供读屏",
+          "html": "<div style='width:760px'><div class=\"c0-card\" data-tool='cordis_define' data-state='error'><span class=\"c0-visuallyHidden\">定义失败</span><div class=\"c1-root\"><div class=\"c1-header\" data-disclosure-header='true'><div class=\"c0-row c1-row\" data-disclosure-row='true' data-expandable='true' role='button' tabindex='0' aria-expanded='false'><span class=\"c1-leading\"><span class=\"c1-iconIdle\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M6.27612 1.5L4.52612 14.5' stroke='currentColor'/><path d='M11.4739 1.5L9.72388 14.5' stroke='currentColor'/><path d='M2.39868 5.5H14.0681' stroke='currentColor'/><path d='M1.93188 10.5H13.6013' stroke='currentColor'/></svg></span><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' class='c0-chevron c1-chevronHover' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></span><span class=\"c2-root\"><span class=\"c2-content\"><span class=\"c2-text c1-title c0-title\">注册 Cordis 插件</span><span class=\"c0-separator\" aria-hidden='true'></span><span class=\"c0-errorSummary\">client 半包注册失败：服务 notes 不存在</span></span></span></div></div></div></div></div>"
+        },
+        {
+          "label": "展开：Client / Host 源码页签 + 代码卡",
+          "note": "源码卡走 CodeBlock 的 toolbarLabels 形态；Host 页签在只有 client 代码时 disabled（opacity .4）",
+          "html": "<div style='width:760px'><div class=\"c0-card forceHover\" data-tool='cordis_define' data-state='ok' data-cordis-plugin-id='pdf-export' data-cordis-package-id='1.4.0' data-cordis-status='running'><div class=\"c1-root\" data-open='true'><div class=\"c1-header\" data-disclosure-header='true'><div class=\"c0-row c1-row\" data-disclosure-row='true' data-expandable='true' role='button' tabindex='0' aria-expanded='true'><span class=\"c1-leading\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' class='c0-chevron' stroke-width='1'><path d='M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10' stroke='currentColor'/></svg></span><span class=\"c2-root\"><span class=\"c2-content\"><span class=\"c2-text c1-title c0-title\">注册 Cordis 插件</span><span class=\"c0-separator\" aria-hidden='true'></span><span class=\"c0-name\">PDF 导出</span><span class=\"c0-purpose\">把当前会话导出成 PDF，并在侧边栏挂一个导出按钮</span><span class=\"c0-readout\"><span class=\"c0-statusLabel\">运行中</span></span></span></span></div></div><div class=\"c0-bodyWrap\"><section class=\"c0-sourceCard\"><div class=\"c0-sourceTabs\" role='tablist' aria-label='插件代码'><button type='button' role='tab' aria-selected='true' class=\"c0-sourceTab c0-sourceTabActive\">Client</button><button type='button' role='tab' aria-selected='false' class=\"c0-sourceTab\" disabled=''>Host</button></div><div class=\"c0-sourcePanel\" role='tabpanel'><div class=\"c3-block c3-card c0-sourceCode\" data-code-wrap='true'><div class=\"c3-bannerWrap\"><div class=\"c4-header\" data-code-block-banner><div class=\"c4-heading\"><span class=\"c4-language\">javascript</span></div><div class=\"c4-actions\"><button type='button' class=\"c4-action\" aria-label='取消自动换行' aria-pressed='true'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'><path d='M2 15H1V1H2V15Z' fill='currentColor'/><path d='M12.3535 7.64645C12.5487 7.84171 12.5487 8.15829 12.3535 8.35355L9.85352 10.8535L9.14648 10.1465L10.793 8.5H3.5V7.5H10.793L9.14648 5.85352L9.85352 5.14648L12.3535 7.64645Z' fill='currentColor'/><path d='M15 15H14V1H15V15Z' fill='currentColor'/></svg></button><button type='button' class=\"c4-action\" aria-label='复制'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><rect x='1.52075' y='4.07373' width='10.3932' height='10.3932' rx='2' stroke='currentColor'/><path d='M11.9792 1.53296C13.36 1.53296 14.4792 2.65225 14.4792 4.03296V9.42847C14.4792 10.3756 13.9521 11.1987 13.1755 11.6228V10.3298C13.3652 10.0787 13.4792 9.7674 13.4792 9.42847V4.03296C13.4792 3.20453 12.8077 2.53296 11.9792 2.53296H6.58374C6.27966 2.53301 5.99684 2.6235 5.7605 2.77905H4.42358C4.85652 2.03463 5.66056 1.53304 6.58374 1.53296H11.9792Z' fill='currentColor'/></svg></button></div></div></div><div class=\"c3-content\" data-code-block-content><pre class=\"c3-plain\"><code>const { definePlugin } = require('dsh-cordis')\n\nmodule.exports = definePlugin({\n  name: 'pdf-export',\n  purpose: '把当前会话导出成 PDF',\n  client(ctx) {\n    ctx.slots.register('sidebar.footer.action', ExportButton)\n  },\n})</code></pre></div></div></div></section><div class=\"c0-panelHint\">运行控制在左下角设置上方的 Cordis 面板</div><button type='button' class=\"c0-inspectButton\"><svg width='12' height='12' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4.67398 4.25061L1.36094 7.86484C1.29085 7.9413 1.29085 8.05866 1.36094 8.13513L4.67398 11.7494' stroke='currentColor'/><path d='M11.3262 4.25061L14.6392 7.86484C14.7093 7.9413 14.7093 8.05866 14.6392 8.13513L11.3262 11.7494' stroke='currentColor'/><path d='M9.56222 3.62573L6.43774 12.3743' stroke='currentColor'/></svg>查看</button></div></div></div></div>",
+          "css": "/* 状态模拟：真实规则是 .card:hover .inspectButton（CordisDefineRow.module.css），\n   悬停无法静态触发，这里把那条规则原样搬到 .forceHover 上。 */\n.forceHover .c0-inspectButton { opacity: 1; }"
+        },
+        {
+          "label": "展开：终态（插件已移除，整卡灰化）+ 结果段",
+          "note": "data-terminal 把标题、名字、用途与状态词一起压到 caption 灰，分隔符也跟着变灰",
+          "html": "<div style='width:760px'><div class=\"c0-card\" data-tool='cordis_define' data-state='ok' data-terminal='true' data-cordis-plugin-id='pdf-export' data-cordis-package-id='1.4.0' data-cordis-status='removed'><div class=\"c1-root\" data-open='true'><div class=\"c1-header\" data-disclosure-header='true'><div class=\"c0-row c1-row\" data-disclosure-row='true' data-expandable='true' role='button' tabindex='0' aria-expanded='true'><span class=\"c1-leading\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' class='c0-chevron' stroke-width='1'><path d='M12 10L8.70711 6.70711C8.31658 6.31658 7.68342 6.31658 7.29289 6.70711L4 10' stroke='currentColor'/></svg></span><span class=\"c2-root\"><span class=\"c2-content\"><span class=\"c2-text c1-title c0-title\">注册 Cordis 插件</span><span class=\"c0-separator\" aria-hidden='true'></span><span class=\"c0-name\">PDF 导出</span><span class=\"c0-purpose\">把当前会话导出成 PDF，并在侧边栏挂一个导出按钮</span><span class=\"c0-readout\"><span class=\"c0-statusLabel\">已移除</span></span></span></span></div></div><div class=\"c0-bodyWrap\"><section class=\"c0-codeSection\"><div class=\"c0-sectionLabel\">结果</div><pre class=\"c0-output\">已注册 pdf-export · 1.4.0（client + host），运行键 pdf-export.1.4.0</pre></section><div class=\"c0-panelHint\">运行控制在左下角设置上方的 Cordis 面板</div></div></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "block",
+          "type": "StartedToolCall | ToolResultNode",
+          "default": "—",
+          "desc": "<code>cordisDefineCard(block)</code> 的数据源：pluginId、packageId、name、purpose、hostCode、clientCode、output、errorSummary、state。"
+        },
+        {
+          "name": "callId",
+          "type": "string",
+          "default": "—",
+          "desc": "没有 <code>name</code> 参数时，折叠行的名字位回落到调用标识。"
+        },
+        {
+          "name": "useInventory",
+          "type": "SnapshotSelectorHook<CordisInventory>",
+          "default": "—",
+          "desc": "框架级插件清单（rows / removed / read / error）：决定状态词取 <code>cordisVisibleStatus</code> 还是「已移除」，并给出 <code>data-terminal</code>。"
+        },
+        {
+          "name": "useLoaded",
+          "type": "SnapshotSelectorHook<readonly DynamicCordisLivePackage[]>",
+          "default": "—",
+          "desc": "本页已激活的 Client 半包；参与判定 running 还是 client-pending。"
+        },
+        {
+          "name": "inspect",
+          "type": "(() => void) | undefined",
+          "default": "undefined",
+          "desc": "给出后展开体底部渲染「查看」药丸（11px、999px 圆角，平时 opacity 0）。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'cordis'>",
+          "default": "—",
+          "desc": "Cordis 字典：标题、四种状态词、代码页签与「查看」；代码卡的 <code>codeBlock.*</code> 文案来自共享字典。"
+        }
+      ],
+      "notes": "卡片标题与 chevron 常驻 <code>--dsw-alias-state-business-primary</code>（可编辑源码的品牌标记），<code>data-terminal</code> 时四条文字一起降级为 <code>--dsw-alias-label-caption</code>。<code>expandable</code> 只在宿主代码、Client 代码或结果三者至少有一个时成立。页签是真正的 <code>role=\"tablist\"</code> + <code>role=\"tabpanel\"</code>，源码区 <code>max-height: 260px</code> 自己滚动。易混：<code>CordisRunRow</code> 才是可运行的那张，本卡只记录定义，运行控制在 Cordis 面板。",
+      "keywords": [
+        "Cordis",
+        "cordis_define",
+        "注册插件",
+        "插件源码",
+        "Host",
+        "Client"
+      ]
+    },
+    {
+      "id": "cordis-panel",
+      "name": "CordisPanel",
+      "exportName": "CordisPanel",
+      "zh": "插件面板",
+      "group": "panels",
+      "summary": "侧边栏页脚「设置」上方的 Cordis 入口与它拉开的那张清单面板：wide 时按钮 42px 高、左边 16px 插件图标、右边 12px 的「2 running」计数，rail 时整条收成 36×36 的圆形图标按钮。面板是 420px 宽、<code>max-height: 60vh</code> 的 fixed 浮层（贴住触发器），材质是 <code>--dsw-specific-menu</code> 加 <code>--dsw-menu-backdrop-filter</code>，44px 头部下面只有 <code>.body</code> 滚动。每行是 12px 圆角描边卡：等宽 11px 的 pluginId、13px/500 插件名、右端 10px 状态点加状态词，下面一行是用途与 28px 圆形动作按钮组（批准一次 / 批准后续版本 / 拒绝、运行 / 停止 / 移除，悬停才亮）；有待批准请求的行描边转业务色，失败行底部追加错误色 <code>.rowError</code>。插件数为 0 时整个组件不渲染。",
+      "source": "packages/extensions/ui-cordis/src/client/CordisPanel.tsx#L118",
+      "css": [
+        "packages/extensions/ui-cordis/src/client/CordisPanel.module.css",
+        "packages/client/ui-primitives/src/StateDot.module.css"
+      ],
+      "tokens": [
+        "--dsw-specific-menu",
+        "--dsw-menu-backdrop-filter",
+        "--dsw-alias-border-l1",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-border-l4",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-state-business-primary",
+        "--dsw-alias-state-error-primary",
+        "--dsw-alias-state-success-primary",
+        "--dsw-alias-state-warn-primary",
+        "--dsw-alias-state-idle-primary",
+        "--dsw-elevation-prominent",
+        "--dsw-alias-scrollbar-bg-l2",
+        "--dsw-alias-scrollbar-hover-l2"
+      ],
+      "specimens": [
+        {
+          "label": "展开：当前会话 + 其他会话（待审批 / 运行中 / 失败）",
+          "note": "面板真实是 fixed 浮层，静态快照用 position: relative 拉回文档流；动作按钮的可见文案在 Tooltip 里，这里只留 aria-label",
+          "html": "<div style='width:440px'><section class=\"c0-panel\" data-cordis-panel='true' aria-label='Cordis 插件'><header class=\"c0-header\"><span class=\"c0-title\">Cordis 插件</span></header><div class=\"c0-body\"><section><h3 class=\"c0-group\">当前会话</h3><ul class=\"c0-rows\"><li class=\"c0-row\" data-cordis-row='pdf-export' data-cordis-status='awaiting-approval' data-cordis-awaiting='req-3f21'><div class=\"c0-rowHead\"><span class=\"c0-rowId\">pdf-export</span><span class=\"c0-rowName\">PDF 导出</span><span class=\"c0-rowStatus\"><span class=\"c1-dot\" data-state=\"warning\" style=\"width:10px;height:10px\"></span><span>待审批</span></span></div><div class=\"c0-rowDetail\"><span class=\"c0-rowPurpose\">把当前会话导出成 PDF，并在侧边栏挂一个导出按钮</span><div class=\"c0-rowActions\"><button type='button' class=\"c0-actionButton\" aria-label='仅允许此版本' data-cordis-approve='req-3f21'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4' stroke='currentColor'/></svg></button><button type='button' class=\"c0-actionButton\" aria-label='允许此插件的后续版本' data-cordis-approve-plugin='req-3f21'><span class=\"c0-doubleCheck\" aria-hidden='true'><svg width='12' height='12' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4' stroke='currentColor'/></svg><svg width='12' height='12' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4' stroke='currentColor'/></svg></span></button><button type='button' class=\"c0-actionButton\" aria-label='拒绝' data-cordis-decline='req-3f21'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M3.5 3.5L12.5 12.5' stroke='currentColor'/><path d='M12.5 3.5L3.5 12.5' stroke='currentColor'/></svg></button></div></div></li></ul></section><section><h3 class=\"c0-group\">其他会话</h3><ul class=\"c0-rows\"><li class=\"c0-row\" data-cordis-row='md-lint' data-cordis-status='running'><div class=\"c0-rowHead\"><span class=\"c0-rowId\">md-lint</span><span class=\"c0-rowName\">Markdown 校验</span><span class=\"c0-rowStatus\"><span class=\"c1-dot\" data-state=\"done\" style=\"width:10px;height:10px\"></span><span>运行中</span></span></div><label class=\"c0-versionPicker\"><span>版本</span><select><option>Markdown 校验 · 0.9.2</option><option selected=''>Markdown 校验 · 0.9.3</option></select></label><div class=\"c0-rowDetail\"><span class=\"c0-rowPurpose\">保存时按团队规则表检查 Markdown 标题层级</span><div class=\"c0-rowActions\"><button type='button' class=\"c0-actionButton\" aria-label='运行' data-cordis-switch='run'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M8 14.5C11.5899 14.5 14.5 11.5899 14.5 8C14.5 4.41015 11.5899 1.5 8 1.5C4.41015 1.5 1.5 4.41015 1.5 8C1.5 11.5899 4.41015 14.5 8 14.5Z' stroke='currentColor'/><path d='M10.3329 7.91346C10.3996 7.95195 10.3996 8.04818 10.3329 8.08667L6.78304 10.1362C6.71638 10.1747 6.63304 10.1266 6.63304 10.0496L6.63304 5.95055C6.63304 5.87357 6.71638 5.82546 6.78304 5.86395L10.3329 7.91346Z' stroke='currentColor'/></svg></button><button type='button' class=\"c0-actionButton\" aria-label='停止' data-cordis-switch='stop'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M12.5 2.5H3.5C2.94772 2.5 2.5 2.94772 2.5 3.5V12.5C2.5 13.0523 2.94772 13.5 3.5 13.5H12.5C13.0523 13.5 13.5 13.0523 13.5 12.5V3.5C13.5 2.94772 13.0523 2.5 12.5 2.5Z' fill='currentColor'/></svg></button><button type='button' class=\"c0-actionButton\" aria-label='移除' data-cordis-remove='md-lint'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M1.28149 3.88831H14.7187' stroke='currentColor'/><path d='M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833' stroke='currentColor'/><path d='M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831' stroke='currentColor'/><path d='M6.44946 6.98926V11.1238' stroke='currentColor'/><path d='M9.55054 6.98926V11.1238' stroke='currentColor'/></svg></button></div></div><span class=\"c0-activeVersion\">运行中: Markdown 校验 · 0.9.2</span></li><li class=\"c0-row\" data-cordis-row='csv-export' data-cordis-status='failed'><div class=\"c0-rowHead\"><span class=\"c0-rowId\">csv-export</span><span class=\"c0-rowName\">CSV 导出</span><span class=\"c0-rowStatus\"><span class=\"c1-dot\" data-state=\"error\" style=\"width:10px;height:10px\"></span><span>运行失败</span></span></div><div class=\"c0-rowDetail\"><span class=\"c0-rowPurpose\">把查询结果导出成 CSV</span><div class=\"c0-rowActions\"><button type='button' class=\"c0-actionButton\" aria-label='运行' data-cordis-switch='run'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M8 14.5C11.5899 14.5 14.5 11.5899 14.5 8C14.5 4.41015 11.5899 1.5 8 1.5C4.41015 1.5 1.5 4.41015 1.5 8C1.5 11.5899 4.41015 14.5 8 14.5Z' stroke='currentColor'/><path d='M10.3329 7.91346C10.3996 7.95195 10.3996 8.04818 10.3329 8.08667L6.78304 10.1362C6.71638 10.1747 6.63304 10.1266 6.63304 10.0496L6.63304 5.95055C6.63304 5.87357 6.71638 5.82546 6.78304 5.86395L10.3329 7.91346Z' stroke='currentColor'/></svg></button><button type='button' class=\"c0-actionButton\" aria-label='停止' data-cordis-switch='stop'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M12.5 2.5H3.5C2.94772 2.5 2.5 2.94772 2.5 3.5V12.5C2.5 13.0523 2.94772 13.5 3.5 13.5H12.5C13.0523 13.5 13.5 13.0523 13.5 12.5V3.5C13.5 2.94772 13.0523 2.5 12.5 2.5Z' fill='currentColor'/></svg></button><button type='button' class=\"c0-actionButton\" aria-label='移除' data-cordis-remove='csv-export'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M1.28149 3.88831H14.7187' stroke='currentColor'/><path d='M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833' stroke='currentColor'/><path d='M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831' stroke='currentColor'/><path d='M6.44946 6.98926V11.1238' stroke='currentColor'/><path d='M9.55054 6.98926V11.1238' stroke='currentColor'/></svg></button></div></div><div class=\"c0-transition\"><span>当前：0.3.0</span><span>待切换：0.4.0</span><div class=\"c0-transitionActions\"><button type='button'>重试</button><button type='button'>回退</button></div></div><div class=\"c0-rowError\" role='alert'>client 半包注册失败 (activate)</div></li></ul></section></div></section></div>",
+          "css": "/* 状态模拟：真实面板是 position: fixed，并用测得偏移贴住触发器\n   （CordisPanel.module.css），静态快照把它拉回文档流。relative 同时留住\n   包含块，.panel::before 那层 inset: 0 的菜单材质才不会铺满视口。 */\n.c0-panel { position: relative; inset: auto; }"
+        },
+        {
+          "label": "底部触发器：wide（图标 + 标签 + 计数）/ rail（36×36 圆形）",
+          "note": "wide 只在有待审批请求时带 data-active，底色转 --dsw-alias-interactive-bg-hover",
+          "bg": "platform",
+          "pad": "lg",
+          "html": "<div style='display:flex;gap:32px;align-items:flex-start'><div style='width:240px'><div class=\"c0-layer\"><div class=\"c0-footerButtons\"><button type='button' class=\"c0-badge\" data-cordis-badge='3' data-cordis-approval-badge='1' data-active='true' aria-label='Cordis 插件' aria-expanded='true'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M3.16143 6.59068L1.75205 8.00006L3.10619 9.35419L2.39908 10.0613L0.832948 8.49517C0.559581 8.2218 0.559582 7.77831 0.832948 7.50494L2.45432 5.88357L3.16143 6.59068ZM8.49511 15.1671C8.22176 15.4405 7.77826 15.4404 7.50489 15.1671L5.93461 13.5968L6.64172 12.8897L8 14.248L9.40938 12.8386L10.1165 13.5457L8.49511 15.1671ZM15.1671 7.50494C15.4403 7.7782 15.4401 8.22179 15.1671 8.49517L13.652 10.0102L12.9449 9.30309L14.248 8.00006L12.8897 6.64178L13.5968 5.93467L15.1671 7.50494ZM9.35414 3.10624L8 1.7521L6.69696 3.05514L5.98986 2.34803L7.50489 0.833003C7.77828 0.559981 8.22186 0.559752 8.49511 0.833003L10.0612 2.39913L9.35414 3.10624Z' fill='currentColor'/><circle cx='8' cy='8' r='1.76221' stroke='currentColor'/></svg><span class=\"c0-badgeLabel\">Cordis Plugin</span><span class=\"c0-badgeCount\">2 running</span></button></div></div></div><div style='width:36px'><div class=\"c0-layer c0-rail\"><div class=\"c0-footerButtons\"><button type='button' class=\"c0-badge\" data-cordis-badge='3' data-cordis-approval-badge='0' aria-label='Cordis 插件' aria-expanded='false'><svg width='18' height='18' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M3.16143 6.59068L1.75205 8.00006L3.10619 9.35419L2.39908 10.0613L0.832948 8.49517C0.559581 8.2218 0.559582 7.77831 0.832948 7.50494L2.45432 5.88357L3.16143 6.59068ZM8.49511 15.1671C8.22176 15.4405 7.77826 15.4404 7.50489 15.1671L5.93461 13.5968L6.64172 12.8897L8 14.248L9.40938 12.8386L10.1165 13.5457L8.49511 15.1671ZM15.1671 7.50494C15.4403 7.7782 15.4401 8.22179 15.1671 8.49517L13.652 10.0102L12.9449 9.30309L14.248 8.00006L12.8897 6.64178L13.5968 5.93467L15.1671 7.50494ZM9.35414 3.10624L8 1.7521L6.69696 3.05514L5.98986 2.34803L7.50489 0.833003C7.77828 0.559981 8.22186 0.559752 8.49511 0.833003L10.0612 2.39913L9.35414 3.10624Z' fill='currentColor'/><circle cx='8' cy='8' r='1.76221' stroke='currentColor'/></svg></button></div></div></div></div>"
+        },
+        {
+          "label": "兜底：读取中 / 空清单 / 读取失败",
+          "note": "三条互斥文案并排展示；插件数为 0 时组件整个返回 null，连触发器都不渲染",
+          "html": "<div style='display:flex;flex-direction:column;gap:12px;width:440px'><section class=\"c0-panel\" data-cordis-panel='true' aria-label='Cordis 插件'><header class=\"c0-header\"><span class=\"c0-title\">Cordis 插件</span></header><div class=\"c0-body\"><p class=\"c0-note\">读取中…</p></div></section><section class=\"c0-panel\" data-cordis-panel='true' aria-label='Cordis 插件'><header class=\"c0-header\"><span class=\"c0-title\">Cordis 插件</span></header><div class=\"c0-body\"><p class=\"c0-note\">还没有定义任何插件</p></div></section><section class=\"c0-panel\" data-cordis-panel='true' aria-label='Cordis 插件'><header class=\"c0-header\"><span class=\"c0-title\">Cordis 插件</span></header><div class=\"c0-body\"><p class=\"c0-readError\" role='alert'>读取插件清单失败：socket closed</p></div></section></div>",
+          "css": "/* 状态模拟：面板真实是 fixed 浮层，静态快照拉回文档流（同第一张示例）。 */\n.c0-panel { position: relative; inset: auto; }"
+        }
+      ],
+      "props": [
+        {
+          "name": "wide",
+          "type": "boolean",
+          "default": "—",
+          "desc": "侧边栏是否是宽栏（false = 56px rail）：决定 42px 标签按钮还是 36×36 圆形按钮，以及图标取 16 还是 18。"
+        },
+        {
+          "name": "useSessions",
+          "type": "SnapshotSelectorHook<SessionsState>",
+          "default": "—",
+          "desc": "取主视图仍在显示的会话 id，用来把插件行分成「当前会话」与「其他会话」两组。"
+        },
+        {
+          "name": "useInventory",
+          "type": "SnapshotSelectorHook<CordisInventory>",
+          "default": "—",
+          "desc": "插件清单：rows、removed、read 与 error，决定行集合与「读取中 / 空 / 读取失败」三条兜底。"
+        },
+        {
+          "name": "useActiveRuns",
+          "type": "SnapshotSelectorHook<ReadonlyMap<CordisDynamicPluginId, CordisRunActivity>>",
+          "default": "—",
+          "desc": "正在编排或等待批准的运行；新出现的审批请求会自动把面板打开。"
+        },
+        {
+          "name": "useRunErrors",
+          "type": "SnapshotSelectorHook<ReadonlyMap<CordisDynamicPluginId, CordisRunFailure>>",
+          "default": "—",
+          "desc": "停止 / 移除失败的原因，与 host 侧失败一起进 <code>.rowError</code>。"
+        },
+        {
+          "name": "useLoaded",
+          "type": "SnapshotSelectorHook<readonly DynamicCordisLivePackage[]>",
+          "default": "—",
+          "desc": "本页已激活的 Client 半包，参与每行的 running / client-pending 判定。"
+        },
+        {
+          "name": "useRenderFailures",
+          "type": "SnapshotSelectorHook<ReadonlyMap<CordisDynamicPluginId, DynamicCordisRenderFailure>>",
+          "default": "—",
+          "desc": "Package 业务视图渲染失败的记录，按 slot 名与「已恢复默认界面 / 未恢复」出错误行。"
+        },
+        {
+          "name": "onApprove",
+          "type": "(requestId: ApprovalRequestId, approveFutureVersions: boolean) => Promise<void>",
+          "default": "—",
+          "desc": "批准一次或批准该插件的后续版本；成功后收起面板。"
+        },
+        {
+          "name": "onDecline / onRun / onStop / onRemove",
+          "type": "(…) => Promise<void | CordisActionResult>",
+          "default": "—",
+          "desc": "拒绝、运行 / 更新、停止、移除四个动作；失败时返回 <code>{ ok: false, message }</code> 并就地显示。"
+        },
+        {
+          "name": "onRefresh",
+          "type": "() => void",
+          "default": "—",
+          "desc": "重新读取清单；挂载时与每次打开面板时都会调用，动作结束后也调用一次。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'cordis'>",
+          "default": "—",
+          "desc": "Cordis 字典：面板标题、分组名、五种状态词与全部动作无障碍标签。"
+        }
+      ],
+      "notes": "状态点复用 <code>StateDot</code>：idle → idle 灰、client-pending / busy → ongoing 转圈、running → done 绿、awaiting-approval → warning 琥珀、failed → error 红。动作按钮是 28px 圆形、只有图标，文案在 500ms 延迟的 portal Tooltip 里，所以 <code>aria-label</code> 是唯一可读名字。面板 <code>position: fixed</code> 是为了躲开侧边栏的 overflow 裁剪，<code>left / bottom</code> 由 <code>useLayoutEffect</code> 量出后写成内联偏移。点击面板外部会自动收起（<code>useDismissOnOutsidePointer</code>）。易混：<code>CordisDefineRow</code> 只记录定义，这里才是运行控制台。",
+      "keywords": [
+        "Cordis",
+        "插件面板",
+        "插件清单",
+        "审批",
+        "运行控制",
+        "rail"
+      ]
+    },
+    {
+      "id": "cordis-preparing-row",
+      "name": "CordisPreparingRow",
+      "exportName": "CordisPreparingRow",
+      "zh": "插件准备行",
+      "group": "panels",
+      "summary": "三个 Cordis 工具卡共用的「准备中」前缀：外层只有一个 <code>data-state=\"preparing\"</code> 的无样式 <code>div</code>，里面是把 <code>DisclosureRow</code> 的 <code>open=false</code>、<code>expandable=false</code>、<code>running=true</code> 钉死的一行——16px 图标槽（14px 字形，图标与标题由调用方给）、13px/24px 的标题，以及 <code>TextShimmer</code> 那层 1.5s 循环的扫光。没有 chevron、没有折叠体、也没有自己的样式表：行高、图标槽与标题字号都来自 <code>DisclosureRow.module.css</code>，所以它只有「正在准备」这一个态。",
+      "source": "packages/extensions/ui-cordis/src/client/CordisPreparingRow.tsx#L23",
+      "css": [
+        "packages/client/ui-primitives/src/DisclosureRow.module.css",
+        "packages/client/ui-primitives/src/TextShimmer.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-shimmer"
+      ],
+      "specimens": [
+        {
+          "label": "运行前缀：图标槽 + 标题 + 扫光层",
+          "note": "扫光是运行中的真实结构（装饰副本只留 data-shimmer-text，靠 ::after 画字），预览里持续播放",
+          "html": "<div style='width:720px'><div data-tool='cordis_run' data-state='preparing' aria-label='准备调用 Cordis 工具'><div class=\"c0-root\"><div class=\"c0-header\" data-disclosure-header='true'><div class=\"c0-row\" data-disclosure-row='true'><span class=\"c0-leading\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M6.27612 1.5L4.52612 14.5' stroke='currentColor'/><path d='M11.4739 1.5L9.72388 14.5' stroke='currentColor'/><path d='M2.39868 5.5H14.0681' stroke='currentColor'/><path d='M1.93188 10.5H13.6013' stroke='currentColor'/></svg></span><span class=\"c1-root\" data-shimmer='true'><span class=\"c1-content\"><span class=\"c1-text c0-title\">运行 Cordis 插件</span></span><span class=\"c1-decoration\" aria-hidden='true' inert=''><span class=\"c1-sweep\"><span class=\"c1-content c1-highlight\"><span class=\"c1-text c0-title\" data-shimmer-text=\"运行 Cordis 插件\"></span></span></span></span></span></div></div></div></div></div>"
+        },
+        {
+          "label": "同一前缀的三族标题：注册 / 停止 / 移除",
+          "note": "图标与标题是 props：调用方分别传代码、实心方块与垃圾桶字形，行本身没有别的分支",
+          "html": "<div style='display:flex;flex-direction:column;gap:6px;width:720px'><div data-tool='cordis_define' data-state='preparing' aria-label='准备调用 Cordis 工具'><div class=\"c0-root\"><div class=\"c0-header\" data-disclosure-header='true'><div class=\"c0-row\" data-disclosure-row='true'><span class=\"c0-leading\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M6.27612 1.5L4.52612 14.5' stroke='currentColor'/><path d='M11.4739 1.5L9.72388 14.5' stroke='currentColor'/><path d='M2.39868 5.5H14.0681' stroke='currentColor'/><path d='M1.93188 10.5H13.6013' stroke='currentColor'/></svg></span><span class=\"c1-root\" data-shimmer='true'><span class=\"c1-content\"><span class=\"c1-text c0-title\">注册 Cordis 插件</span></span><span class=\"c1-decoration\" aria-hidden='true' inert=''><span class=\"c1-sweep\"><span class=\"c1-content c1-highlight\"><span class=\"c1-text c0-title\" data-shimmer-text=\"注册 Cordis 插件\"></span></span></span></span></span></div></div></div></div><div data-tool='cordis_stop' data-state='preparing' aria-label='准备调用 Cordis 工具'><div class=\"c0-root\"><div class=\"c0-header\" data-disclosure-header='true'><div class=\"c0-row\" data-disclosure-row='true'><span class=\"c0-leading\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M12.5 2.5H3.5C2.94772 2.5 2.5 2.94772 2.5 3.5V12.5C2.5 13.0523 2.94772 13.5 3.5 13.5H12.5C13.0523 13.5 13.5 13.0523 13.5 12.5V3.5C13.5 2.94772 13.0523 2.5 12.5 2.5Z' fill='currentColor'/></svg></span><span class=\"c1-root\" data-shimmer='true'><span class=\"c1-content\"><span class=\"c1-text c0-title\">停止 Cordis 插件</span></span><span class=\"c1-decoration\" aria-hidden='true' inert=''><span class=\"c1-sweep\"><span class=\"c1-content c1-highlight\"><span class=\"c1-text c0-title\" data-shimmer-text=\"停止 Cordis 插件\"></span></span></span></span></span></div></div></div></div><div data-tool='cordis_undefine' data-state='preparing' aria-label='准备调用 Cordis 工具'><div class=\"c0-root\"><div class=\"c0-header\" data-disclosure-header='true'><div class=\"c0-row\" data-disclosure-row='true'><span class=\"c0-leading\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M1.28149 3.88831H14.7187' stroke='currentColor'/><path d='M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833' stroke='currentColor'/><path d='M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831' stroke='currentColor'/><path d='M6.44946 6.98926V11.1238' stroke='currentColor'/><path d='M9.55054 6.98926V11.1238' stroke='currentColor'/></svg></span><span class=\"c1-root\" data-shimmer='true'><span class=\"c1-content\"><span class=\"c1-text c0-title\">移除 Cordis 插件</span></span><span class=\"c1-decoration\" aria-hidden='true' inert=''><span class=\"c1-sweep\"><span class=\"c1-content c1-highlight\"><span class=\"c1-text c0-title\" data-shimmer-text=\"移除 Cordis 插件\"></span></span></span></span></span></div></div></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "toolName",
+          "type": "string",
+          "default": "—",
+          "desc": "<code>cordis_define</code> / <code>cordis_run</code> / <code>cordis_stop</code> / <code>cordis_undefine</code>：原样写进外层 <code>data-tool</code>，供工具卡定位。"
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "default": "—",
+          "desc": "图标槽内容；三族分别传 14px 的代码、实心方块与垃圾桶字形。"
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "default": "—",
+          "desc": "调用方已本地化的标题（<code>row.defineTitle</code> 等），进 <code>DisclosureRow</code> 的扫光标题位。"
+        },
+        {
+          "name": "className",
+          "type": "string | undefined",
+          "default": "undefined",
+          "desc": "透传给 <code>DisclosureRow</code> 根节点；三个调用方都传自己样式表里的 <code>card</code>。"
+        },
+        {
+          "name": "rowClassName",
+          "type": "string | undefined",
+          "default": "undefined",
+          "desc": "透传给行容器；调用方传 <code>row</code>，与 <code>DisclosureRow</code> 自己的 <code>row</code> 合并。"
+        },
+        {
+          "name": "titleClassName",
+          "type": "string | undefined",
+          "default": "undefined",
+          "desc": "透传给标题；调用方传 <code>title</code>，拿到 14px/500 的业务色标题。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'cordis'>",
+          "default": "—",
+          "desc": "外层 <code>aria-label</code> 用 <code>a11y.preparing</code>（「准备调用 Cordis 工具」）。"
+        }
+      ],
+      "notes": "自身不产生任何类名与样式，<code>className</code> / <code>rowClassName</code> / <code>titleClassName</code> 是它唯一的观感接口——所以单独渲染时是 tertiary 的 13px 行，接进 <code>CordisRunRow</code> / <code>CordisDefineRow</code> 后才变成 14px/500 的业务色标题。无障碍靠外层 <code>aria-label</code> 与扫光层自己的 <code>aria-hidden</code>，装饰副本对读屏不可见（真实文本保留在 <code>.content</code> 里）。<code>onToggle</code> 是 <code>DisclosureRow</code> 的必填回调，这里传 noop；<code>expandable=false</code> 所以既不显示 chevron 也不可展开。",
+      "keywords": [
+        "Cordis",
+        "preparing",
+        "准备中",
+        "扫光",
+        "前缀行",
+        "DisclosureRow"
+      ]
+    },
+    {
+      "id": "cordis-run-row",
+      "name": "CordisRunRow",
+      "exportName": "CordisRunRow",
+      "zh": "插件运行卡",
+      "group": "panels",
+      "summary": "<code>cordis_run</code> 的激活卡：32px 行里是 14px 业务色代码图标、14px/500 的「运行 Cordis 插件 / 更新 Cordis 插件」、2px 圆点、13px 的 <code>pluginId · packageId</code> 摘要、右端 12px 状态词（待激活 / Client 待激活 / 运行中 / 待审批 / 运行失败 / 已有更新 / 已移除）与一枚悬停才出现的「查看」按钮；状态词按 <code>data-cordis-status</code> 换色（运行中绿、待审批与 Client 待激活琥珀、失败红）。运行中且四元组齐全时，下方多出一只 12px 圆角、<code>--dsw-alias-bg-base</code> 底色的业务视图座位——Package 自己注册的 <code>tool.view.cordis</code> 组件渲染在这里，没有注册者就落回 <code>output</code> 代码块；被取代、已移除或失败时座位换成一条 <code>--dsw-alias-button-ghost-active-fill</code> 底的说明条。",
+      "source": "packages/extensions/ui-cordis/src/client/CordisRunRow.tsx#L36",
+      "css": [
+        "packages/extensions/ui-cordis/src/client/CordisRunRow.module.css",
+        "packages/client/ui-primitives/src/DisclosureRow.module.css",
+        "packages/client/ui-primitives/src/TextShimmer.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-state-business-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-state-error-primary",
+        "--dsw-alias-state-success-primary",
+        "--dsw-alias-state-warn-label",
+        "--dsw-alias-button-ghost-active-fill",
+        "--dsw-alias-border-l4",
+        "--dsw-alias-bg-base",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-markdown-code-block",
+        "--dsw-font-markdown-code-block-small",
+        "--dsw-alias-label-shimmer"
+      ],
+      "specimens": [
+        {
+          "label": "运行中：业务视图座位（无注册者时落回输出块）",
+          "note": "扫光只属于准备态；「查看」按钮用 .forceHover 做悬停模拟",
+          "html": "<div style='width:760px'><div class=\"c0-card forceHover\" data-tool='cordis_run' data-state='ok' data-cordis-plugin-id='pdf-export' data-cordis-package-id='1.4.0' data-cordis-run-id='run-7f3c1a' data-cordis-status='running'><div class=\"c0-row\"><span class=\"c0-icon\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M6.27612 1.5L4.52612 14.5' stroke='currentColor'/><path d='M11.4739 1.5L9.72388 14.5' stroke='currentColor'/><path d='M2.39868 5.5H14.0681' stroke='currentColor'/><path d='M1.93188 10.5H13.6013' stroke='currentColor'/></svg></span><span class=\"c0-title\">运行 Cordis 插件</span><span class=\"c0-separator\" aria-hidden='true'></span><span class=\"c0-summary\">pdf-export · 1.4.0</span><span class=\"c0-status\">运行中</span><button type='button' class=\"c0-inspect\" aria-label='查看'><svg width='12' height='12' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4.67398 4.25061L1.36094 7.86484C1.29085 7.9413 1.29085 8.05866 1.36094 8.13513L4.67398 11.7494' stroke='currentColor'/><path d='M11.3262 4.25061L14.6392 7.86484C14.7093 7.9413 14.7093 8.05866 14.6392 8.13513L11.3262 11.7494' stroke='currentColor'/><path d='M9.56222 3.62573L6.43774 12.3743' stroke='currentColor'/></svg></button></div><div class=\"c0-business\" data-cordis-business-view='pdf-export.1.4.0'><pre class=\"c0-output\">已激活 client 半包：1 个插槽（sidebar.footer.action）</pre></div></div></div>",
+          "css": "/* 状态模拟：真实规则是 .card:hover .inspect（CordisRunRow.module.css），\n   悬停无法静态触发，这里把那条规则原样搬到 .forceHover 上。 */\n.c0-card.forceHover .c0-inspect { opacity: 1; }"
+        },
+        {
+          "label": "等待批准：更新一次运行，状态词转琥珀",
+          "note": "mode 为 update 时标题走 row.updateTitle；待审批与 Client 待激活共用 --dsw-alias-state-warn-label",
+          "html": "<div style='width:760px'><div class=\"c0-card\" data-tool='cordis_run' data-state='ok' data-cordis-plugin-id='pdf-export' data-cordis-package-id='1.5.0' data-cordis-run-id='run-91ab02' data-cordis-status='awaiting-approval'><div class=\"c0-row\"><span class=\"c0-icon\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M6.27612 1.5L4.52612 14.5' stroke='currentColor'/><path d='M11.4739 1.5L9.72388 14.5' stroke='currentColor'/><path d='M2.39868 5.5H14.0681' stroke='currentColor'/><path d='M1.93188 10.5H13.6013' stroke='currentColor'/></svg></span><span class=\"c0-title\">更新 Cordis 插件</span><span class=\"c0-separator\" aria-hidden='true'></span><span class=\"c0-summary\">pdf-export · 1.5.0</span><span class=\"c0-status\">待审批</span></div></div></div>"
+        },
+        {
+          "label": "失败：红色摘要 + 失败信息 + 输出",
+          "note": "失败行不再给业务视图座位，改为一条 .message 说明与原始输出",
+          "html": "<div style='width:760px'><div class=\"c0-card\" data-tool='cordis_run' data-state='error' data-cordis-plugin-id='pdf-export' data-cordis-package-id='1.5.0' data-cordis-run-id='run-91ab02' data-cordis-status='failed'><div class=\"c0-row\"><span class=\"c0-icon\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M6.27612 1.5L4.52612 14.5' stroke='currentColor'/><path d='M11.4739 1.5L9.72388 14.5' stroke='currentColor'/><path d='M2.39868 5.5H14.0681' stroke='currentColor'/><path d='M1.93188 10.5H13.6013' stroke='currentColor'/></svg></span><span class=\"c0-title\">更新 Cordis 插件</span><span class=\"c0-separator\" aria-hidden='true'></span><span class=\"c0-error\">client 半包注册失败：服务 notes 不存在</span><span class=\"c0-status\">运行失败</span></div><div class=\"c0-message\">client 半包注册失败：服务 notes 不存在</div><pre class=\"c0-output\">Error: service \"notes\" is not registered</pre></div></div>"
+        },
+        {
+          "label": "已被取代：只剩一行说明",
+          "note": "同一会话里出现更新的运行卡时，旧卡去掉输出与业务视图，只留 status.superseded 文案",
+          "html": "<div style='width:760px'><div class=\"c0-card\" data-tool='cordis_run' data-state='ok' data-cordis-plugin-id='pdf-export' data-cordis-package-id='1.4.0' data-cordis-run-id='run-7f3c1a' data-cordis-status='superseded'><div class=\"c0-row\"><span class=\"c0-icon\"><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M6.27612 1.5L4.52612 14.5' stroke='currentColor'/><path d='M11.4739 1.5L9.72388 14.5' stroke='currentColor'/><path d='M2.39868 5.5H14.0681' stroke='currentColor'/><path d='M1.93188 10.5H13.6013' stroke='currentColor'/></svg></span><span class=\"c0-title\">运行 Cordis 插件</span><span class=\"c0-separator\" aria-hidden='true'></span><span class=\"c0-summary\">pdf-export · 1.4.0</span><span class=\"c0-status\">已有更新</span></div><div class=\"c0-message\">已有更新的运行卡片，请查看下方</div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "block",
+          "type": "StartedToolCall | ToolResultNode",
+          "default": "—",
+          "desc": "<code>cordisRunCard(block)</code> 的数据源：pluginId、packageId、pluginRunId、mode、seq、output、errorSummary、state。"
+        },
+        {
+          "name": "callId",
+          "type": "string",
+          "default": "—",
+          "desc": "写进运行卡索引并用于判定是否被同一 key 的更新运行取代。"
+        },
+        {
+          "name": "renderSlot",
+          "type": "RenderSlot<'tool.view.cordis'>",
+          "default": "—",
+          "desc": "把 Package 自带的业务视图渲染进 <code>.business</code> 座位，并以 <code>output</code> 代码块作 fallback；UI 组件本身不管插槽。"
+        },
+        {
+          "name": "useInventory",
+          "type": "SnapshotSelectorHook<CordisInventory>",
+          "default": "—",
+          "desc": "插件清单：判断插件是否已被移除，并取该 Package 的实时状态。"
+        },
+        {
+          "name": "useLoaded",
+          "type": "SnapshotSelectorHook<readonly DynamicCordisLivePackage[]>",
+          "default": "—",
+          "desc": "本页已激活的 Client 半包，参与 running / client-pending 判定。"
+        },
+        {
+          "name": "useRunCards",
+          "type": "SnapshotSelectorHook<ReadonlyMap<CordisToolViewKey, CordisRunCardPointer>>",
+          "default": "—",
+          "desc": "本会话的运行卡索引；同一 key 出现更大的 seq 时本卡转为 superseded。"
+        },
+        {
+          "name": "useActiveRuns",
+          "type": "SnapshotSelectorHook<ReadonlyMap<CordisDynamicPluginId, CordisRunActivity>>",
+          "default": "—",
+          "desc": "在途运行动作；处于 awaiting-approval 且 packageId 与 mode 对得上时状态词转「待审批」。"
+        },
+        {
+          "name": "onObserveRunCard",
+          "type": "(pointer: CordisRunCardPointer) => void",
+          "default": "—",
+          "desc": "成功且四元组齐全时把这张卡登记为最新，抢占业务视图座位。"
+        },
+        {
+          "name": "inspect",
+          "type": "(() => void) | undefined",
+          "default": "undefined",
+          "desc": "给出后行尾渲染 24px 圆形「查看」按钮；缺省时不渲染。"
+        },
+        {
+          "name": "t",
+          "type": "TranslateNS<'cordis'>",
+          "default": "—",
+          "desc": "Cordis 字典：两个标题、七种状态词、两条说明与「查看」。"
+        }
+      ],
+      "notes": "状态词颜色由 <code>.card[data-cordis-status=…]</code> 决定：running → success、awaiting-approval / client-pending → warn-label、failed → error，其余走 caption。<code>phase === 'preparing'</code> 时同样转交 <code>CordisPreparingRow</code>，并把 <code>card / row / title</code> 三个类名带过去。业务视图座位只在 <code>reading === 'running'</code> 且 pluginId、packageId、pluginRunId、seq 都非空时出现；<code>.business .output</code> 会去掉边框与圆角，因为它已经在座位里。易混：<code>CordisDefineRow</code> 是只读的定义记录，<code>CordisActionRow</code> 管停止与移除。",
+      "keywords": [
+        "Cordis",
+        "cordis_run",
+        "运行插件",
+        "业务视图",
+        "tool.view.cordis",
+        "运行卡"
+      ]
+    }
+  ]
+}

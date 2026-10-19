@@ -1,0 +1,843 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "id": "subagent-card",
+      "name": "SubagentCard",
+      "exportName": "SubagentCard",
+      "zh": "子智能体卡",
+      "group": "settings",
+      "summary": "插件页里的「子智能体」配置卡：一块 <code>SettingsForm</code> 里放两个 <code>.section</code>——「运行限制」（最大递归深度、并行数量上限）与「模型选择」（是否为子智能体挑选模型的开关 + 授权路由清单），页脚是唯一的写入口「保存」。<code>.section</code> 上下各 16px 内边距、<code>.heading</code> 13px/600 的主文字色；<code>view: 'summary'</code> 时整卡只回一行「设置子智能体的递归层级、数量和模型。」。宿主不服务的分区整段不渲染，两边都不可用时卡片也只回那一行描述。",
+      "source": "packages/client/ui-settings-subagent/src/client/SubagentCard.tsx#L22",
+      "css": [
+        "packages/client/ui-settings-subagent/src/client/SubagentCard.module.css",
+        "packages/client/ui-primitives/src/settings-form/SettingsForm.module.css",
+        "packages/client/ui-primitives/src/settings-form/fields.module.css",
+        "packages/client/ui-settings-subagent/src/client/SubagentLimitsFields.module.css",
+        "packages/client/ui-settings-subagent/src/client/SubagentModelSelectionFields.module.css",
+        "packages/client/ui-primitives/src/Switch.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-layer-3",
+        "--dsw-alias-bg-layer-4",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-border-l4",
+        "--dsw-alias-brand-primary",
+        "--dsw-alias-label-error",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-primary-foreground",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-state-business-primary",
+        "--dsw-alias-state-error-primary",
+        "--dsw-alias-switch-thumb",
+        "--dsw-focus-ring-color",
+        "--dsw-focus-ring-width",
+        "--dsw-radius-lg",
+        "--dsw-radius-md",
+        "--dsw-radius-sm"
+      ],
+      "specimens": [
+        {
+          "label": "默认态：两项限制取宿主默认值，模型选择关闭，保存灰",
+          "note": "深度默认 1、并行上限默认 8；没有未保存改动时页脚的「保存」带 <code>:disabled</code>（<code>opacity: 0.4</code>）。",
+          "html": "<div style='width:640px'>\n  <div class=\"form\">\n    <section class=\"section\" aria-labelledby='subagent-limits-heading'>\n      <h3 class=\"heading\" id='subagent-limits-heading'>运行限制</h3>\n      <div class=\"limits\">\n        <div class=\"limit\"><div class=\"field\">\n  <div class=\"head\">\n    <div class=\"labelGroup\">\n      <label class=\"label\" for='plugin-config-subagent-depth'>最大递归深度</label>\n      <button type='button' class=\"helpButton\" aria-label='最大递归深度说明' aria-expanded='false' aria-controls='plugin-config-subagent-depth-help'><svg width='12' height='12' viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M12.5757 7.00012C12.5757 3.92085 10.0794 1.42463 7.00012 1.42456C3.9208 1.42456 1.42456 3.9208 1.42456 7.00012C1.42463 10.0794 3.92085 12.5757 7.00012 12.5757C10.0793 12.5756 12.5756 10.0793 12.5757 7.00012ZM13.8002 7.00012C13.8001 10.7559 10.7559 13.8001 7.00012 13.8002C3.2443 13.8002 0.199291 10.7559 0.199219 7.00012C0.199219 3.24426 3.24426 0.199219 7.00012 0.199219C10.7559 0.199291 13.8002 3.2443 13.8002 7.00012Z' fill='currentColor'/><path d='M7.6127 3.18921V4.55986H6.38735V3.18921H7.6127Z' fill='currentColor'/><path d='M7.6127 5.68921V10.8109H6.38735V5.68921H7.6127Z' fill='currentColor'/></svg></button>\n    </div>\n  </div>\n  <input id='plugin-config-subagent-depth' class=\"input\" type='text' inputmode='numeric' value='1'>\n  \n  \n</div></div>\n        <div class=\"limit\"><div class=\"field\">\n  <div class=\"head\">\n    <div class=\"labelGroup\">\n      <label class=\"label\" for='plugin-config-subagent-capacity'>子智能体并行数量上限</label>\n      <button type='button' class=\"helpButton\" aria-label='子智能体并行数量上限说明' aria-expanded='false' aria-controls='plugin-config-subagent-capacity-help'><svg width='12' height='12' viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M12.5757 7.00012C12.5757 3.92085 10.0794 1.42463 7.00012 1.42456C3.9208 1.42456 1.42456 3.9208 1.42456 7.00012C1.42463 10.0794 3.92085 12.5757 7.00012 12.5757C10.0793 12.5756 12.5756 10.0793 12.5757 7.00012ZM13.8002 7.00012C13.8001 10.7559 10.7559 13.8001 7.00012 13.8002C3.2443 13.8002 0.199291 10.7559 0.199219 7.00012C0.199219 3.24426 3.24426 0.199219 7.00012 0.199219C10.7559 0.199291 13.8002 3.2443 13.8002 7.00012Z' fill='currentColor'/><path d='M7.6127 3.18921V4.55986H6.38735V3.18921H7.6127Z' fill='currentColor'/><path d='M7.6127 5.68921V10.8109H6.38735V5.68921H7.6127Z' fill='currentColor'/></svg></button>\n    </div>\n  </div>\n  <input id='plugin-config-subagent-capacity' class=\"input\" type='text' inputmode='numeric' value='8'>\n  \n  \n</div></div>\n      </div>\n    </section>\n    <section class=\"section\" aria-labelledby='subagent-models-heading'>\n      <h3 class=\"heading\" id='subagent-models-heading'>模型选择</h3>\n      <div class=\"permission\">\n  <div class=\"toggleRow\">\n    <span class=\"toggleLabel\">允许 Agent 为子智能体选择模型</span>\n    <button type='button' role='switch' aria-checked='false' aria-label='允许 Agent 为子智能体选择模型' class=\"switch\"><span class=\"thumb\"></span></button>\n  </div>\n  <p class=\"c4-hint\">关闭后，子智能体使用配置的默认模型或继承父 Agent 的模型；已选模型会保留。</p>\n</div>\n    </section>\n    <div class=\"footer\">\n      <button type='button' class=\"save\" disabled>保存</button>\n    </div>\n  </div>\n</div>"
+        },
+        {
+          "label": "开启模型选择：按提供方分组的授权清单 + 已保存但不可用的路由",
+          "note": "开关打开后 <code>.selection</code> 才出现；候选清单最多 280px 高、超出滚动，目录不再公布的路由留在「已保存但当前不可用」一组里，勾选状态保留以便取消。",
+          "html": "<div style='width:640px'>\n  <div class=\"form\">\n    <section class=\"section\" aria-labelledby='subagent-models-heading-2'>\n      <h3 class=\"heading\" id='subagent-models-heading-2'>模型选择</h3>\n      <div class=\"permission\">\n  <div class=\"toggleRow\">\n    <span class=\"toggleLabel\">允许 Agent 为子智能体选择模型</span>\n    <button type='button' role='switch' aria-checked='true' aria-label='允许 Agent 为子智能体选择模型' class=\"switch\"><span class=\"thumb\"></span></button>\n  </div>\n  <p class=\"c4-hint\">开启后，Agent 可以从下方授权模型中，为每个子智能体选择提供方、模型和推理强度。仅影响新会话。</p>\n</div>\n      <div class=\"selection\">\n        <fieldset class=\"models\">\n          <legend>Agent 可选择的模型</legend>\n          <div class=\"modelGroup\">\n            <div class=\"providerName\">DeepSeek</div>\n            <label class=\"model\"><input type='checkbox' checked><span><span class=\"modelName\">DeepSeek-V4.1-Flash</span><span class=\"route\">DeepSeek · deepseek-official/deepseek-flash</span></span></label>\n            <label class=\"model\"><input type='checkbox'><span><span class=\"modelName\">DeepSeek-V4-Pro</span><span class=\"route\">DeepSeek · deepseek-official/deepseek-v4-pro</span></span></label>\n          </div>\n          <div class=\"modelGroup\">\n            <div class=\"providerName\">已保存但当前不可用</div>\n            <label class=\"model\"><input type='checkbox' checked><span><span class=\"modelName\">gpt-4o</span><span class=\"route\">openai-compatible · openai-compatible/gpt-4o</span></span><span class=\"c4-unavailable\">当前不可用</span></label>\n          </div>\n        </fieldset>\n      </div>\n    </section>\n    <div class=\"footer\">\n      <button type='button' class=\"save\">保存</button>\n    </div>\n  </div>\n</div>"
+        },
+        {
+          "label": "摘要态：view: 'summary' 只回一行描述",
+          "note": "该分支不产生任何 DOM，只把插件一行描述作为文本交给 <code>plugins.item</code> 的宿主排版；这里的字号与行高来自示例框，不是组件样式。",
+          "html": "<div style='width:520px'>设置子智能体的递归层级、数量和模型。</div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "view",
+          "type": "'summary' | 'page'",
+          "default": "—",
+          "desc": "插件页要的形态：<code>'summary'</code> 只回一行描述文本，<code>'page'</code> 渲染整块表单。"
+        },
+        {
+          "name": "useSubagentLimitsCard",
+          "type": "SnapshotStore<SubagentLimitsCardState> 的选择器",
+          "default": "—",
+          "desc": "读运行限制分区的快照：可写性、两个字段的草稿与是否已覆盖。"
+        },
+        {
+          "name": "useSubagentModelSelectionCard",
+          "type": "SnapshotStore<SubagentModelSelectionCardState> 的选择器",
+          "default": "—",
+          "desc": "读模型选择分区的快照：开关草稿、候选路由、目录状态与冲突位。"
+        },
+        {
+          "name": "editLimit",
+          "type": "(field, text) => void",
+          "default": "—",
+          "desc": "给 <code>maxDepth</code> / <code>maxActiveSubagents</code> 暂存草稿文本。"
+        },
+        {
+          "name": "resetLimit",
+          "type": "(field) => void",
+          "default": "—",
+          "desc": "暂存一次清除，让该字段在保存后重新继承组合层。"
+        },
+        {
+          "name": "toggleEnabled",
+          "type": "() => void",
+          "default": "—",
+          "desc": "暂存模型选择开关；打开时同时拉取适配器目录。"
+        },
+        {
+          "name": "toggleModel",
+          "type": "(key: string) => void",
+          "default": "—",
+          "desc": "按不透明路由键授权／取消授权一条 provider/model 路由。"
+        },
+        {
+          "name": "retryCatalog",
+          "type": "() => void",
+          "default": "—",
+          "desc": "目录加载失败后重试。"
+        },
+        {
+          "name": "save",
+          "type": "() => void",
+          "default": "—",
+          "desc": "按各自命名空间的修订栅栏写入脏分区；卡片只在非 saving、非 invalid、且有改动时真正写。"
+        },
+        {
+          "name": "discard",
+          "type": "() => void",
+          "default": "—",
+          "desc": "丢弃两个分区的草稿；保存中的调用会被忽略。"
+        }
+      ],
+      "notes": "卡片状态由 <code>subagentCardShell</code> 从两个分区合成：<code>available</code> 取并集、<code>writable</code> 取交集，<code>dirty</code> / <code>invalid</code> / <code>saving</code> / <code>failed</code> 任一为真即整体为真。部署把设置存成只读时，<code>SettingsForm</code> 会在控件上方加一条 12px 三级灰的 <code>.readOnly</code> 提示，保存按钮保持灰；某分区不可用则那一段 <code>.section</code> 整体消失（包括标题）。<code>view: 'summary'</code> 分支不看任何状态，永远回同一行描述。",
+      "keywords": [
+        "子智能体",
+        "子代理设置",
+        "运行限制",
+        "模型选择",
+        "subagent settings",
+        "plugins.item"
+      ]
+    },
+    {
+      "id": "subagent-limits-fields",
+      "name": "SubagentLimitsFields",
+      "exportName": "SubagentLimitsFields",
+      "zh": "运行限制",
+      "group": "settings",
+      "summary": "子智能体卡上半部分的两个数值字段：<code>.limits</code> 是 <code>auto-fit minmax(min(220px,100%),1fr)</code> 的响应式网格（16px 间距，窄到 220px 以下自动单列），每个 <code>.limit</code> 里是一个 <code>SettingsValueField</code>——13px/500 的标签、24×24 的问号按钮，以及 34px 高、数字用等宽字形（<code>tabular-nums</code>）的文本框。深度字段的问号展开一张两行 <code>.depthTable</code>（0 = 禁用子智能体，1 = 仅允许主 Agent 创建），上下各一条 0.5px 的 <code>--dsw-alias-border-l2</code> 分隔线。",
+      "source": "packages/client/ui-settings-subagent/src/client/SubagentLimitsFields.tsx#L18",
+      "css": [
+        "packages/client/ui-settings-subagent/src/client/SubagentLimitsFields.module.css",
+        "packages/client/ui-primitives/src/settings-form/fields.module.css",
+        "packages/client/ui-primitives/src/Tag.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-layer-3",
+        "--dsw-alias-bg-layer-4",
+        "--dsw-alias-bg-module-platform",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l4",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-state-business-primary",
+        "--dsw-alias-state-error-primary",
+        "--dsw-focus-ring-color",
+        "--dsw-focus-ring-width",
+        "--dsw-radius-md",
+        "--dsw-radius-sm"
+      ],
+      "specimens": [
+        {
+          "label": "两个字段：默认值 1 / 8，深度的说明表格已展开",
+          "note": "问号按钮的 <code>aria-expanded='true'</code> 就是真实展开态，样式表里那条 <code>.helpButton[aria-expanded='true']</code> 直接生效，不需要额外模拟。",
+          "html": "<div style='width:640px'>\n  <div class=\"limits\">\n    <div class=\"limit\"><div class=\"field\">\n  <div class=\"head\">\n    <div class=\"labelGroup\">\n      <label class=\"label\" for='plugin-config-subagent-depth'>最大递归深度</label>\n      <button type='button' class=\"helpButton\" aria-label='最大递归深度说明' aria-expanded='true' aria-controls='plugin-config-subagent-depth-help'><svg width='12' height='12' viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M12.5757 7.00012C12.5757 3.92085 10.0794 1.42463 7.00012 1.42456C3.9208 1.42456 1.42456 3.9208 1.42456 7.00012C1.42463 10.0794 3.92085 12.5757 7.00012 12.5757C10.0793 12.5756 12.5756 10.0793 12.5757 7.00012ZM13.8002 7.00012C13.8001 10.7559 10.7559 13.8001 7.00012 13.8002C3.2443 13.8002 0.199291 10.7559 0.199219 7.00012C0.199219 3.24426 3.24426 0.199219 7.00012 0.199219C10.7559 0.199291 13.8002 3.2443 13.8002 7.00012Z' fill='currentColor'/><path d='M7.6127 3.18921V4.55986H6.38735V3.18921H7.6127Z' fill='currentColor'/><path d='M7.6127 5.68921V10.8109H6.38735V5.68921H7.6127Z' fill='currentColor'/></svg></button>\n    </div>\n  </div>\n  <input id='plugin-config-subagent-depth' class=\"input\" type='text' inputmode='numeric' value='1' aria-describedby='plugin-config-subagent-depth-message plugin-config-subagent-depth-help'>\n  \n  <div id='plugin-config-subagent-depth-help' class=\"help\" role='region' aria-label='最大递归深度说明'><p>限制 Agent 创建子智能体的递归层级。</p>\n  <table class=\"depthTable\" aria-label='最大递归深度说明'>\n    <tbody>\n      <tr><th scope='row'>0</th><td>禁用子智能体</td></tr>\n      <tr><th scope='row'>1</th><td>仅允许主 Agent 创建子智能体</td></tr>\n    </tbody>\n  </table>\n  <p>如果某个工具单独设置了最大递归深度，以该工具的设置为准。</p></div>\n</div></div>\n    <div class=\"limit\"><div class=\"field\">\n  <div class=\"head\">\n    <div class=\"labelGroup\">\n      <label class=\"label\" for='plugin-config-subagent-capacity'>子智能体并行数量上限</label>\n      <button type='button' class=\"helpButton\" aria-label='子智能体并行数量上限说明' aria-expanded='false' aria-controls='plugin-config-subagent-capacity-help'><svg width='12' height='12' viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M12.5757 7.00012C12.5757 3.92085 10.0794 1.42463 7.00012 1.42456C3.9208 1.42456 1.42456 3.9208 1.42456 7.00012C1.42463 10.0794 3.92085 12.5757 7.00012 12.5757C10.0793 12.5756 12.5756 10.0793 12.5757 7.00012ZM13.8002 7.00012C13.8001 10.7559 10.7559 13.8001 7.00012 13.8002C3.2443 13.8002 0.199291 10.7559 0.199219 7.00012C0.199219 3.24426 3.24426 0.199219 7.00012 0.199219C10.7559 0.199291 13.8002 3.2443 13.8002 7.00012Z' fill='currentColor'/><path d='M7.6127 3.18921V4.55986H6.38735V3.18921H7.6127Z' fill='currentColor'/><path d='M7.6127 5.68921V10.8109H6.38735V5.68921H7.6127Z' fill='currentColor'/></svg></button>\n    </div>\n  </div>\n  <input id='plugin-config-subagent-capacity' class=\"input\" type='text' inputmode='numeric' value='8'>\n  \n  \n</div></div>\n  </div>\n</div>"
+        },
+        {
+          "label": "草稿态：一个字段已覆盖，另一个草稿非法",
+          "note": "深度改过之后 <code>.head</code> 右侧出现 11px 的「已覆盖」胶囊与 12px 的「恢复默认」；<code>aria-invalid</code> 让文本框换成 0.5px 错误色描边，并在下方给一行 12px 红字校验文案。",
+          "html": "<div style='width:640px'>\n  <div class=\"limits\">\n    <div class=\"limit\"><div class=\"field\">\n  <div class=\"head\">\n    <div class=\"labelGroup\">\n      <label class=\"label\" for='plugin-config-subagent-depth'>最大递归深度</label>\n      <button type='button' class=\"helpButton\" aria-label='最大递归深度说明' aria-expanded='false' aria-controls='plugin-config-subagent-depth-help'><svg width='12' height='12' viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M12.5757 7.00012C12.5757 3.92085 10.0794 1.42463 7.00012 1.42456C3.9208 1.42456 1.42456 3.9208 1.42456 7.00012C1.42463 10.0794 3.92085 12.5757 7.00012 12.5757C10.0793 12.5756 12.5756 10.0793 12.5757 7.00012ZM13.8002 7.00012C13.8001 10.7559 10.7559 13.8001 7.00012 13.8002C3.2443 13.8002 0.199291 10.7559 0.199219 7.00012C0.199219 3.24426 3.24426 0.199219 7.00012 0.199219C10.7559 0.199291 13.8002 3.2443 13.8002 7.00012Z' fill='currentColor'/><path d='M7.6127 3.18921V4.55986H6.38735V3.18921H7.6127Z' fill='currentColor'/><path d='M7.6127 5.68921V10.8109H6.38735V5.68921H7.6127Z' fill='currentColor'/></svg></button>\n    </div><span class=\"badges\"><span class=\"tag\" data-tone='neutral'>已覆盖</span><button type='button' class=\"reset\">恢复默认</button></span>\n  </div>\n  <input id='plugin-config-subagent-depth' class=\"input\" type='text' inputmode='numeric' value='2'>\n  \n  \n</div></div>\n    <div class=\"limit\"><div class=\"field\">\n  <div class=\"head\">\n    <div class=\"labelGroup\">\n      <label class=\"label\" for='plugin-config-subagent-capacity'>子智能体并行数量上限</label>\n      <button type='button' class=\"helpButton\" aria-label='子智能体并行数量上限说明' aria-expanded='false' aria-controls='plugin-config-subagent-capacity-help'><svg width='12' height='12' viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M12.5757 7.00012C12.5757 3.92085 10.0794 1.42463 7.00012 1.42456C3.9208 1.42456 1.42456 3.9208 1.42456 7.00012C1.42463 10.0794 3.92085 12.5757 7.00012 12.5757C10.0793 12.5756 12.5756 10.0793 12.5757 7.00012ZM13.8002 7.00012C13.8001 10.7559 10.7559 13.8001 7.00012 13.8002C3.2443 13.8002 0.199291 10.7559 0.199219 7.00012C0.199219 3.24426 3.24426 0.199219 7.00012 0.199219C10.7559 0.199291 13.8002 3.2443 13.8002 7.00012Z' fill='currentColor'/><path d='M7.6127 3.18921V4.55986H6.38735V3.18921H7.6127Z' fill='currentColor'/><path d='M7.6127 5.68921V10.8109H6.38735V5.68921H7.6127Z' fill='currentColor'/></svg></button>\n    </div>\n  </div>\n  <input id='plugin-config-subagent-capacity' class=\"input\" type='text' inputmode='numeric' value='' aria-invalid='true' aria-describedby='plugin-config-subagent-capacity-message'>\n  <p id='plugin-config-subagent-capacity-message' class=\"c1-invalid\">请输入不小于 1 的整数。</p>\n  \n</div></div>\n  </div>\n</div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "t",
+          "type": "PropsLocale<'settings.subagent'>['t']",
+          "default": "—",
+          "desc": "设置页字典：两个字段名、两段说明、非法文案与「已覆盖」「恢复默认」。"
+        },
+        {
+          "name": "state",
+          "type": "SubagentLimitsCardState",
+          "default": "—",
+          "desc": "分区快照：<code>writable</code> / <code>saving</code> 与 <code>maxDepth</code>、<code>maxActiveSubagents</code> 两个字段的文本、覆盖位、非法位。"
+        },
+        {
+          "name": "edit",
+          "type": "SettingsFormActions['edit']",
+          "default": "—",
+          "desc": "暂存某个字段的草稿文本，落在 <code>maxDepth</code> / <code>maxActiveSubagents</code> 上。"
+        },
+        {
+          "name": "resetField",
+          "type": "SettingsFormActions['resetField']",
+          "default": "—",
+          "desc": "暂存一次清除，保存后该字段回到组合层继承值。"
+        }
+      ],
+      "notes": "两个字段的合法性判据来自控制器的字段规格：深度是不小于 0 的整数，并行上限是不小于 1 的整数，且都要求安全整数、拒绝 <code>-0</code>；草稿不合法时只是把保存挡住（连同「已覆盖」标记一起不显示），组件不会改写用户输入。<code>disabled</code> 取 <code>!writable || saving</code>，只读部署或保存进行中两个文本框一起变灰。",
+      "keywords": [
+        "运行限制",
+        "递归深度",
+        "并行上限",
+        "subagent limits",
+        "maxDepth",
+        "maxActiveSubagents"
+      ]
+    },
+    {
+      "id": "subagent-model-selection-fields",
+      "name": "SubagentModelSelectionFields",
+      "exportName": "SubagentModelSelectionFields",
+      "zh": "模型授权",
+      "group": "settings",
+      "summary": "子智能体卡下半部分：一行 <code>.toggleRow</code>（13px 说明文字 + 36×20 的 <code>Switch</code>）决定是否允许 Agent 为子智能体挑模型，下面一行 12px 三级灰的 <code>.hint</code> 跟着开关换文案。开关打开后才渲染 <code>.selection</code>：候选清单是 280px 封顶、带 0.5px <code>--dsw-alias-border-l4</code> 描边和 <code>--dsw-radius-lg</code> 圆角的 <code>fieldset.models</code>，按提供方分组，组间一条 0.5px 分隔线；每行是 <code>auto minmax(0,1fr) auto</code> 的三列网格（复选框 / 13px 模型名 + 11px 路由 / 11px 状态），悬停整行染 <code>--dsw-alias-bg-layer-4</code>。",
+      "source": "packages/client/ui-settings-subagent/src/client/SubagentModelSelectionFields.tsx#L22",
+      "css": [
+        "packages/client/ui-settings-subagent/src/client/SubagentModelSelectionFields.module.css",
+        "packages/client/ui-primitives/src/Switch.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-layer-4",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-border-l4",
+        "--dsw-alias-brand-primary",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-primary-foreground",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-state-business-primary",
+        "--dsw-alias-state-error-primary",
+        "--dsw-alias-switch-thumb",
+        "--dsw-focus-ring-color",
+        "--dsw-focus-ring-width",
+        "--dsw-radius-lg",
+        "--dsw-radius-md"
+      ],
+      "specimens": [
+        {
+          "label": "默认关闭：只有开关与一行说明，没有候选区",
+          "note": "宿主默认 <code>enabled: false</code>，初次打开这一页看到的就是这个形态，说明文字是「已选模型会保留」那句。",
+          "html": "<div style='width:640px'><div class=\"permission\">\n  <div class=\"toggleRow\">\n    <span class=\"toggleLabel\">允许 Agent 为子智能体选择模型</span>\n    <button type='button' role='switch' aria-checked='false' aria-label='允许 Agent 为子智能体选择模型' class=\"switch\"><span class=\"thumb\"></span></button>\n  </div>\n  <p class=\"hint\">关闭后，子智能体使用配置的默认模型或继承父 Agent 的模型；已选模型会保留。</p>\n</div></div>"
+        },
+        {
+          "label": "开启：按提供方分组的候选清单（含部分加载提示）",
+          "note": "列表可滚、悬停整行染色；「当前不可用」那一组是存过、当前适配器目录不再公布的路由，勾选状态保留以便取消。",
+          "html": "<div style='width:640px'>\n  <div class=\"permission\">\n  <div class=\"toggleRow\">\n    <span class=\"toggleLabel\">允许 Agent 为子智能体选择模型</span>\n    <button type='button' role='switch' aria-checked='true' aria-label='允许 Agent 为子智能体选择模型' class=\"switch\"><span class=\"thumb\"></span></button>\n  </div>\n  <p class=\"hint\">开启后，Agent 可以从下方授权模型中，为每个子智能体选择提供方、模型和推理强度。仅影响新会话。</p>\n</div>\n  <div class=\"selection\">\n    <p class=\"notice\">部分模型提供方暂时无法加载；已保存的选择仍可移除。</p>\n    <fieldset class=\"models\">\n      <legend>Agent 可选择的模型</legend>\n      <div class=\"modelGroup\">\n        <div class=\"providerName\">DeepSeek</div>\n        <label class=\"model\"><input type='checkbox' checked><span><span class=\"modelName\">DeepSeek-V4.1-Flash</span><span class=\"route\">DeepSeek · deepseek-official/deepseek-flash</span></span></label>\n        <label class=\"model\"><input type='checkbox'><span><span class=\"modelName\">DeepSeek-V4-Pro</span><span class=\"route\">DeepSeek · deepseek-official/deepseek-v4-pro</span></span></label>\n      </div>\n      <div class=\"modelGroup\">\n        <div class=\"providerName\">已保存但当前不可用</div>\n        <label class=\"model\"><input type='checkbox' checked><span><span class=\"modelName\">gpt-4o</span><span class=\"route\">openai-compatible · openai-compatible/gpt-4o</span></span><span class=\"unavailable\">当前不可用</span></label>\n      </div>\n    </fieldset>\n  </div>\n</div>"
+        },
+        {
+          "label": "目录失败：错误行内重试 + 仍可移除的已保存路由",
+          "note": "目录失败时错误行给出「重试」；存过的路由仍然照常渲染，取消勾选再保存就能把它移除。",
+          "html": "<div style='width:640px'>\n  <div class=\"permission\">\n  <div class=\"toggleRow\">\n    <span class=\"toggleLabel\">允许 Agent 为子智能体选择模型</span>\n    <button type='button' role='switch' aria-checked='true' aria-label='允许 Agent 为子智能体选择模型' class=\"switch\"><span class=\"thumb\"></span></button>\n  </div>\n  <p class=\"hint\">开启后，Agent 可以从下方授权模型中，为每个子智能体选择提供方、模型和推理强度。仅影响新会话。</p>\n</div>\n  <div class=\"selection\">\n    <div class=\"catalogError\" role='alert'>\n      <span>无法加载模型。</span>\n      <button type='button'>重试</button>\n    </div>\n    <fieldset class=\"models\">\n      <legend>Agent 可选择的模型</legend>\n      <div class=\"modelGroup\">\n        <div class=\"providerName\">已保存但当前不可用</div>\n        <label class=\"model\"><input type='checkbox' checked><span><span class=\"modelName\">gpt-4o</span><span class=\"route\">openai-compatible · openai-compatible/gpt-4o</span></span><span class=\"unavailable\">当前不可用</span></label>\n      </div>\n    </fieldset>\n  </div>\n</div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "t",
+          "type": "PropsLocale<'settings.subagent'>['t']",
+          "default": "—",
+          "desc": "设置页字典：开关名、开／关两种说明、清单图例、加载与失败文案、不可用标记与校验文案。"
+        },
+        {
+          "name": "state",
+          "type": "SubagentModelSelectionCardState",
+          "default": "—",
+          "desc": "分区快照：<code>enabled</code> 草稿、<code>candidates</code> 候选、<code>catalogStatus</code>（idle/loading/ready/error）、<code>catalogPartial</code>、<code>conflicted</code>，外加表单外壳的 <code>writable</code> / <code>saving</code>。"
+        },
+        {
+          "name": "toggleEnabled",
+          "type": "SubagentModelSelectionCardFace['toggleEnabled']",
+          "default": "—",
+          "desc": "暂存开关；打开时顺带触发适配器目录加载。"
+        },
+        {
+          "name": "toggleModel",
+          "type": "(key: string) => void",
+          "default": "—",
+          "desc": "按候选的 <code>key</code>（provider + 空字符 + model）在草稿里授权或取消一条路由。"
+        },
+        {
+          "name": "retryCatalog",
+          "type": "SubagentModelSelectionCardFace['retryCatalog']",
+          "default": "—",
+          "desc": "目录加载失败后重试；错误行里的「重试」按钮接的就是它。"
+        }
+      ],
+      "notes": "候选来自 <code>subagentModelCandidates</code>：目录里公布的路由按提供方分组、<code>available: true</code>；存过但目录不再公布的路由落到「已保存但当前不可用」组（<code>providerName</code> 回落到 provider id、<code>modelName</code> 回落到 model id），勾选状态照旧保留，方便用户取消。<code>enabled</code> 打开且一条都没勾时底部给 <code>.invalid</code> 红字「保存前请至少选择一个模型。」；宿主修订变化时给 <code>.conflict</code> 红字提示（它在 <code>.selection</code> 之外，关掉开关也照样显示）；部分提供方失败时给 <code>.notice</code>。整行是 <code>label</code>，所以点模型名也能切换勾选。",
+      "keywords": [
+        "模型授权",
+        "模型选择",
+        "允许子智能体选模型",
+        "subagent model selection",
+        "allowedModels"
+      ]
+    },
+    {
+      "id": "shortcut-editor",
+      "name": "ShortcutEditor",
+      "exportName": "ShortcutEditor",
+      "zh": "快捷键编辑",
+      "group": "settings",
+      "summary": "快捷键速查里某一行展开后的行内编辑器：<code>.inlineEditor</code> 竖排、右对齐，里面一行 <code>.inlineControls</code> 放「恢复默认」「移除」两个 12px 纯文字按钮和一个 <code>.recorder</code> 录键按钮（最小 96px 宽、26px 高、0.5px <code>--dsw-alias-border-l4</code> 描边、10px 圆角）。按钮默认写着「按下快捷键」；录到组合后按钮里换成真实键帽（<code>.recorded</code> 去掉底色与内边距，只留 <code>.keys</code> 的排布）。录键进行中会抢走文档级 keydown/keyup，Esc 退出、松开即保存，保存失败保留草稿并多出一个「重试保存」。",
+      "source": "packages/client/ui-shortcuts/src/client/Editor.tsx#L25",
+      "css": [
+        "packages/client/ui-shortcuts/src/client/Reference.module.css",
+        "packages/client/ui-primitives/src/ShortcutKeys.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-module-platform",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l4",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-markdown-code-block",
+        "--dsw-alias-scrollbar-bg-l2",
+        "--dsw-alias-scrollbar-hover-l2",
+        "--dsw-alias-state-business-primary",
+        "--dsw-alias-state-error-primary",
+        "--dsw-alias-state-success-secondary",
+        "--dsw-alias-state-warn-secondary",
+        "--dsw-focus-ring-color",
+        "--dsw-radius-md"
+      ],
+      "specimens": [
+        {
+          "label": "待录键：恢复默认 / 移除 / 按下快捷键",
+          "note": "编辑器本身没有样式表，全部类名来自 <code>Reference.module.css</code>；<code>.binding:has(.inlineEditor)</code> 会把这一格的 <code>pointer-events</code> 重新打开。",
+          "html": "<div style='width:460px'>\n  <ul class=\"rows\">\n    <li class=\"row\">\n      <span class=\"commandLabel\">搜索会话</span>\n      <span class=\"binding\">\n        <div class=\"inlineEditor\" role='group' aria-label='搜索会话' data-shortcut-modal='shortcut-edit'>\n          <div class=\"inlineControls\">\n            <button type='button' class=\"inlineAction\">恢复默认</button>\n            <button type='button' class=\"inlineAction\">移除</button>\n            <button type='button' class=\"recorder\" aria-label='按下快捷键' aria-invalid='false'>按下快捷键</button>\n          </div>\n          <span class=\"srOnly\">松开组合键即保存。Tab 切换操作，Esc 退出录键。</span>\n        </div>\n      </span>\n    </li>\n  </ul>\n</div>"
+        },
+        {
+          "label": "已录到组合：键帽顶掉按钮文案",
+          "note": "录到组合后按钮内容换成 <code>.recorded</code> 包着的键帽（透明底、高度自适应），边框仍是录键按钮那条 <code>--dsw-alias-border-l4</code>。",
+          "html": "<div style='width:460px'>\n  <ul class=\"rows\">\n    <li class=\"row\">\n      <span class=\"commandLabel\">分栏</span>\n      <span class=\"binding\">\n        <div class=\"inlineEditor\" role='group' aria-label='分栏' data-shortcut-modal='shortcut-edit'>\n          <div class=\"inlineControls\">\n            <button type='button' class=\"inlineAction\">恢复默认</button>\n            <button type='button' class=\"inlineAction\">移除</button>\n            <button type='button' class=\"recorder\" aria-label='按下快捷键' aria-invalid='false'><span class=\"keys recorded\"><kbd class=\"key\">⌘</kbd><kbd class=\"key\">\\</kbd></span></button>\n          </div>\n          <span class=\"srOnly\"></span>\n        </div>\n      </span>\n    </li>\n  </ul>\n</div>"
+        },
+        {
+          "label": "录键被拒：.recorder.invalid 换成错误色描边 + 屏幕外说明",
+          "note": "冲突、保留组合、暂不支持的按键都会给 record 按钮加 <code>.invalid</code>（1px 错误色实线，覆盖那条 0.5px 描边），具体原因只写在 <code>.srOnly</code> 里由读屏播报。",
+          "html": "<div style='width:460px'>\n  <ul class=\"rows\">\n    <li class=\"row\">\n      <span class=\"commandLabel\">展开／收起右侧栏</span>\n      <span class=\"binding\">\n        <div class=\"inlineEditor\" role='group' aria-label='展开／收起右侧栏' data-shortcut-modal='shortcut-edit'>\n          <div class=\"inlineControls\">\n            <button type='button' class=\"inlineAction\">恢复默认</button>\n            <button type='button' class=\"inlineAction\">移除</button>\n            <button type='button' class=\"recorder invalid\" aria-label='按下快捷键' aria-invalid='true'>按下快捷键</button>\n          </div>\n          <span class=\"srOnly\">已被「搜索会话」占用</span>\n        </div>\n      </span>\n    </li>\n  </ul>\n</div>"
+        },
+        {
+          "label": "配置已更新：.review 要求先核对最新键位",
+          "note": "宿主修订变了以后整个编辑器变成只读：上方多一行 12px 三级灰的 <code>.review</code> 与「已核对最新配置」按钮，此时两个纯文字按钮与录键器都带 <code>:disabled</code>（<code>opacity: 0.45</code>）。",
+          "html": "<div style='width:460px'>\n  <ul class=\"rows\">\n    <li class=\"row\">\n      <span class=\"commandLabel\">新会话</span>\n      <span class=\"binding\">\n        <div class=\"inlineEditor\" role='group' aria-label='新会话' data-shortcut-modal='shortcut-edit' aria-busy='false'>\n          <div class=\"inlineControls\">\n            <button type='button' class=\"inlineAction\" disabled>恢复默认</button>\n            <button type='button' class=\"inlineAction\" disabled>移除</button>\n            <button type='button' class=\"recorder\" aria-label='按下快捷键' aria-disabled='false'>按下快捷键</button>\n          </div>\n          <span class=\"srOnly\"></span>\n          <div class=\"review\">\n            <span>快捷键配置或可用命令已更新。请核对最新键位后再保存。</span>\n            <button type='button' class=\"inlineAction\">已核对最新配置</button>\n          </div>\n        </div>\n      </span>\n    </li>\n  </ul>\n</div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "target",
+          "type": "ShortcutCatalogEntry",
+          "default": "—",
+          "desc": "正在编辑的命令行：<code>id</code> 用于写入，<code>label</code> 是编辑器 <code>role=\"group\"</code> 的可访问名，<code>binding</code> 决定要不要画「移除」。"
+        },
+        {
+          "name": "onClose",
+          "type": "() => void",
+          "default": "—",
+          "desc": "收起编辑器；Esc（未按修饰键、非录键写入中）与保存成功都会走到这里。"
+        },
+        {
+          "name": "onSaved",
+          "type": "() => void",
+          "default": "—",
+          "desc": "写入被宿主接受后的回调，速查页用它弹「已修改」提示并关闭编辑器。"
+        },
+        {
+          "name": "onError",
+          "type": "(message: string) => void",
+          "default": "—",
+          "desc": "把失败原因交给外层显示；同时草稿与「重试保存」都留在行内。"
+        },
+        {
+          "name": "edit",
+          "type": "Shortcuts['edit']",
+          "default": "—",
+          "desc": "带修订栅栏的写入：<code>{type:'set'|'reset'}</code> 与审阅时的 revision 一起提交。"
+        },
+        {
+          "name": "recording",
+          "type": "(active: boolean) => Promise<void>",
+          "default": "—",
+          "desc": "进出录键模式时通知宿主（桌面端据此临时关掉全局热键）。"
+        },
+        {
+          "name": "describeBinding",
+          "type": "Shortcuts['describeBinding']",
+          "default": "—",
+          "desc": "把物理组合解析成键帽标签、冲突命令与问题分类，编辑器据此决定能否直接保存。"
+        },
+        {
+          "name": "runtime",
+          "type": "Shortcuts['runtime']",
+          "default": "—",
+          "desc": "'web' 或 'desktop'：决定录键用网页可用组合规则还是桌面物理和弦规则，以及屏幕外帮助文案。"
+        },
+        {
+          "name": "platform",
+          "type": "ShortcutPlatform",
+          "default": "—",
+          "desc": "'macos' | 'windows' | 'linux'：决定键帽符号（⌘ / Ctrl）与能否记录 Tab、和弦。"
+        },
+        {
+          "name": "useCatalog / useConfig / useFixedCatalog",
+          "type": "ObservableSnapshot 选择器",
+          "default": "—",
+          "desc": "读有效目录、配置快照（revision/status）与固定组合，用于冲突判定、陈旧判定与只读判定。"
+        }
+      ],
+      "notes": "只读条件 <code>readonly = busy || stale || config.status !== 'ready'</code>，所以加载中、读取失败、有未核对的修订时三个控件一起禁用。录键期间组件在 <code>document</code> 捕获阶段监听 keydown/keyup：Esc 退出、修饰键单独按下不算、桌面端最多两个非修饰键、按 <code>event.code</code> 记录所以不受输入法影响；macOS 松开 Command 时字符 keyup 可能缺失，代码里为此保留了兜底。录到的组合先本地判定（<code>issue</code> / <code>conflicts</code> / <code>stale</code> / <code>config.status</code>），全部通过才提交 <code>{type:'set'}</code>，否则把原因写进 <code>.srOnly</code> 并给按钮 <code>.recorder.invalid</code>。",
+      "keywords": [
+        "快捷键编辑",
+        "录键",
+        "重设快捷键",
+        "shortcut editor",
+        "recorder",
+        "按键录制"
+      ]
+    },
+    {
+      "id": "shortcut-icon",
+      "name": "ShortcutIcon",
+      "exportName": "ShortcutIcon",
+      "zh": "快捷键图标",
+      "group": "settings",
+      "summary": "快捷键功能自带的三枚装饰字形，颜色一律走 <code>currentColor</code>、不持有样式表：<code>edit</code>（12×12，viewBox <code>0 0 12 12</code>）用在速查行右侧悬停才浮现的 <code>.rowActions</code> 里，颜色是 <code>--dsw-alias-label-tertiary</code>；<code>error</code> 与 <code>success</code>（各 16×16）只出现在反馈 Toast 的图标位上，分别染 <code>--dsw-alias-state-warn-secondary</code> 与 <code>--dsw-alias-state-success-secondary</code>。三枚都是 <code>aria-hidden=\"true\"</code> 的纯装饰，语义由外层文字负责。",
+      "source": "packages/client/ui-shortcuts/src/client/Icons.tsx#L13",
+      "css": [
+        "packages/client/ui-shortcuts/src/client/Reference.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-module-platform",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-state-business-primary",
+        "--dsw-alias-state-success-secondary",
+        "--dsw-alias-state-warn-secondary",
+        "--dsw-focus-ring-color"
+      ],
+      "specimens": [
+        {
+          "label": "三枚字形与它们在产品里的落点",
+          "note": "字号与间距只为并排展示；每枚字形的尺寸（12 / 16）与颜色都来自真实调用点。",
+          "html": "<div style='width:460px;display:flex;gap:24px;align-items:flex-start'>\n  <div style='display:flex;flex-direction:column;align-items:center;gap:6px'>\n    <span class=\"rowActions\"><svg width='12' height='12' viewBox='0 0 12 12' fill='currentColor' aria-hidden='true'><path d=\"M7.4553 1.01221C8.02829 0.676881 8.73746 0.676959 9.31048 1.01221C9.52928 1.14026 9.72631 1.34353 9.98255 1.59978C10.2388 1.85601 10.4421 2.05305 10.5701 2.27185C10.9053 2.84485 10.9054 3.55407 10.5701 4.12703C10.4421 4.34576 10.2387 4.54293 9.98255 4.7991L4.99422 9.78744C4.71024 10.0714 4.50494 10.2832 4.2488 10.4324C3.99266 10.5815 3.70709 10.6557 3.32001 10.7625L2.43268 11.0072C2.08118 11.1042 1.75876 11.1948 1.50071 11.2265C1.2387 11.2585 0.884455 11.2512 0.607798 10.9745C0.331166 10.6979 0.323805 10.3436 0.35587 10.0816C0.387501 9.82358 0.47815 9.50112 0.575111 9.14964L0.819864 8.26232C0.926638 7.87525 1.00083 7.58966 1.14992 7.33353C1.2991 7.07739 1.5109 6.87209 1.79489 6.58811L6.78322 1.59978C7.03941 1.34359 7.23656 1.14027 7.4553 1.01221ZM11.6568 11.13H5.6639L6.72503 10.0689H11.6568V11.13ZM2.54509 7.33831C2.22348 7.65993 2.13155 7.75784 2.06755 7.86768C2.0036 7.97757 1.96369 8.10606 1.84272 8.54454L1.59797 9.43187C1.5011 9.78304 1.44118 10.0065 1.4162 10.1653C1.57504 10.1404 1.79876 10.0814 2.15046 9.98436L3.03779 9.7396C3.47631 9.61863 3.60475 9.57874 3.71464 9.51478C3.82448 9.45077 3.92239 9.35885 4.24401 9.03723L8.04047 5.23998L6.34155 3.54106L2.54509 7.33831ZM8.77473 1.92824C8.53277 1.78664 8.233 1.78664 7.99104 1.92824C7.91987 1.97 7.83628 2.04713 7.53343 2.34998L7.09176 2.79085L8.79068 4.48977L9.23235 4.0489C9.53517 3.74608 9.61232 3.66245 9.65409 3.59128C9.79567 3.34935 9.79564 3.04954 9.65409 2.8076C9.61237 2.73635 9.53565 2.65329 9.23235 2.34998C8.92899 2.04662 8.84598 1.96995 8.77473 1.92824Z\" /></svg></span>\n    <span style='font-size:11px'>edit · 12px · .rowActions</span>\n  </div>\n  <div style='display:flex;flex-direction:column;align-items:center;gap:6px'>\n    <span class=\"toastSuccess\"><svg width='16' height='16' viewBox='0 0 16 16' fill='currentColor' aria-hidden='true'><path d=\"M12.5303 6.53027L8.80273 10.2578C8.54967 10.5109 8.31796 10.7439 8.10645 10.9141C7.88375 11.0932 7.616 11.2602 7.27344 11.3145C7.09229 11.3431 6.90771 11.3431 6.72656 11.3145C6.384 11.2602 6.11625 11.0932 5.89355 10.9141C5.68204 10.7439 5.45033 10.5109 5.19727 10.2578L3.46973 8.53027L4.53027 7.46973L6.25781 9.19727C6.53457 9.47402 6.70036 9.63859 6.83398 9.74609C6.95637 9.84453 6.98241 9.83644 6.96094 9.83301C6.98679 9.83709 7.01321 9.83709 7.03906 9.83301C7.01759 9.83644 7.04363 9.84453 7.16602 9.74609C7.29964 9.63859 7.46543 9.47402 7.74219 9.19727L11.4697 5.46973L12.5303 6.53027Z\" /><path d=\"M14.5996 8C14.5996 4.35492 11.6451 1.40039 8 1.40039C4.35492 1.40039 1.40039 4.35492 1.40039 8C1.40039 11.6451 4.35492 14.5996 8 14.5996C11.6451 14.5996 14.5996 11.6451 14.5996 8ZM15.9004 8C15.9004 12.363 12.363 15.9004 8 15.9004C3.63695 15.9004 0.0996094 12.363 0.0996094 8C0.0996094 3.63695 3.63695 0.0996094 8 0.0996094C12.363 0.0996094 15.9004 3.63695 15.9004 8Z\" /></svg></span>\n    <span style='font-size:11px'>success · 16px · .toastSuccess</span>\n  </div>\n  <div style='display:flex;flex-direction:column;align-items:center;gap:6px'>\n    <span class=\"toastError\"><svg width='16' height='16' viewBox='0 0 16 16' fill='currentColor' aria-hidden='true'><path d=\"M8.90039 3.97328V9.07973H7.09961V3.97328H8.90039Z\" /><path d=\"M8.90039 10.341V12.3654H7.09961V10.341H8.90039Z\" /><path d=\"M14.5996 8C14.5996 4.35492 11.6451 1.40039 8 1.40039C4.35492 1.40039 1.40039 4.35492 1.40039 8C1.40039 11.6451 4.35492 14.5996 8 14.5996C11.6451 14.5996 14.5996 11.6451 14.5996 8ZM15.9004 8C15.9004 12.363 12.363 15.9004 8 15.9004C3.63695 15.9004 0.0996094 12.363 0.0996094 8C0.0996094 3.63695 3.63695 0.0996094 8 0.0996094C12.363 0.0996094 15.9004 3.63695 15.9004 8Z\" /></svg></span>\n    <span style='font-size:11px'>error · 16px · .toastError</span>\n  </div>\n</div>"
+        },
+        {
+          "label": "行内：悬停／聚焦时才浮现的编辑字形",
+          "note": "悬停模拟：把 <code>.row:hover .rowActions</code> 与 <code>.row:has(:focus-visible) .rowActions</code> 两条真实规则搬到这一行上（键盘用户靠 <code>rowButton:focus-visible</code> 触发同一效果）。键帽只挂 Reference 的 <code>.keyBadge</code>——<code>.keys</code> / <code>.key</code> 属于 ui-primitives 的 <code>ShortcutKeys</code>，本条目不再列它的样式表，间距用布局性内联样式补位。",
+          "css": "/* 悬停模拟：真实规则是 .row:hover .rowActions 与 .row:has(:focus-visible) .rowActions 把 20×26 的编辑位从 opacity: 0 抬到 1。 */\n.row.forceActions .rowActions { opacity: 1; }",
+          "html": "<div style='width:460px'>\n  <ul class=\"rows\">\n    <li class=\"row forceActions\">\n      <button type='button' class=\"rowButton\" aria-label='修改搜索会话快捷键'></button>\n      <span class=\"commandLabel\">搜索会话</span>\n      <span class=\"binding\">\n        <span class=\"rowActions\"><svg width='12' height='12' viewBox='0 0 12 12' fill='currentColor' aria-hidden='true'><path d=\"M7.4553 1.01221C8.02829 0.676881 8.73746 0.676959 9.31048 1.01221C9.52928 1.14026 9.72631 1.34353 9.98255 1.59978C10.2388 1.85601 10.4421 2.05305 10.5701 2.27185C10.9053 2.84485 10.9054 3.55407 10.5701 4.12703C10.4421 4.34576 10.2387 4.54293 9.98255 4.7991L4.99422 9.78744C4.71024 10.0714 4.50494 10.2832 4.2488 10.4324C3.99266 10.5815 3.70709 10.6557 3.32001 10.7625L2.43268 11.0072C2.08118 11.1042 1.75876 11.1948 1.50071 11.2265C1.2387 11.2585 0.884455 11.2512 0.607798 10.9745C0.331166 10.6979 0.323805 10.3436 0.35587 10.0816C0.387501 9.82358 0.47815 9.50112 0.575111 9.14964L0.819864 8.26232C0.926638 7.87525 1.00083 7.58966 1.14992 7.33353C1.2991 7.07739 1.5109 6.87209 1.79489 6.58811L6.78322 1.59978C7.03941 1.34359 7.23656 1.14027 7.4553 1.01221ZM11.6568 11.13H5.6639L6.72503 10.0689H11.6568V11.13ZM2.54509 7.33831C2.22348 7.65993 2.13155 7.75784 2.06755 7.86768C2.0036 7.97757 1.96369 8.10606 1.84272 8.54454L1.59797 9.43187C1.5011 9.78304 1.44118 10.0065 1.4162 10.1653C1.57504 10.1404 1.79876 10.0814 2.15046 9.98436L3.03779 9.7396C3.47631 9.61863 3.60475 9.57874 3.71464 9.51478C3.82448 9.45077 3.92239 9.35885 4.24401 9.03723L8.04047 5.23998L6.34155 3.54106L2.54509 7.33831ZM8.77473 1.92824C8.53277 1.78664 8.233 1.78664 7.99104 1.92824C7.91987 1.97 7.83628 2.04713 7.53343 2.34998L7.09176 2.79085L8.79068 4.48977L9.23235 4.0489C9.53517 3.74608 9.61232 3.66245 9.65409 3.59128C9.79567 3.34935 9.79564 3.04954 9.65409 2.8076C9.61237 2.73635 9.53565 2.65329 9.23235 2.34998C8.92899 2.04662 8.84598 1.96995 8.77473 1.92824Z\" /></svg></span><span class=\"keyBadge\" style='display:inline-flex;align-items:center;gap:3px'><kbd>⌘</kbd><kbd>K</kbd></span>\n      </span>\n    </li>\n  </ul>\n</div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "kind",
+          "type": "keyof typeof artwork",
+          "default": "—",
+          "desc": "字形种类：<code>'edit'</code>（12×12）、<code>'error'</code>、<code>'success'</code>（各 16×16）。尺寸由 kind 决定，不可通过 props 改。"
+        },
+        {
+          "name": "className",
+          "type": "string | undefined",
+          "default": "undefined",
+          "desc": "调用方给的颜色／布局类：行内编辑位是 <code>.rowActions</code>，Toast 里是 <code>.toastSuccess</code> / <code>.toastError</code>。"
+        }
+      ],
+      "notes": "三枚字形都画在一个 <code>fill=\"currentColor\"</code> 的 svg 里，所以颜色完全由调用方的类决定——这也是它没有样式表的原因：条目里列的 <code>Reference.module.css</code> 只是它真实落点（<code>.rowActions</code> / <code>.toastSuccess</code> / <code>.toastError</code>）的宿主样式。它与 ui-primitives 的图标族不是一套：这里只服务快捷键速查的「编辑」入口与成功／失败反馈，图标本身不带 <code>stroke-width</code>（字形是填充几何）。",
+      "keywords": [
+        "快捷键图标",
+        "编辑图标",
+        "成功图标",
+        "错误图标",
+        "shortcut icon",
+        "glyph"
+      ]
+    },
+    {
+      "id": "shortcuts-row",
+      "name": "ShortcutsRow",
+      "exportName": "ShortcutsRow",
+      "zh": "快捷键行",
+      "group": "settings",
+      "summary": "设置 › 通用里的一行入口（<code>settings.general.item</code>，order 16）：<code>.setting</code> 是 60px 起高、16px 上下留白、底边一条 0.5px <code>--dsw-alias-border-l2</code> 的两端对齐行；左边 <code>.settingText</code> 是 14px 主文字「快捷键」加 12px 三级灰说明「查看和编辑当前可用的快捷键和输入操作」，右边一颗 36px 高、至少 90px 宽、圆角 <code>--dsw-radius-md</code> 的 <code>.button</code>「编辑快捷键」。按钮外包着 <code>Tooltip</code>：只有 <code>shortcuts.open</code> 真有绑定时才悬停／聚焦给出「全局唤起查看」气泡与平台化键帽。",
+      "source": "packages/client/ui-shortcuts/src/client/Reference.tsx#L54",
+      "css": [
+        "packages/client/ui-shortcuts/src/client/Reference.module.css",
+        "packages/client/ui-primitives/src/Tooltip.module.css",
+        "packages/client/ui-primitives/src/ShortcutKeys.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-module-platform",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-tooltip-bg",
+        "--dsw-alias-tooltip-key-bg",
+        "--dsw-focus-ring-color",
+        "--dsw-radius-md",
+        "--dsw-radius-sm",
+        "--dsw-static-neutral-bluish-00"
+      ],
+      "specimens": [
+        {
+          "label": "默认态：说明文字 + 编辑快捷键按钮",
+          "note": "整行就是设置列表里的一格；按钮文字与 <code>aria-label</code> 都是「编辑快捷键」，点开后浮出速查对话框。",
+          "html": "<div style='width:640px'>\n  <div class=\"setting\">\n    <div class=\"settingText\">\n      <div class=\"settingTitle\">快捷键</div>\n      <p class=\"settingDescription\">查看和编辑当前可用的快捷键和输入操作</p>\n    </div>\n    <button class=\"button\" type='button' aria-label='编辑快捷键' aria-keyshortcuts='Control+Slash'>编辑快捷键</button>\n  </div>\n</div>"
+        },
+        {
+          "label": "悬停模拟：按钮变底色，右侧浮出提示气泡与键帽",
+          "note": "悬停模拟；气泡是真实 DOM 的兄弟节点（<code>Tooltip</code> 不改写锚点，只在其后追加一个 <code>role=\"tooltip\"</code> 的 span），这里把它按 <code>data-side='right'</code> 的落点摆在按钮右侧。",
+          "css": "/* 状态模拟：悬停无法静态触发。两条规则原样搬自 Reference.module.css 与 Tooltip.module.css，\n   只把气泡的 position: fixed 拉回文档流（保留包含块），并取消 data-side='right' 的 translateY(-50%)。 */\n.button.forceHover { background: var(--dsw-alias-interactive-bg-hover); }\n.bubble.snapshotStatic { position: relative; inset: auto; transform: none; }",
+          "html": "<div style='width:640px'>\n  <div class=\"setting\">\n    <div class=\"settingText\">\n      <div class=\"settingTitle\">快捷键</div>\n      <p class=\"settingDescription\">查看和编辑当前可用的快捷键和输入操作</p>\n    </div>\n    <button class=\"button forceHover\" type='button' aria-label='编辑快捷键' aria-keyshortcuts='Control+Slash'>编辑快捷键</button>\n    <span class=\"bubble snapshotStatic\" data-side='right' data-align='center' data-has-shortcut='true' role='tooltip' aria-label='全局唤起查看 Ctrl + /'>\n      <span class=\"label\">全局唤起查看</span><span class=\"keys tooltip joined\"><kbd class=\"key\">Ctrl</kbd><kbd class=\"separator\">+</kbd><kbd class=\"key\">/</kbd></span>\n    </span>\n  </div>\n</div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "actions",
+          "type": "PropsRuntime<'settings.general.item'>['actions']",
+          "default": "—",
+          "desc": "槽动作；本行只调用 <code>actions.open()</code> 打开速查对话框。"
+        },
+        {
+          "name": "t",
+          "type": "PropsLocale<'shortcuts'>['t']",
+          "default": "—",
+          "desc": "快捷键字典：<code>settings</code>「快捷键」、<code>description</code> 一行说明、<code>view</code>「编辑快捷键」与 <code>global-hint</code>。"
+        },
+        {
+          "name": "useCatalog",
+          "type": "ObservableSnapshot<readonly ShortcutCatalogEntry[]> 的选择器",
+          "default": "—",
+          "desc": "从有效目录里取 <code>shortcuts.open</code> 一行，只为了它的键帽与 <code>aria-keyshortcuts</code>。"
+        },
+        {
+          "name": "platform / runtime / edit / recording / describeBinding",
+          "type": "ReferenceInjected",
+          "default": "—",
+          "desc": "注入面：平台与运行时、写入动作与绑定描述。本行只把 <code>keys</code> 交给 Tooltip；其余字段是速查对话框在用。"
+        }
+      ],
+      "notes": "按钮的提示是 <code>Tooltip disabled={!shortcut?.keys.length}</code>：命令被解绑或还没读到目录时不弹气泡，按钮本体照样渲染（<code>disabled</code> 不会重挂锚点，所以过渡不会被切断）。行的底边分隔线来自 <code>.setting</code> 自己，不依赖父级列表——所以它既能落在设置页里，也能单独复用。",
+      "keywords": [
+        "快捷键设置行",
+        "快捷键入口",
+        "通用设置",
+        "shortcuts row",
+        "settings.general.item"
+      ]
+    },
+    {
+      "id": "shortcut-reference",
+      "name": "ShortcutReference",
+      "exportName": "ShortcutReference",
+      "zh": "快捷键速查",
+      "group": "settings",
+      "summary": "整个速查对话框（<code>shell.overlay</code> 单例，只在打开时渲染）：<code>Modal headless</code> 的卡片被 <code>.dialog</code> 改成 <code>min(480px, 100%)</code> 宽、600px 高、24px 圆角，内部是自绘的 <code>.contents</code>——46px 头部放 16px 标题与圆形关闭按钮，60px 搜索行是 36px 高、12px 圆角的 <code>.searchField</code>（放大镜 + 13px 输入框 + 有内容时的清空圆钮），中间 <code>.list</code> 按「应用操作 / 消息输入 / 菜单与弹层 / 审批区域」分组列出 42px 起的行，页脚是 52px 的「恢复全部默认」与「n 项已自定义」。",
+      "source": "packages/client/ui-shortcuts/src/client/Reference.tsx#L73",
+      "css": [
+        "packages/client/ui-shortcuts/src/client/Reference.module.css",
+        "packages/client/ui-primitives/src/Modal.module.css",
+        "packages/client/ui-primitives/src/ShortcutKeys.module.css",
+        "packages/client/ui-primitives/src/Toast.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-layer-2",
+        "--dsw-alias-bg-mask-1",
+        "--dsw-alias-bg-module-platform",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l4",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-markdown-code-block",
+        "--dsw-alias-scrollbar-bg-l2",
+        "--dsw-alias-scrollbar-hover-l2",
+        "--dsw-alias-state-business-primary",
+        "--dsw-alias-state-error-primary",
+        "--dsw-alias-state-success-primary",
+        "--dsw-alias-state-success-secondary",
+        "--dsw-alias-state-warn-secondary",
+        "--dsw-alias-toast-bg",
+        "--dsw-alias-toast-label",
+        "--dsw-focus-ring-color",
+        "--dsw-radius-lg",
+        "--dsw-radius-md",
+        "--dsw-radius-panel",
+        "--dsw-radius-sm",
+        "--dsw-shadow-lv3"
+      ],
+      "specimens": [
+        {
+          "label": "默认态：应用操作与菜单与弹层两组",
+          "note": "可编辑的命令行有一个铺满整行的透明 <code>.rowButton</code>（点击进入行内编辑），固定组合则只有键帽；页脚在没有自定义项时「恢复全部默认」是禁用的。",
+          "css": "/* 静态快照：Modal 的 .root 在真实产品里是 portal 到 body 的 fixed 全屏层，这里改回文档流内的相对定位，\n   留住它作为 .mask 绝对定位子层的包含块；高度由示例框给定，卡片自己的 600px 高度不变。 */\n.root.snapshotStatic { position: relative; inset: auto; }",
+          "html": "<div style='width:520px'>\n  <div class=\"root snapshotStatic\" style='height:600px' role='presentation'>\n    <div class=\"mask\" aria-hidden='true'></div>\n    <div class=\"dialog\" tabindex='-1' data-shortcut-modal='shortcuts' role='dialog' aria-modal='true' aria-label='快捷键'>\n      <div class=\"contents\"><header class=\"c0-header\">\n  <h2 class=\"c0-title\">快捷键</h2>\n  <button type='button' class=\"c0-close\" aria-label='关闭快捷键'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M2.5 2.5L13.5 13.5' stroke='currentColor'/><path d='M13.5 2.5L2.5 13.5' stroke='currentColor'/></svg></button>\n</header>\n        <div class=\"searchRow\">\n  <div class=\"searchField\" role='search' aria-label='搜索快捷键'>\n    <svg class=\"searchIcon\" width='14' height='14' viewBox='0 0 14 14' fill='none' aria-hidden='true'><path d='M10.28 5.86536C10.28 3.41381 8.29245 1.42644 5.84094 1.42627C3.38929 1.42627 1.40186 3.4137 1.40186 5.86536C1.40203 8.31686 3.38939 10.3044 5.84094 10.3044C8.29234 10.3043 10.2799 8.31676 10.28 5.86536ZM11.4174 5.86536C11.4172 8.94498 8.92057 11.4416 5.84094 11.4418C2.76117 11.4418 0.263843 8.94509 0.263672 5.86536C0.263672 2.78548 2.76106 0.288086 5.84094 0.288086C8.92067 0.288258 11.4174 2.78559 11.4174 5.86536Z' fill='currentColor'/><path d='M13.7372 12.9078L12.9323 13.7127L9.9732 10.7536L10.7781 9.94867L13.7372 12.9078Z' fill='currentColor'/></svg>\n    <input class=\"search\" type='search' aria-label='搜索快捷键' placeholder='搜索快捷键' value=''>\n    \n  </div>\n</div>\n        <div class=\"list\" aria-busy='false'>\n          <section aria-label='应用操作'>\n            <ul class=\"rows\">\n              <li class=\"row\">\n  <button type='button' class=\"rowButton\" aria-label='修改快捷键速查快捷键'></button>\n  <span class=\"commandLabel\">快捷键速查</span>\n  <span class=\"binding\"><span class=\"rowActions\"><svg width='12' height='12' viewBox='0 0 12 12' fill='currentColor' aria-hidden='true'><path d=\"M7.4553 1.01221C8.02829 0.676881 8.73746 0.676959 9.31048 1.01221C9.52928 1.14026 9.72631 1.34353 9.98255 1.59978C10.2388 1.85601 10.4421 2.05305 10.5701 2.27185C10.9053 2.84485 10.9054 3.55407 10.5701 4.12703C10.4421 4.34576 10.2387 4.54293 9.98255 4.7991L4.99422 9.78744C4.71024 10.0714 4.50494 10.2832 4.2488 10.4324C3.99266 10.5815 3.70709 10.6557 3.32001 10.7625L2.43268 11.0072C2.08118 11.1042 1.75876 11.1948 1.50071 11.2265C1.2387 11.2585 0.884455 11.2512 0.607798 10.9745C0.331166 10.6979 0.323805 10.3436 0.35587 10.0816C0.387501 9.82358 0.47815 9.50112 0.575111 9.14964L0.819864 8.26232C0.926638 7.87525 1.00083 7.58966 1.14992 7.33353C1.2991 7.07739 1.5109 6.87209 1.79489 6.58811L6.78322 1.59978C7.03941 1.34359 7.23656 1.14027 7.4553 1.01221ZM11.6568 11.13H5.6639L6.72503 10.0689H11.6568V11.13ZM2.54509 7.33831C2.22348 7.65993 2.13155 7.75784 2.06755 7.86768C2.0036 7.97757 1.96369 8.10606 1.84272 8.54454L1.59797 9.43187C1.5011 9.78304 1.44118 10.0065 1.4162 10.1653C1.57504 10.1404 1.79876 10.0814 2.15046 9.98436L3.03779 9.7396C3.47631 9.61863 3.60475 9.57874 3.71464 9.51478C3.82448 9.45077 3.92239 9.35885 4.24401 9.03723L8.04047 5.23998L6.34155 3.54106L2.54509 7.33831ZM8.77473 1.92824C8.53277 1.78664 8.233 1.78664 7.99104 1.92824C7.91987 1.97 7.83628 2.04713 7.53343 2.34998L7.09176 2.79085L8.79068 4.48977L9.23235 4.0489C9.53517 3.74608 9.61232 3.66245 9.65409 3.59128C9.79567 3.34935 9.79564 3.04954 9.65409 2.8076C9.61237 2.73635 9.53565 2.65329 9.23235 2.34998C8.92899 2.04662 8.84598 1.96995 8.77473 1.92824Z\" /></svg></span><span class=\"keys keyBadge\"><kbd class=\"key\">⌘</kbd><kbd class=\"key\">/</kbd></span></span>\n</li>\n              <li class=\"row\">\n  <button type='button' class=\"rowButton\" aria-label='修改新会话快捷键'></button>\n  <span class=\"commandLabel\">新会话</span>\n  <span class=\"binding\"><span class=\"rowActions\"><svg width='12' height='12' viewBox='0 0 12 12' fill='currentColor' aria-hidden='true'><path d=\"M7.4553 1.01221C8.02829 0.676881 8.73746 0.676959 9.31048 1.01221C9.52928 1.14026 9.72631 1.34353 9.98255 1.59978C10.2388 1.85601 10.4421 2.05305 10.5701 2.27185C10.9053 2.84485 10.9054 3.55407 10.5701 4.12703C10.4421 4.34576 10.2387 4.54293 9.98255 4.7991L4.99422 9.78744C4.71024 10.0714 4.50494 10.2832 4.2488 10.4324C3.99266 10.5815 3.70709 10.6557 3.32001 10.7625L2.43268 11.0072C2.08118 11.1042 1.75876 11.1948 1.50071 11.2265C1.2387 11.2585 0.884455 11.2512 0.607798 10.9745C0.331166 10.6979 0.323805 10.3436 0.35587 10.0816C0.387501 9.82358 0.47815 9.50112 0.575111 9.14964L0.819864 8.26232C0.926638 7.87525 1.00083 7.58966 1.14992 7.33353C1.2991 7.07739 1.5109 6.87209 1.79489 6.58811L6.78322 1.59978C7.03941 1.34359 7.23656 1.14027 7.4553 1.01221ZM11.6568 11.13H5.6639L6.72503 10.0689H11.6568V11.13ZM2.54509 7.33831C2.22348 7.65993 2.13155 7.75784 2.06755 7.86768C2.0036 7.97757 1.96369 8.10606 1.84272 8.54454L1.59797 9.43187C1.5011 9.78304 1.44118 10.0065 1.4162 10.1653C1.57504 10.1404 1.79876 10.0814 2.15046 9.98436L3.03779 9.7396C3.47631 9.61863 3.60475 9.57874 3.71464 9.51478C3.82448 9.45077 3.92239 9.35885 4.24401 9.03723L8.04047 5.23998L6.34155 3.54106L2.54509 7.33831ZM8.77473 1.92824C8.53277 1.78664 8.233 1.78664 7.99104 1.92824C7.91987 1.97 7.83628 2.04713 7.53343 2.34998L7.09176 2.79085L8.79068 4.48977L9.23235 4.0489C9.53517 3.74608 9.61232 3.66245 9.65409 3.59128C9.79567 3.34935 9.79564 3.04954 9.65409 2.8076C9.61237 2.73635 9.53565 2.65329 9.23235 2.34998C8.92899 2.04662 8.84598 1.96995 8.77473 1.92824Z\" /></svg></span><span class=\"keys keyBadge\"><kbd class=\"key\">⌘</kbd><kbd class=\"key\">N</kbd></span></span>\n</li>\n              <li class=\"row\">\n  <button type='button' class=\"rowButton\" aria-label='修改搜索会话快捷键'></button>\n  <span class=\"commandLabel\">搜索会话</span>\n  <span class=\"binding\"><span class=\"rowActions\"><svg width='12' height='12' viewBox='0 0 12 12' fill='currentColor' aria-hidden='true'><path d=\"M7.4553 1.01221C8.02829 0.676881 8.73746 0.676959 9.31048 1.01221C9.52928 1.14026 9.72631 1.34353 9.98255 1.59978C10.2388 1.85601 10.4421 2.05305 10.5701 2.27185C10.9053 2.84485 10.9054 3.55407 10.5701 4.12703C10.4421 4.34576 10.2387 4.54293 9.98255 4.7991L4.99422 9.78744C4.71024 10.0714 4.50494 10.2832 4.2488 10.4324C3.99266 10.5815 3.70709 10.6557 3.32001 10.7625L2.43268 11.0072C2.08118 11.1042 1.75876 11.1948 1.50071 11.2265C1.2387 11.2585 0.884455 11.2512 0.607798 10.9745C0.331166 10.6979 0.323805 10.3436 0.35587 10.0816C0.387501 9.82358 0.47815 9.50112 0.575111 9.14964L0.819864 8.26232C0.926638 7.87525 1.00083 7.58966 1.14992 7.33353C1.2991 7.07739 1.5109 6.87209 1.79489 6.58811L6.78322 1.59978C7.03941 1.34359 7.23656 1.14027 7.4553 1.01221ZM11.6568 11.13H5.6639L6.72503 10.0689H11.6568V11.13ZM2.54509 7.33831C2.22348 7.65993 2.13155 7.75784 2.06755 7.86768C2.0036 7.97757 1.96369 8.10606 1.84272 8.54454L1.59797 9.43187C1.5011 9.78304 1.44118 10.0065 1.4162 10.1653C1.57504 10.1404 1.79876 10.0814 2.15046 9.98436L3.03779 9.7396C3.47631 9.61863 3.60475 9.57874 3.71464 9.51478C3.82448 9.45077 3.92239 9.35885 4.24401 9.03723L8.04047 5.23998L6.34155 3.54106L2.54509 7.33831ZM8.77473 1.92824C8.53277 1.78664 8.233 1.78664 7.99104 1.92824C7.91987 1.97 7.83628 2.04713 7.53343 2.34998L7.09176 2.79085L8.79068 4.48977L9.23235 4.0489C9.53517 3.74608 9.61232 3.66245 9.65409 3.59128C9.79567 3.34935 9.79564 3.04954 9.65409 2.8076C9.61237 2.73635 9.53565 2.65329 9.23235 2.34998C8.92899 2.04662 8.84598 1.96995 8.77473 1.92824Z\" /></svg></span><span class=\"keys keyBadge\"><kbd class=\"key\">⌘</kbd><kbd class=\"key\">K</kbd></span></span>\n</li>\n              <li class=\"row\">\n  <button type='button' class=\"rowButton\" aria-label='修改添加工作区快捷键'></button>\n  <span class=\"commandLabel\">添加工作区</span>\n  <span class=\"binding\"><span class=\"rowActions\"><svg width='12' height='12' viewBox='0 0 12 12' fill='currentColor' aria-hidden='true'><path d=\"M7.4553 1.01221C8.02829 0.676881 8.73746 0.676959 9.31048 1.01221C9.52928 1.14026 9.72631 1.34353 9.98255 1.59978C10.2388 1.85601 10.4421 2.05305 10.5701 2.27185C10.9053 2.84485 10.9054 3.55407 10.5701 4.12703C10.4421 4.34576 10.2387 4.54293 9.98255 4.7991L4.99422 9.78744C4.71024 10.0714 4.50494 10.2832 4.2488 10.4324C3.99266 10.5815 3.70709 10.6557 3.32001 10.7625L2.43268 11.0072C2.08118 11.1042 1.75876 11.1948 1.50071 11.2265C1.2387 11.2585 0.884455 11.2512 0.607798 10.9745C0.331166 10.6979 0.323805 10.3436 0.35587 10.0816C0.387501 9.82358 0.47815 9.50112 0.575111 9.14964L0.819864 8.26232C0.926638 7.87525 1.00083 7.58966 1.14992 7.33353C1.2991 7.07739 1.5109 6.87209 1.79489 6.58811L6.78322 1.59978C7.03941 1.34359 7.23656 1.14027 7.4553 1.01221ZM11.6568 11.13H5.6639L6.72503 10.0689H11.6568V11.13ZM2.54509 7.33831C2.22348 7.65993 2.13155 7.75784 2.06755 7.86768C2.0036 7.97757 1.96369 8.10606 1.84272 8.54454L1.59797 9.43187C1.5011 9.78304 1.44118 10.0065 1.4162 10.1653C1.57504 10.1404 1.79876 10.0814 2.15046 9.98436L3.03779 9.7396C3.47631 9.61863 3.60475 9.57874 3.71464 9.51478C3.82448 9.45077 3.92239 9.35885 4.24401 9.03723L8.04047 5.23998L6.34155 3.54106L2.54509 7.33831ZM8.77473 1.92824C8.53277 1.78664 8.233 1.78664 7.99104 1.92824C7.91987 1.97 7.83628 2.04713 7.53343 2.34998L7.09176 2.79085L8.79068 4.48977L9.23235 4.0489C9.53517 3.74608 9.61232 3.66245 9.65409 3.59128C9.79567 3.34935 9.79564 3.04954 9.65409 2.8076C9.61237 2.73635 9.53565 2.65329 9.23235 2.34998C8.92899 2.04662 8.84598 1.96995 8.77473 1.92824Z\" /></svg></span><span class=\"keys keyBadge\"><kbd class=\"key\">⌘</kbd><kbd class=\"key\">O</kbd></span></span>\n</li>\n            </ul>\n          </section>\n          <section aria-label='菜单与弹层'>\n            <h3 class=\"group\">菜单与弹层</h3>\n            <ul class=\"rows\">\n              <li class=\"row\">\n  <span class=\"commandLabel\">移动菜单选择</span>\n  <span class=\"binding\"><span class=\"keys fixedKeyBadge\"><kbd class=\"key\">↑</kbd><kbd class=\"key\">↓</kbd></span></span>\n</li>\n              <li class=\"row\">\n  <span class=\"commandLabel\">选择菜单项</span>\n  <span class=\"binding\"><span class=\"keys fixedKeyBadge\"><kbd class=\"key\">Enter</kbd></span></span>\n</li>\n              <li class=\"row\">\n  <span class=\"commandLabel\">关闭菜单或顶层弹窗</span>\n  <span class=\"binding\"><span class=\"keys fixedKeyBadge\"><kbd class=\"key\">Esc</kbd></span></span>\n</li>\n            </ul>\n          </section>\n        </div>\n        <footer class=\"c0-footer\">\n  <button type='button' class=\"resetAll\" disabled><svg width='12' height='12' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M14.5001 8C14.5 9.28552 14.1188 10.5422 13.4045 11.611C12.6903 12.6799 11.6752 13.5129 10.4875 14.0049C9.29982 14.4968 7.99295 14.6255 6.73212 14.3747C5.4713 14.124 4.31314 13.505 3.4041 12.596C2.49514 11.687 1.87614 10.5288 1.62537 9.26798C1.37459 8.00716 1.50331 6.70028 1.99525 5.51261C2.48719 4.32494 3.32025 3.30981 4.3891 2.59557C5.45795 1.88134 6.71458 1.50008 8.0001 1.5C9.9001 1.5 11.7001 2.3 13.0001 3.6L14.5001 5.1' stroke='currentColor'/><path d='M14.4999 1.5V5.1H10.8999' stroke='currentColor'/></svg>恢复全部默认</button>\n  \n</footer>\n      </div>\n    </div>\n  </div>\n</div>"
+        },
+        {
+          "label": "编辑态：一行展开为行内录键器，搜索框带清空钮",
+          "note": "正在编辑的那一行把键帽换成 <code>ShortcutEditor</code>；搜索框有内容时才出现 <code>.clearSearch</code> 圆钮。",
+          "css": "/* 静态快照：Modal 的 .root 在真实产品里是 portal 到 body 的 fixed 全屏层，这里改回文档流内的相对定位，\n   留住它作为 .mask 绝对定位子层的包含块；高度由示例框给定，卡片自己的 600px 高度不变。 */\n.root.snapshotStatic { position: relative; inset: auto; }",
+          "html": "<div style='width:520px'>\n  <div class=\"root snapshotStatic\" style='height:600px' role='presentation'>\n    <div class=\"mask\" aria-hidden='true'></div>\n    <div class=\"dialog\" tabindex='-1' data-shortcut-modal='shortcuts' role='dialog' aria-modal='true' aria-label='快捷键'>\n      <div class=\"contents\"><header class=\"c0-header\">\n  <h2 class=\"c0-title\">快捷键</h2>\n  <button type='button' class=\"c0-close\" aria-label='关闭快捷键'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M2.5 2.5L13.5 13.5' stroke='currentColor'/><path d='M13.5 2.5L2.5 13.5' stroke='currentColor'/></svg></button>\n</header>\n        <div class=\"searchRow\">\n  <div class=\"searchField\" role='search' aria-label='搜索快捷键'>\n    <svg class=\"searchIcon\" width='14' height='14' viewBox='0 0 14 14' fill='none' aria-hidden='true'><path d='M10.28 5.86536C10.28 3.41381 8.29245 1.42644 5.84094 1.42627C3.38929 1.42627 1.40186 3.4137 1.40186 5.86536C1.40203 8.31686 3.38939 10.3044 5.84094 10.3044C8.29234 10.3043 10.2799 8.31676 10.28 5.86536ZM11.4174 5.86536C11.4172 8.94498 8.92057 11.4416 5.84094 11.4418C2.76117 11.4418 0.263843 8.94509 0.263672 5.86536C0.263672 2.78548 2.76106 0.288086 5.84094 0.288086C8.92067 0.288258 11.4174 2.78559 11.4174 5.86536Z' fill='currentColor'/><path d='M13.7372 12.9078L12.9323 13.7127L9.9732 10.7536L10.7781 9.94867L13.7372 12.9078Z' fill='currentColor'/></svg>\n    <input class=\"search\" type='search' aria-label='搜索快捷键' placeholder='搜索快捷键' value='会话'>\n    <button type='button' class=\"clearSearch\" aria-label='清空搜索'><svg width='10' height='10' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M2.5 2.5L13.5 13.5' stroke='currentColor'/><path d='M13.5 2.5L2.5 13.5' stroke='currentColor'/></svg></button>\n  </div>\n</div>\n        <div class=\"list\" aria-busy='false'>\n          <section aria-label='应用操作'>\n            <ul class=\"rows\">\n              <li class=\"row\">\n  <button type='button' class=\"rowButton\" aria-label='修改新会话快捷键'></button>\n  <span class=\"commandLabel\">新会话</span>\n  <span class=\"binding\"><span class=\"rowActions\"><svg width='12' height='12' viewBox='0 0 12 12' fill='currentColor' aria-hidden='true'><path d=\"M7.4553 1.01221C8.02829 0.676881 8.73746 0.676959 9.31048 1.01221C9.52928 1.14026 9.72631 1.34353 9.98255 1.59978C10.2388 1.85601 10.4421 2.05305 10.5701 2.27185C10.9053 2.84485 10.9054 3.55407 10.5701 4.12703C10.4421 4.34576 10.2387 4.54293 9.98255 4.7991L4.99422 9.78744C4.71024 10.0714 4.50494 10.2832 4.2488 10.4324C3.99266 10.5815 3.70709 10.6557 3.32001 10.7625L2.43268 11.0072C2.08118 11.1042 1.75876 11.1948 1.50071 11.2265C1.2387 11.2585 0.884455 11.2512 0.607798 10.9745C0.331166 10.6979 0.323805 10.3436 0.35587 10.0816C0.387501 9.82358 0.47815 9.50112 0.575111 9.14964L0.819864 8.26232C0.926638 7.87525 1.00083 7.58966 1.14992 7.33353C1.2991 7.07739 1.5109 6.87209 1.79489 6.58811L6.78322 1.59978C7.03941 1.34359 7.23656 1.14027 7.4553 1.01221ZM11.6568 11.13H5.6639L6.72503 10.0689H11.6568V11.13ZM2.54509 7.33831C2.22348 7.65993 2.13155 7.75784 2.06755 7.86768C2.0036 7.97757 1.96369 8.10606 1.84272 8.54454L1.59797 9.43187C1.5011 9.78304 1.44118 10.0065 1.4162 10.1653C1.57504 10.1404 1.79876 10.0814 2.15046 9.98436L3.03779 9.7396C3.47631 9.61863 3.60475 9.57874 3.71464 9.51478C3.82448 9.45077 3.92239 9.35885 4.24401 9.03723L8.04047 5.23998L6.34155 3.54106L2.54509 7.33831ZM8.77473 1.92824C8.53277 1.78664 8.233 1.78664 7.99104 1.92824C7.91987 1.97 7.83628 2.04713 7.53343 2.34998L7.09176 2.79085L8.79068 4.48977L9.23235 4.0489C9.53517 3.74608 9.61232 3.66245 9.65409 3.59128C9.79567 3.34935 9.79564 3.04954 9.65409 2.8076C9.61237 2.73635 9.53565 2.65329 9.23235 2.34998C8.92899 2.04662 8.84598 1.96995 8.77473 1.92824Z\" /></svg></span><span class=\"keys keyBadge\"><kbd class=\"key\">⌘</kbd><kbd class=\"key\">N</kbd></span></span>\n</li>\n              <li class=\"row\">\n  <span class=\"commandLabel\">搜索会话</span>\n  <span class=\"binding\"><div class=\"inlineEditor\" role='group' aria-label='搜索会话' data-shortcut-modal='shortcut-edit'>\n                  <div class=\"inlineControls\">\n                    <button type='button' class=\"inlineAction\">恢复默认</button>\n                    <button type='button' class=\"inlineAction\">移除</button>\n                    <button type='button' class=\"recorder\" aria-label='按下快捷键' aria-invalid='false'><span class=\"keys recorded\"><kbd class=\"key\">⌘</kbd><kbd class=\"key\">J</kbd></span></button>\n                  </div>\n                  <span class=\"srOnly\"></span>\n                </div></span>\n</li>\n              <li class=\"row\">\n  <button type='button' class=\"rowButton\" aria-label='修改重命名会话快捷键'></button>\n  <span class=\"commandLabel\">重命名会话</span>\n  <span class=\"binding\"><span class=\"rowActions\"><svg width='12' height='12' viewBox='0 0 12 12' fill='currentColor' aria-hidden='true'><path d=\"M7.4553 1.01221C8.02829 0.676881 8.73746 0.676959 9.31048 1.01221C9.52928 1.14026 9.72631 1.34353 9.98255 1.59978C10.2388 1.85601 10.4421 2.05305 10.5701 2.27185C10.9053 2.84485 10.9054 3.55407 10.5701 4.12703C10.4421 4.34576 10.2387 4.54293 9.98255 4.7991L4.99422 9.78744C4.71024 10.0714 4.50494 10.2832 4.2488 10.4324C3.99266 10.5815 3.70709 10.6557 3.32001 10.7625L2.43268 11.0072C2.08118 11.1042 1.75876 11.1948 1.50071 11.2265C1.2387 11.2585 0.884455 11.2512 0.607798 10.9745C0.331166 10.6979 0.323805 10.3436 0.35587 10.0816C0.387501 9.82358 0.47815 9.50112 0.575111 9.14964L0.819864 8.26232C0.926638 7.87525 1.00083 7.58966 1.14992 7.33353C1.2991 7.07739 1.5109 6.87209 1.79489 6.58811L6.78322 1.59978C7.03941 1.34359 7.23656 1.14027 7.4553 1.01221ZM11.6568 11.13H5.6639L6.72503 10.0689H11.6568V11.13ZM2.54509 7.33831C2.22348 7.65993 2.13155 7.75784 2.06755 7.86768C2.0036 7.97757 1.96369 8.10606 1.84272 8.54454L1.59797 9.43187C1.5011 9.78304 1.44118 10.0065 1.4162 10.1653C1.57504 10.1404 1.79876 10.0814 2.15046 9.98436L3.03779 9.7396C3.47631 9.61863 3.60475 9.57874 3.71464 9.51478C3.82448 9.45077 3.92239 9.35885 4.24401 9.03723L8.04047 5.23998L6.34155 3.54106L2.54509 7.33831ZM8.77473 1.92824C8.53277 1.78664 8.233 1.78664 7.99104 1.92824C7.91987 1.97 7.83628 2.04713 7.53343 2.34998L7.09176 2.79085L8.79068 4.48977L9.23235 4.0489C9.53517 3.74608 9.61232 3.66245 9.65409 3.59128C9.79567 3.34935 9.79564 3.04954 9.65409 2.8076C9.61237 2.73635 9.53565 2.65329 9.23235 2.34998C8.92899 2.04662 8.84598 1.96995 8.77473 1.92824Z\" /></svg></span><span class=\"keys keyBadge\"><kbd class=\"key\">⌘</kbd><kbd class=\"key\">⌥</kbd><kbd class=\"key\">G</kbd></span></span>\n</li>\n            </ul>\n          </section>\n        </div>\n        <footer class=\"c0-footer\">\n  <button type='button' class=\"resetAll\"><svg width='12' height='12' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M14.5001 8C14.5 9.28552 14.1188 10.5422 13.4045 11.611C12.6903 12.6799 11.6752 13.5129 10.4875 14.0049C9.29982 14.4968 7.99295 14.6255 6.73212 14.3747C5.4713 14.124 4.31314 13.505 3.4041 12.596C2.49514 11.687 1.87614 10.5288 1.62537 9.26798C1.37459 8.00716 1.50331 6.70028 1.99525 5.51261C2.48719 4.32494 3.32025 3.30981 4.3891 2.59557C5.45795 1.88134 6.71458 1.50008 8.0001 1.5C9.9001 1.5 11.7001 2.3 13.0001 3.6L14.5001 5.1' stroke='currentColor'/><path d='M14.4999 1.5V5.1H10.8999' stroke='currentColor'/></svg>恢复全部默认</button>\n  <span class=\"modifiedCount\">2 项已自定义</span>\n</footer>\n      </div>\n    </div>\n  </div>\n</div>"
+        },
+        {
+          "label": "搜不到：.hint 兜底一行",
+          "note": "匹配为空时列表里只留一行 12px 三级灰的 <code>.hint</code>；页脚的计数与「恢复全部默认」照常反映自定义项数量。",
+          "css": "/* 静态快照：Modal 的 .root 在真实产品里是 portal 到 body 的 fixed 全屏层，这里改回文档流内的相对定位，\n   留住它作为 .mask 绝对定位子层的包含块；高度由示例框给定，卡片自己的 600px 高度不变。 */\n.root.snapshotStatic { position: relative; inset: auto; }",
+          "html": "<div style='width:520px'>\n  <div class=\"root snapshotStatic\" style='height:320px' role='presentation'>\n    <div class=\"mask\" aria-hidden='true'></div>\n    <div class=\"dialog\" tabindex='-1' data-shortcut-modal='shortcuts' role='dialog' aria-modal='true' aria-label='快捷键'>\n      <div class=\"contents\"><header class=\"c0-header\">\n  <h2 class=\"c0-title\">快捷键</h2>\n  <button type='button' class=\"c0-close\" aria-label='关闭快捷键'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M2.5 2.5L13.5 13.5' stroke='currentColor'/><path d='M13.5 2.5L2.5 13.5' stroke='currentColor'/></svg></button>\n</header>\n        <div class=\"searchRow\">\n  <div class=\"searchField\" role='search' aria-label='搜索快捷键'>\n    <svg class=\"searchIcon\" width='14' height='14' viewBox='0 0 14 14' fill='none' aria-hidden='true'><path d='M10.28 5.86536C10.28 3.41381 8.29245 1.42644 5.84094 1.42627C3.38929 1.42627 1.40186 3.4137 1.40186 5.86536C1.40203 8.31686 3.38939 10.3044 5.84094 10.3044C8.29234 10.3043 10.2799 8.31676 10.28 5.86536ZM11.4174 5.86536C11.4172 8.94498 8.92057 11.4416 5.84094 11.4418C2.76117 11.4418 0.263843 8.94509 0.263672 5.86536C0.263672 2.78548 2.76106 0.288086 5.84094 0.288086C8.92067 0.288258 11.4174 2.78559 11.4174 5.86536Z' fill='currentColor'/><path d='M13.7372 12.9078L12.9323 13.7127L9.9732 10.7536L10.7781 9.94867L13.7372 12.9078Z' fill='currentColor'/></svg>\n    <input class=\"search\" type='search' aria-label='搜索快捷键' placeholder='搜索快捷键' value='zzz'>\n    <button type='button' class=\"clearSearch\" aria-label='清空搜索'><svg width='10' height='10' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M2.5 2.5L13.5 13.5' stroke='currentColor'/><path d='M13.5 2.5L2.5 13.5' stroke='currentColor'/></svg></button>\n  </div>\n</div>\n        <div class=\"list\" aria-busy='false'>\n          <p class=\"hint\" role='status'>没有匹配的快捷键</p>\n        </div>\n        <footer class=\"c0-footer\">\n  <button type='button' class=\"resetAll\"><svg width='12' height='12' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M14.5001 8C14.5 9.28552 14.1188 10.5422 13.4045 11.611C12.6903 12.6799 11.6752 13.5129 10.4875 14.0049C9.29982 14.4968 7.99295 14.6255 6.73212 14.3747C5.4713 14.124 4.31314 13.505 3.4041 12.596C2.49514 11.687 1.87614 10.5288 1.62537 9.26798C1.37459 8.00716 1.50331 6.70028 1.99525 5.51261C2.48719 4.32494 3.32025 3.30981 4.3891 2.59557C5.45795 1.88134 6.71458 1.50008 8.0001 1.5C9.9001 1.5 11.7001 2.3 13.0001 3.6L14.5001 5.1' stroke='currentColor'/><path d='M14.4999 1.5V5.1H10.8999' stroke='currentColor'/></svg>恢复全部默认</button>\n  <span class=\"modifiedCount\">2 项已自定义</span>\n</footer>\n      </div>\n    </div>\n  </div>\n</div>"
+        },
+        {
+          "label": "保存成功：Toast 横幅（success 字形 + 已修改）",
+          "note": "静态快照：Toast 真实渲染由门户挂到 body，<code>position: fixed</code> 并有滑入与 hold 后 1s 淡出的动画；这里拉回文档流并停掉动画，配色与尺寸仍走真实样式表。",
+          "css": "/* 静态快照：Toast 由 createPortal 挂到 body，position: fixed; top: 40px; left: 50%; translateX(-50%)，\n   并在 3s 保持后开始 1s 淡出；这里改回文档流内的相对定位、取消位移与动画，让它在示例框里保持可见。 */\n.toast.snapshotStatic { position: relative; inset: auto; transform: none; animation: none; width: max-content; max-width: 100%; }",
+          "html": "<div style='width:520px'><div class=\"toast snapshotStatic\" role='alert'>\n  <span class=\"icon\" aria-hidden='true'><svg width='16' height='16' viewBox='0 0 16 16' fill='currentColor' class=\"toastSuccess\" aria-hidden='true'><path d=\"M12.5303 6.53027L8.80273 10.2578C8.54967 10.5109 8.31796 10.7439 8.10645 10.9141C7.88375 11.0932 7.616 11.2602 7.27344 11.3145C7.09229 11.3431 6.90771 11.3431 6.72656 11.3145C6.384 11.2602 6.11625 11.0932 5.89355 10.9141C5.68204 10.7439 5.45033 10.5109 5.19727 10.2578L3.46973 8.53027L4.53027 7.46973L6.25781 9.19727C6.53457 9.47402 6.70036 9.63859 6.83398 9.74609C6.95637 9.84453 6.98241 9.83644 6.96094 9.83301C6.98679 9.83709 7.01321 9.83709 7.03906 9.83301C7.01759 9.83644 7.04363 9.84453 7.16602 9.74609C7.29964 9.63859 7.46543 9.47402 7.74219 9.19727L11.4697 5.46973L12.5303 6.53027Z\" /><path d=\"M14.5996 8C14.5996 4.35492 11.6451 1.40039 8 1.40039C4.35492 1.40039 1.40039 4.35492 1.40039 8C1.40039 11.6451 4.35492 14.5996 8 14.5996C11.6451 14.5996 14.5996 11.6451 14.5996 8ZM15.9004 8C15.9004 12.363 12.363 15.9004 8 15.9004C3.63695 15.9004 0.0996094 12.363 0.0996094 8C0.0996094 3.63695 3.63695 0.0996094 8 0.0996094C12.363 0.0996094 15.9004 3.63695 15.9004 8Z\" /></svg></span>\n  <span class=\"text\">已修改</span>\n</div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "useStore",
+          "type": "PropsStore<ReturnType<typeof createShortcutsStore>>['useStore']",
+          "default": "—",
+          "desc": "速查自己的状态：<code>open</code>、搜索 <code>query</code> 与 <code>focusRequest</code>（用于把焦点交给搜索框）。"
+        },
+        {
+          "name": "actions",
+          "type": "PropsRuntime<'shell.overlay'>['actions']",
+          "default": "—",
+          "desc": "槽动作：<code>close()</code> 关对话框、<code>search(text)</code> 写入查询。"
+        },
+        {
+          "name": "useCatalog / useConfig / useFixedCatalog",
+          "type": "ObservableSnapshot 选择器",
+          "default": "—",
+          "desc": "有效目录（可编辑命令）、配置（revision/status/document.profiles）与固定组合，用于排序、搜索命名、计数与只读判定。"
+        },
+        {
+          "name": "platform / runtime",
+          "type": "ShortcutPlatform / Shortcuts['runtime']",
+          "default": "—",
+          "desc": "决定键帽呈现与「当前平台」的 profile 键（<code>runtime:platform</code>），计数只数这个 profile。"
+        },
+        {
+          "name": "edit / recording / describeBinding",
+          "type": "Shortcuts 的对应成员",
+          "default": "—",
+          "desc": "写入、录键开关与绑定描述；除 <code>edit</code> 被包一层 <code>busy</code> 外原样传给行内编辑器。"
+        },
+        {
+          "name": "t",
+          "type": "PropsLocale<'shortcuts'>['t']",
+          "default": "—",
+          "desc": "字典：标题、搜索与清空、四个分组名、未绑定与空结果、恢复全部默认与计数、以及各种失败文案。"
+        }
+      ],
+      "notes": "排序是三层：固定组合排最后（<code>response.stop</code> 之前先让位），其余先按 <code>coreActionOrder</code> 里 20 个核心命令的产品顺序，再按 id 字典序；一旦有搜索词，相关度排名（<code>rankByName</code>：忽略大小写的有序子序列、前缀命中优先）压过上面两层。搜索会同时匹配命令名、别名、键帽字符串与 <code>aria</code>（含把 Meta 写成 Cmd 的变体）。对话框整体是 <code>headless</code> 的 <code>Modal</code>：遮罩、Esc、<code>aria-modal</code> 与「点击遮罩关闭」由 Modal 提供，标题栏、搜索行、列表与页脚由本组件自绘。恢复全部默认要过一道确认弹窗（本条目未截）；行内编辑期间点击行外空白会先关掉编辑器而不是关对话框。成功／失败反馈走 <code>Toast</code>，成功时用 <code>ShortcutIcon kind='success'</code>（绿色），失败时用 <code>error</code> 字形（警告色）。",
+      "keywords": [
+        "快捷键速查",
+        "快捷键面板",
+        "恢复全部默认",
+        "keyboard shortcuts",
+        "shell.overlay",
+        "键位"
+      ]
+    },
+    {
+      "id": "skill-reference",
+      "name": "SkillReference",
+      "exportName": "SkillReference",
+      "zh": "技能引用",
+      "group": "settings",
+      "summary": "已发送用户文本里的 <code>/技能名</code> 引用节点：渲染成 ui-primitives 的 <code>ReferenceChip appearance=\"skill\"</code>——只显示 <code>/</code> 加名字（技能引用不带字形），<code>title</code> 保留用户原始拼写。芯片是 <code>.refChip.slashChip</code>：<code>display:inline</code> 与宿主行盒共用基线、左右各 2px 外边距、500 字重，颜色是 <code>--dsw-alias-state-business-primary</code>，等宽只由 <code>.slashChip</code> 加上（<code>--dsw-font-markdown-code-font-family</code>）。交互模式下额外叠一层 <code>.fileMention</code>：颜色切到 <code>--dsw-alias-link</code>、悬停或聚焦才画虚线下划线，单击请会话把该技能的 SKILL.md 在右侧栏打开。",
+      "source": "packages/client/ui-skill/src/client/SkillReference.tsx#L21",
+      "css": [
+        "packages/client/ui-primitives/src/user-text.module.css",
+        "packages/client/ui-primitives/src/markdown/MarkdownText.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-link",
+        "--dsw-alias-state-business-primary",
+        "--dsw-font-markdown-code-font-family"
+      ],
+      "specimens": [
+        {
+          "label": "可交互芯片：button + .fileMention",
+          "note": "发出去的文本里点技能引用走的就是这条路：芯片是 <code>button</code>，颜色走链接蓝，悬停才出现虚线下划线；双击与「存在选区」的单击被守卫掉，不会误触预览。",
+          "html": "<div style='width:520px'><span class=\"plainRun\">用 </span><button type='button' class=\"refChip slashChip fileMention\" data-ref-chip='skill' title='/office-pptx'>/office-pptx</button><span class=\"plainRun\"> 把 skill-office 里的能力整理成一页说明，顺便核对 </span><button type='button' class=\"refChip slashChip fileMention\" data-ref-chip='skill' title='/dsh-code-review'>/dsh-code-review</button><span class=\"plainRun\"> 的检查项。</span></div>"
+        },
+        {
+          "label": "只读芯片：没有 interactive 时退回 span",
+          "note": "预览、队列行这类地方传不到交互标记，芯片就只是文本：颜色留在业务蓝，点不动，也不会触发技能预览。",
+          "html": "<div style='width:520px'><span class=\"plainRun\">队列预览：用 </span><span class=\"refChip slashChip\" data-ref-chip='skill' title='/office-pptx'>/office-pptx</span><span class=\"plainRun\"> 生成季度汇报（等待发送）</span></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "node",
+          "type": "UserTextNodeProps<'skill'>['node']",
+          "default": "—",
+          "desc": "解析出的技能节点：<code>start</code> / <code>end</code> 与 <code>data: { name }</code>——name 已剥掉前导斜杠，渲染时再加回 <code>/</code>。"
+        },
+        {
+          "name": "raw",
+          "type": "string",
+          "default": "—",
+          "desc": "原文里的完整拼写，只作为芯片的 <code>title</code>，不改变显示文本。"
+        },
+        {
+          "name": "interactive",
+          "type": "boolean",
+          "default": "false",
+          "desc": "为 true 时才接上 <code>onActivate</code>，芯片从 <code>span</code> 变成 <code>button</code> 并叠加 <code>.fileMention</code>。"
+        },
+        {
+          "name": "openSkill",
+          "type": "(name: string) => void",
+          "default": "—",
+          "desc": "注入的会话级动作：按技能名请求预览；由 <code>conversation.user.text.node</code> 的 <code>skill</code> 键注入，会话作用域不在时为空操作。"
+        }
+      ],
+      "notes": "匹配规则在 <code>user-text-rules.ts</code>：只认「非空白 + <code>/名字</code> + 非空白」这种独立 token，而且名字必须出现在本会话技能目录的已确认清单里（<code>context.read('skillNames')</code>），所以随手打的斜杠单词不会变芯片。点击后走 <code>openReference</code>：先在已落定的目录里找 <code>path</code>，再用 <code>sidebarRight.openResource</code> 打开该 SKILL.md；这不是「执行技能」——真正的加载由模型调用 <code>skill</code> 工具完成。子会话里这个引用源直接返回 false，技能引用不会在子智能体会话里打开预览。",
+      "keywords": [
+        "技能引用",
+        "斜杠技能",
+        "skill chip",
+        "/skill",
+        "skill reference",
+        "reference chip"
+      ]
+    },
+    {
+      "id": "skill-row",
+      "name": "SkillRow",
+      "exportName": "SkillRow",
+      "zh": "技能工具行",
+      "group": "settings",
+      "summary": "<code>skill</code> 工具调用的专用行视图：一行 24px 高（随字号设置浮动的 <code>--dsh-content-font-delta</code>）的强调摘要——16px 的字形位 + 13px「加载技能」+ 一个 2×2 的 <code>--dsw-alias-label-caption</code> 圆点 + 13px 技能名（超出省略号），运行时整行套一层 <code>TextShimmer</code> 扫光、静止时是三级灰、悬停升到二级灰。展开体是 <code>.instructionsCard</code>：11px 大写的「说明」头条、<code>--dsw-alias-markdown-code-block</code> 底、<code>--dsw-radius-lg</code> 圆角、最高 260px 的 <code>pre</code>（用 <code>--dsw-font-markdown-code-block-small</code>），下面一枚悬停才现形的「查看」药丸。",
+      "source": "packages/client/ui-skill/src/client/SkillRow.tsx#L102",
+      "css": [
+        "packages/client/ui-skill/src/client/SkillRow.module.css",
+        "packages/client/ui-primitives/src/TextShimmer.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-base",
+        "--dsw-alias-border-l1",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l4",
+        "--dsw-alias-interactive-bg-hover-solid",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-shimmer",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-markdown-code-block",
+        "--dsw-alias-markdown-code-block-banner",
+        "--dsw-alias-state-error-primary",
+        "--dsw-alias-state-warn-label",
+        "--dsw-font-markdown-code-block-small",
+        "--dsw-radius-lg",
+        "--dsw-radius-sm"
+      ],
+      "specimens": [
+        {
+          "label": "运行中：扫光掠过「加载技能」与技能名",
+          "note": "扫光由 <code>TextShimmer</code> 的两层同步位移组成（<code>.sweep</code> 的低亮副本 + <code>.highlight</code> 的高亮副本），这里连同那份 <code>aria-hidden</code> 的装饰层一起静态渲染；<code>prefers-reduced-motion</code> 下样式表会把装饰层直接隐藏。",
+          "html": "<div style='width:640px'><div class=\"card\" data-tool='skill' data-state='running'>\n  <div class=\"row\">\n    <span class=\"leading\"><svg width='14' height='14' viewBox='0 0 17 17' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4.57788 5.77124H10.7029' stroke='currentColor'/><path d='M4.57788 8.89819H7.91879' stroke='currentColor'/><path d='M12.1404 1.19446C12.9442 1.19446 13.6404 1.81999 13.6404 2.64465V8.89856H12.6404V2.64465C12.6404 2.42015 12.4411 2.19446 12.1404 2.19446H3.14038C2.83968 2.19446 2.64038 2.42015 2.64038 2.64465V13.0929C2.64082 13.3172 2.84001 13.5421 3.14038 13.5421H8.88159V14.5421H3.14038C2.33675 14.5421 1.6408 13.9172 1.64038 13.0929V2.64465C1.64038 1.81999 2.33651 1.19446 3.14038 1.19446H12.1404Z' fill='currentColor'/><path d='M12.0051 15.1056C12.0051 13.6395 10.8166 12.451 9.35059 12.451C10.8166 12.451 12.0051 11.2626 12.0051 9.79651C12.0051 11.2626 13.1936 12.451 14.6597 12.451C13.1936 12.451 12.0051 13.6395 12.0051 15.1056Z' stroke='currentColor'/></svg></span>\n    <span class=\"visuallyHidden\">正在加载 skill</span>\n    <span class=\"root\" data-shimmer='true'>\n      <span class=\"content\"><span class=\"title\"><span class=\"text\">加载技能</span></span>\n      <span class=\"separator\" data-shimmer-decoration='true' aria-hidden='true'></span>\n      <span class=\"summary\"><span class=\"text\">editing-cordis-compositions</span></span></span>\n      <span class=\"decoration\" aria-hidden='true' inert=''>\n        <span class=\"sweep\">\n          <span class=\"content highlight\"><span class=\"title\"><span class=\"text\" data-shimmer-text='加载技能'></span></span><span class=\"separator\" data-shimmer-decoration='true' aria-hidden='true'></span><span class=\"summary\"><span class=\"text\" data-shimmer-text='editing-cordis-compositions'></span></span></span>\n        </span>\n      </span>\n    </span>\n  </div>\n  \n</div></div>"
+        },
+        {
+          "label": "已展开：说明卡 + 悬停才现形的「查看」药丸",
+          "note": "悬停模拟：把 <code>.card:hover .inspectButton</code> 这条真实规则搬到展开体上；展开时左侧换成常显的向下 chevron（<code>role=\"button\"</code>、<code>aria-expanded=\"true\"</code>）。",
+          "css": "/* 悬停模拟：真实规则是 .card:hover .inspectButton 与 .inspectButton:focus-visible 把药丸从 opacity: 0 抬到 1。 */\n.card.forceHover .inspectButton { opacity: 1; }",
+          "html": "<div style='width:640px'><div class=\"card forceHover\" data-tool='skill' data-state='ok'>\n  <div class=\"row\" data-expandable='true' role='button' tabindex='0' aria-expanded='true'>\n    <span class=\"leading\"><svg class=\"chevron\" width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></span>\n    \n    <span class=\"root\">\n      <span class=\"content\"><span class=\"title\"><span class=\"text\">加载技能</span></span>\n      <span class=\"separator\" data-shimmer-decoration='true' aria-hidden='true'></span>\n      <span class=\"summary\"><span class=\"text\">editing-cordis-compositions</span></span></span>\n      \n    </span>\n  </div>\n  <div class=\"bodyWrap\">\n    <section class=\"instructionsCard\" aria-label='说明'>\n      <div class=\"instructionsHeader\">说明</div>\n      <pre class=\"instructions\">&lt;skill_content name=\"editing-cordis-compositions\"&gt;\n&lt;skill_resources&gt;\nBase directory for this skill: /home/lk/deepseek-harness/.dsh/skills/editing-cordis-compositions\nResolve relative paths mentioned by this skill against the base directory before using them. Load referenced resources only as needed.\n&lt;/skill_resources&gt;\n\n&lt;skill_instructions&gt;\n# Editing Cordis compositions\n\nAgent presets are ordinary declarations carried by bundle patches. Nothing edits a declaration in place: a preset is created or changed by installing a bundle whose patch declares or overrides it.</pre>\n    </section>\n    <button type='button' class=\"inspectButton\"><svg width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4.67398 4.25061L1.36094 7.86484C1.29085 7.9413 1.29085 8.05866 1.36094 8.13513L4.67398 11.7494' stroke='currentColor'/><path d='M11.3262 4.25061L14.6392 7.86484C14.7093 7.9413 14.7093 8.05866 14.6392 8.13513L11.3262 11.7494' stroke='currentColor'/><path d='M9.56222 3.62573L6.43774 12.3743' stroke='currentColor'/></svg>查看</button>\n  </div>\n</div></div>"
+        },
+        {
+          "label": "加载失败与中途停止：错误红摘要 / 中止黄摘要",
+          "note": "失败时摘要换成输出第一行并染 <code>--dsw-alias-state-error-primary</code>，展开的 <code>pre</code> 也走 <code>[data-error]</code> 红字；被中断的一次摘要固定是「skill 加载已中止」、染 <code>--dsw-alias-state-warn-label</code>，而且没有展开体（拿不到输出）。",
+          "html": "<div style='width:640px;display:flex;flex-direction:column;gap:16px'>\n  <div class=\"card\" data-tool='skill' data-state='error'>\n  <div class=\"row\" data-expandable='true' role='button' tabindex='0' aria-expanded='true'>\n    <span class=\"leading\"><svg class=\"chevron\" width='14' height='14' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'/></svg></span>\n    \n    <span class=\"root\">\n      <span class=\"content\"><span class=\"title\"><span class=\"text\">加载技能</span></span>\n      <span class=\"separator\" data-shimmer-decoration='true' aria-hidden='true'></span>\n      <span class=\"summary errorSummary\"><span class=\"text\">skill &quot;office-pptx&quot; is unknown or no longer available</span></span></span>\n      \n    </span>\n  </div>\n  <div class=\"bodyWrap\">\n    <section class=\"instructionsCard\" aria-label='说明'>\n      <div class=\"instructionsHeader\">说明</div>\n      <pre class=\"instructions\" data-error='true'>skill &quot;office-pptx&quot; is unknown or no longer available</pre>\n    </section>\n    <button type='button' class=\"inspectButton\"><svg width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4.67398 4.25061L1.36094 7.86484C1.29085 7.9413 1.29085 8.05866 1.36094 8.13513L4.67398 11.7494' stroke='currentColor'/><path d='M11.3262 4.25061L14.6392 7.86484C14.7093 7.9413 14.7093 8.05866 14.6392 8.13513L11.3262 11.7494' stroke='currentColor'/><path d='M9.56222 3.62573L6.43774 12.3743' stroke='currentColor'/></svg>查看</button>\n  </div>\n</div>\n  <div class=\"card\" data-tool='skill' data-state='stopped'>\n  <div class=\"row\">\n    <span class=\"leading\"><svg width='14' height='14' viewBox='0 0 17 17' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' stroke-width='1'><path d='M4.57788 5.77124H10.7029' stroke='currentColor'/><path d='M4.57788 8.89819H7.91879' stroke='currentColor'/><path d='M12.1404 1.19446C12.9442 1.19446 13.6404 1.81999 13.6404 2.64465V8.89856H12.6404V2.64465C12.6404 2.42015 12.4411 2.19446 12.1404 2.19446H3.14038C2.83968 2.19446 2.64038 2.42015 2.64038 2.64465V13.0929C2.64082 13.3172 2.84001 13.5421 3.14038 13.5421H8.88159V14.5421H3.14038C2.33675 14.5421 1.6408 13.9172 1.64038 13.0929V2.64465C1.64038 1.81999 2.33651 1.19446 3.14038 1.19446H12.1404Z' fill='currentColor'/><path d='M12.0051 15.1056C12.0051 13.6395 10.8166 12.451 9.35059 12.451C10.8166 12.451 12.0051 11.2626 12.0051 9.79651C12.0051 11.2626 13.1936 12.451 14.6597 12.451C13.1936 12.451 12.0051 13.6395 12.0051 15.1056Z' stroke='currentColor'/></svg></span>\n    \n    <span class=\"root\">\n      <span class=\"content\"><span class=\"title\"><span class=\"text\">加载技能</span></span>\n      <span class=\"separator\" data-shimmer-decoration='true' aria-hidden='true'></span>\n      <span class=\"summary stoppedSummary\"><span class=\"text\">skill 加载已中止</span></span></span>\n      \n    </span>\n  </div>\n  \n</div>\n</div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "phase",
+          "type": "'preparing' | 'start' | 'result'",
+          "default": "—",
+          "desc": "调用阶段；<code>'preparing'</code> 走单独分支：只有字形位、屏幕外的「准备加载技能」和一行扫光标题。"
+        },
+        {
+          "name": "block",
+          "type": "PreparingToolCall | StartedToolCall | ToolResultNode",
+          "default": "—",
+          "desc": "该阶段的冻结切片：参数原文里取技能名，结算切片的 <code>isError</code> / <code>error.code</code> / 内容块决定摘要与展开体。"
+        },
+        {
+          "name": "callId",
+          "type": "string",
+          "default": "—",
+          "desc": "调用标识；参数不是合法 JSON 时的摘要兜底（<code>argsRaw</code> 为空则直接显示它）。"
+        },
+        {
+          "name": "toolName",
+          "type": "string",
+          "default": "—",
+          "desc": "线工具名，keyed 分发用；本视图固定挂在 <code>skill</code> 键上。"
+        },
+        {
+          "name": "inspect",
+          "type": "(() => void) | undefined",
+          "default": "undefined",
+          "desc": "有轨迹视图时展开体底部出现「查看」药丸，点击跳过去。"
+        },
+        {
+          "name": "t",
+          "type": "PropsLocale<'skill'>['t']",
+          "default": "—",
+          "desc": "技能字典：<code>row.title</code>「加载技能」、运行／失败／中止的屏幕外状态、<code>row.instructions</code> 与 <code>row.inspect</code>。"
+        },
+        {
+          "name": "useDisclosure",
+          "type": "UseDisclosure",
+          "default": "—",
+          "desc": "外层回合提供的展开状态钩子（本行内部另有自己的 <code>useState</code>，随行挂载重置）。"
+        },
+        {
+          "name": "openFile / loadImage",
+          "type": "ToolCallCommonProps['openFile' | 'loadImage']",
+          "default": "—",
+          "desc": "同族工具视图共享的宿主能力；本行只取技能名与输出，不用它们。"
+        }
+      ],
+      "notes": "状态完全从日志切片推导（<code>skillRowModel</code>）：未结算 = running、<code>error.code === 'interrupted'</code> = stopped、<code>isError</code> = error，其余 ok，不查实时技能目录——所以回放旧会话时行内容不会变。摘要取 <code>args</code> 里 <code>name</code> 的第一行（JSON 被截断时退回参数原文第一行、再退回 <code>callId</code>）；能展开的唯一条件是结果里有文本输出。运行中的状态语义只写在 <code>.visuallyHidden</code> 里（「正在加载 skill」/「skill 加载失败」），颜色本身不承载信息。整行是 <code>role='button'</code> + <code>tabIndex=0</code>，Enter 与空格都能开合，<code>aria-expanded</code> 跟着展开态走。<code>phase: 'preparing'</code> 时是另一套 DOM：只有字形位 + 屏幕外文案 + 扫光标题，没有圆点与摘要。",
+      "keywords": [
+        "技能工具行",
+        "加载技能",
+        "skill toolview",
+        "skill row",
+        "说明披露"
+      ]
+    }
+  ]
+}

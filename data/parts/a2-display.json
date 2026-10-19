@@ -670,19 +670,19 @@
     {
      "label": "side=\"right\"：纯文字提示",
      "note": "静态快照：气泡回到文档流",
-     "css": "/* 静态快照：气泡真实渲染是 position: fixed，先隐藏、量好尺寸后由 JS 写入 left/top 并显示；这里回到文档流并取消跟随锚点的位移，配色、内边距与键帽仍走真实样式。 */\n.bubble.snapshotStatic { position: static; transform: none; visibility: visible; }",
+     "css": "/* 静态快照：气泡真实渲染是 position: fixed，先隐藏、量好尺寸后由 JS 写入 left/top 并显示；这里回到文档流并取消跟随锚点的位移，配色、内边距与键帽仍走真实样式。 */\n.bubble.snapshotStatic[data-side][data-align] { position: relative; inset: auto; transform: none; visibility: visible; }",
      "html": "<span class=\"bubble snapshotStatic\" role=\"tooltip\" data-side=\"right\" data-align=\"center\"><span class=\"label\">复制路径</span></span>"
     },
     {
      "label": "side=\"bottom\" + align=\"end\" + shortcutKeys：键帽组合",
      "note": "静态快照：气泡回到文档流",
-     "css": "/* 静态快照：气泡真实渲染是 position: fixed，先隐藏、量好尺寸后由 JS 写入 left/top 并显示；这里回到文档流并取消跟随锚点的位移，配色、内边距与键帽仍走真实样式。 */\n.bubble.snapshotStatic { position: static; transform: none; visibility: visible; }",
+     "css": "/* 静态快照：气泡真实渲染是 position: fixed，先隐藏、量好尺寸后由 JS 写入 left/top 并显示；这里回到文档流并取消跟随锚点的位移，配色、内边距与键帽仍走真实样式。 */\n.bubble.snapshotStatic[data-side][data-align] { position: relative; inset: auto; transform: none; visibility: visible; }",
      "html": "<span class=\"bubble snapshotStatic\" role=\"tooltip\" data-side=\"bottom\" data-align=\"end\" data-has-shortcut aria-label=\"展开详情 ⌘ + B\"><span class=\"label\">展开详情</span><span class=\"keys tooltip joined\"><kbd class=\"key\">⌘</kbd><kbd class=\"separator\">+</kbd><kbd class=\"key\">B</kbd></span></span>"
     },
     {
      "label": "portal + openOnClick 钉住：只有键帽，无文字",
      "note": "静态快照：气泡回到文档流",
-     "css": "/* 静态快照：气泡真实渲染是 position: fixed 的门户内容，量好尺寸后由 JS 写入 left/top 并显示；这里回到文档流并取消跟随锚点的位移，配色、内边距与键帽仍走真实样式。 */\n.bubble.snapshotStatic { position: static; transform: none; visibility: visible; }",
+     "css": "/* 静态快照：气泡真实渲染是 position: fixed 的门户内容，量好尺寸后由 JS 写入 left/top 并显示；这里回到文档流并取消跟随锚点的位移，配色、内边距与键帽仍走真实样式。 */\n.bubble.snapshotStatic[data-side][data-align] { position: relative; inset: auto; transform: none; visibility: visible; }",
      "html": "<span class=\"bubble snapshotStatic\" role=\"tooltip\" data-side=\"right\" data-align=\"center\" data-portal data-pinned data-has-shortcut aria-label=\"⌘ K\"><span class=\"keys tooltip\"><kbd class=\"key\">⌘</kbd><kbd class=\"key\">K</kbd></span></span>"
     }
    ],

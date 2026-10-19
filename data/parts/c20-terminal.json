@@ -1,0 +1,672 @@
+{
+ "schemaVersion": 1,
+ "entries": [
+  {
+   "id": "lazy-terminal-body",
+   "name": "LazyTerminalBody",
+   "exportName": "LazyTerminalBody",
+   "zh": "终端懒加载",
+   "group": "dock",
+   "summary": "侧边栏终端分包的懒加载壳：<code>React.lazy</code> 在终端 tab 首次挂载时才拉取 <code>./terminal.tsx</code>（xterm + FitAddon），外面只套一层 <code>Suspense</code>，fallback 是 <code>null</code>。分包在途时这块面板完全空白——没有 spinner，也没有骨架；到达后原样渲染 <code>TerminalBody</code>，<code>TerminalBodyProps</code> 直接透传。它自己不产生任何 DOM，外观与状态全部由被渲染的终端主体决定。",
+   "source": "packages/client/ui-sidebar-terminal/src/client/LazyTerminalBody.tsx#L12",
+   "css": [
+    "packages/client/ui-sidebar-terminal/src/client/terminal.module.css",
+    "packages/client/ui-primitives/src/Button.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-base",
+    "--dsw-alias-bg-l2",
+    "--dsw-alias-label-primary",
+    "--dsw-radius-md",
+    "--dsw-radius-sm",
+    "--dsw-alias-button-primary-fill",
+    "--dsw-alias-button-primary-hover",
+    "--dsw-alias-label-primary-foreground",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-interactive-bg-active",
+    "--dsw-alias-border-l3"
+   ],
+   "specimens": [
+    {
+     "label": "加载完成后：它渲染出来的终端画面",
+     "note": "该组件本身无独立外观，这里展示它挂载后渲染的 TerminalBody",
+     "bg": "sidebar",
+     "html": "<div style=\"width:420px;height:240px;display:flex\"><section class=\"root\" data-sidebar-terminal><div class=\"screen\"><pre style=\"margin:0\">$ pnpm test\n RUN  v3.2.4 /home/lk/deepseek-harness\n\n ✓ packages/client/ui-chat  (128 tests)\n ✓ packages/client/ui-sidebar-terminal  (21 tests)\n\n Test Files  2 passed (2)\n      Tests  149 passed (149)\n</pre></div></section></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "useTabInfo",
+     "type": "UseSidebarRightTabInfo",
+     "default": "—",
+     "desc": "sidebar.right.pane.tab 分享的 tab 信息 Hook，取 tab.id 解析终端模型。"
+    },
+    {
+     "name": "view",
+     "type": "(key: string) => TerminalView",
+     "default": "—",
+     "desc": "按侧边栏出现键解析终端命令面：mount / refresh / connect / write / resize / rename …。"
+    },
+    {
+     "name": "useTerminal",
+     "type": "KeyedSnapshotSelectorHook<TerminalViewState>",
+     "default": "—",
+     "desc": "订阅该 tab 的终端状态（phase、info、render、writable、environment）；undefined 时整棵子树返回 null。"
+    },
+    {
+     "name": "useTheme",
+     "type": "SnapshotSelectorHook<ThemeSnapshot>",
+     "default": "—",
+     "desc": "取当前主题快照，把 terminal 字体族与字号交给 xterm，并在主题切换时更新终端调色板。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'sidebarTerminal'>",
+     "default": "—",
+     "desc": "sidebarTerminal 命名空间的翻译座位（新建终端、正在连接…、只读、重试等）。"
+    }
+   ],
+   "notes": "它只是 <code>lazy(() =&gt; import('./terminal.tsx'))</code> + <code>Suspense</code> 的包装：分包失败会直接冒泡到外层错误边界，组件自己不处理异常。要看真正的界面请看 <code>TerminalBody</code> 条目。",
+   "keywords": [
+    "懒加载",
+    "终端分包",
+    "lazy terminal",
+    "xterm",
+    "Suspense"
+   ]
+  },
+  {
+   "id": "terminal-body",
+   "name": "TerminalBody",
+   "exportName": "TerminalBody",
+   "zh": "终端主体",
+   "group": "dock",
+   "summary": "侧边栏终端画面本体：<code>section.root</code> 纵向铺满、顶部留 8px、13px 字，下面可以依次出现状态条、终端屏幕与错误行。状态条是 <code>--dsw-alias-bg-l2</code> 底、<code>5px 12px</code> 内边距的换行 flex 行，按状态拼「正在连接…」「此页面当前只读。+ 接管输入」「连接已断开。+ 重新连接」「进程已退出（{code}）+ 新建终端」；屏幕 <code>.screen</code> 内边距 8px、底色 <code>--dsw-alias-bg-base</code>，xterm 就挂在这里并跟随主题字体与字号。终端不存在时改成居中的空态：36px 插图、28ch 的提示与一个 36px 高的主按钮；出错时在屏幕下方追加一条 <code>.error</code> 提示。",
+   "source": "packages/client/ui-sidebar-terminal/src/client/terminal.tsx#L24",
+   "css": [
+    "packages/client/ui-sidebar-terminal/src/client/terminal.module.css",
+    "packages/client/ui-primitives/src/Button.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-base",
+    "--dsw-alias-bg-l2",
+    "--dsw-alias-label-primary",
+    "--dsw-radius-md",
+    "--dsw-radius-sm",
+    "--dsw-alias-button-primary-fill",
+    "--dsw-alias-button-primary-hover",
+    "--dsw-alias-label-primary-foreground",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-interactive-bg-active",
+    "--dsw-alias-border-l3"
+   ],
+   "specimens": [
+    {
+     "label": "只读：状态条 + 接管输入",
+     "note": "静态快照",
+     "bg": "sidebar",
+     "html": "<div style=\"width:420px;height:250px;display:flex\"><section class=\"root\" data-sidebar-terminal><div class=\"status\" role=\"status\">此页面当前只读。 <button type=\"button\" class=\"button outline sm\">接管输入</button></div><div class=\"screen\"><pre style=\"margin:0\">$ pnpm test\n RUN  v3.2.4 /home/lk/deepseek-harness\n\n ✓ packages/client/ui-chat  (128 tests)\n ✓ packages/client/ui-sidebar-terminal  (21 tests)\n\n Test Files  2 passed (2)\n      Tests  149 passed (149)\n</pre></div></section></div>"
+    },
+    {
+     "label": "空态：此终端已不存在",
+     "note": "静态快照",
+     "bg": "sidebar",
+     "html": "<div style=\"width:420px;height:280px;display:flex\"><section class=\"root\" data-sidebar-terminal><div class=\"empty\"><svg width=\"36\" height=\"36\" viewBox=\"0 0 28 28\" fill=\"none\" aria-hidden=\"true\"><rect x=\"3\" y=\"5\" width=\"22\" height=\"19\" rx=\"3\" fill=\"#17191d\"></rect><path d=\"m8 10 4 4-4 4M15 18h5\" stroke=\"#fff\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></path></svg><p class=\"emptyMessage\" role=\"alert\">此终端已不存在，请新建终端。</p><button type=\"button\" class=\"button primary md\"><span class=\"icon\"><span class=\"actionIcon\" aria-hidden=\"true\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 2V14\" stroke=\"currentColor\"></path><path d=\"M2 8H14\" stroke=\"currentColor\"></path></svg></span></span>新建终端</button></div></section></div>"
+    },
+    {
+     "label": "进程退出：新建终端",
+     "note": "静态快照",
+     "bg": "sidebar",
+     "html": "<div style=\"width:420px;height:250px;display:flex\"><section class=\"root\" data-sidebar-terminal><div class=\"status\" role=\"status\">进程已退出（0）<button type=\"button\" class=\"button primary sm\"><span class=\"icon\"><span class=\"actionIcon\" aria-hidden=\"true\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M8 2V14\" stroke=\"currentColor\"></path><path d=\"M2 8H14\" stroke=\"currentColor\"></path></svg></span></span>新建终端</button></div><div class=\"screen\"><pre style=\"margin:0\">$ pnpm test\n> vitest run packages/client/ui-chat\n Test Files  12 passed (12)\n      Tests  86 passed (86)\n\n$ git status --short\n M ui-chat/src/ChatView.tsx\n</pre></div></section></div>"
+    },
+    {
+     "label": "错误：终端错误提示 + 重试",
+     "note": "静态快照",
+     "bg": "sidebar",
+     "html": "<div style=\"width:420px;height:170px;display:flex\"><section class=\"root\" data-sidebar-terminal><div class=\"status\" role=\"status\"><button type=\"button\" class=\"button outline sm\">重试</button></div><p class=\"error\" role=\"alert\">终端错误：终端连接已结束，请重新连接。</p></section></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "useTabInfo",
+     "type": "UseSidebarRightTabInfo",
+     "default": "—",
+     "desc": "取当前 tab 记录：tab.id 解析终端模型，tab.visible 决定是否重新适配网格。"
+    },
+    {
+     "name": "view",
+     "type": "(key: string) => TerminalView",
+     "default": "—",
+     "desc": "终端命令面；mount() 在 effect 里确保 Host 侧终端存在。"
+    },
+    {
+     "name": "useTerminal",
+     "type": "KeyedSnapshotSelectorHook<TerminalViewState>",
+     "default": "—",
+     "desc": "订阅终端状态；undefined 表示该 key 还没有模型，此时组件返回 null。"
+    },
+    {
+     "name": "useTheme",
+     "type": "SnapshotSelectorHook<ThemeSnapshot>",
+     "default": "—",
+     "desc": "主题快照：<code>fontFamilies.terminal</code> 与 <code>fontSizes.terminal</code> 传给 xterm，并据 <code>.screen</code> 的计算色刷新调色板。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'sidebarTerminal'>",
+     "default": "—",
+     "desc": "sidebarTerminal 命名空间：加载/启动/连接中、退出码、只读、重试、错误包装等文案。"
+    }
+   ],
+   "notes": "<code>--dsw-alias-bg-l1</code> / <code>--dsw-alias-bg-l2</code> 在本检出里没有声明处，状态条与错误行的背景声明因此失效、呈透明底，只剩内边距区分。示例里的终端画面用等宽 <code>&lt;pre&gt;</code> 静态近似：<code>@xterm/xterm/css/xterm.css</code> 不在仓库内（node_modules 未安装），无法像其它样式表那样逐字内联，字符网格、光标闪烁（<code>terminal-cursor-blink</code>）与选区都不在快照里。",
+   "keywords": [
+    "终端",
+    "xterm",
+    "终端画面",
+    "只读",
+    "terminal body",
+    "连接已断开"
+   ]
+  },
+  {
+   "id": "terminal-cleanup",
+   "name": "TerminalCleanup",
+   "exportName": "TerminalCleanup",
+   "zh": "清理失败通知",
+   "group": "dock",
+   "summary": "终端关闭失败后的右下角通知堆：<code>.stack</code> 固定在视口 <code>right/bottom: 20px</code>，用一个 <code>grid</code> 以 8px 间距纵排，最大宽度 <code>min(440px, 100vw - 40px)</code>。每条 <code>.notice</code> 是 12/16 内边距的横排卡片——0.5px 描边、<code>--dsw-radius-md</code> 圆角、<code>0 4px 20px #0002</code> 投影、13px 文案，右侧跟一个 4/8 内边距、自带描边的「重试」小按钮。没有失败时组件返回 <code>null</code>，不占位。",
+   "source": "packages/client/ui-sidebar-terminal/src/client/TerminalCleanup.tsx#L22",
+   "css": [
+    "packages/client/ui-sidebar-terminal/src/client/TerminalCleanup.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-l1",
+    "--dsw-alias-border-l3",
+    "--dsw-alias-label-primary",
+    "--dsw-radius-md",
+    "--dsw-radius-sm"
+   ],
+   "specimens": [
+    {
+     "label": "一条关闭失败通知",
+     "note": "静态快照：fixed 通知拉回文档流",
+     "bg": "platform",
+     "html": "<div class=\"stack snapshotStatic\"><div class=\"notice\" role=\"alert\"><span>终端「pnpm dev」未能结束：Host 未在 5 秒内响应关闭请求。</span><button type=\"button\">重试</button></div></div>",
+     "css": "/* 静态快照：.stack 在真实产品里 position: fixed 到视口右下角，这里改成文档流内的\n   相对定位（right/bottom 归零），卡片本身的外观仍全部来自 TerminalCleanup.module.css。 */\n.stack.snapshotStatic { position: relative; right: auto; bottom: auto; }"
+    },
+    {
+     "label": "多条失败：堆叠 8px 间距与长文案换行",
+     "note": "静态快照：fixed 通知拉回文档流",
+     "bg": "platform",
+     "html": "<div class=\"stack snapshotStatic\"><div class=\"notice\" role=\"alert\"><span>终端「pnpm dev」未能结束：Host 未在 5 秒内响应关闭请求。</span><button type=\"button\">重试</button></div><div class=\"notice\" role=\"alert\"><span>终端「vitest watch」未能结束：会话写入方仍持有该终端，关闭被拒绝，请稍后重试或手动结束进程。</span><button type=\"button\">重试</button></div></div>",
+     "css": "/* 静态快照：同上，fixed 的通知堆改为文档流内的相对定位。 */\n.stack.snapshotStatic { position: relative; right: auto; bottom: auto; }"
+    }
+   ],
+   "props": [
+    {
+     "name": "useCloseFailures",
+     "type": "SnapshotSelectorHook<readonly TerminalCloseFailure[]>",
+     "default": "—",
+     "desc": "订阅关闭失败列表；空数组时组件直接返回 null。每项带 id / title / message。"
+    },
+    {
+     "name": "retryClose",
+     "type": "(id: WebTerminalId) => void",
+     "default": "—",
+     "desc": "对某条失败重新发起关闭请求；模型层负责清理，这个座位只展示失败与请求重试。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'sidebarTerminal'>",
+     "default": "—",
+     "desc": "sidebarTerminal 命名空间：<code>cleanupFailed</code>（终端「{title}」未能结束：{message}）与 <code>retry</code>。"
+    }
+   ],
+   "notes": "检出里的 <code>index.ts</code> 把 <code>shell.overlay</code> 注册整段注释掉了（连同 <code>TerminalRecovery</code> 的注册），所以最近这版并没有挂载这个组件——条目按源码本身描述。按钮没有类名，样式来自 <code>.notice button</code> 后代选择器；<code>--dsw-alias-bg-l1</code> 在本检出未声明，卡片背景实际回落为透明，靠描边与投影成形。",
+   "keywords": [
+    "终端清理",
+    "关闭失败",
+    "cleanup",
+    "通知堆",
+    "重试关闭"
+   ]
+  },
+  {
+   "id": "terminal-guide",
+   "name": "TerminalGuide",
+   "exportName": "TerminalGuide",
+   "zh": "终端引导卡",
+   "group": "dock",
+   "summary": "侧边栏「新建终端」的引导卡：<code>.entry</code> 最小高 56px、内边距 14/20，0.5px 描边 + <code>--dsl-guide-entry-radius</code> 圆角、<code>--dsw-alias-bg-layer-1</code> 底，最上面压着一个铺满全卡的 ghost <code>Button</code>（<code>.main</code>，绝对定位 inset:0）承担点击，露出来的是 26px 终端美术字、14px 标题、11px 副标题与右端快捷键键帽。标题行里还有一个 20×20 的 ▾ 按钮，展开一个右对齐的 Shell 菜单（当前 Shell 打勾）；菜单可能停在「正在读取 Shell…」的禁用行，或者失败时显示「终端错误：…」+「重试」两行。",
+   "source": "packages/client/ui-sidebar-terminal/src/client/TerminalGuide.tsx#L32",
+   "css": [
+    "packages/client/ui-sidebar-terminal/src/client/TerminalGuide.module.css",
+    "packages/client/ui-primitives/src/Button.module.css",
+    "packages/client/ui-primitives/src/Menu.module.css",
+    "packages/client/ui-primitives/src/MenuSurface.module.css",
+    "packages/client/ui-primitives/src/ShortcutKeys.module.css"
+   ],
+   "tokens": [
+    "--dsl-guide-entry-radius",
+    "--dsw-alias-bg-layer-1",
+    "--dsw-alias-border-l1",
+    "--dsw-alias-border-l3",
+    "--dsw-alias-interactive-bg-active",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-caption",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-secondary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-scrollbar-bg-l2",
+    "--dsw-alias-scrollbar-hover-l2",
+    "--dsw-elevation-prominent",
+    "--dsw-menu-surface-fill",
+    "--dsw-radius-lg",
+    "--dsw-radius-md",
+    "--dsw-radius-sm"
+   ],
+   "specimens": [
+    {
+     "label": "引导卡默认态（含有效快捷键键帽）",
+     "note": "静态快照",
+     "bg": "sidebar",
+     "html": "<div class=\"snapshotGuide\"><div class=\"entry\" data-sidebar-right-guide-entry=\"new\"><button type=\"button\" class=\"button ghost md main\" aria-label=\"新建终端 在会话工作区运行命令\"></button><span class=\"c0-icon\" aria-hidden=\"true\"><svg width=\"26\" height=\"26\" viewBox=\"0 0 36 36\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M10 11L16.606 17.606C16.6841 17.6841 16.6841 17.8107 16.606 17.8888L10 24.4948\" stroke=\"#679EFE\" stroke-width=\"3.5\"></path><path d=\"M20.1211 24.4946H26.8685\" stroke=\"#679EFE\" stroke-width=\"3.5\"></path></svg></span><span class=\"text\"><span class=\"titleRow\"><span class=\"title\" aria-hidden=\"true\">新建终端</span><span class=\"root menu\"><button type=\"button\" class=\"button ghost md trigger\" aria-label=\"选择 Shell\" aria-haspopup=\"menu\" aria-expanded=\"false\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"></path></svg></button></span></span><span class=\"description\" aria-hidden=\"true\">在会话工作区运行命令</span></span><span class=\"keys c0-shortcut\"><kbd class=\"key\">Ctrl</kbd><kbd class=\"c4-separator\">+</kbd><kbd class=\"key\">`</kbd></span></div></div>",
+     "css": "/* 静态快照：引导卡真实所在的外层 .guide（ui-sidebar-right 的 GuideBody.module.css）在这个条目里没有列出，\n   这里按源码原样补上它声明的本地自定义属性 --dsl-guide-entry-radius（= --dsw-radius-xl），\n   以及那条 flex 纵列布局，卡片自身样式仍全部来自 TerminalGuide.module.css。 */\n.snapshotGuide {\n  --dsl-guide-entry-radius: var(--dsw-radius-xl);\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n  width: 380px;\n}\n/* 静态快照：Shell 菜单在真实产品里 portal 到 body 并用锚点矩形做 fixed 定位，这里拉回文档流。 */\n.list.snapshotStatic { position: relative; top: auto; left: auto; }"
+    },
+    {
+     "label": "打开态：Shell 菜单（当前 Shell 打勾）",
+     "note": "静态快照：菜单拉回文档流",
+     "bg": "sidebar",
+     "html": "<div class=\"snapshotGuide\"><div class=\"entry\" data-sidebar-right-guide-entry=\"new\"><button type=\"button\" class=\"button ghost md main\" aria-label=\"新建终端 在会话工作区运行命令\"></button><span class=\"c0-icon\" aria-hidden=\"true\"><svg width=\"26\" height=\"26\" viewBox=\"0 0 36 36\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M10 11L16.606 17.606C16.6841 17.6841 16.6841 17.8107 16.606 17.8888L10 24.4948\" stroke=\"#679EFE\" stroke-width=\"3.5\"></path><path d=\"M20.1211 24.4946H26.8685\" stroke=\"#679EFE\" stroke-width=\"3.5\"></path></svg></span><span class=\"text\"><span class=\"titleRow\"><span class=\"title\" aria-hidden=\"true\">新建终端</span><span class=\"root menu\"><button type=\"button\" class=\"button ghost md trigger\" aria-label=\"选择 Shell\" aria-haspopup=\"menu\" aria-expanded=\"true\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"></path></svg></button></span></span><span class=\"description\" aria-hidden=\"true\">在会话工作区运行命令</span></span><span class=\"keys c0-shortcut\"><kbd class=\"key\">Ctrl</kbd><kbd class=\"c4-separator\">+</kbd><kbd class=\"key\">`</kbd></span></div><div class=\"surface list portal scrollable snapshotStatic\" role=\"menu\"><div aria-hidden=\"true\" class=\"material\"></div><div class=\"viewport\" role=\"presentation\"><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item selected\"><span class=\"itemLabel\">zsh</span><svg class=\"check\" width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4\" stroke=\"currentColor\"></path></svg></button></div><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item\"><span class=\"itemLabel\">bash</span></button></div><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item\"><span class=\"itemLabel\">fish</span></button></div></div></div></div>",
+     "css": "/* 静态快照：引导卡真实所在的外层 .guide（ui-sidebar-right 的 GuideBody.module.css）在这个条目里没有列出，\n   这里按源码原样补上它声明的本地自定义属性 --dsl-guide-entry-radius（= --dsw-radius-xl），\n   以及那条 flex 纵列布局，卡片自身样式仍全部来自 TerminalGuide.module.css。 */\n.snapshotGuide {\n  --dsl-guide-entry-radius: var(--dsw-radius-xl);\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n  width: 380px;\n}\n/* 静态快照：Shell 菜单在真实产品里 portal 到 body 并用锚点矩形做 fixed 定位，这里拉回文档流。 */\n.list.snapshotStatic { position: relative; top: auto; left: auto; }"
+    },
+    {
+     "label": "菜单失败：错误行 + 重试行",
+     "note": "静态快照：菜单拉回文档流",
+     "bg": "sidebar",
+     "html": "<div class=\"snapshotGuide\"><div class=\"entry\" data-sidebar-right-guide-entry=\"new\"><button type=\"button\" class=\"button ghost md main\" aria-label=\"新建终端 在会话工作区运行命令\"></button><span class=\"c0-icon\" aria-hidden=\"true\"><svg width=\"26\" height=\"26\" viewBox=\"0 0 36 36\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M10 11L16.606 17.606C16.6841 17.6841 16.6841 17.8107 16.606 17.8888L10 24.4948\" stroke=\"#679EFE\" stroke-width=\"3.5\"></path><path d=\"M20.1211 24.4946H26.8685\" stroke=\"#679EFE\" stroke-width=\"3.5\"></path></svg></span><span class=\"text\"><span class=\"titleRow\"><span class=\"title\" aria-hidden=\"true\">新建终端</span><span class=\"root menu\"><button type=\"button\" class=\"button ghost md trigger\" aria-label=\"选择 Shell\" aria-haspopup=\"menu\" aria-expanded=\"true\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6\" stroke=\"currentColor\"></path></svg></button></span></span><span class=\"description\" aria-hidden=\"true\">在会话工作区运行命令</span></span><span class=\"keys c0-shortcut\"><kbd class=\"key\">Ctrl</kbd><kbd class=\"c4-separator\">+</kbd><kbd class=\"key\">`</kbd></span></div><div class=\"surface list portal scrollable snapshotStatic\" role=\"menu\"><div aria-hidden=\"true\" class=\"material\"></div><div class=\"viewport\" role=\"presentation\"><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item\" disabled><span class=\"itemLabel\">终端错误：connect ECONNREFUSED 127.0.0.1:3080</span></button></div><div class=\"itemWrap\"><button type=\"button\" role=\"menuitem\" class=\"item\"><span class=\"itemLabel\">重试</span></button></div></div></div></div>",
+     "css": "/* 静态快照：引导卡真实所在的外层 .guide（ui-sidebar-right 的 GuideBody.module.css）在这个条目里没有列出，\n   这里按源码原样补上它声明的本地自定义属性 --dsl-guide-entry-radius（= --dsw-radius-xl），\n   以及那条 flex 纵列布局，卡片自身样式仍全部来自 TerminalGuide.module.css。 */\n.snapshotGuide {\n  --dsl-guide-entry-radius: var(--dsw-radius-xl);\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n  width: 380px;\n}\n/* 静态快照：Shell 菜单在真实产品里 portal 到 body 并用锚点矩形做 fixed 定位，这里拉回文档流。 */\n.list.snapshotStatic { position: relative; top: auto; left: auto; }"
+    }
+   ],
+   "props": [
+    {
+     "name": "title",
+     "type": "string",
+     "default": "—",
+     "desc": "引导条目的标题（终端类型注册时给的 <code>新建终端</code>）。"
+    },
+    {
+     "name": "description",
+     "type": "string | undefined",
+     "default": "—",
+     "desc": "副标题（<code>在会话工作区运行命令</code>）；有副标题时美术字取 26px，没有则取 22px。"
+    },
+    {
+     "name": "kind",
+     "type": "string",
+     "default": "—",
+     "desc": "页面类型标识（<code>terminal</code>），作为 <code>data-sidebar-right-guide-entry</code> 的值供外层定位。"
+    },
+    {
+     "name": "useTabInfo",
+     "type": "UseSidebarRightTabInfo",
+     "default": "—",
+     "desc": "取 tab 动作：<code>openTab('terminal', { replaceTab: true, params: { shellPath } })</code>。"
+    },
+    {
+     "name": "loadShells",
+     "type": "(signal: AbortSignal) => Promise<TerminalLaunchShells>",
+     "default": "—",
+     "desc": "打开菜单时按菜单生命周期读取可用 Shell 与浏览器偏好；signal 中止即丢弃结果。"
+    },
+    {
+     "name": "selectShell",
+     "type": "(path: string) => void",
+     "default": "—",
+     "desc": "把选中的 Shell 写进浏览器偏好，作为下次「新建终端」的默认值。"
+    },
+    {
+     "name": "useShortcuts",
+     "type": "SnapshotSelectorHook<readonly ShortcutCatalogEntry[]>",
+     "default": "—",
+     "desc": "在快捷键目录里找 <code>terminal.new</code>，把它的有效键位显示成键帽并写进 <code>aria-keyshortcuts</code>。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'sidebarTerminal'>",
+     "default": "—",
+     "desc": "sidebarTerminal 命名空间：选择 Shell、正在读取 Shell…、没有可用的 Shell、重试等。"
+    }
+   ],
+   "notes": "整张卡的点击区是 <code>.main</code> 这个绝对铺满的 ghost Button，图标与文字层都是 <code>pointer-events: none</code>，只有 20×20 的 ▾ 例外（它所在的 <code>.menu</code> 是唯一 <code>auto</code> 的一层），键帽 <code>.shortcut</code> 同样不接指针。菜单是 <code>Menu</code> 的 portaled + autoFocus 形态（<code>align=\"end\"</code>、宽 144–360px、<code>--dsw-alias-border-l1</code> 描边 + <code>--dsw-elevation-prominent</code> 投影），静态快照里已把它拉回文档流；圆角靠外层 <code>.guide</code> 声明的 <code>--dsl-guide-entry-radius</code>，条目里由示例样式按源码补上。",
+   "keywords": [
+    "终端",
+    "新建终端",
+    "Shell",
+    "引导卡",
+    "terminal guide",
+    "快捷键"
+   ]
+  },
+  {
+   "id": "terminal-icon",
+   "name": "TerminalIcon",
+   "exportName": "TerminalIcon",
+   "zh": "终端图标",
+   "group": "dock",
+   "summary": "侧边栏终端 tab 标题左侧的 16×16 线条字形：一条 <code>M3 4L7 8L3 12</code> 的提示符折线加一条 <code>M9 12H13</code> 的下划线，两条路径都用 <code>currentColor</code> 描边（1px），所以颜色完全跟随所在标题的文字色。它没有 props、没有样式表，<code>aria-hidden=\"true\"</code> 只作装饰，名称由旁边的 <code>TerminalTitle</code> 文字承担。",
+   "source": "packages/client/ui-sidebar-terminal/src/client/TerminalIcon.tsx#L8",
+   "css": [],
+   "tokens": [],
+   "specimens": [
+    {
+     "label": "字形本身：16×16 的终端提示符",
+     "note": "静态快照",
+     "bg": "sidebar",
+     "html": "<div style=\"display:flex;align-items:center;gap:8px\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M3 4L7 8L3 12\" stroke=\"currentColor\"></path><path d=\"M9 12H13\" stroke=\"currentColor\"></path></svg><span style=\"font-size:11px\">16×16 · currentColor 描边</span></div>"
+    }
+   ],
+   "notes": "唯一的用处是 <code>TerminalTitle</code> 里名称前面那个字形；<code>TerminalBody</code> 空态用的是另一张 36×36 的内联插图，不是这个组件。颜色跟随周围文字（<code>currentColor</code>），因此没有可列的设计变量，也没有样式表。",
+   "keywords": [
+    "终端",
+    "字形",
+    "图标",
+    "terminal glyph",
+    "prompt"
+   ]
+  },
+  {
+   "id": "terminal-recovery",
+   "name": "TerminalRecovery",
+   "exportName": "TerminalRecovery",
+   "zh": "终端恢复",
+   "group": "dock",
+   "summary": "把保留在 Host 上的终端重新挂回侧边栏的会话级副作用组件：每次会话头部出现时调用一次 <code>restore()</code>，成功时返回 <code>null</code>——用户看不到任何东西。只有恢复失败才渲染一个没有任何类名的原生 <code>&lt;button&gt;</code>（标题即 <code>恢复终端失败：{message}</code>，文案「重试恢复终端」），点击后清掉错误并自增尝试次数重跑；它的观感完全由所在的会话头部动作行决定。",
+   "source": "packages/client/ui-sidebar-terminal/src/client/TerminalRecovery.tsx#L18",
+   "css": [],
+   "tokens": [],
+   "specimens": [
+    {
+     "label": "恢复失败时唯一的可见产物：一个无类名的重试按钮",
+     "note": "该组件本身无独立外观，这里展示它失败时渲染的那颗按钮",
+     "bg": "layer2",
+     "html": "<div style=\"display:flex;align-items:center;gap:8px\"><button type=\"button\" title=\"恢复终端失败：Host 连接已关闭\">重试恢复终端</button><span style=\"font-size:11px\">按钮无类名、无样式表，外观来自外层会话头部</span></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "restore",
+     "type": "() => Promise<void>",
+     "default": "—",
+     "desc": "把该会话保留的终端打开成侧边栏 tab；每个会话只跑一次，成功后不再渲染任何东西。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'sidebarTerminal'>",
+     "default": "—",
+     "desc": "sidebarTerminal 命名空间：<code>recoveryFailed</code>（恢复终端失败：{message}）与 <code>retryRecovery</code>。"
+    }
+   ],
+   "notes": "<code>index.ts</code> 里 <code>conversation.session.header.actions</code> 的注册（连同上方的恢复缓存与 <code>disposed</code> 守卫）当前是注释掉的，所以这版没有挂载。它的错误态刻意做得不起眼：按钮无类名、无内联样式，交给头部动作行去排版；恢复成功后组件不产生任何 DOM。",
+   "keywords": [
+    "终端恢复",
+    "recovery",
+    "重试",
+    "会话头部"
+   ]
+  },
+  {
+   "id": "terminal-title",
+   "name": "TerminalTitle",
+   "exportName": "TerminalTitle",
+   "zh": "终端标题",
+   "group": "dock",
+   "summary": "侧边栏（或浮动窗）终端 tab 的标题：先是一个 16px 的 <code>TerminalIcon</code>，再是名称文本 <code>.title</code>——<code>white-space: nowrap</code> + 省略号，宽度不够时先截断文字。双击所在 tab 的 chip（最近的 <code>[data-dockkit-tab]</code> / <code>[data-dockkit-float-grip]</code>）后就地换成输入框 <code>.name</code>：宽 120px、最小 48px、最多 100%，0/4 内边距，0.5px <code>--dsw-alias-border-l3</code> 描边与 <code>--dsw-radius-sm</code> 圆角；<code>Enter</code> 或失焦提交、<code>Esc</code> 取消，最长 120 字符。",
+   "source": "packages/client/ui-sidebar-terminal/src/client/TerminalTitle.tsx#L14",
+   "css": [
+    "packages/client/ui-sidebar-terminal/src/client/TerminalTitle.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-l1",
+    "--dsw-alias-border-l3",
+    "--dsw-radius-sm"
+   ],
+   "specimens": [
+    {
+     "label": "标题：字形 + 名称（窄栏时省略号截断）",
+     "note": "静态快照",
+     "bg": "sidebar",
+     "html": "<div style=\"display:flex;align-items:center;gap:6px;width:190px\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M3 4L7 8L3 12\" stroke=\"currentColor\"></path><path d=\"M9 12H13\" stroke=\"currentColor\"></path></svg><span class=\"title\">pnpm dev — deepseek-harness 前端</span></div>"
+    },
+    {
+     "label": "重命名态：双击 tab chip 后的就地输入框",
+     "note": "静态近似：真实产品里输入框挂载即聚焦并全选，静态快照不聚焦",
+     "bg": "sidebar",
+     "html": "<div style=\"display:flex;align-items:center;gap:6px;width:220px\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M3 4L7 8L3 12\" stroke=\"currentColor\"></path><path d=\"M9 12H13\" stroke=\"currentColor\"></path></svg><input class=\"name\" type=\"text\" maxlength=\"120\" aria-label=\"终端名称\" value=\"pnpm dev — deepseek-harness 前端\"></div>"
+    }
+   ],
+   "props": [
+    {
+     "name": "useTabInfo",
+     "type": "UseSidebarRightTabInfo",
+     "default": "—",
+     "desc": "取 tab.id 与 tab.title（终端标题还没拿到时用它兜底）。"
+    },
+    {
+     "name": "useTerminal",
+     "type": "KeyedSnapshotSelectorHook<TerminalViewState | undefined>",
+     "default": "—",
+     "desc": "订阅终端状态，优先显示 <code>info.title</code>，没有则用 <code>state.title</code>。"
+    },
+    {
+     "name": "view",
+     "type": "(key: string) => TerminalView",
+     "default": "—",
+     "desc": "提交重命名：<code>view(tab.id).rename(next)</code>，仅当新名字非空且与旧名不同。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'sidebarTerminal'>",
+     "default": "—",
+     "desc": "sidebarTerminal 命名空间，目前只用 <code>rename</code>（终端名称）作输入框的 aria-label。"
+    }
+   ],
+   "notes": "双击监听挂在最近的 dockkit chip 上而不是标题本身：拖拽把手会先吃掉 dblclick，所以源码用 <code>closest()</code> 找到 chip 再加监听，并在编辑时屏蔽 <code>pointerdown</code> / <code>click</code> / <code>dblclick</code> 冒泡。输入法组合态（<code>isComposing</code> 或 keyCode 229）时不处理按键。<code>--dsw-alias-bg-l1</code> 在本检出未声明，输入框背景实际是透明的，只靠描边勾出形状。",
+   "keywords": [
+    "终端标题",
+    "tab 标题",
+    "重命名",
+    "rename",
+    "terminal title"
+   ]
+  },
+  {
+   "id": "popup-select-view",
+   "name": "PopupSelectView",
+   "exportName": "PopupSelectView",
+   "zh": "弹出选择",
+   "group": "dock",
+   "summary": "popupSelect 类命令的选项卡（<code>/permission</code>、<code>/model</code> 都用它）：贴在下方的输入卡上沿之上，宽跟随输入卡、<code>min-width: min(220px, 100%)</code>，高上限 320px（运行时再按输入框上方的剩余空间收紧），4px 内边距 + 16px 圆角（<code>--dsw-radius-lg</code>）+ 半透明菜单材质。卡片顶部是 12px 字号的搜索框，下面每行是 12px 字号、<code>5px 7px</code> 内边距、12px 圆角的选项（当前高亮行用 <code>--dsw-alias-interactive-bg-hover</code> 填充），行内可以带 8px 上标徽标、11px 灰色说明和尾部对勾；按供应商分组时组标题是 sticky 的。它持有焦点：搜索框在打开时聚焦，↑↓ 走虚拟高亮、Enter/Tab 接受、Esc/Shift+Tab 关闭；失败时卡片里多一条错误行 + 重试按钮。",
+   "source": "packages/client/ui-commands/src/client/PopupSelectView.tsx#L42",
+   "css": [
+    "packages/client/ui-commands/src/client/PopupSelectView.module.css",
+    "packages/client/ui-primitives/src/MenuSurface.module.css",
+    "packages/client/ui-primitives/src/MenuGroup.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-border-inverted",
+    "--dsw-alias-border-l1",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-scrollbar-bg-l2",
+    "--dsw-alias-scrollbar-hover-l2",
+    "--dsw-alias-state-error-primary",
+    "--dsw-elevation-prominent",
+    "--dsw-menu-surface-fill",
+    "--dsw-radius-lg",
+    "--dsw-radius-md",
+    "--dsw-radius-sm"
+   ],
+   "specimens": [
+    {
+     "label": "就绪：/permission 平铺选项（当前项打勾 + EXP 徽标）",
+     "note": "静态快照：卡片拉回文档流",
+     "bg": "platform",
+     "html": "<div style=\"width:360px\"><div class=\"surface card snapshotStatic\" aria-label=\"/permission 选项\"><div aria-hidden=\"true\" class=\"material\"></div><input class=\"search\" type=\"text\" placeholder=\"搜索…\" aria-label=\"筛选选项\" value=\"\"><div class=\"viewport\" role=\"listbox\" aria-label=\"/permission 匹配项\"><div role=\"option\" aria-selected=\"false\" class=\"row\"><span class=\"label\"><span class=\"labelText\">仅可查看</span></span></div><div role=\"option\" aria-selected=\"true\" class=\"row rowActive\"><span class=\"label\"><span class=\"labelText\">工作区内修改</span></span><span class=\"check\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4\" stroke=\"currentColor\"></path></svg></span></div><div role=\"option\" aria-selected=\"false\" class=\"row\"><span class=\"label\"><span class=\"labelText\">完全权限</span></span></div><div role=\"option\" aria-selected=\"false\" aria-label=\"自动审查 EXP\" class=\"row\"><span class=\"label\"><span class=\"labelText\">自动审查</span><sup class=\"badge\">EXP</sup></span><span class=\"detail\">无沙箱运行；每次原生工具调用和 PTC 内层调用前由同一模型进行实验性审查。</span></div></div></div></div>",
+     "css": "/* 静态快照：卡片在真实产品里 absolute 贴在输入卡上沿（bottom: calc(100% + 4px)），这里放回文档流；\n   保持 relative 以便 MenuSurface 的 .material 绝对层仍以卡片为父级。 */\n.card.snapshotStatic { position: relative; inset: auto; }"
+    },
+    {
+     "label": "就绪：/model 按供应商分组 + 未分组的加载失败行",
+     "note": "静态快照：卡片拉回文档流",
+     "bg": "platform",
+     "html": "<div style=\"width:360px\"><div class=\"surface card snapshotStatic\" aria-label=\"/model 选项\"><div aria-hidden=\"true\" class=\"material\"></div><input class=\"search\" type=\"text\" placeholder=\"搜索模型…\" aria-label=\"筛选选项\" value=\"\"><div class=\"viewport\" role=\"listbox\" aria-label=\"/model 匹配项\"><section class=\"group\" role=\"group\" data-menu-group><span aria-hidden=\"true\" class=\"start\" data-menu-group-start></span><div class=\"heading\" data-menu-group-heading>DeepSeek</div><div role=\"option\" aria-selected=\"true\" class=\"row rowActive\"><span class=\"label\"><span class=\"labelText\">deepseek-chat</span></span><span class=\"check\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M2.25 8.5L5.49732 11.7473C5.90519 12.1552 6.57263 12.1344 6.95426 11.7018L13.75 4\" stroke=\"currentColor\"></path></svg></span></div><div role=\"option\" aria-selected=\"false\" class=\"row\"><span class=\"label\"><span class=\"labelText\">deepseek-reasoner</span></span></div></section><div role=\"option\" aria-selected=\"false\" class=\"row\"><span class=\"label\"><span class=\"labelText\">OpenAI</span></span><span class=\"detail\">目录加载失败：401 Unauthorized</span></div></div></div></div>",
+     "css": "/* 静态快照：卡片在真实产品里 absolute 贴在输入卡上沿（bottom: calc(100% + 4px)），这里放回文档流；\n   保持 relative 以便 MenuSurface 的 .material 绝对层仍以卡片为父级。 */\n.card.snapshotStatic { position: relative; inset: auto; }"
+    },
+    {
+     "label": "无结果：搜索框有词时的空文案",
+     "note": "静态快照：卡片拉回文档流",
+     "bg": "platform",
+     "html": "<div style=\"width:360px\"><div class=\"surface card snapshotStatic\" aria-label=\"/model 选项\"><div aria-hidden=\"true\" class=\"material\"></div><input class=\"search\" type=\"text\" placeholder=\"搜索模型…\" aria-label=\"筛选选项\" value=\"deepseek-r1\"><div class=\"status\">没有匹配的模型。</div></div></div>",
+     "css": "/* 静态快照：卡片在真实产品里 absolute 贴在输入卡上沿（bottom: calc(100% + 4px)），这里放回文档流；\n   保持 relative 以便 MenuSurface 的 .material 绝对层仍以卡片为父级。 */\n.card.snapshotStatic { position: relative; inset: auto; }"
+    },
+    {
+     "label": "失败：错误行 + 重试",
+     "note": "静态快照：卡片拉回文档流",
+     "bg": "platform",
+     "html": "<div style=\"width:360px\"><div class=\"surface card snapshotStatic\" aria-label=\"/model 选项\"><div aria-hidden=\"true\" class=\"material\"></div><input class=\"search\" type=\"text\" placeholder=\"搜索模型…\" aria-label=\"筛选选项\" value=\"\"><div class=\"error\" role=\"alert\"><span class=\"errorText\">TypeError: Failed to fetch</span><button type=\"button\" class=\"retry\">重试</button></div></div></div>",
+     "css": "/* 静态快照：卡片在真实产品里 absolute 贴在输入卡上沿（bottom: calc(100% + 4px)），这里放回文档流；\n   保持 relative 以便 MenuSurface 的 .material 绝对层仍以卡片为父级。 */\n.card.snapshotStatic { position: relative; inset: auto; }"
+    }
+   ],
+   "props": [
+    {
+     "name": "popup",
+     "type": "PopupSelectController",
+     "default": "—",
+     "desc": "当前会话的 popupSelect 控制器：<code>state</code> 快照（open / status / options / search / active / submitting / confirming / error）加 <code>select / move / highlight / setSearch / retry / dismiss / acknowledge / cancelConfirmation / confirm</code> 动作。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'command'>",
+     "default": "—",
+     "desc": "command 命名空间：搜索占位与 aria、正在加载选项…、正在应用…、无选项、/{command} 选项，以及回落到通用字典的「重试」。"
+    }
+   ],
+   "notes": "它是 overlay 座位但表现像对话框：打开时搜索框接管焦点（不是留在输入框），所以行用 <code>onClick</code> 而不是 mousedown；点击卡片以外的任何地方都会关闭。Enter 与 Tab 等价于接受当前高亮，Shift+Tab 与 Esc 关闭并把焦点还给输入框；当列表还没就绪或过滤为空时 Tab 归还浏览器，好让错误行的「重试」按钮仍能到达。带 <code>confirmation</code> 的选项（完全权限、自动审查）不走这张卡，改由 <code>RiskConfirmation</code> 风险门渲染——那是另一个组件的形状，本条目没有收录。卡片在真实产品里是 <code>position: absolute</code> 贴输入卡上沿，示例里已改成文档流内的相对定位。",
+   "keywords": [
+    "弹出选择",
+    "斜杠命令",
+    "popupSelect",
+    "选项卡",
+    "Grouped menu"
+   ]
+  },
+  {
+   "id": "menu-view",
+   "name": "MenuView",
+   "exportName": "MenuView",
+   "zh": "候选菜单",
+   "group": "dock",
+   "summary": "输入框上方的触发候选菜单（<code>/</code>、<code>@</code> 等触发的下拉）：同样是贴输入卡上沿的半透明菜单卡，宽与输入卡等宽、高上限 400px（运行时再按上方空间收紧），4px 内边距 + 16px 圆角（<code>--dsw-radius-lg</code>），行最小高 34px、<code>6px 8px</code> 内边距 + 12px 圆角（<code>--dsw-radius-md</code>）。每行依次是 14px 图标、标题、灰色指令名别名与右对齐的 12px 说明；指针移动与键盘共用同一个高亮（<code>.item.active</code> 填 <code>--dsw-alias-interactive-bg-hover</code>）。它按来源分组并支持钻入：有面包屑的来源会在滚动区上方钉一条导航，可钻入的行在高亮时露出「进入目录 Tab」提示与一个 18×18 的箭头；来源还在读取时用两条骨架行占位。",
+   "source": "packages/client/ui-input-trigger/src/client/MenuView.tsx#L47",
+   "css": [
+    "packages/client/ui-input-trigger/src/client/MenuView.module.css",
+    "packages/client/ui-primitives/src/MenuSurface.module.css"
+   ],
+   "tokens": [
+    "--dsw-alias-bg-skeleton",
+    "--dsw-alias-border-l1",
+    "--dsw-alias-interactive-bg-hover",
+    "--dsw-alias-label-caption",
+    "--dsw-alias-label-primary",
+    "--dsw-alias-label-tertiary",
+    "--dsw-alias-menu-icon",
+    "--dsw-alias-scrollbar-bg-l2",
+    "--dsw-alias-scrollbar-hover-l2",
+    "--dsw-elevation-prominent",
+    "--dsw-menu-surface-fill",
+    "--dsw-radius-lg",
+    "--dsw-radius-md",
+    "--dsw-radius-sm",
+    "--dsw-radius-xs",
+    "--dsw-specific-menu"
+   ],
+   "specimens": [
+    {
+     "label": "默认展开：分段标题 + 高亮行",
+     "note": "静态快照：菜单拉回文档流",
+     "bg": "platform",
+     "html": "<div style=\"width:420px\"><div class=\"surface menu snapshotStatic\" data-trigger-menu><div aria-hidden=\"true\" class=\"material\"></div><div class=\"viewport\" role=\"listbox\" aria-label=\"触发候选建议\" aria-activedescendant=\"dsh-slash-option-command-1\"><div class=\"sectionTitle\" role=\"presentation\">添加</div><button type=\"button\" role=\"option\" id=\"dsh-slash-option-command-0\" aria-selected=\"false\" class=\"item\"><span class=\"itemIcon\" aria-hidden><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M14.5001 8C14.5 9.28552 14.1188 10.5422 13.4045 11.611C12.6903 12.6799 11.6752 13.5129 10.4875 14.0049C9.29982 14.4968 7.99295 14.6255 6.73212 14.3747C5.4713 14.124 4.31314 13.505 3.4041 12.596C2.49514 11.687 1.87614 10.5288 1.62537 9.26798C1.37459 8.00716 1.50331 6.70028 1.99525 5.51261C2.48719 4.32494 3.32025 3.30981 4.3891 2.59557C5.45795 1.88134 6.71458 1.50008 8.0001 1.5\" stroke=\"currentColor\"></path><path d=\"M11.5 8C11.5001 8.69227 11.2948 9.36901 10.9102 9.94463C10.5257 10.5202 9.97901 10.9689 9.33944 11.2338C8.69986 11.4987 7.99609 11.5681 7.31712 11.433C6.63816 11.2979 6.01449 10.9645 5.52501 10.475C5.03548 9.98552 4.70209 9.36185 4.56702 8.68289C4.43195 8.00392 4.50127 7.30015 4.76619 6.66057C5.03112 6.021 5.47976 5.47436 6.05538 5.08978C6.631 4.70519 7.30774 4.49995 8.00001 4.5\" stroke=\"currentColor\"></path><path d=\"M8.00024 7.99976L11.2 4.80005\" stroke=\"currentColor\"></path><path d=\"M12.4719 5.62245C12.4246 5.66972 12.3569 5.69025 12.2913 5.67715L10.7814 5.37555C10.7022 5.35972 10.6402 5.29781 10.6244 5.2186L10.3228 3.70866C10.3097 3.6431 10.3302 3.57533 10.3775 3.52806L12.1826 1.723C12.2863 1.61929 12.4627 1.65879 12.5122 1.79684L12.9271 2.95225C12.9472 3.00847 12.9915 3.05272 13.0477 3.07291L14.2031 3.48774C14.3412 3.5373 14.3807 3.71368 14.277 3.81739L12.4719 5.62245Z\" stroke=\"currentColor\"></path></svg></span><span class=\"itemName\">目标</span><span class=\"itemAlias\">goal</span><span class=\"itemDescription\">设置或查看长期任务目标</span></button><button type=\"button\" role=\"option\" id=\"dsh-slash-option-command-1\" aria-selected=\"true\" class=\"item active\"><span class=\"itemIcon\" aria-hidden><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4.9375 5.90295H11.0625\" stroke=\"currentColor\"></path><path d=\"M4.9375 9.02991H8.27841\" stroke=\"currentColor\"></path><path d=\"M12.5 1.32617C13.3039 1.32617 14 1.95171 14 2.77637V7.61328L13 8.68164V2.77637C13 2.55186 12.8007 2.32617 12.5 2.32617H3.5C3.1993 2.32617 3 2.55186 3 2.77637V13.2246C3.00044 13.4489 3.19963 13.6738 3.5 13.6738H8.32812L7.39258 14.6738H3.5C2.69637 14.6738 2.00042 14.0489 2 13.2246V2.77637C2 1.95171 2.69613 1.32617 3.5 1.32617H12.5Z\" fill=\"currentColor\"></path><path d=\"M8.97212 14.3693C9.17511 14.5723 9.37811 14.7753 9.5811 14.9783C9.67012 14.8953 9.75914 14.8123 9.84815 14.7293C11.4505 13.2352 13.0528 11.7411 14.6551 10.247C14.7441 10.164 14.8331 10.081 14.9221 9.99803C14.5989 9.6748 14.2756 9.35157 13.9524 9.02834C13.8694 9.11736 13.7864 9.20637 13.7034 9.29539C12.2093 10.8977 10.7152 12.5 9.22113 14.1023C9.13813 14.1913 9.05513 14.2803 8.97212 14.3693Z\" fill=\"currentColor\"></path><path d=\"M11.6323 13.7841C11.6323 14.0395 11.6323 14.295 11.6323 14.5504C11.6812 14.5523 11.7301 14.5543 11.779 14.5562C12.659 14.5913 13.539 14.6263 14.419 14.6614C14.4679 14.6633 14.5168 14.6653 14.5657 14.6672C14.5657 14.3339 14.5657 14.0006 14.5657 13.6672C14.5168 13.6692 14.4679 13.6711 14.419 13.6731C13.539 13.7081 12.659 13.7432 11.779 13.7783C11.7301 13.7802 11.6812 13.7821 11.6323 13.7841Z\" fill=\"currentColor\"></path></svg></span><span class=\"itemName\">计划</span><span class=\"itemAlias\">plan</span><span class=\"itemDescription\">进入或退出计划模式</span></button><button type=\"button\" role=\"option\" id=\"dsh-slash-option-command-2\" aria-selected=\"false\" class=\"item\"><span class=\"itemIcon\" aria-hidden><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4.74024 9.11029L1.82882 7.79865C1.75022 7.76323 1.75026 7.65161 1.82889 7.61626L12.9665 2.60943C13.0354 2.57846 13.1125 2.63213 13.1073 2.70749L12.3914 13.1388C12.3864 13.2117 12.3073 13.2548 12.2433 13.2194L6.12677 9.83657\" stroke=\"currentColor\"></path><path d=\"M8.44336 11.0825L6.2832 13.2843C6.22048 13.3482 6.11182 13.3038 6.11182 13.2143V9.86772C6.11182 9.84165 6.122 9.8166 6.1402 9.79793L12.972 2.78748\" stroke=\"currentColor\"></path></svg></span><span class=\"itemName\">反馈</span><span class=\"itemAlias\">feedback</span><span class=\"itemDescription\">发送关于当前会话的反馈</span></button><div class=\"sectionTitle\" role=\"presentation\">指令</div><button type=\"button\" role=\"option\" id=\"dsh-slash-option-command-3\" aria-selected=\"false\" class=\"item\"><span class=\"itemIcon\" aria-hidden><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path opacity=\"0.35\" d=\"M8 14.5C11.5899 14.5 14.5 11.5899 14.5 8C14.5 4.41015 11.5899 1.5 8 1.5C4.41015 1.5 1.5 4.41015 1.5 8C1.5 11.5899 4.41015 14.5 8 14.5Z\" stroke=\"currentColor\"></path><path d=\"M8 1.5C8.85359 1.5 9.69883 1.66813 10.4874 1.99478C11.2761 2.32144 11.9926 2.80022 12.5962 3.40381C13.1998 4.00739 13.6786 4.72394 14.0052 5.51256C14.3319 6.30117 14.5 7.14641 14.5 8\" stroke=\"currentColor\"></path></svg></span><span class=\"itemName\">压缩</span><span class=\"itemAlias\">compact</span><span class=\"itemDescription\">压缩以上对话内容</span></button><button type=\"button\" role=\"option\" id=\"dsh-slash-option-command-4\" aria-selected=\"false\" class=\"item\"><span class=\"itemIcon\" aria-hidden><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M6.59624 2.14853C7.50155 1.80917 8.49914 1.80919 9.40444 2.14859L13.9245 3.84317V7.11961C13.9245 11.6089 10.5565 13.5975 8.00035 14.5779C5.44423 13.5975 2.07544 11.6089 2.07544 7.11961V3.84317L6.59624 2.14853Z\" stroke=\"currentColor\" stroke-linejoin=\"round\"></path><path d=\"M8 4.39209V9.89209\" stroke=\"currentColor\"></path><path d=\"M8 10.8081V11.8081\" stroke=\"currentColor\"></path></svg></span><span class=\"itemName\">权限</span><span class=\"itemAlias\">permission</span><span class=\"itemDescription\">切换权限预设（沙箱模式与审批策略）</span></button></div></div></div>",
+     "css": "/* 静态快照：菜单在真实产品里 absolute 贴在输入卡上沿（bottom: calc(100% + 4px)），这里放回文档流；\n   保持 relative 以便 MenuSurface 的 .material 绝对层仍以卡片为父级。 */\n.menu.snapshotStatic { position: relative; inset: auto; }"
+    },
+    {
+     "label": "钻入目录：面包屑 + 可下钻行（高亮时露出 Tab 提示）",
+     "note": "静态快照：菜单拉回文档流",
+     "bg": "platform",
+     "html": "<div style=\"width:420px\"><div class=\"surface menu snapshotStatic\" data-trigger-menu><div aria-hidden=\"true\" class=\"material\"></div><nav class=\"crumbs\" aria-label=\"目录导航\"><button type=\"button\" class=\"crumb\">deepseek-harness</button><span class=\"crumbSeparator\" aria-hidden><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4\" stroke=\"currentColor\"></path></svg></span><button type=\"button\" class=\"crumb\">packages</button><span class=\"crumbSeparator\" aria-hidden><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4\" stroke=\"currentColor\"></path></svg></span><button type=\"button\" class=\"crumb crumbCurrent\" aria-current=\"location\" disabled>client</button></nav><div class=\"viewport\" role=\"listbox\" aria-label=\"触发候选建议\" aria-activedescendant=\"dsh-slash-option-file-0\"><div class=\"sectionTitle\" role=\"presentation\">文件与文件夹</div><button type=\"button\" role=\"option\" id=\"dsh-slash-option-file-0\" aria-selected=\"true\" class=\"item active\"><span class=\"itemIcon\" aria-hidden><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M1.50439 3.11059C1.50439 2.55831 1.95211 2.1106 2.50439 2.1106H5.43389C5.67773 2.1106 5.91318 2.19969 6.09593 2.36113L7.71649 3.79265C7.89924 3.95409 8.1347 4.04319 8.3785 4.04319H13.4958C14.0481 4.04319 14.4958 4.4909 14.4958 5.04319V12.8894C14.4958 13.4417 14.0481 13.8894 13.4958 13.8894H2.50439C1.95211 13.8894 1.50439 13.4417 1.50439 12.8894V4.04319V3.11059Z\" stroke=\"currentColor\"></path><path d=\"M3.63501 7.66614H12.3647\" stroke=\"currentColor\"></path></svg></span><span class=\"itemName\">ui-chat/</span><span class=\"itemDescription\">packages/client</span><span class=\"trailing\"><span class=\"drillHintText\" aria-hidden>进入目录</span><kbd class=\"drillHint\" aria-hidden>Tab</kbd><span role=\"button\" aria-label=\"进入目录\" class=\"drill\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4\" stroke=\"currentColor\"></path></svg></span></span></button><button type=\"button\" role=\"option\" id=\"dsh-slash-option-file-1\" aria-selected=\"false\" class=\"item\"><span class=\"itemIcon\" aria-hidden><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M4.9375 5.90295H11.0625\" stroke=\"currentColor\"></path><path d=\"M4.9375 9.02991H8.27841\" stroke=\"currentColor\"></path><path d=\"M12.5 1.32617C13.3039 1.32617 14 1.95171 14 2.77637V13.2246C13.9996 14.0489 13.3036 14.6738 12.5 14.6738H3.5C2.69637 14.6738 2.00042 14.0489 2 13.2246V2.77637C2 1.95171 2.69613 1.32617 3.5 1.32617H12.5ZM3.5 2.32617C3.1993 2.32617 3 2.55186 3 2.77637V13.2246C3.00044 13.4489 3.19963 13.6738 3.5 13.6738H12.5C12.8004 13.6738 12.9996 13.4489 13 13.2246V2.77637C13 2.55186 12.8007 2.32617 12.5 2.32617H3.5Z\" fill=\"currentColor\"></path></svg></span><span class=\"itemName\">package.json</span><span class=\"itemDescription\">packages/client</span></button></div></div></div>",
+     "css": "/* 静态快照：菜单在真实产品里 absolute 贴在输入卡上沿（bottom: calc(100% + 4px)），这里放回文档流；\n   保持 relative 以便 MenuSurface 的 .material 绝对层仍以卡片为父级。 */\n.menu.snapshotStatic { position: relative; inset: auto; }"
+    },
+    {
+     "label": "读取中：来源分组标题 + 两条骨架行",
+     "note": "静态快照：菜单拉回文档流；骨架条宽度按源码的 32% / 48%",
+     "bg": "platform",
+     "html": "<div style=\"width:420px\"><div class=\"surface menu snapshotStatic\" data-trigger-menu><div aria-hidden=\"true\" class=\"material\"></div><div class=\"viewport\" role=\"listbox\" aria-label=\"触发候选建议\"><div class=\"groupTitle\" role=\"presentation\" data-source=\"skill\">技能</div><div role=\"status\" aria-label=\"正在加载…\" data-source=\"skill\"><div class=\"skeletonRow\"><span class=\"skeletonBar\" style=\"width:32%\"></span></div><div class=\"skeletonRow\"><span class=\"skeletonBar\" style=\"width:48%\"></span></div></div></div></div></div>",
+     "css": "/* 静态快照：菜单在真实产品里 absolute 贴在输入卡上沿（bottom: calc(100% + 4px)），这里放回文档流；\n   保持 relative 以便 MenuSurface 的 .material 绝对层仍以卡片为父级。 */\n.menu.snapshotStatic { position: relative; inset: auto; }"
+    }
+   ],
+   "props": [
+    {
+     "name": "menu",
+     "type": "SnapshotStore<MenuState>",
+     "default": "—",
+     "desc": "服务的菜单状态 store（open / groups / status / highlight），组件只订阅不写。"
+    },
+    {
+     "name": "headers",
+     "type": "SnapshotStore<ReadonlyMap<string, readonly InputTriggerCrumb[]>>",
+     "default": "—",
+     "desc": "各来源发布的面包屑；没有发布过的来源不会出现导航条。"
+    },
+    {
+     "name": "onPick",
+     "type": "(source: string, index: number, action?: PickAction) => void",
+     "default": "—",
+     "desc": "指针选中某一行，或某个可下钻行的钻入动作（<code>action: 'drill'</code>）。"
+    },
+    {
+     "name": "onHover",
+     "type": "(source: string, index: number) => void",
+     "default": "—",
+     "desc": "指针移动把共享高亮移到该行；已在高亮的行不再触发，避免键盘滚动时抢回高亮。"
+    },
+    {
+     "name": "onCrumb",
+     "type": "(source: string, index: number) => void",
+     "default": "—",
+     "desc": "点击面包屑的某一级，回到该层。"
+    },
+    {
+     "name": "onDismiss",
+     "type": "() => void",
+     "default": "—",
+     "desc": "指针落在菜单与输入卡之外时关闭菜单。"
+    },
+    {
+     "name": "t",
+     "type": "TranslateNS<'slash.menu'>",
+     "default": "—",
+     "desc": "slash.menu 命名空间：分组标题（按来源名查表，未知来源原样显示）、正在加载…、进入目录 / Tab、aria 文案。"
+    }
+   ],
+   "notes": "这是 combobox 模式：焦点始终留在输入框，所以行用 <code>onMouseDown</code> + <code>preventDefault</code> 选中、高亮通过 listbox 的 <code>aria-activedescendant</code> 暴露，键盘移动后由脚本 <code>scrollIntoView</code>。带 <code>data-overflow-below</code> 时卡片底部会多一条 16px 的渐隐提示（<code>::after</code> + <code>--dsw-specific-menu</code>），这一版示例里列表还没溢出，所以没有加这个属性。分组标题 <code>.groupTitle</code> 只在「该来源的行没有 section」时出现，否则行内改用 <code>.sectionTitle</code> 段标题——两种标题不会同时出现。",
+   "keywords": [
+    "候选菜单",
+    "斜杠菜单",
+    "输入触发",
+    "slash menu",
+    "面包屑",
+    "骨架行"
+   ]
+  }
+ ]
+}

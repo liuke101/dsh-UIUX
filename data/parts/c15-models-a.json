@@ -1,0 +1,933 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "id": "api-key-input",
+      "name": "ApiKeyInput",
+      "exportName": "ApiKeyInput",
+      "zh": "密钥输入框",
+      "group": "settings",
+      "summary": "设置页里的只写凭据字段：32px 高、0.5px <code>--dsw-alias-border-l4</code> 描边、R12（<code>--dsw-radius-md</code>）的密码框，右侧叠一枚 32px 宽、无底色的揭示按钮。草稿为空时只画输入框；一旦有值，输入框加上 <code>.keyInputFilled</code>（右侧内边距 40px）并让出位置给按钮。揭示状态由草稿值本身把关：<code>onChange</code> 会清掉已揭示的旧值，所以改一个字符就回到遮蔽，图标在睁眼／划线之间切换并用 <code>aria-pressed</code> 播报。",
+      "source": "packages/client/ui-settings-models/src/client/ApiKeyInput.tsx#L24",
+      "css": [
+        "packages/client/ui-settings-models/src/client/ModelsSection.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-layer-1",
+        "--dsw-alias-border-l4",
+        "--dsw-alias-label-dimmed",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-state-business-primary",
+        "--dsw-focus-ring-color",
+        "--dsw-focus-ring-width",
+        "--dsw-radius-md"
+      ],
+      "specimens": [
+        {
+          "label": "空草稿：只有密码框",
+          "note": "草稿为空时不渲染揭示按钮，输入框也不加 .keyInputFilled",
+          "html": "<div style='width:320px'><div class='keyInput'><input class='input' type='password' placeholder='输入 API 密钥' aria-label='API 密钥'></div></div>"
+        },
+        {
+          "label": "已填草稿：遮蔽态 / 已揭示态",
+          "note": "两个都是真实态：左侧 type=password + 睁眼图标，右侧 type=text + 划线图标（aria-pressed=true）",
+          "html": "<div style='display:flex;flex-direction:column;gap:12px;width:320px'><div class='keyInput'><input class='input keyInputFilled' type='password' value='sk-4f9c2b7e18a34d05' aria-label='API 密钥'><button type='button' class='keyToggle' aria-label='显示密钥' aria-pressed='false'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.3' stroke-linecap='round' aria-hidden='true'><path d='M1.5 8C2.9 5.25 5.25 3.5 8 3.5C10.75 3.5 13.1 5.25 14.5 8C13.1 10.75 10.75 12.5 8 12.5C5.25 12.5 2.9 10.75 1.5 8Z'></path><path d='M10 8C10 9.1 9.1 10 8 10C6.9 10 6 9.1 6 8C6 6.9 6.9 6 8 6C9.1 6 10 6.9 10 8Z'></path></svg></button></div><div class='keyInput'><input class='input keyInputFilled' type='text' value='sk-4f9c2b7e18a34d05' aria-label='API 密钥'><button type='button' class='keyToggle' aria-label='隐藏密钥' aria-pressed='true'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.3' stroke-linecap='round' aria-hidden='true'><path d='M1.5 8C2.9 5.25 5.25 3.5 8 3.5C10.75 3.5 13.1 5.25 14.5 8C13.1 10.75 10.75 12.5 8 12.5C5.25 12.5 2.9 10.75 1.5 8Z'></path><path d='M2.5 2.5L13.5 13.5'></path></svg></button></div></div>"
+        },
+        {
+          "label": "揭示按钮悬停模拟",
+          "note": "悬停模拟：把真实 .keyToggle:hover:not(:disabled) 的规则搬到同名类上",
+          "html": "<div style='width:320px'><div class='keyInput'><input class='input keyInputFilled' type='password' value='sk-4f9c2b7e18a34d05' aria-label='API 密钥'><button type='button' class='keyToggle' aria-label='显示密钥' aria-pressed='false'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.3' stroke-linecap='round' aria-hidden='true'><path d='M1.5 8C2.9 5.25 5.25 3.5 8 3.5C10.75 3.5 13.1 5.25 14.5 8C13.1 10.75 10.75 12.5 8 12.5C5.25 12.5 2.9 10.75 1.5 8Z'></path><path d='M10 8C10 9.1 9.1 10 8 10C6.9 10 6 9.1 6 8C6 6.9 6.9 6 8 6C9.1 6 10 6.9 10 8Z'></path></svg></button></div></div>",
+          "css": "/* 状态模拟：.keyToggle 的悬停态无法静态触发，这里把 :hover:not(:disabled) 那条规则原样套在类上 */\n.keyToggle {\n  color: var(--dsw-alias-label-primary);\n}"
+        }
+      ],
+      "props": [
+        {
+          "name": "value",
+          "type": "string",
+          "default": "—",
+          "desc": "未保存的密钥草稿；已存凭据从不回读进这个字段，空串表示不写入。"
+        },
+        {
+          "name": "t",
+          "type": "(key: keyof typeof en) => string",
+          "default": "—",
+          "desc": "取 keyReveal / keyHide 两个标签，作为揭示按钮的无障碍名。"
+        },
+        {
+          "name": "…props",
+          "type": "Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'type' | 'className' | 'autoComplete'>",
+          "default": "—",
+          "desc": "其余输入属性（placeholder、disabled、aria-label、required、onChange…）原样透传给 <input>；type 由揭示状态接管，autoComplete 固定为 new-password。"
+        }
+      ],
+      "notes": "按钮本身不用 <code>tabIndex</code>：它在 DOM 里紧跟输入框，键盘顺序自然。输入框的 <code>:focus</code> 只换描边色（<code>--dsw-alias-state-business-primary</code>），焦点环留给按钮的 <code>:focus-visible</code>。禁用时按钮单独降为 60% 不透明，输入框的禁用样式由宿主容器决定。",
+      "keywords": [
+        "API 密钥",
+        "密码框",
+        "揭示",
+        "reveal",
+        "secret",
+        "credential"
+      ]
+    },
+    {
+      "id": "custom-provider-card",
+      "name": "CustomProviderCard",
+      "exportName": "CustomProviderCard",
+      "zh": "自定义提供商",
+      "group": "settings",
+      "summary": "「添加模型提供商」里自定义模式的核心表单，也是整页里最长的创建卡：R16 的 <code>--dsw-alias-bg-module-platform</code> 编辑面 <code>.editor</code>（上下 14px、左右 16px 内边距、14px 间距）里依次是 Provider ID、显示名称、API 地址、API 协议、API 密钥与模型目录，字段标签 12/18 二级色、输入框 32px/R12（<code>--dsw-radius-md</code>），问题行用 12/18 的 <code>.error</code> 红字、说明行用 <code>.advancedHint</code> 三级色。「创建提供商」是否可点由 <code>ready</code> 一次算清：route id 非空、匹配 <code>/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/</code> 且未被已有路由占用，API 地址非空且是 http/https，至少一行模型且逐行校验通过（ID 非空不重复，显示名与容量若填写需合法；声明推理等级时每档参数值非空且至少有一个非 <code>off</code> 档），密钥格式合法（空值放行，纯空白、带引号或 <code>KEY=…</code> 整行粘贴都算错）。协议有默认值（<code>protocols[0]</code>），不算门禁。<code>ready</code> 时整条提示行消失而不是印一行空文案。",
+      "source": "packages/client/ui-settings-models/src/client/CustomProviderCard.tsx#L100",
+      "css": [
+        "packages/client/ui-settings-models/src/client/ModelsSection.module.css",
+        "packages/client/ui-primitives/src/Checkbox.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-layer-1",
+        "--dsw-alias-bg-module-platform",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-border-l4",
+        "--dsw-alias-brand-primary",
+        "--dsw-alias-button-primary-fill",
+        "--dsw-alias-button-primary-hover",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-interactive-bg-hover-danger",
+        "--dsw-alias-interactive-bg-hover-solid",
+        "--dsw-alias-label-dimmed",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-primary-foreground",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-state-business-primary",
+        "--dsw-alias-state-error-primary",
+        "--dsw-focus-ring-color",
+        "--dsw-focus-ring-width",
+        "--dsw-radius-lg",
+        "--dsw-radius-md",
+        "--dsw-radius-sm"
+      ],
+      "specimens": [
+        {
+          "label": "默认态：空白创建卡",
+          "note": "地址与模型都没填，底部只剩「需要填写 API 地址」一条提示；「获取可用模型」因为没有地址而禁用（title 说明原因）",
+          "html": "<div style='width:600px'><div class='editor'><div class='field'><span class='fieldLabel'>Provider ID</span><input class='input' type='text' placeholder='acme-gateway' aria-label='Provider ID'></div><p class='advancedHint'>以小写字母开头的标识，在请求中唯一标识该提供商，并用于派生凭据名。</p><div class='field'><span class='fieldLabel'>显示名称</span><input class='input' type='text' placeholder='显示名称' aria-label='显示名称'></div><div class='field'><span class='fieldLabel'>API 地址</span><input class='input' type='text' placeholder='https://gateway.example/v1' aria-label='API 地址'></div><div class='field'><span class='fieldLabel'>API 协议</span><select class='input selectInput' aria-label='API 协议'><option>OpenAI Chat Completions</option><option>OpenAI Responses</option><option>Anthropic Messages</option></select></div><div class='field'><span class='fieldLabel'>API 密钥</span><div class='keyInput'><input class='input' type='password' placeholder='输入 API 密钥' aria-label='API 密钥'></div></div><section class='modelCatalog' aria-label='模型目录'><div class='modelListHead'><div class='modelCatalogHeading'><span class='modelCatalogTitle'>模型目录</span></div><button type='button' class='linkButton' disabled title='请先填写 API 地址，再获取。'>获取可用模型</button></div><p class='modelEmpty'>模型选择器中将不显示任何模型；目录外 ID 仍可直接发送。</p><div class='modelList'></div><button type='button' class='addModelButton'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M8 2V14' stroke='currentColor'></path><path d='M2 8H14' stroke='currentColor'></path></svg>添加模型</button></section><p class='advancedHint'>自定义模型 API 需要填写 API 地址。</p><div class='editorActions'><button type='button' class='secondaryButton'>取消</button><button type='button' class='primaryButton' disabled>创建提供商</button></div></div></div>"
+        },
+        {
+          "label": "可提交：填满三个门禁 + 展开的模型行",
+          "note": "门禁满足后底部提示整条消失；模型行展开后是 32px 容量输入框与两个输入类型复选框",
+          "html": "<div style='width:600px'><div class='editor'><div class='field'><span class='fieldLabel'>Provider ID</span><input class='input' type='text' value='acme-gateway' aria-label='Provider ID'></div><p class='advancedHint'>以小写字母开头的标识，在请求中唯一标识该提供商，并用于派生凭据名。</p><div class='field'><span class='fieldLabel'>显示名称</span><input class='input' type='text' value='Acme 网关' aria-label='显示名称'></div><div class='field'><span class='fieldLabel'>API 地址</span><input class='input' type='text' value='https://gateway.example/v1' aria-label='API 地址'></div><div class='field'><span class='fieldLabel'>API 协议</span><select class='input selectInput' aria-label='API 协议'><option>OpenAI Chat Completions</option><option>OpenAI Responses</option><option>Anthropic Messages</option></select></div><div class='field'><span class='fieldLabel'>API 密钥</span><div class='keyInput'><input class='input keyInputFilled' type='password' value='sk-4f9c2b7e18a34d05' aria-label='API 密钥'><button type='button' class='keyToggle' aria-label='显示密钥' aria-pressed='false'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.3' stroke-linecap='round' aria-hidden='true'><path d='M1.5 8C2.9 5.25 5.25 3.5 8 3.5C10.75 3.5 13.1 5.25 14.5 8C13.1 10.75 10.75 12.5 8 12.5C5.25 12.5 2.9 10.75 1.5 8Z'></path><path d='M10 8C10 9.1 9.1 10 8 10C6.9 10 6 9.1 6 8C6 6.9 6.9 6 8 6C9.1 6 10 6.9 10 8Z'></path></svg></button></div></div><section class='modelCatalog' aria-label='模型目录'><div class='modelListHead'><div class='modelCatalogHeading'><span class='modelCatalogTitle'>模型目录</span></div><button type='button' class='linkButton'>获取可用模型</button></div><div class='modelList'><div class='modelEntry'><div class='modelRow'><input class='input' type='text' value='gpt-4o-mini' aria-label='模型 ID 1'><input class='input' type='text' value='GPT-4o mini' aria-label='显示名称 1'><button type='button' class='iconButton' aria-label='模型选项 1' aria-expanded='true'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'></path></svg></button><button type='button' class='iconButton iconButtonDanger' aria-label='删除模型 1'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M1.28149 3.88831H14.7187' stroke='currentColor'></path><path d='M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833' stroke='currentColor'></path><path d='M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831' stroke='currentColor'></path><path d='M6.44946 6.98926V11.1238' stroke='currentColor'></path><path d='M9.55054 6.98926V11.1238' stroke='currentColor'></path></svg></button></div><div class='modelAdvanced'><label class='modelField'><span class='modelFieldLabel'>上下文窗口</span><input class='input' type='text' inputmode='numeric' value='256K' aria-label='上下文窗口 1'></label><label class='modelField'><span class='modelFieldLabel'>最大输出 token 数</span><input class='input' type='text' inputmode='numeric' value='32K' aria-label='最大输出 token 数 1'></label><fieldset class='modelInputTypes' aria-label='输入类型 1'><legend class='modelFieldLabel'>输入类型</legend><div class='modelInputChoices'><label class='checkbox'><input type='checkbox' checked><span>文本</span></label><label class='checkbox'><input type='checkbox'><span>图片</span></label></div></fieldset></div></div></div><button type='button' class='addModelButton'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M8 2V14' stroke='currentColor'></path><path d='M2 8H14' stroke='currentColor'></path></svg>添加模型</button></section><div class='editorActions'><button type='button' class='secondaryButton'>取消</button><button type='button' class='primaryButton'>创建提供商</button></div></div></div>"
+        },
+        {
+          "label": "失败态：ID 被占用 / 地址非法 / 密钥整行粘贴",
+          "note": "三处字段级错误行同时出现；此时底部提示行整条不画（字段自己已经说清了），提交保持禁用",
+          "html": "<div style='width:600px'><div class='editor'><div class='field'><span class='fieldLabel'>Provider ID</span><input class='input' type='text' value='deepseek' aria-label='Provider ID'></div><p class='error'>已有提供商使用了这个 ID。</p><div class='field'><span class='fieldLabel'>显示名称</span><input class='input' type='text' value='本地中转' aria-label='显示名称'></div><div class='field'><span class='fieldLabel'>API 地址</span><input class='input' type='text' value='gateway.example/v1' aria-label='API 地址' aria-invalid='true'></div><p class='error'>请输入有效的 HTTP 或 HTTPS 地址。</p><div class='field'><span class='fieldLabel'>API 协议</span><select class='input selectInput' aria-label='API 协议'><option>OpenAI Chat Completions</option><option>OpenAI Responses</option><option>Anthropic Messages</option></select></div><div class='field'><span class='fieldLabel'>API 密钥</span><div class='keyInput'><input class='input keyInputFilled' type='password' value='DEEPSEEK_API_KEY=sk-4f9c2b7e' aria-label='API 密钥' aria-invalid='true'><button type='button' class='keyToggle' aria-label='显示密钥' aria-pressed='false'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.3' stroke-linecap='round' aria-hidden='true'><path d='M1.5 8C2.9 5.25 5.25 3.5 8 3.5C10.75 3.5 13.1 5.25 14.5 8C13.1 10.75 10.75 12.5 8 12.5C5.25 12.5 2.9 10.75 1.5 8Z'></path><path d='M10 8C10 9.1 9.1 10 8 10C6.9 10 6 9.1 6 8C6 6.9 6.9 6 8 6C9.1 6 10 6.9 10 8Z'></path></svg></button></div><p class='error'>该 API 密钥格式错误，请检查。</p></div><section class='modelCatalog' aria-label='模型目录'><div class='modelListHead'><div class='modelCatalogHeading'><span class='modelCatalogTitle'>模型目录</span></div><button type='button' class='linkButton'>获取可用模型</button></div><div class='modelList'><div class='modelEntry'><div class='modelRow'><input class='input' type='text' value='gpt-4o-mini' aria-label='模型 ID 1'><input class='input' type='text' placeholder='显示名称' aria-label='显示名称 1'><button type='button' class='iconButton' aria-label='模型选项 1' aria-expanded='false'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4' stroke='currentColor'></path></svg></button><button type='button' class='iconButton iconButtonDanger' aria-label='删除模型 1'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M1.28149 3.88831H14.7187' stroke='currentColor'></path><path d='M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833' stroke='currentColor'></path><path d='M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831' stroke='currentColor'></path><path d='M6.44946 6.98926V11.1238' stroke='currentColor'></path><path d='M9.55054 6.98926V11.1238' stroke='currentColor'></path></svg></button></div></div></div><button type='button' class='addModelButton'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M8 2V14' stroke='currentColor'></path><path d='M2 8H14' stroke='currentColor'></path></svg>添加模型</button></section><div class='editorActions'><button type='button' class='secondaryButton'>取消</button><button type='button' class='primaryButton' disabled>创建提供商</button></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "taken",
+          "type": "readonly string[]",
+          "default": "—",
+          "desc": "已声明的路由 id 快照，用来当场拒绝重名的 Provider ID。"
+        },
+        {
+          "name": "protocols",
+          "type": "readonly string[]",
+          "default": "—",
+          "desc": "适配器可服务的协议标识，按它上报的顺序成为下拉项；空数组时首项为空串。"
+        },
+        {
+          "name": "reasoningLevels",
+          "type": "readonly string[]",
+          "default": "—",
+          "desc": "适配器 schema 接受的推理档位，逐行交给模型编辑器；空数组则不显示推理控件。"
+        },
+        {
+          "name": "revision",
+          "type": "number",
+          "default": "—",
+          "desc": "打开这张卡时的 <code>llm-pi-ai</code> 用户段版本号，随创建一并提交，别处并发写入会变成冲突提示而不是覆盖。"
+        },
+        {
+          "name": "operations",
+          "type": "ModelsOperations",
+          "default": "—",
+          "desc": "写设置、写凭证与端点探测的 Host 操作。"
+        },
+        {
+          "name": "t",
+          "type": "(key: keyof typeof en) => string",
+          "default": "—",
+          "desc": "settings.models 段落文案。"
+        },
+        {
+          "name": "readOnly",
+          "type": "boolean",
+          "default": "—",
+          "desc": "只读部署：禁用全部写入控件（取消仍然可用）。"
+        },
+        {
+          "name": "onClose",
+          "type": "(changed: boolean) => void",
+          "default": "—",
+          "desc": "关闭卡片；<code>changed</code> 说明是否真的创建了提供商。"
+        },
+        {
+          "name": "onBusyChange",
+          "type": "(busy: boolean) => void",
+          "default": "undefined",
+          "desc": "创建或端点探测在途时上报，宿主据此按住卡片外围（例如添加方式开关）。"
+        }
+      ],
+      "notes": "提交是分两步的：先 <code>settings.mutate</code> 在 <code>providers.&lt;route&gt;</code> 写下整个 profile，再单独把密钥写进 credentials；profile 落地后 <code>committed</code> 置位，字段停用而重试只重发密钥那一步。这里刻意没有提供商级的推理档位控件——档位是每个模型各自的属性，同一个提供商下的模型并不一致，所以档位改由每条模型行自己声明。底部按钮组是共享的 <code>EditorFooter</code>，用的也是 <code>.editorActions</code> + <code>.secondaryButton/.primaryButton</code>。",
+      "keywords": [
+        "自定义提供商",
+        "中转站",
+        "Provider ID",
+        "baseURL",
+        "API 协议",
+        "创建提供商"
+      ]
+    },
+    {
+      "id": "deepseek-models-editor",
+      "name": "DeepSeekModelsEditor",
+      "exportName": "DeepSeekModelsEditor",
+      "zh": "模型目录编辑",
+      "group": "settings",
+      "summary": "DeepSeek 直连适配器的模型目录编辑器：顶部一行是 12/18 的「模型目录」标题与继承／已覆盖状态，右侧在覆盖时多一枚 <code>.linkButton</code>「恢复默认模型」。每个模型是一张 R16、0.5px <code>--dsw-alias-border-l4</code> 的 <code>.modelEntry</code>，第一行用四列栅格（1.4fr 的 ID、1fr 的名称、两枚 28×28 图标按钮）排开；展开后是两列 <code>.modelAdvanced</code>：上下文窗口与最大输出 token 数两个 32px 输入框，加一组跨两列的输入类型复选框。列表末尾是 28px 高、0.5px <code>--dsw-alias-border-l3</code> 实线描边的「添加模型」按钮（虚线描边只属于空态 <code>.modelEmpty</code>）。",
+      "source": "packages/client/ui-settings-models/src/client/DeepSeekModelsEditor.tsx#L150",
+      "css": [
+        "packages/client/ui-settings-models/src/client/ModelsSection.module.css",
+        "packages/client/ui-primitives/src/Checkbox.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-layer-1",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-border-l4",
+        "--dsw-alias-brand-primary",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-interactive-bg-hover-danger",
+        "--dsw-alias-label-dimmed",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-state-business-primary",
+        "--dsw-alias-state-error-primary",
+        "--dsw-focus-ring-color",
+        "--dsw-focus-ring-width",
+        "--dsw-radius-lg",
+        "--dsw-radius-md",
+        "--dsw-radius-sm"
+      ],
+      "specimens": [
+        {
+          "label": "继承态：适配器默认目录（两行折叠）",
+          "note": "未覆盖时没有「恢复默认模型」按钮，状态行写「正在使用适配器默认模型」",
+          "html": "<div style='width:600px'><section class='modelCatalog' aria-label='模型目录'><div class='modelListHead'><div class='modelCatalogHeading'><span class='modelCatalogTitle'>模型目录</span><span class='modelCatalogMeta'>正在使用适配器默认模型</span></div></div><div class='modelList'><div class='modelEntry'><div class='modelRow'><input class='input' type='text' value='deepseek-chat' aria-label='模型 ID 1'><input class='input' type='text' value='DeepSeek Chat' aria-label='显示名称 1'><button type='button' class='iconButton' aria-label='模型选项 1' aria-expanded='false' title='模型选项'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4' stroke='currentColor'></path></svg></button><button type='button' class='iconButton iconButtonDanger' aria-label='删除模型 1' title='删除模型'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M1.28149 3.88831H14.7187' stroke='currentColor'></path><path d='M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833' stroke='currentColor'></path><path d='M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831' stroke='currentColor'></path><path d='M6.44946 6.98926V11.1238' stroke='currentColor'></path><path d='M9.55054 6.98926V11.1238' stroke='currentColor'></path></svg></button></div></div><div class='modelEntry'><div class='modelRow'><input class='input' type='text' value='deepseek-reasoner' aria-label='模型 ID 2'><input class='input' type='text' placeholder='显示名称' aria-label='显示名称 2'><button type='button' class='iconButton' aria-label='模型选项 2' aria-expanded='false' title='模型选项'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4' stroke='currentColor'></path></svg></button><button type='button' class='iconButton iconButtonDanger' aria-label='删除模型 2' title='删除模型'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M1.28149 3.88831H14.7187' stroke='currentColor'></path><path d='M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833' stroke='currentColor'></path><path d='M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831' stroke='currentColor'></path><path d='M6.44946 6.98926V11.1238' stroke='currentColor'></path><path d='M9.55054 6.98926V11.1238' stroke='currentColor'></path></svg></button></div></div></div><button type='button' class='addModelButton'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M8 2V14' stroke='currentColor'></path><path d='M2 8H14' stroke='currentColor'></path></svg>添加模型</button></section></div>"
+        },
+        {
+          "label": "已覆盖 + 首行展开：容量与输入类型",
+          "note": "覆盖后状态行变成「已自定义模型目录」并出现恢复按钮；展开行的上下文窗口显示 256K（存储值 256000）",
+          "html": "<div style='width:600px'><section class='modelCatalog' aria-label='模型目录'><div class='modelListHead'><div class='modelCatalogHeading'><span class='modelCatalogTitle'>模型目录</span><span class='modelCatalogMeta'>已自定义模型目录</span></div><button type='button' class='linkButton'>恢复默认模型</button></div><div class='modelList'><div class='modelEntry'><div class='modelRow'><input class='input' type='text' value='deepseek-chat' aria-label='模型 ID 1'><input class='input' type='text' value='DeepSeek Chat' aria-label='显示名称 1'><button type='button' class='iconButton' aria-label='模型选项 1' aria-expanded='true' title='模型选项'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M4 6L7.29289 9.29289C7.68342 9.68342 8.31658 9.68342 8.70711 9.29289L12 6' stroke='currentColor'></path></svg></button><button type='button' class='iconButton iconButtonDanger' aria-label='删除模型 1' title='删除模型'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M1.28149 3.88831H14.7187' stroke='currentColor'></path><path d='M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833' stroke='currentColor'></path><path d='M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831' stroke='currentColor'></path><path d='M6.44946 6.98926V11.1238' stroke='currentColor'></path><path d='M9.55054 6.98926V11.1238' stroke='currentColor'></path></svg></button></div><div class='modelAdvanced'><label class='modelField'><span class='modelFieldLabel'>上下文窗口</span><input class='input' type='text' inputmode='numeric' value='256K' aria-label='上下文窗口 1'></label><label class='modelField'><span class='modelFieldLabel'>最大输出 token 数</span><input class='input' type='text' inputmode='numeric' value='64K' aria-label='最大输出 token 数 1'></label><fieldset class='modelInputTypes' aria-label='输入类型 1'><legend class='modelFieldLabel'>输入类型</legend><div class='modelInputChoices'><label class='checkbox'><input type='checkbox' checked><span>文本</span></label><label class='checkbox'><input type='checkbox'><span>图片</span></label></div></fieldset></div></div><div class='modelEntry'><div class='modelRow'><input class='input' type='text' value='deepseek-reasoner' aria-label='模型 ID 2'><input class='input' type='text' value='DeepSeek Reasoner' aria-label='显示名称 2'><button type='button' class='iconButton' aria-label='模型选项 2' aria-expanded='false' title='模型选项'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M6 12L9.29289 8.70711C9.68342 8.31658 9.68342 7.68342 9.29289 7.29289L6 4' stroke='currentColor'></path></svg></button><button type='button' class='iconButton iconButtonDanger' aria-label='删除模型 2' title='删除模型'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M1.28149 3.88831H14.7187' stroke='currentColor'></path><path d='M5.41602 3.88833V2.47962C5.41602 2.29282 5.52492 2.11366 5.71876 1.98157C5.9126 1.84948 6.17551 1.77527 6.44964 1.77527H9.55053C9.82466 1.77527 10.0876 1.84948 10.2814 1.98157C10.4753 2.11366 10.5842 2.29282 10.5842 2.47962V3.88833' stroke='currentColor'></path><path d='M2.57349 3.88831L3.19366 13.2943C3.21937 13.5502 3.33952 13.7872 3.53065 13.9593C3.72178 14.1313 3.97016 14.2259 4.22729 14.2246H11.7728C12.0299 14.2259 12.2783 14.1313 12.4694 13.9593C12.6605 13.7872 12.7807 13.5502 12.8064 13.2943L13.4266 3.88831' stroke='currentColor'></path><path d='M6.44946 6.98926V11.1238' stroke='currentColor'></path><path d='M9.55054 6.98926V11.1238' stroke='currentColor'></path></svg></button></div></div></div><button type='button' class='addModelButton'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M8 2V14' stroke='currentColor'></path><path d='M2 8H14' stroke='currentColor'></path></svg>添加模型</button></section></div>"
+        },
+        {
+          "label": "空目录：一条虚线空态",
+          "note": "models 为空时只剩 .modelEmpty 的一行说明，添加按钮仍在末尾",
+          "html": "<div style='width:600px'><section class='modelCatalog' aria-label='模型目录'><div class='modelListHead'><div class='modelCatalogHeading'><span class='modelCatalogTitle'>模型目录</span><span class='modelCatalogMeta'>已自定义模型目录</span></div><button type='button' class='linkButton'>恢复默认模型</button></div><p class='modelEmpty'>模型选择器中将不显示任何模型；目录外 ID 仍可直接发送。</p><button type='button' class='addModelButton'><svg width='14' height='14' viewBox='0 0 16 16' fill='none' aria-hidden='true' stroke-width='1'><path d='M8 2V14' stroke='currentColor'></path><path d='M2 8H14' stroke='currentColor'></path></svg>添加模型</button></section></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "models",
+          "type": "readonly DeepSeekModelDraft[]",
+          "default": "—",
+          "desc": "生效中的行：父级物化覆盖之前是继承来的适配器默认值。"
+        },
+        {
+          "name": "overridden",
+          "type": "boolean",
+          "default": "—",
+          "desc": "用户层是否已经拥有整个数组；决定状态行文案与是否画「恢复默认模型」。"
+        },
+        {
+          "name": "defaultContextWindow",
+          "type": "number | undefined",
+          "default": "undefined",
+          "desc": "行未写上下文窗口时的兜底值，只作为输入框 placeholder 显示。"
+        },
+        {
+          "name": "defaultMaxTokens",
+          "type": "number | undefined",
+          "default": "undefined",
+          "desc": "行未写最大输出时的兜底值，同样只做 placeholder。"
+        },
+        {
+          "name": "t",
+          "type": "(key: keyof typeof en) => string",
+          "default": "—",
+          "desc": "settings.models 段落文案。"
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "—",
+          "desc": "停用全部改动（只读部署或写入在途）。"
+        },
+        {
+          "name": "onChange",
+          "type": "(models: DeepSeekModelDraft[]) => void",
+          "default": "—",
+          "desc": "一次可见编辑后替换整个用户数组。"
+        },
+        {
+          "name": "onReset",
+          "type": "() => void",
+          "default": "—",
+          "desc": "删掉用户数组、退回继承。"
+        }
+      ],
+      "notes": "容量按 K/M 文本读写：<code>256K</code> 存成 256000，<code>1M</code> 是 1000K；读不懂的文本会一直留在输入框里，等保存时的校验按行号报错，而不是当场改写用户输入。编辑缓冲按 <code>&lt;行号&gt;:&lt;字段&gt;</code> 逐字段存，删行时整批重排行号。每行折叠按钮的 <code>aria-expanded</code> 与箭头方向同步，删除按钮悬停才染红（<code>.iconButtonDanger</code>）。",
+      "keywords": [
+        "模型目录",
+        "contextWindow",
+        "maxTokens",
+        "256K",
+        "输入类型",
+        "恢复默认模型"
+      ]
+    },
+    {
+      "id": "deepseek-onboarding-dialog",
+      "name": "DeepSeekOnboardingDialog",
+      "exportName": "DeepSeekOnboardingDialog",
+      "zh": "首次配置弹窗",
+      "group": "settings",
+      "summary": "首启时请用户填官方 DeepSeek 凭据的阻塞式弹窗：600px 上限的对话框（<code>--dsw-radius-panel</code>、<code>--dsw-elevation-prominent</code>、二级层填充）压在模糊蒙版上，正文 28px 内边距、标题 20/28/500。内容是一句 14/24 二级色的说明，加 24px 间距的 <code>.editor</code>——里面复用模型页的凭据编辑器，只画 API 密钥一个字段（32px 密码框 + 揭示按钮）和右对齐的「稍后配置 / 保存并继续」。凭据为空时提交保持禁用。",
+      "source": "packages/client/ui-settings-models/src/client/DeepSeekOnboardingDialog.tsx#L58",
+      "css": [
+        "packages/client/ui-settings-models/src/client/DeepSeekOnboardingDialog.module.css",
+        "packages/client/ui-settings-models/src/client/ModelsSection.module.css",
+        "packages/client/ui-primitives/src/Modal.module.css",
+        "packages/client/ui-settings-models/src/client/OnboardingModal.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-layer-1",
+        "--dsw-alias-bg-layer-2",
+        "--dsw-alias-bg-mask-1",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-border-l4",
+        "--dsw-alias-button-primary-fill",
+        "--dsw-alias-button-primary-hover",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-interactive-bg-hover-solid",
+        "--dsw-alias-label-dimmed",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-primary-foreground",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-state-business-primary",
+        "--dsw-alias-state-error-primary",
+        "--dsw-elevation-prominent",
+        "--dsw-focus-ring-color",
+        "--dsw-focus-ring-width",
+        "--dsw-mask-blur",
+        "--dsw-radius-md",
+        "--dsw-radius-panel"
+      ],
+      "specimens": [
+        {
+          "label": "首启默认态：空密钥，提交禁用",
+          "note": "该组件本身无独立外观，这里展示它渲染的内容；蒙版与对话框原为 fixed 门户层，静态快照拉回文档流",
+          "html": "<div style='width:640px'><div class='root'><div class='mask' aria-hidden='true'></div><div class='dialog' role='dialog' aria-modal='true' aria-label='添加一个 API Key 开始使用'><div class='c3-content'><h2 class='c3-title'>添加一个 API Key 开始使用</h2><div class='c3-body'><p class='c0-description'>配置 DeepSeek 官方模型，即可开始使用。</p><div class='c0-editor'><div class='addBlock'><div class='field'><span class='fieldLabel'>API 密钥<button type='button' class='helpButton' aria-label='认证说明'>?</button></span><div class='keyInput'><input class='input' type='password' placeholder='输入 API 密钥' aria-label='API 密钥' required></div></div><div class='editorActions'><button type='button' class='secondaryButton'>稍后配置</button><button type='button' class='primaryButton' disabled>保存并继续</button></div></div></div></div></div></div></div></div>",
+          "css": "/* 状态模拟：门户卡片原本 position: fixed，静态快照写 relative + inset: auto 拉回文档流；\n   这里不用 static，留住包含块让 .mask 的 inset 仍以卡片为参照 */\n.c2-root {\n  position: relative;\n  inset: auto;\n}"
+        },
+        {
+          "label": "已填密钥：可提交",
+          "note": "密钥草稿一有值，输入框让出 40px 并出现揭示按钮；提交按钮恢复主色",
+          "html": "<div style='width:640px'><div class='root'><div class='mask' aria-hidden='true'></div><div class='dialog' role='dialog' aria-modal='true' aria-label='添加一个 API Key 开始使用'><div class='c3-content'><h2 class='c3-title'>添加一个 API Key 开始使用</h2><div class='c3-body'><p class='c0-description'>配置 DeepSeek 官方模型，即可开始使用。</p><div class='c0-editor'><div class='addBlock'><div class='field'><span class='fieldLabel'>API 密钥<button type='button' class='helpButton' aria-label='认证说明'>?</button></span><div class='keyInput'><input class='input keyInputFilled' type='password' value='sk-4f9c2b7e18a34d05' aria-label='API 密钥' required><button type='button' class='keyToggle' aria-label='显示密钥' aria-pressed='false'><svg width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.3' stroke-linecap='round' aria-hidden='true'><path d='M1.5 8C2.9 5.25 5.25 3.5 8 3.5C10.75 3.5 13.1 5.25 14.5 8C13.1 10.75 10.75 12.5 8 12.5C5.25 12.5 2.9 10.75 1.5 8Z'></path><path d='M10 8C10 9.1 9.1 10 8 10C6.9 10 6 9.1 6 8C6 6.9 6.9 6 8 6C9.1 6 10 6.9 10 8Z'></path></svg></button></div></div><div class='editorActions'><button type='button' class='secondaryButton'>稍后配置</button><button type='button' class='primaryButton'>保存并继续</button></div></div></div></div></div></div></div></div>",
+          "css": "/* 状态模拟：门户卡片原本 position: fixed，静态快照写 relative + inset: auto 拉回文档流；\n   这里不用 static，留住包含块让 .mask 的 inset 仍以卡片为参照 */\n.c2-root {\n  position: relative;\n  inset: auto;\n}"
+        }
+      ],
+      "props": [
+        {
+          "name": "stepId",
+          "type": "string",
+          "default": "—",
+          "desc": "协调者当前选中的步骤 id（本步骤是 <code>deepseek-official</code>）。"
+        },
+        {
+          "name": "explicit",
+          "type": "boolean",
+          "default": "false",
+          "desc": "用户在首启之外主动重开该步骤；为真时即使已有可用提供商也照常显示。"
+        },
+        {
+          "name": "complete",
+          "type": "() => void",
+          "default": "—",
+          "desc": "结束或跳过该步骤，把所有权交给下一个注册者。"
+        },
+        {
+          "name": "openSection",
+          "type": "(id: string) => void",
+          "default": "—",
+          "desc": "直接打开设置面板的某个分区。"
+        },
+        {
+          "name": "automatic",
+          "type": "boolean",
+          "default": "—",
+          "desc": "注册侧注入：首启是否自动展示；为假且非 explicit 时组件直接返回 null。"
+        },
+        {
+          "name": "hooks.models",
+          "type": "SnapshotStore<ModelsSettingsState>",
+          "default": "—",
+          "desc": "与模型设置页共享的联合快照（提供商、命名空间、凭据）。"
+        },
+        {
+          "name": "controller",
+          "type": "ModelsSettingsStore",
+          "default": "—",
+          "desc": "模型页的联合控制器，用来按需 load / 重新加载。"
+        },
+        {
+          "name": "operations",
+          "type": "ModelsOperations",
+          "default": "—",
+          "desc": "复用的凭据编辑器写设置与写凭证时走的 Host 操作。"
+        },
+        {
+          "name": "schema",
+          "type": "SettingsSchemaOperations",
+          "default": "—",
+          "desc": "读取命名空间 schema 与不可变路径。"
+        },
+        {
+          "name": "t",
+          "type": "(key: keyof typeof en) => string",
+          "default": "—",
+          "desc": "settings.models 文案；本步骤用 onboarding* 四个键与 keyInput/keyReveal/keyHide。"
+        },
+        {
+          "name": "renderSlot",
+          "type": "(key: 'settings.models.sign-in', owner, opts?) => ReactNode",
+          "default": "—",
+          "desc": "先派发登录方式槽；没有注册者时回退到内联的官方凭据编辑器。"
+        },
+        {
+          "name": "track",
+          "type": "TrackProductEvent | undefined",
+          "default": "undefined",
+          "desc": "桌面端事件采集；凭据提交时上报 <code>api_key_save_click</code>。"
+        }
+      ],
+      "notes": "它自己不产生独立外观：外壳是 onboarding 插件的共享模态，正文是模型页的凭据编辑器（<code>credentialOnly</code>、<code>hideTitle</code>、<code>credentialRequired</code>，因此只画密钥字段、不带「自定义设置」折叠区）。readiness 不是 credential-missing 时（loading / adapter-absent / unavailable / 已有可用提供商）立即 <code>complete()</code> 并返回 null；挂载期间把 <code>#root</code> 置为 inert，卸载时还原，所以蒙版点击与 Esc 都不关闭它。",
+      "keywords": [
+        "首次配置",
+        "onboarding",
+        "API Key",
+        "首启",
+        "阻塞弹窗",
+        "保存并继续"
+      ]
+    },
+    {
+      "id": "editor-footer",
+      "name": "EditorFooter",
+      "exportName": "EditorFooter",
+      "zh": "编辑操作行",
+      "group": "settings",
+      "summary": "每张提供商编辑卡末尾都有的动作行：右对齐、间距 8px 的两个按钮，取消用 0.5px <code>--dsw-alias-border-l3</code> 描边的透明底次要按钮，提交用 <code>--dsw-alias-button-primary-fill</code> 实心主按钮，都是 36px 高、R12（<code>--dsw-radius-md</code>）、14/22、左右内边距 14px。禁用时只降为 40% 不透明并去掉指针手型；提交在途时忙文案替换提交文案。",
+      "source": "packages/client/ui-settings-models/src/client/EditorFooter.tsx#L45",
+      "css": [
+        "packages/client/ui-settings-models/src/client/ModelsSection.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-border-l3",
+        "--dsw-alias-button-primary-fill",
+        "--dsw-alias-button-primary-hover",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-interactive-bg-hover-solid",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-primary-foreground",
+        "--dsw-alias-state-business-primary",
+        "--dsw-focus-ring-color",
+        "--dsw-radius-md"
+      ],
+      "specimens": [
+        {
+          "label": "默认：取消 + 创建提供商",
+          "note": "两枚按钮都可用，行本身只负责右对齐与 8px 间距",
+          "html": "<div style='width:520px'><div class='editorActions'><button type='button' class='secondaryButton'>取消</button><button type='button' class='primaryButton'>创建提供商</button></div></div>"
+        },
+        {
+          "label": "提交在途 / 提交被拒",
+          "note": "上行是 busy 态（两枚都禁用、文案换成创建中…），下行只有提交被门禁拒绝",
+          "html": "<div style='display:flex;flex-direction:column;gap:12px;width:520px'><div class='editorActions'><button type='button' class='secondaryButton' disabled>取消</button><button type='button' class='primaryButton' disabled>创建中…</button></div><div class='editorActions'><button type='button' class='secondaryButton'>取消</button><button type='button' class='primaryButton' disabled>创建提供商</button></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "t",
+          "type": "(key: keyof typeof en) => string",
+          "default": "—",
+          "desc": "这一行自己的标签文案。"
+        },
+        {
+          "name": "busy",
+          "type": "boolean",
+          "default": "—",
+          "desc": "提交在途：按住取消，并把提交文案换成忙文案。"
+        },
+        {
+          "name": "submitDisabled",
+          "type": "boolean",
+          "default": "—",
+          "desc": "提交是否被拒，由拥有这张卡的一方判定。"
+        },
+        {
+          "name": "submitLabelKey",
+          "type": "keyof typeof en",
+          "default": "—",
+          "desc": "空闲时的提交文案键。"
+        },
+        {
+          "name": "submitBusyLabelKey",
+          "type": "keyof typeof en",
+          "default": "—",
+          "desc": "在途时的提交文案键。"
+        },
+        {
+          "name": "cancelLabelKey",
+          "type": "keyof typeof en",
+          "default": "'cancel'",
+          "desc": "取消文案键；不传时取设置编辑器通用的「取消」。"
+        },
+        {
+          "name": "onCancel",
+          "type": "() => void",
+          "default": "—",
+          "desc": "不提交直接关掉卡片。"
+        },
+        {
+          "name": "onSubmit",
+          "type": "() => void",
+          "default": "—",
+          "desc": "执行这张卡的提交。"
+        }
+      ],
+      "notes": "行本身不知道两张卡提交的是什么——创建路由还是保存既有 profile 由卡片决定；取消只在提交在途时禁用，从不因为卡片整体 disabled 而禁用（只读部署的卡片也必须能关掉）。按钮的悬停底色是 <code>--dsw-alias-interactive-bg-hover-solid</code>（次要）与 <code>--dsw-alias-button-primary-hover</code>（主要）。",
+      "keywords": [
+        "操作行",
+        "取消",
+        "提交",
+        "创建提供商",
+        "保存中"
+      ]
+    },
+    {
+      "id": "model-input-types",
+      "name": "ModelInputTypes",
+      "exportName": "ModelInputTypes",
+      "zh": "输入类型",
+      "group": "settings",
+      "summary": "模型行展开区里的输入类型选择：无边框的 <code>fieldset</code> 加 12/18 三级色 <code>legend</code>，下面是一条 <code>.modelInputChoices</code> 横排（间距 16px、最小高 32px）放「文本 / 图片」两个 16px 原生复选框，复选框用 <code>--dsw-alias-brand-primary</code> 作为 accent-color。覆盖不存在时显示继承来的类型；只剩一个已选项时该项自己被禁用，避免把最后一种类型也取消掉。",
+      "source": "packages/client/ui-settings-models/src/client/ModelInputTypes.tsx#L32",
+      "css": [
+        "packages/client/ui-settings-models/src/client/ModelsSection.module.css",
+        "packages/client/ui-primitives/src/Checkbox.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-brand-primary",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-state-business-primary",
+        "--dsw-focus-ring-color",
+        "--dsw-focus-ring-width"
+      ],
+      "specimens": [
+        {
+          "label": "继承态：只有文本，且文本不可取消",
+          "note": "行内没有覆盖时选中回退到 fallback ?? ['text']；只剩一个已选项时它自己禁用（整行降为 50% 不透明）",
+          "html": "<div style='width:320px'><fieldset class='modelInputTypes' aria-label='输入类型 1'><legend class='modelFieldLabel'>输入类型</legend><div class='modelInputChoices'><label class='checkbox'><input type='checkbox' checked disabled><span>文本</span></label><label class='checkbox'><input type='checkbox'><span>图片</span></label></div></fieldset></div>"
+        },
+        {
+          "label": "覆盖态：文本 + 图片都选中",
+          "note": "两种类型都在，两个复选框都可点；取消图片时组件会顺手删掉 imagePixelBudget 与 imageMaxBytes",
+          "html": "<div style='width:320px'><fieldset class='modelInputTypes' aria-label='输入类型 2'><legend class='modelFieldLabel'>输入类型</legend><div class='modelInputChoices'><label class='checkbox'><input type='checkbox' checked><span>文本</span></label><label class='checkbox'><input type='checkbox' checked><span>图片</span></label></div></fieldset></div>"
+        },
+        {
+          "label": "只读或保存中：整组禁用",
+          "note": "disabled 由所在行传入，用于只读部署与写入在途",
+          "html": "<div style='width:320px'><fieldset class='modelInputTypes' aria-label='输入类型 3'><legend class='modelFieldLabel'>输入类型</legend><div class='modelInputChoices'><label class='checkbox'><input type='checkbox' checked disabled><span>文本</span></label><label class='checkbox'><input type='checkbox' checked disabled><span>图片</span></label></div></fieldset></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "model",
+          "type": "DeepSeekModelDraft",
+          "default": "—",
+          "desc": "生效中的模型行，包含这个编辑器不编辑的字段。"
+        },
+        {
+          "name": "field",
+          "type": "'inputModalities' | 'input'",
+          "default": "—",
+          "desc": "写回哪个字段：DeepSeek 用 <code>inputModalities</code>，pi-ai 用 <code>input</code>。"
+        },
+        {
+          "name": "position",
+          "type": "number",
+          "default": "—",
+          "desc": "从 1 开始的行号，拼进无障碍组名。"
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "—",
+          "desc": "只读或保存中时禁止改动。"
+        },
+        {
+          "name": "fallback",
+          "type": "readonly string[] | undefined",
+          "default": "undefined",
+          "desc": "行未声明输入类型时的继承值（已装目录或提供商默认）。"
+        },
+        {
+          "name": "t",
+          "type": "(key: ModelsKey) => string",
+          "default": "—",
+          "desc": "取 modelInputTypes / modelInputText / modelInputImage 三个键。"
+        },
+        {
+          "name": "onChange",
+          "type": "(model: DeepSeekModelDraft) => void",
+          "default": "—",
+          "desc": "替换这一行并保留无关配置。"
+        }
+      ],
+      "notes": "选中集合始终至少保留一项：勾选是「当前项取反，其余保持原样」，所以两个都选后取消文本会得到 <code>['image']</code>。为 DeepSeek 写回时，去掉图片会连带删除 <code>imagePixelBudget</code> 与 <code>imageMaxBytes</code>，因为适配器会拒绝纯文本模型上的图片限制。视觉上它就是 <code>Checkbox</code> 原语，样式表因此一并内联。",
+      "keywords": [
+        "输入类型",
+        "inputModalities",
+        "文本",
+        "图片",
+        "复选框",
+        "多模态"
+      ]
+    },
+    {
+      "id": "agent-loop-card",
+      "name": "AgentLoopCard",
+      "exportName": "AgentLoopCard",
+      "zh": "Agent 循环",
+      "group": "settings",
+      "summary": "内置插件页里 Agent 循环这一页：<code>view='summary'</code> 时只返回一句「控制 Agent 派发工具调用的方式。」，<code>view='page'</code> 时画一个共享设置表单——13px/500 的字段标签加右侧「已覆盖」胶囊与「恢复默认」文字按钮，下面 34px 高、0.5px <code>--dsw-alias-border-l4</code> 描边的输入框（只读时文字降为三级色），再一行 12px 三级色说明。页脚是共享表单的 <code>.footer</code>（flex、间距 8px、没有 <code>justify-content</code>）：未编辑时保存按钮禁用且靠左；失败提示以 <code>flex: 1</code> 占满整行时才把保存挤到右侧。",
+      "source": "packages/client/ui-settings-agent-loop/src/client/AgentLoopCard.tsx#L20",
+      "css": [
+        "packages/client/ui-primitives/src/settings-form/SettingsForm.module.css",
+        "packages/client/ui-primitives/src/settings-form/fields.module.css",
+        "packages/client/ui-primitives/src/Tag.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-layer-3",
+        "--dsw-alias-bg-module-platform",
+        "--dsw-alias-border-l4",
+        "--dsw-alias-label-error",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-state-business-primary",
+        "--dsw-alias-state-error-primary",
+        "--dsw-focus-ring-color",
+        "--dsw-focus-ring-width",
+        "--dsw-radius-md"
+      ],
+      "specimens": [
+        {
+          "label": "默认态：未覆盖，保存禁用",
+          "note": "表单没有 staged 改动时保存按钮 disabled（40% 不透明）",
+          "html": "<div style='width:420px'><div class='form'><div class='field'><div class='head'><div class='labelGroup'><label class='label' for='plugin-config-agent-loop-parallel'>并行工具调用数</label></div></div><input class='input' id='plugin-config-agent-loop-parallel' type='text' inputmode='numeric' value='4' aria-label='并行工具调用数'><p class='hint'>同一步内最多同时运行多少个可并行的调用。</p></div><div class='footer'><button type='button' class='save' disabled>保存</button></div></div></div>"
+        },
+        {
+          "label": "已覆盖：徽标 + 恢复默认，保存可用",
+          "note": "值来自用户层时右侧出现 neutral 色调胶囊与「恢复默认」，保存按钮恢复可用",
+          "html": "<div style='width:420px'><div class='form'><div class='field'><div class='head'><div class='labelGroup'><label class='label' for='plugin-config-agent-loop-parallel'>并行工具调用数</label></div><span class='badges'><span class='tag' data-tone='neutral'>已覆盖</span><button type='button' class='reset'>恢复默认</button></span></div><input class='input' id='plugin-config-agent-loop-parallel' type='text' inputmode='numeric' value='8' aria-label='并行工具调用数'><p class='hint'>同一步内最多同时运行多少个可并行的调用。</p></div><div class='footer'><button type='button' class='save'>保存</button></div></div></div>"
+        },
+        {
+          "label": "只读部署：说明行 + 禁用输入",
+          "note": "writable=false 时先画一行 12px 三级色的只读说明，字段全部 disabled",
+          "html": "<div style='width:420px'><div class='form'><p class='readOnly' role='status'>本部署的设置为只读。</p><div class='field'><div class='head'><div class='labelGroup'><label class='label' for='plugin-config-agent-loop-parallel'>并行工具调用数</label></div></div><input class='input' id='plugin-config-agent-loop-parallel' type='text' inputmode='numeric' value='4' aria-label='并行工具调用数' disabled><p class='hint'>同一步内最多同时运行多少个可并行的调用。</p></div><div class='footer'><button type='button' class='save' disabled>保存</button></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "view",
+          "type": "'summary' | 'page'",
+          "default": "—",
+          "desc": "插件页问的形态：summary 只给一行说明文字，page 给带保存的完整表单。"
+        },
+        {
+          "name": "t",
+          "type": "(key: AgentLoopSettingsLocaleKey) => string",
+          "default": "—",
+          "desc": "settings.agentLoop 文案：字段名、说明、已覆盖／恢复默认与表单框架的保存、只读、不可用、保存失败。"
+        },
+        {
+          "name": "useAgentLoopCard",
+          "type": "(select) => AgentLoopCardState",
+          "default": "—",
+          "desc": "读取这一页的快照：表单壳状态加 maxParallelToolCalls 的草稿文本、是否覆盖、是否非法。"
+        },
+        {
+          "name": "save",
+          "type": "() => void",
+          "default": "—",
+          "desc": "把全部 staged 改动写下去。"
+        },
+        {
+          "name": "discard",
+          "type": "() => void",
+          "default": "—",
+          "desc": "丢弃全部 staged 改动；表单在卸载时自己调用它，所以页面没有丢弃按钮。"
+        },
+        {
+          "name": "edit",
+          "type": "(field: string, text: string) => void",
+          "default": "—",
+          "desc": "暂存某个字段的文本。"
+        },
+        {
+          "name": "resetField",
+          "type": "(field: string) => void",
+          "default": "—",
+          "desc": "暂存一次清除，让该字段保存后退回组合层默认值。"
+        }
+      ],
+      "notes": "命名空间是 <code>agent-loop</code>，只暴露 <code>maxParallelToolCalls</code> 一个数字字段，数值校验与「留空即用默认」由共享的 <code>settingsNumberField</code> 决定，非法时字段下方换成红色提示且保存被按住。表单只在 <code>save</code> 时写一次，离开页面即丢弃草稿，因此没有「放弃修改」控件。",
+      "keywords": [
+        "Agent 循环",
+        "并行工具调用",
+        "maxParallelToolCalls",
+        "插件设置页",
+        "保存"
+      ]
+    },
+    {
+      "id": "web-search-card",
+      "name": "WebSearchCard",
+      "exportName": "WebSearchCard",
+      "zh": "网页搜索",
+      "group": "settings",
+      "summary": "网页搜索提供方的设置页：最上面是一条「启用新版 Web 搜索 API」的开关行（13/1.5、36×20 的 <code>.switch</code>，关闭时轨道是 <code>--dsw-alias-border-l3</code>、打开时换成 <code>--dsw-alias-brand-primary</code>），下一行 12px 三级色说明里带一条 <code>--dsw-alias-link</code> 色的站外链接。往下依次是 API Key 字段（密码框 + 「已配置密钥。」胶囊）、基础地址与次数三个字段，全部走共享设置表单的 34px 输入框与 12px 说明行；字段底部是共享表单的 <code>.footer</code>（flex、间距 8px、没有 <code>justify-content</code>）：无失败提示时保存按钮靠左，失败提示以 <code>flex: 1</code> 占满整行时才把它挤到右侧。",
+      "source": "packages/client/ui-settings-web-search/src/client/WebSearchCard.tsx#L27",
+      "css": [
+        "packages/client/ui-settings-web-search/src/client/WebSearchCard.module.css",
+        "packages/client/ui-primitives/src/settings-form/SettingsForm.module.css",
+        "packages/client/ui-primitives/src/settings-form/fields.module.css",
+        "packages/client/ui-primitives/src/Switch.module.css",
+        "packages/client/ui-primitives/src/Tag.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-layer-3",
+        "--dsw-alias-bg-module-platform",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-border-l4",
+        "--dsw-alias-brand-primary",
+        "--dsw-alias-label-error",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-primary-foreground",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-link",
+        "--dsw-alias-state-business-primary",
+        "--dsw-alias-state-error-primary",
+        "--dsw-alias-switch-thumb",
+        "--dsw-focus-ring-color",
+        "--dsw-focus-ring-width",
+        "--dsw-radius-md"
+      ],
+      "specimens": [
+        {
+          "label": "默认态：Messages 模式，密钥已配置",
+          "note": "开关关闭走 <code>maxUses</code> 与 Messages 地址；未配置密钥时同一位置的胶囊会换成更长的说明文案",
+          "html": "<div style='width:460px'><div class='form'><div class='feature'><label class='toggleRow'><span>启用新版 Web 搜索 API</span><button type='button' role='switch' aria-checked='false' aria-label='启用新版 Web 搜索 API' class='switch'><span class='thumb'></span></button></label><p class='c0-hint'>默认关闭，搜索通过 DeepSeek Messages 完成。新版 Web 搜索 API 功能与计费详见<a class='link' href='https://api-docs.deepseek.com/zh-cn/guides/search' target='_blank' rel='noopener noreferrer'>网页搜索与抓取指南</a></p></div><div class='field'><div class='head'><label class='label' for='plugin-config-web-search-key'>API Key</label><span class='badges'><span class='tag' data-tone='neutral'>已配置密钥。</span></span></div><input class='input' id='plugin-config-web-search-key' type='password' autocomplete='new-password' value='' aria-label='API Key'><p class='c2-hint'>不写入设置文件。留空表示保持当前密钥。</p></div><div class='field'><div class='head'><label class='label' for='plugin-config-web-search-endpoint'>Messages API 基础地址</label></div><input class='input' id='plugin-config-web-search-endpoint' type='text' value='https://api.deepseek.com/anthropic/v1' aria-label='Messages API 基础地址'><p class='c2-hint'>填写含 API 前缀的地址，例如 https://api.deepseek.com/anthropic/v1；程序追加 /messages，留空恢复默认。</p></div><div class='field'><div class='head'><label class='label' for='plugin-config-web-search-max-uses'>单次请求最多搜索次数</label></div><input class='input' id='plugin-config-web-search-max-uses' type='text' inputmode='numeric' value='3' aria-label='单次请求最多搜索次数'><p class='c2-hint'>辅助模型在一次 Messages 请求内最多可执行的搜索次数，仅适用于 Messages API。</p></div><div class='footer'><button type='button' class='save' disabled>保存</button></div></div></div>"
+        },
+        {
+          "label": "覆盖态：新版 API 打开 + 两项已覆盖",
+          "note": "打开后字段名与说明换成 Search / Fetch 那一套，「已覆盖」胶囊与「恢复默认」出现在字段标签右侧",
+          "html": "<div style='width:460px'><div class='form'><div class='feature'><label class='toggleRow'><span>启用新版 Web 搜索 API</span><button type='button' role='switch' aria-checked='true' aria-label='启用新版 Web 搜索 API' class='switch'><span class='thumb'></span></button></label><p class='c0-hint'>默认关闭，搜索通过 DeepSeek Messages 完成。新版 Web 搜索 API 功能与计费详见<a class='link' href='https://api-docs.deepseek.com/zh-cn/guides/search' target='_blank' rel='noopener noreferrer'>网页搜索与抓取指南</a></p></div><div class='field'><div class='head'><label class='label' for='plugin-config-web-search-key'>API Key</label><span class='badges'><span class='tag' data-tone='neutral'>已配置密钥。</span></span></div><input class='input' id='plugin-config-web-search-key' type='password' autocomplete='new-password' value='' aria-label='API Key'><p class='c2-hint'>不写入设置文件。留空表示保持当前密钥。</p></div><div class='field'><div class='head'><div class='labelGroup'><label class='label' for='plugin-config-web-search-endpoint'>Search / Fetch API 基础地址</label></div><span class='badges'><span class='tag' data-tone='neutral'>已覆盖</span><button type='button' class='reset'>恢复默认</button></span></div><input class='input' id='plugin-config-web-search-endpoint' type='text' value='https://api.deepseek.com/v1/tools' aria-label='Search / Fetch API 基础地址'><p class='c2-hint'>填写含 API 前缀的地址，例如 https://api.deepseek.com/v1/tools；程序追加 /search 或 /fetch，留空恢复默认。</p></div><div class='field'><div class='head'><div class='labelGroup'><label class='label' for='plugin-config-web-search-count'>每次搜索结果数</label></div><span class='badges'><span class='tag' data-tone='neutral'>已覆盖</span><button type='button' class='reset'>恢复默认</button></span></div><input class='input' id='plugin-config-web-search-count' type='text' inputmode='numeric' value='10' aria-label='每次搜索结果数'><p class='c2-hint'>每个查询返回的结果条数，须为 1–50 的整数，默认 10；不控制搜索调用次数。web_search 保留的来源数不超过其自身的结果上限。</p></div><div class='footer'><button type='button' class='save'>保存</button></div></div></div>"
+        },
+        {
+          "label": "失败态：结果数越界",
+          "note": "草稿非法时输入框描边转 <code>--dsw-alias-state-error-primary</code>、说明行换成红色提示，保存被按住",
+          "html": "<div style='width:460px'><div class='form'><div class='field'><div class='head'><div class='labelGroup'><label class='label' for='plugin-config-web-search-count'>每次搜索结果数</label></div><span class='badges'><span class='tag' data-tone='neutral'>已覆盖</span><button type='button' class='reset'>恢复默认</button></span></div><input class='input' id='plugin-config-web-search-count' type='text' inputmode='numeric' value='80' aria-label='每次搜索结果数' aria-invalid='true'><p class='invalid'>请填 1–50 的整数；留空表示使用默认值。</p></div><div class='footer'><p class='failed' role='status'>本部署没有接受这些值，已保留供你修改。</p><button type='button' class='save' disabled>保存</button></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "view",
+          "type": "'summary' | 'page'",
+          "default": "—",
+          "desc": "summary 只给「设置 DeepSeek 的搜索提供方。」一行，page 给带保存的完整表单。"
+        },
+        {
+          "name": "t",
+          "type": "(key: WebSearchSettingsLocaleKey) => string",
+          "default": "—",
+          "desc": "settings.webSearch 文案：开关、密钥、地址、次数与表单框架的保存／只读／保存失败。"
+        },
+        {
+          "name": "useWebSearchCard",
+          "type": "(select) => WebSearchCardState",
+          "default": "—",
+          "desc": "读取这一页的快照：useSearchApi、apiSwitchAvailable／apiSwitchBlocked、apiKeyWritable、三个字段状态与表单壳状态。"
+        },
+        {
+          "name": "setSearchApi",
+          "type": "(checked: boolean) => void",
+          "default": "—",
+          "desc": "切换 Messages 搜索与新版 Search / Fetch API，切换后字段名与校验规则随之改变。"
+        },
+        {
+          "name": "save",
+          "type": "() => void",
+          "default": "—",
+          "desc": "写设置；密钥走凭证域而非设置文档。"
+        },
+        {
+          "name": "discard",
+          "type": "() => void",
+          "default": "—",
+          "desc": "丢弃全部 staged 改动（离开页面时表单自动调用）。"
+        },
+        {
+          "name": "edit",
+          "type": "(field: string, text: string) => void",
+          "default": "—",
+          "desc": "暂存 apiKey / baseURL / maxUses / count 中某个字段的文本。"
+        },
+        {
+          "name": "resetField",
+          "type": "(field: string) => void",
+          "default": "—",
+          "desc": "暂存一次清除，保存后退回组合层默认值。"
+        }
+      ],
+      "notes": "字段随开关变形：关闭时是 <code>baseUrl</code> + <code>maxUses</code>（单次请求最多搜索次数），打开后变成 <code>searchApiBaseUrl</code> + <code>count</code>（每次搜索结果数，1–50 的整数）。密钥字段的禁用只看凭证域自己的可写性——设置文档只读时它仍可能可写，反之环境变量来的密钥则不能从这里覆盖。",
+      "keywords": [
+        "网页搜索",
+        "Web Search",
+        "搜索 API",
+        "API Key",
+        "maxUses",
+        "开关"
+      ]
+    },
+    {
+      "id": "shell-card",
+      "name": "ShellCard",
+      "exportName": "ShellCard",
+      "zh": "终端设置",
+      "group": "settings",
+      "summary": "终端执行器的设置页：同样是共享设置表单，两个数字字段纵向排列——「命令超时（毫秒）」与「单流输出上限（字节）」，两段之间由 <code>.field + .field</code> 的 0.5px <code>--dsw-alias-border-l2</code> 分隔线切开。每段是 13px/500 标签（覆盖时右侧接 neutral 胶囊与「恢复默认」）、34px 输入框、12px 三级色说明；页脚没有 <code>justify-content</code>：未编辑、无失败提示时保存按钮靠左并禁用；只有失败提示以 <code>flex: 1</code> 占满整行时它才被挤到右侧。只读部署在顶部多一行说明并把两个输入框降为三级色。",
+      "source": "packages/client/ui-settings-shell/src/client/ShellCard.tsx#L20",
+      "css": [
+        "packages/client/ui-primitives/src/settings-form/SettingsForm.module.css",
+        "packages/client/ui-primitives/src/settings-form/fields.module.css",
+        "packages/client/ui-primitives/src/Tag.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-layer-3",
+        "--dsw-alias-bg-module-platform",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l4",
+        "--dsw-alias-label-error",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-state-business-primary",
+        "--dsw-alias-state-error-primary",
+        "--dsw-focus-ring-color",
+        "--dsw-focus-ring-width",
+        "--dsw-radius-md"
+      ],
+      "specimens": [
+        {
+          "label": "默认态：两个限制字段",
+          "note": "两段之间是 .field + .field 的细分隔线；没有 staged 改动时保存禁用",
+          "html": "<div style='width:440px'><div class='form'><div class='field'><div class='head'><div class='labelGroup'><label class='label' for='plugin-config-shell-timeout'>命令超时（毫秒）</label></div></div><input class='input' id='plugin-config-shell-timeout' type='text' inputmode='numeric' value='30000' aria-label='命令超时（毫秒）'><p class='hint'>单条命令允许运行多久，超时即终止。</p></div><div class='field'><div class='head'><div class='labelGroup'><label class='label' for='plugin-config-shell-output'>单流输出上限（字节）</label></div></div><input class='input' id='plugin-config-shell-output' type='text' inputmode='numeric' value='262144' aria-label='单流输出上限（字节）'><p class='hint'>超出部分会转存到临时文件，而不是被丢弃。</p></div><div class='footer'><button type='button' class='save' disabled>保存</button></div></div></div>"
+        },
+        {
+          "label": "已覆盖：两个字段都可恢复默认",
+          "note": "用户层拥有这两个值时，每段标签右侧各有一枚「已覆盖」胶囊与「恢复默认」",
+          "html": "<div style='width:440px'><div class='form'><div class='field'><div class='head'><div class='labelGroup'><label class='label' for='plugin-config-shell-timeout'>命令超时（毫秒）</label></div><span class='badges'><span class='tag' data-tone='neutral'>已覆盖</span><button type='button' class='reset'>恢复默认</button></span></div><input class='input' id='plugin-config-shell-timeout' type='text' inputmode='numeric' value='60000' aria-label='命令超时（毫秒）'><p class='hint'>单条命令允许运行多久，超时即终止。</p></div><div class='field'><div class='head'><div class='labelGroup'><label class='label' for='plugin-config-shell-output'>单流输出上限（字节）</label></div><span class='badges'><span class='tag' data-tone='neutral'>已覆盖</span><button type='button' class='reset'>恢复默认</button></span></div><input class='input' id='plugin-config-shell-output' type='text' inputmode='numeric' value='1048576' aria-label='单流输出上限（字节）'><p class='hint'>超出部分会转存到临时文件，而不是被丢弃。</p></div><div class='footer'><button type='button' class='save'>保存</button></div></div></div>"
+        },
+        {
+          "label": "失败态：填了非数字",
+          "note": "非法草稿下方换成红色提示，保存保持禁用；保存失败时页脚左侧再多一行错误说明",
+          "html": "<div style='width:440px'><div class='form'><div class='field'><div class='head'><div class='labelGroup'><label class='label' for='plugin-config-shell-timeout'>命令超时（毫秒）</label></div><span class='badges'><span class='tag' data-tone='neutral'>已覆盖</span><button type='button' class='reset'>恢复默认</button></span></div><input class='input' id='plugin-config-shell-timeout' type='text' inputmode='numeric' value='30s' aria-label='命令超时（毫秒）' aria-invalid='true'><p class='invalid'>请填数字；留空表示使用默认值。</p></div><div class='field'><div class='head'><div class='labelGroup'><label class='label' for='plugin-config-shell-output'>单流输出上限（字节）</label></div></div><input class='input' id='plugin-config-shell-output' type='text' inputmode='numeric' value='262144' aria-label='单流输出上限（字节）'><p class='hint'>超出部分会转存到临时文件，而不是被丢弃。</p></div><div class='footer'><p class='failed' role='status'>本部署没有接受这些值，已保留供你修改。</p><button type='button' class='save' disabled>保存</button></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "view",
+          "type": "'summary' | 'page'",
+          "default": "—",
+          "desc": "summary 只给「限制每条命令最多能跑多久、最多输出多少内容。」一行，page 给带保存的完整表单。"
+        },
+        {
+          "name": "t",
+          "type": "(key: ShellSettingsLocaleKey) => string",
+          "default": "—",
+          "desc": "settings.shell 文案：两个字段名与说明、已覆盖／恢复默认，以及表单框架的保存／只读／保存失败。"
+        },
+        {
+          "name": "useShellCard",
+          "type": "(select) => ShellCardState",
+          "default": "—",
+          "desc": "读取这一页的快照：表单壳状态加 timeoutMs 与 maxOutputBytes 两个字段的草稿、覆盖与非法标志。"
+        },
+        {
+          "name": "save",
+          "type": "() => void",
+          "default": "—",
+          "desc": "把两个 staged 数字写进组合出来的 shell 执行器条目。"
+        },
+        {
+          "name": "discard",
+          "type": "() => void",
+          "default": "—",
+          "desc": "丢弃全部 staged 改动（离开页面时表单自动调用）。"
+        },
+        {
+          "name": "edit",
+          "type": "(field: string, text: string) => void",
+          "default": "—",
+          "desc": "暂存 timeoutMs 或 maxOutputBytes 的文本。"
+        },
+        {
+          "name": "resetField",
+          "type": "(field: string) => void",
+          "default": "—",
+          "desc": "暂存一次清除，保存后退回组合层默认值。"
+        }
+      ],
+      "notes": "页面只编辑服务端 schema 的子集（<code>timeoutMs</code>、<code>maxOutputBytes</code>），其余字段仍归 <code>cordis.patch.yml</code>。同一个页面组件在 POSIX 与 Windows 部署上分别挂在 <code>bash-sandbox</code> 与 <code>pwsh-sandbox</code> 两个条目下，所以文案由注册者注入而不是写死。",
+      "keywords": [
+        "终端",
+        "Shell",
+        "命令超时",
+        "输出上限",
+        "timeoutMs",
+        "插件设置页"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,705 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "id": "trajectory-cell",
+      "name": "TrajectoryCell",
+      "exportName": "TrajectoryCell",
+      "zh": "轨迹记录格",
+      "group": "agent",
+      "summary": "轨迹账本里的一行记录格：38px 高、圆角 <code>--dsw-radius-md</code>、0.5px <code>--dsw-alias-border-l4</code> 描边、<code>--dsw-alias-bg-layer-3</code> 底，左内边距 20px、列间距 24px。行内依次是 24px 宽的 <code>#N</code> 序号、80px 宽的 kind 槽（22px 高、13px 粗体标签，7 种 kind 共用 6 套标签配色，已压缩复用系统灰：用户与上下文走成功绿、消息走品牌紫混错误红、工具走琥珀、子项走更淡的琥珀且整行左移 28px 表示 run_code 的子派发）、单行省略的摘要，以及右侧 320px 固定四列（4×71px + 3×12px 间距，几何与粘顶轮次表头一致）。只有 message 行才填输入/输出/思考三个数字，最后一列恒为本行耗时（毫秒标签，未知显示 —）。",
+      "source": "packages/client/ui-trajectory/src/client/TrajectoryCell.tsx#L44",
+      "css": [
+        "packages/client/ui-trajectory/src/client/TrajectoryCell.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-layer-1",
+        "--dsw-alias-bg-layer-3",
+        "--dsw-alias-bg-module-platform",
+        "--dsw-alias-border-l4",
+        "--dsw-alias-brand-primary-new-colorprimary-new-color",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-state-business-primary",
+        "--dsw-alias-state-error-secondary",
+        "--dsw-alias-state-success-primary",
+        "--dsw-alias-state-success-tertiary",
+        "--dsw-alias-state-warn-label",
+        "--dsw-alias-state-warn-tertiary",
+        "--dsw-font-xs-13",
+        "--dsw-font-xs-strong-13",
+        "--dsw-radius-md",
+        "--dsw-radius-xs"
+      ],
+      "specimens": [
+        {
+          "label": "七种 kind 的标签配色",
+          "html": "<div style=\"display:flex;flex-direction:column;gap:8px;width:760px\"><div class=\"root\" data-kind=\"system\"><span class=\"index\">#1</span><span class=\"tagSlot\"><span class=\"tag tagSystem\">系统</span></span><span class=\"text\">初始系统提示词</span><span class=\"trailing\"><span class=\"time\">12 毫秒</span></span></div><div class=\"root\" data-kind=\"user\"><span class=\"index\">#2</span><span class=\"tagSlot\"><span class=\"tag tagUser\">用户</span></span><span class=\"text\">轨迹账本的四列指标和轮次表头没对齐</span><span class=\"trailing\"><span class=\"time\">3 毫秒</span></span></div><div class=\"root\" data-kind=\"context\"><span class=\"index\">#3</span><span class=\"tagSlot\"><span class=\"tag tagContext\">上下文</span></span><span class=\"text\">插件 · trajectory 注册了 2 个工具</span><span class=\"trailing\"><span class=\"time\">1 毫秒</span></span></div><div class=\"root\" data-kind=\"compacted\"><span class=\"index\">#4</span><span class=\"tagSlot\"><span class=\"tag tagSystem\">已压缩</span></span><span class=\"text\">上文已压缩为 1 段摘要</span><span class=\"trailing\"><span class=\"time\">842 毫秒</span></span></div><div class=\"root\" data-kind=\"message\"><span class=\"index\">#5</span><span class=\"tagSlot\"><span class=\"tag tagMessage\">消息</span></span><span class=\"text\">先读 TrajectoryCell.module.css，核对四列指标宽度</span><span class=\"trailing\"><span class=\"metric\">12480</span><span class=\"metric\">2048</span><span class=\"metric\">640</span><span class=\"time\">8,240 毫秒</span></span></div><div class=\"root\" data-kind=\"tool\"><span class=\"index\">#6</span><span class=\"tagSlot\"><span class=\"tag tagTool\">工具</span></span><span class=\"text\">read_file · TrajectoryCell.module.css</span><span class=\"trailing\"><span class=\"time\">21 毫秒</span></span></div><div class=\"root\" data-kind=\"subtool\"><span class=\"index\">#7</span><span class=\"tagSlot\"><span class=\"tag tagSubtool\">子项</span></span><span class=\"text\">glob · **/Trajectory*.module.css</span><span class=\"trailing\"><span class=\"time\">6 毫秒</span></span></div></div>"
+        },
+        {
+          "label": "选中态与 message 的三个指标列",
+          "note": "选中态由 .selected 类呈现；真实组件同时把 data-selected 写到根节点",
+          "html": "<div style=\"display:flex;flex-direction:column;gap:8px;width:760px\"><div class=\"root selected\" data-kind=\"tool\" data-selected=\"true\"><span class=\"index\">#6</span><span class=\"tagSlot\"><span class=\"tag tagTool\">工具</span></span><span class=\"text\">read_file · TrajectoryTable.module.css</span><span class=\"trailing\"><span class=\"time\">21 毫秒</span></span></div><div class=\"root\" data-kind=\"message\"><span class=\"index\">#5</span><span class=\"tagSlot\"><span class=\"tag tagMessage\">消息</span></span><span class=\"text\">账本行高 30px，事件列 122px（:lang(zh) 收成 84px）</span><span class=\"trailing\"><span class=\"metric\">12480</span><span class=\"metric\">2048</span><span class=\"metric\">640</span><span class=\"time\">8,240 毫秒</span></span></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "index",
+          "type": "number",
+          "default": "—",
+          "desc": "1-based 记录序号，渲染成左侧的 #N。"
+        },
+        {
+          "name": "kind",
+          "type": "TrajectoryCellKind",
+          "default": "—",
+          "desc": "记录种类（system / user / context / compacted / message / tool / subtool），决定标签配色，并作为 data-kind 输出给样式；subtool 额外把整行左内边距放到 28px。"
+        },
+        {
+          "name": "text",
+          "type": "string",
+          "default": "—",
+          "desc": "单行摘要，超宽时省略号截断。"
+        },
+        {
+          "name": "timeSeconds",
+          "type": "number | null",
+          "default": "—",
+          "desc": "本行自身耗时（秒），格式化成毫秒标签；null 渲染成 —。"
+        },
+        {
+          "name": "input",
+          "type": "number | undefined",
+          "default": "—",
+          "desc": "message 行第一列指标（输入 token 数）。"
+        },
+        {
+          "name": "output",
+          "type": "number | undefined",
+          "default": "—",
+          "desc": "message 行第二列指标（输出 token 数）。"
+        },
+        {
+          "name": "think",
+          "type": "number | undefined",
+          "default": "—",
+          "desc": "message 行第三列指标（推理 token 数）。"
+        },
+        {
+          "name": "selected",
+          "type": "boolean",
+          "default": "false",
+          "desc": "选中态：描边转透明，改用 2px business-primary 内阴影。"
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "default": "—",
+          "desc": "追加到根节点的类名，与 css.root / css.selected 拼接。"
+        },
+        {
+          "name": "t",
+          "type": "TrajectoryTranslate",
+          "default": "—",
+          "desc": "trajectory 命名空间的翻译座位，提供 7 个 kind 标签与毫秒单位文案。"
+        }
+      ],
+      "notes": "这是保留给直接调用方与快照测试的 legacy 单元格：<code>inputDetail</code> / <code>outputDetail</code> / <code>thinkingDetail</code> / <code>schemaDetail</code> / <code>assistantMetrics</code> / <code>sourceBlocks</code> / <code>result</code> 等详情面板专用字段在这里被解构后丢弃，只渲染序号、标签、摘要、message 指标与耗时。根节点同时输出 <code>data-kind</code> 与 <code>data-selected</code>，其余 <code>...rest</code> 属性原样透传，所以它也能直接被行级测试断言。账本里真正在用的是 <code>TrajectoryTable</code> 内联的行结构（30px 高、事件列 + 内容列两列），两者观感不同、不要混用。",
+      "keywords": [
+        "轨迹记录",
+        "记录行",
+        "trajectory cell",
+        "kind 标签",
+        "耗时列"
+      ]
+    },
+    {
+      "id": "trajectory-group-header",
+      "name": "TrajectoryGroupHeader",
+      "exportName": "TrajectoryGroupHeader",
+      "zh": "轨迹分组标题",
+      "group": "agent",
+      "summary": "轮次体内的分组标题行：36px 高、左右内边距 20px、标题与描述间隔 24px，本身没有背景和描边，靠垂直间距把「消息 / 第 N 步 / 压缩 N」三种分组分开。左侧 <code>.title</code> 是 13px <code>--dsw-alias-label-primary</code> 且不收缩；右侧 <code>.description</code> 是 13px <code>--dsw-alias-label-tertiary</code>，可伸缩、单行省略，写入空字符串时整个描述节点不渲染。",
+      "source": "packages/client/ui-trajectory/src/client/TrajectoryGroupHeader.tsx#L17",
+      "css": [
+        "packages/client/ui-trajectory/src/client/TrajectoryGroupHeader.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-font-xs-13"
+      ],
+      "specimens": [
+        {
+          "label": "三种分组标题：消息 / 第 N 步 / 压缩",
+          "html": "<div style=\"display:flex;flex-direction:column;width:760px\"><div class=\"root\"><span class=\"title\">消息</span><span class=\"description\">8,240 毫秒 · read_file×2 · bash</span></div><div class=\"root\"><span class=\"title\">第 2 步</span><span class=\"description\">316 毫秒 · bash</span></div><div class=\"root\"><span class=\"title\">压缩 41</span><span class=\"description\">1,204 毫秒</span></div></div>"
+        },
+        {
+          "label": "描述为空：只留标题",
+          "html": "<div style=\"display:flex;flex-direction:column;width:760px\"><div class=\"root\"><span class=\"title\">第 3 步</span></div><div class=\"root\"><span class=\"title\">消息</span></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "title",
+          "type": "string",
+          "default": "—",
+          "desc": "分组标题，来源是 group.message / group.step / group.compaction 三条文案（如「消息」「第 2 步」「压缩 41」）。"
+        },
+        {
+          "name": "description",
+          "type": "string | undefined",
+          "default": "—",
+          "desc": "次级摘要，由分组内记录的墙钟跨度与工具名拼成（如「316 毫秒 · bash」）；undefined 或空串都不渲染这个节点。"
+        }
+      ],
+      "notes": "标题字号与 <code>TrajectoryCell</code> 的正文同为 13px，但标题不省略、描述才省略。分组标题行不含任何交互，双击 / 回车折叠的是它下面那一行账本记录，不是这一行。",
+      "keywords": [
+        "分组标题",
+        "消息组",
+        "步骤组",
+        "group header"
+      ]
+    },
+    {
+      "id": "trajectory-table",
+      "name": "TrajectoryTable",
+      "exportName": "TrajectoryTable",
+      "zh": "轨迹账本",
+      "group": "agent",
+      "summary": "轨迹账本的装配体：外层 <code>.split</code> 是 flex 行兼 inline-size 容器，左侧 <code>.tablePane</code> 纵向滚动（容器名 <code>trajectory-table</code>，底部留出 <code>--dsh-trajectory-bottom-clearance</code> 给悬浮输入框），右侧 <code>.details</code> 是事件检查器（宽 <code>clamp(320px, 38%, 440px)</code>、上限 <code>calc(100% - 280px)</code>，左缘挂 8px 拖拽手柄、顶部 42px 标题栏、34px 标签页）。表格是 <code>table-layout: fixed</code>：事件列 122px（<code>:lang(zh)</code> 收成 84px）、内容列自适应，每行 30px、底缘 0.5px <code>--dsw-alias-border-l1</code>；轮次分界由 <code>data-turn-start</code> 行的 <code>::before</code> 画 2px 线，活动轮次在左缘画 2px <code>.turnRail</code>（错误轮次转 22% 的 state-error 混合），选中行加 3px <code>.selectionRail</code> 与 <code>--dsw-alias-interactive-bg-active</code> 底。事件列左内边距 36px，里面是固定 76px 的 kind 槽（<code>:lang(zh)</code> 44px，容器 ≤620px 时收成 19px 只留图标）与 19px 高的 kind 标签；内容列是单行 <code>.contentText</code> 或两列网格 <code>.resultPreview</code>（请求摘要 <code>clamp(180px, 36cqw - 56px, 480px)</code> + <code>→</code> 结果）。时间线聚焦把区间外的行降到 24% 不透明，收起态只留 20px 高的 <code>…</code> 摘要行，请求边界行高 0 只承载 16px 的圆点按钮；表没写 <code>data-scroll-ready='true'</code> 时整表 <code>visibility: hidden</code>。",
+      "source": "packages/client/ui-trajectory/src/client/TrajectoryTable.tsx#L2085",
+      "css": [
+        "packages/client/ui-trajectory/src/client/TrajectoryTable.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-base",
+        "--dsw-alias-bg-layer-1",
+        "--dsw-alias-bg-layer-2",
+        "--dsw-alias-bg-module-platform",
+        "--dsw-alias-border-l1",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-border-l2-darkmode-thin",
+        "--dsw-alias-border-l3",
+        "--dsw-alias-brand-primary-new-colorprimary-new-color",
+        "--dsw-alias-interactive-bg-active",
+        "--dsw-alias-interactive-bg-hover",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-label-tertiary",
+        "--dsw-alias-markdown-citation",
+        "--dsw-alias-markdown-code-block",
+        "--dsw-alias-scrollbar-bg-l2",
+        "--dsw-alias-scrollbar-hover-l2",
+        "--dsw-alias-state-business-primary",
+        "--dsw-alias-state-business-tertiary",
+        "--dsw-alias-state-error-primary",
+        "--dsw-alias-state-error-secondary",
+        "--dsw-alias-state-success-primary",
+        "--dsw-alias-state-success-tertiary",
+        "--dsw-alias-state-warn-label",
+        "--dsw-alias-state-warn-tertiary",
+        "--dsw-elevation-panel",
+        "--dsw-focus-ring-color",
+        "--dsw-focus-ring-width",
+        "--dsw-font-family",
+        "--dsw-font-xs-13",
+        "--dsw-font-xs-strong-13",
+        "--dsw-font-xxs-12",
+        "--dsw-radius-lg",
+        "--dsw-radius-md",
+        "--dsw-radius-sm",
+        "--dsw-radius-xs",
+        "--dsw-specific-sidebar-fill",
+        "--dsw-static-blue-500"
+      ],
+      "specimens": [
+        {
+          "label": "账本：轮次标记、kind 标签与两列内容",
+          "html": "<div style=\"width:780px\"><div class=\"split\" style=\"height:150px\"><div class=\"tablePane\" data-trajectory-scroll=\"\"><table class=\"table\" data-scroll-ready=\"true\" aria-rowcount=\"5\"><colgroup><col class=\"eventColumn\" /><col class=\"contentColumn\" /></colgroup><tbody><tr tabindex=\"0\" data-kind=\"system\" data-turn-start=\"true\" data-selected=\"true\" aria-label=\"第 1 轮系统，初始系统提示词\"><td class=\"event\"><span class=\"selectionRail\" aria-hidden=\"true\"></span><span class=\"turnLabel\" aria-label=\"第 1 轮\"><span class=\"turnLabelFull\" aria-hidden=\"true\">第 1 轮</span><span class=\"turnLabelCompact\" aria-hidden=\"true\">#1</span></span><div class=\"eventInner\"><span class=\"kindSlot\"><span class=\"kindTag systemNeutral\" data-role-kind=\"system\"><span class=\"kindTagIcon\" aria-hidden=\"true\"><svg width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\"><circle cx=\"8\" cy=\"8\" r=\"2.6\" /><path d=\"M8 1.8v1.6M8 12.6v1.6M1.8 8h1.6M12.6 8h1.6M3.6 3.6l1.15 1.15M11.25 11.25l1.15 1.15M12.4 3.6l-1.15 1.15M4.75 11.25L3.6 12.4\" /></svg></span><span class=\"kindTagLabel\">系统</span></span></span></div></td><td class=\"content\"><span class=\"contentText\" title=\"初始系统提示词\">初始系统提示词</span></td></tr><tr tabindex=\"0\" data-kind=\"user\" aria-label=\"第 1 轮用户，轨迹账本的四列指标和轮次表头没对齐\"><td class=\"event\"><span class=\"turnRail\" aria-hidden=\"true\"></span><div class=\"eventInner\"><span class=\"kindSlot\"><span class=\"kindTag user\" data-role-kind=\"user\"><span class=\"kindTagIcon\" aria-hidden=\"true\"><svg width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\"><circle cx=\"8\" cy=\"5.6\" r=\"2.6\" /><path d=\"M3.2 13.4c0-2.3 2.15-3.8 4.8-3.8s4.8 1.5 4.8 3.8\" /></svg></span><span class=\"kindTagLabel\">用户</span></span></span></div></td><td class=\"content\"><span class=\"contentText\" title=\"轨迹账本的四列指标和轮次表头没对齐\">轨迹账本的四列指标和轮次表头没对齐</span></td></tr><tr tabindex=\"0\" data-kind=\"message\" aria-label=\"第 1 轮消息，先读 TrajectoryCell.module.css，核对四列指标宽度\"><td class=\"event\"><span class=\"turnRail\" aria-hidden=\"true\"></span><div class=\"eventInner\"><span class=\"kindSlot\"><span class=\"kindTag assistantVioletBright\" data-role-kind=\"message\"><span class=\"kindTagIcon\" aria-hidden=\"true\"><svg width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\"><path d=\"M8 2.2l1.5 4.3 4.3 1.5-4.3 1.5L8 13.8l-1.5-4.3L2.2 8l4.3-1.5z\" /></svg></span><span class=\"kindTagLabel\">消息</span></span></span></div></td><td class=\"content\"><span class=\"resultPreview\" title=\"先读 TrajectoryCell.module.css，核对四列指标宽度 → 四列各 71px，间距 12px\"><span class=\"resultRequest\">先读 TrajectoryCell.module.css，核对四列指标宽度</span><span class=\"inlineResult\"><span class=\"arrow\">→</span><span class=\"inlineResultText\">四列各 71px，间距 12px</span></span></span></td></tr><tr tabindex=\"0\" data-kind=\"tool\" aria-label=\"第 2 步工具，read_file TrajectoryCell.module.css\"><td class=\"event\"><button type=\"button\" class=\"requestBoundaryControl\" aria-label=\"请求 #1\" aria-pressed=\"false\" data-label=\"请求 #1\" data-request-run-index=\"0\" data-request-status=\"complete\" style=\"--request-boundary-offset:0px\"></button><span class=\"turnRail\" aria-hidden=\"true\"></span><div class=\"eventInner\"><span class=\"kindSlot\"><span class=\"kindTag toolAmber\" data-role-kind=\"tool\"><span class=\"kindTagIcon\" aria-hidden=\"true\"><svg width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\"><path d=\"M10.4 2.6a3.4 3.4 0 0 1 3 5.6l-6 6-2.6-2.6 6-6a3.4 3.4 0 0 1-.4-3z\" /></svg></span><span class=\"kindTagLabel\">工具</span></span></span></div></td><td class=\"content\"><span class=\"resultPreview\" title=\"read_file TrajectoryCell.module.css → 已读取 138 行\"><span class=\"resultRequest\"><span class=\"toolCallNameTypeface\">read_file</span><span class=\"toolCallPayload\">TrajectoryCell.module.css</span></span><span class=\"inlineResult\"><span class=\"arrow\">→</span><span class=\"inlineResultText\">已读取 138 行</span></span></span></td></tr><tr tabindex=\"0\" data-kind=\"subtool\" data-turn-end=\"true\" aria-label=\"第 1 轮子项，glob **/TrajectoryCell.module.css\"><td class=\"event\"><span class=\"turnRail\" aria-hidden=\"true\"></span><div class=\"eventInner\"><span class=\"kindSlot\"><span class=\"kindTag subtoolAmber\" data-role-kind=\"subtool\"><span class=\"kindTagIcon\" aria-hidden=\"true\"><svg width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\"><path d=\"M10.4 2.6a3.4 3.4 0 0 1 3 5.6l-6 6-2.6-2.6 6-6a3.4 3.4 0 0 1-.4-3z\" /></svg></span><span class=\"kindTagLabel\">子项</span></span></span></div></td><td class=\"content\"><span class=\"contentText\" title=\"glob **/TrajectoryCell.module.css\"><span class=\"toolCallNameTypeface\">glob</span><span class=\"toolCallPayload\">**/TrajectoryCell.module.css</span></span></td></tr></tbody></table></div></div></div>"
+        },
+        {
+          "label": "加载更早历史 / 压缩行 / 错误行 / 收起摘要行",
+          "note": "四种特殊行拼在一起，都是真实 data-* 钩子触发的样式",
+          "html": "<div style=\"width:780px\"><div class=\"split\" style=\"height:110px\"><div class=\"tablePane\" data-trajectory-scroll=\"\"><table class=\"table\" data-scroll-ready=\"true\" aria-rowcount=\"4\"><colgroup><col class=\"eventColumn\" /><col class=\"contentColumn\" /></colgroup><tbody><tr class=\"historyLoadRow\" data-history-load=\"\" aria-rowindex=\"1\"><td colspan=\"2\"><button type=\"button\" class=\"historyLoadButton\" aria-label=\"加载更早的历史\"><span aria-hidden=\"true\">加载更早的历史</span><span class=\"visuallyHidden\" role=\"status\" aria-live=\"polite\"></span></button></td></tr><tr tabindex=\"0\" data-kind=\"compacted\" data-turn-start=\"true\" aria-label=\"轮次之间已压缩，上下文已压缩\"><td class=\"event\"><span class=\"turnLabel\" aria-label=\"轮次之间\">轮次之间</span><div class=\"eventInner\"><span class=\"kindSlot\"><span class=\"kindTag compacted\" data-role-kind=\"compacted\"><span class=\"kindTagIcon\" aria-hidden=\"true\"><svg width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\"><path d=\"M3 5.4h10M3 8h10M3 10.6h6\" /></svg></span><span class=\"kindTagLabel\">已压缩</span></span></span></div></td><td class=\"content\"><span class=\"contentText\" title=\"上下文已压缩\">上下文已压缩</span></td></tr><tr tabindex=\"0\" data-kind=\"tool\" data-error=\"true\" data-selected=\"true\" aria-label=\"第 2 轮工具，运行 pnpm test\"><td class=\"event\"><span class=\"turnRail\" aria-hidden=\"true\"></span><span class=\"selectionRail\" aria-hidden=\"true\"></span><div class=\"eventInner\"><span class=\"kindSlot\"><span class=\"kindTag toolAmber\" data-role-kind=\"tool\"><span class=\"kindTagIcon\" aria-hidden=\"true\"><svg width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\"><path d=\"M10.4 2.6a3.4 3.4 0 0 1 3 5.6l-6 6-2.6-2.6 6-6a3.4 3.4 0 0 1-.4-3z\" /></svg></span><span class=\"kindTagLabel\">工具</span></span></span></div></td><td class=\"content\"><span class=\"resultPreview\" title=\"bash 运行 pnpm test → 命令失败：exit code 1\"><span class=\"resultRequest\"><span class=\"toolCallNameTypeface\">bash</span><span class=\"toolCallPayload\">运行 pnpm test</span></span><span class=\"inlineResult error\"><span class=\"arrow\">→</span><span class=\"inlineResultText\">命令失败：exit code 1</span></span></span></td></tr><tr tabindex=\"0\" data-collapsed-summary=\"assistant\" aria-label=\"已收起的助手概述，2 个工具调用 · read_file, bash\"><td class=\"event\"></td><td class=\"content\"><span class=\"collapsedTurnContent\" title=\"2 个工具调用 · read_file, bash\"><span class=\"collapsedTurnEllipsis\">…</span><span class=\"collapsedTurnText\">2 个工具调用 · read_file, bash</span></span></td></tr></tbody></table></div></div></div>"
+        },
+        {
+          "label": "选中记录 + 事件详情面板（概述标签页）",
+          "note": "检查器只画到 markdownPreview 这一层，里面的 Markdown 正文用普通段落代替渲染器的输出",
+          "html": "<div style=\"width:880px\"><div class=\"split\" style=\"height:240px\"><div class=\"tablePane\" data-trajectory-scroll=\"\"><table class=\"table\" data-scroll-ready=\"true\" aria-rowcount=\"2\"><colgroup><col class=\"eventColumn\" /><col class=\"contentColumn\" /></colgroup><tbody><tr tabindex=\"0\" data-kind=\"user\" data-turn-start=\"true\" aria-label=\"第 2 轮用户，选中记录时把原始参数展开在右侧\"><td class=\"event\"><span class=\"turnLabel\" aria-label=\"第 2 轮\"><span class=\"turnLabelFull\" aria-hidden=\"true\">第 2 轮</span><span class=\"turnLabelCompact\" aria-hidden=\"true\">#2</span></span><div class=\"eventInner\"><span class=\"kindSlot\"><span class=\"kindTag user\" data-role-kind=\"user\"><span class=\"kindTagIcon\" aria-hidden=\"true\"><svg width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\"><circle cx=\"8\" cy=\"5.6\" r=\"2.6\" /><path d=\"M3.2 13.4c0-2.3 2.15-3.8 4.8-3.8s4.8 1.5 4.8 3.8\" /></svg></span><span class=\"kindTagLabel\">用户</span></span></span></div></td><td class=\"content\"><span class=\"contentText\" title=\"选中记录时把原始参数展开在右侧\">选中记录时把原始参数展开在右侧</span></td></tr><tr tabindex=\"0\" data-kind=\"message\" data-selected=\"true\" aria-label=\"第 2 轮消息，账本右侧的检查器\"><td class=\"event\"><span class=\"turnRail\" aria-hidden=\"true\"></span><span class=\"selectionRail\" aria-hidden=\"true\"></span><div class=\"eventInner\"><span class=\"kindSlot\"><span class=\"kindTag assistantVioletBright\" data-role-kind=\"message\"><span class=\"kindTagIcon\" aria-hidden=\"true\"><svg width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\"><path d=\"M8 2.2l1.5 4.3 4.3 1.5-4.3 1.5L8 13.8l-1.5-4.3L2.2 8l4.3-1.5z\" /></svg></span><span class=\"kindTagLabel\">消息</span></span></span></div></td><td class=\"content\"><span class=\"contentText\" title=\"账本右侧的检查器\">账本右侧的检查器</span></td></tr></tbody></table></div><aside class=\"details\" aria-label=\"事件详情\"><div class=\"detailsResizeHandle\" role=\"separator\" aria-label=\"调整事件详情宽度\" aria-orientation=\"vertical\" tabindex=\"0\" title=\"拖动调整大小；双击恢复默认值。\"></div><div class=\"detailsHeader\"><div class=\"detailsTitle\"><span class=\"kindTag assistantVioletBright\">消息</span><span class=\"detailsLocation\">第 2 轮 · 第 2 步</span></div><button type=\"button\" class=\"close\" aria-label=\"关闭详情\"><span aria-hidden=\"true\">×</span></button></div><div class=\"detailTabs\" role=\"tablist\" aria-label=\"事件详情\"><button type=\"button\" role=\"tab\" class=\"detailTab detailTabActive\" aria-selected=\"true\" aria-controls=\"trajectory-detail-panel\">概述</button><button type=\"button\" role=\"tab\" class=\"detailTab\" aria-selected=\"false\" aria-controls=\"trajectory-detail-panel\">预览</button><button type=\"button\" role=\"tab\" class=\"detailTab\" aria-selected=\"false\" aria-controls=\"trajectory-detail-panel\">原始内容</button></div><div id=\"trajectory-detail-panel\" class=\"detailBody detailBodySummary\" role=\"tabpanel\"><dl class=\"overview summaryScrollRegion\"><div><dt>状态</dt><dd>已完成</dd></div><div><dt>Token</dt><dd>2,048 tok</dd></div><div class=\"requestTokenDetail\"><dt>推理</dt><dd>640 tok</dd></div><div class=\"requestTokenDetail\"><dt>内容</dt><dd>1,408 tok</dd></div></dl><div class=\"overviewSections\"><section class=\"overviewSection\"><h3 class=\"overviewHeading\"><button type=\"button\" class=\"overviewTitle\"><span>预览</span><svg class=\"overviewTitleIcon\" width=\"12\" height=\"12\" viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\"><path d=\"M6 4l4 4-4 4\" /></svg></button></h3><div class=\"overviewPreview summaryScrollRegion\"><div class=\"markdownPreview\"><p>账本按轮次与步骤分组，右侧检查器给出单条记录的完整内容。</p><p>这里只渲染静态快照；真实面板的标签页与滚动区域由组件状态切换。</p></div></div></section></div></div></aside></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "t",
+          "type": "TrajectoryTranslate",
+          "default": "—",
+          "desc": "trajectory 命名空间的翻译座位，提供 kind 标签、列名、标签页与状态文案。"
+        },
+        {
+          "name": "turns",
+          "type": "readonly TrajectoryTurnModel[]",
+          "default": "—",
+          "desc": "已分组的显示顺序记录（轮次 → 分组 → 单元格），账本按它展开成行。"
+        },
+        {
+          "name": "requestNumbers",
+          "type": "readonly TrajectoryRequestNumber[] | undefined",
+          "default": "—",
+          "desc": "会话级请求编号表，用来在请求边界画圆点、并在检查器里显示「请求 #N」。"
+        },
+        {
+          "name": "collapsedTurns",
+          "type": "ReadonlySet<number>",
+          "default": "—",
+          "desc": "已折叠的轮次号：命中时该轮除首行外收成一行 20px 高的摘要。"
+        },
+        {
+          "name": "onToggleTurn",
+          "type": "(turn: number) => void",
+          "default": "—",
+          "desc": "点击摘要行或双击轮次首行时切换该轮折叠态。"
+        },
+        {
+          "name": "collapsedAssistants",
+          "type": "ReadonlySet<string>",
+          "default": "—",
+          "desc": "已折叠工具调用的助手记录 id 集合（trajectoryRecordId 生成）。"
+        },
+        {
+          "name": "onToggleAssistant",
+          "type": "(id: string) => void",
+          "default": "—",
+          "desc": "折叠 / 展开某条助手记录下的工具调用。"
+        },
+        {
+          "name": "streamingCells",
+          "type": "readonly TrajectoryCellProps[]",
+          "default": "[]",
+          "desc": "正在流式输出的单元格，按 index 覆盖对应的结构性记录内容。"
+        },
+        {
+          "name": "timelineFocusIndexes",
+          "type": "ReadonlySet<number> | null",
+          "default": "null",
+          "desc": "时间线选中的区间命中的记录号；区间外的行降到 24% 不透明。"
+        },
+        {
+          "name": "searchMatchIndexes",
+          "type": "ReadonlySet<number> | null",
+          "default": "null",
+          "desc": "搜索命中的记录号；与时间线一起决定高亮与淡出。"
+        },
+        {
+          "name": "recordSelection",
+          "type": "{ readonly index: number } | null",
+          "default": "null",
+          "desc": "外部请求选中某条记录（时间线点击）；传入新对象即重复请求。"
+        },
+        {
+          "name": "recordFocus",
+          "type": "{ readonly index: number } | null",
+          "default": "null",
+          "desc": "只把某条记录滚进视野、不改变检查器选中。"
+        },
+        {
+          "name": "onRecordSelect",
+          "type": "(index: number) => void",
+          "default": "—",
+          "desc": "用户在账本里直接选中一行时回报记录号。"
+        },
+        {
+          "name": "hasOlderRecords",
+          "type": "boolean",
+          "default": "false",
+          "desc": "是否还能加载更早历史；为真时表首插入 30px 高的「加载更早的历史」行。"
+        },
+        {
+          "name": "onLoadOlder",
+          "type": "() => Promise<boolean>",
+          "default": "—",
+          "desc": "请求一页更早历史，成功后保留滚动位置。"
+        },
+        {
+          "name": "historyLoading",
+          "type": "boolean",
+          "default": "false",
+          "desc": "历史尾部首次加载中：在表顶叠一条 sticky 的「正在加载轨迹…」状态条。"
+        },
+        {
+          "name": "olderHistoryLoading",
+          "type": "boolean",
+          "default": "false",
+          "desc": "更早历史请求进行中：按钮禁用并换成「正在加载更早的历史…」。"
+        },
+        {
+          "name": "inspectCallId",
+          "type": "string | null",
+          "default": "null",
+          "desc": "跨视图定位：滚动到该 tool call 所在记录并打开检查器，定位后回调 onInspectApplied。"
+        },
+        {
+          "name": "stringWrapping",
+          "type": "JsonTreeProps['stringWrapping'] | undefined",
+          "default": "—",
+          "desc": "JSON 检查器共享的换行偏好（含「自动换行」标签）。"
+        },
+        {
+          "name": "renderSlot",
+          "type": "PropsRenderSlots<'conversation.trajectory.images'>['renderSlot']",
+          "default": "—",
+          "desc": "记录图片组的插槽渲染器，与 Chat 图库共用。"
+        },
+        {
+          "name": "loadImage",
+          "type": "MessageImageLoader",
+          "default": "—",
+          "desc": "会话授权的图片 URL 加载器。"
+        }
+      ],
+      "notes": "交互：单行可聚焦（<code>tabindex=0</code>），回车 / 空格选中，双击轮次首行折叠整轮、双击助手行折叠它下面的工具调用；点击面板空白清除选中。可用性：请求边界的圆点按钮只有 16×16，标签靠 <code>data-label</code> 与 <code>::after</code> 在悬停 / 聚焦时浮出；「加载更早的历史」行额外带一个 <code>visuallyHidden</code> 的 <code>role=status</code> 播报，收起摘要行的 <code>aria-label</code> 会读成「已收起的轮次概述，N 个步骤 · M 个工具调用」。易混：账本行是 30px 高的表格行，<code>TrajectoryCell</code> 是 38px 高的独立卡片，两者标签配色相同但不是同一段 DOM。",
+      "keywords": [
+        "账本",
+        "事件列表",
+        "详情面板",
+        "检查器",
+        "trajectory table",
+        "ledger"
+      ]
+    },
+    {
+      "id": "trajectory-timeline",
+      "name": "TrajectoryTimeline",
+      "exportName": "TrajectoryTimeline",
+      "zh": "轨迹时间线",
+      "group": "agent",
+      "summary": "固定在账本上方的三泳道总览：50px 高、grid 44px + 1fr，左列是 10px 的 输入 / 模型 / 工具 标签（分别贴在 7 / 21 / 35px 三行、右对齐），右列是 <code>cursor: crosshair</code>、<code>touch-action: none</code> 的绘图区（底 <code>--dsw-alias-bg-layer-2</code>，下缘 0.5px <code>--dsw-alias-border-l2</code>）。每条可见记录是一根 8px 高的 <code>.span</code>（最小 2px、圆角 1px、默认 78% 不透明），按 kind 上色：输入泳道走次级文字 / business / 成功绿混合，模型泳道走品牌紫混错误红（有计时记录时用渐变在条内画出 TTFT 与解码两段），工具泳道走琥珀，出错整条转 <code>--dsw-alias-state-error-primary</code>；等宽模式条宽固定 8px，当前记录加 2px business 外环，悬停的记录加 80% 透明度的外环。拖选会画 <code>.selection</code>（12% business 填充 + 两侧 58% layer1 遮罩）与两端 3px 的 <code>.selectionEdges</code>，悬停还有一条 2px 竖线；区间外的条降到 20% 不透明、搜索未命中的降到 14%。无计时数据时绘图区中央显示「无计时数据」，未加载的历史前缀用左缘 28px 的 … 按钮补拉；滚轮缩放、右键拖动平移、Esc 或双击复位。",
+      "source": "packages/client/ui-trajectory/src/client/TrajectoryTimeline.tsx#L241",
+      "css": [
+        "packages/client/ui-trajectory/src/client/TrajectoryTimeline.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-layer-1",
+        "--dsw-alias-bg-layer-2",
+        "--dsw-alias-border-l1",
+        "--dsw-alias-border-l2",
+        "--dsw-alias-brand-primary-new-colorprimary-new-color",
+        "--dsw-alias-label-caption",
+        "--dsw-alias-label-secondary",
+        "--dsw-alias-state-business-primary",
+        "--dsw-alias-state-error-primary",
+        "--dsw-alias-state-error-secondary",
+        "--dsw-alias-state-success-primary",
+        "--dsw-alias-state-warn-label",
+        "--dsw-focus-ring-color",
+        "--dsw-font-xs-13",
+        "--dsw-font-xxxs-11"
+      ],
+      "specimens": [
+        {
+          "label": "默认：三条泳道、12 根记录条与第 2 轮分界",
+          "html": "<div style=\"width:820px\"><section class=\"root\" aria-label=\"轨迹时间线\"><div class=\"plot\"><div class=\"labels\" aria-hidden=\"true\"><span>输入</span><span>模型</span><span>工具</span></div><div class=\"track\" aria-label=\"时间线概览；水平拖动可聚焦事件\" tabindex=\"0\"><div class=\"turnBoundaries\" aria-hidden=\"true\" style=\"--trajectory-domain-left:0%;--trajectory-domain-width:100%\"><span class=\"turnBoundary\" data-turn=\"2\" style=\"--trajectory-turn-left:66.667%\"></span></div><div class=\"lanes\" data-timeline-domain=\"\" style=\"--trajectory-domain-left:0%;--trajectory-domain-width:100%\"><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"system\" data-timeline-record-index=\"0\" style=\"--trajectory-span-left:0%;--trajectory-span-width:8.333%;--trajectory-span-gap:min(0.667%,1px);--trajectory-span-lane:0\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"user\" data-timeline-record-index=\"1\" style=\"--trajectory-span-left:8.333%;--trajectory-span-width:8.333%;--trajectory-span-gap:min(0.667%,1px);--trajectory-span-lane:0\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"message\" data-timeline-record-index=\"2\" data-assistant-timing=\"true\" style=\"--trajectory-span-left:16.667%;--trajectory-span-width:8.333%;--trajectory-span-gap:min(0.667%,1px);--trajectory-span-lane:1;--trajectory-assistant-ttft:54%\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"tool\" data-timeline-record-index=\"3\" style=\"--trajectory-span-left:25%;--trajectory-span-width:8.333%;--trajectory-span-gap:min(0.667%,1px);--trajectory-span-lane:2\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"tool\" data-timeline-record-index=\"4\" style=\"--trajectory-span-left:33.333%;--trajectory-span-width:8.333%;--trajectory-span-gap:min(0.667%,1px);--trajectory-span-lane:2\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"message\" data-timeline-record-index=\"5\" data-assistant-timing=\"true\" style=\"--trajectory-span-left:41.667%;--trajectory-span-width:8.333%;--trajectory-span-gap:min(0.667%,1px);--trajectory-span-lane:1;--trajectory-assistant-ttft:38%\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"tool\" data-timeline-record-index=\"6\" style=\"--trajectory-span-left:50%;--trajectory-span-width:8.333%;--trajectory-span-gap:min(0.667%,1px);--trajectory-span-lane:2\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"subtool\" data-timeline-record-index=\"7\" style=\"--trajectory-span-left:58.333%;--trajectory-span-width:8.333%;--trajectory-span-gap:min(0.667%,1px);--trajectory-span-lane:2\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"user\" data-timeline-record-index=\"8\" style=\"--trajectory-span-left:66.667%;--trajectory-span-width:8.333%;--trajectory-span-gap:min(0.667%,1px);--trajectory-span-lane:0\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"message\" data-timeline-record-index=\"9\" data-assistant-timing=\"true\" style=\"--trajectory-span-left:75%;--trajectory-span-width:8.333%;--trajectory-span-gap:min(0.667%,1px);--trajectory-span-lane:1;--trajectory-assistant-ttft:41%\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"tool\" data-timeline-record-index=\"10\" style=\"--trajectory-span-left:83.333%;--trajectory-span-width:8.333%;--trajectory-span-gap:min(0.667%,1px);--trajectory-span-lane:2\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"message\" data-timeline-record-index=\"11\" style=\"--trajectory-span-left:91.667%;--trajectory-span-width:8.333%;--trajectory-span-gap:min(0.667%,1px);--trajectory-span-lane:1\"></span></div></div></div></section></div>"
+        },
+        {
+          "label": "空态：无计时数据 + 未加载的历史前缀",
+          "note": "省略了把 … 按钮包起来的 Tooltip 门户，静态快照里它本来就不显示",
+          "html": "<div style=\"width:820px\"><section class=\"root\" aria-label=\"轨迹时间线\"><div class=\"plot\"><div class=\"labels\" aria-hidden=\"true\"><span>输入</span><span>模型</span><span>工具</span></div><div class=\"track\" aria-label=\"时间线概览；水平拖动可聚焦事件\" tabindex=\"0\"><span class=\"empty\">无计时数据</span><button type=\"button\" class=\"earlierHistory\" data-earlier-history=\"\" aria-label=\"加载更早的历史\" aria-disabled=\"false\">…</button></div></div></section></div>"
+        },
+        {
+          "label": "拖选区间 + 悬停竖线：区间外的条与未命中搜索的条一起淡出",
+          "note": "拖选、拖动中与悬停都是静态快照；真实组件由指针事件写入同一批 CSS 变量",
+          "html": "<div style=\"width:820px\"><section class=\"root\" aria-label=\"轨迹时间线\"><div class=\"plot\"><div class=\"labels\" aria-hidden=\"true\"><span>输入</span><span>模型</span><span>工具</span></div><div class=\"track\" aria-label=\"时间线概览；水平拖动可聚焦事件\" tabindex=\"0\"><div class=\"hoverLine\" aria-hidden=\"true\" style=\"--trajectory-hover-left:37%\"></div><div class=\"selection\" data-dragging=\"true\" aria-hidden=\"true\" style=\"--trajectory-selection-left:25%;--trajectory-selection-width:33.333%\"></div><div class=\"selectionEdges\" data-dragging=\"true\" aria-hidden=\"true\" style=\"--trajectory-selection-left:25%;--trajectory-selection-width:33.333%\"></div><div class=\"turnBoundaries\" aria-hidden=\"true\" style=\"--trajectory-domain-left:0%;--trajectory-domain-width:100%\"><span class=\"turnBoundary\" data-turn=\"2\" style=\"--trajectory-turn-left:66.667%\"></span></div><div class=\"lanes\" data-timeline-domain=\"\" style=\"--trajectory-domain-left:0%;--trajectory-domain-width:100%\"><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"system\" data-timeline-record-index=\"0\" data-search-match=\"false\" data-selected=\"false\" style=\"--trajectory-span-left:0%;--trajectory-span-width:8.333%;--trajectory-span-gap:min(0.667%,1px);--trajectory-span-lane:0\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"user\" data-timeline-record-index=\"1\" data-search-match=\"false\" data-selected=\"false\" style=\"--trajectory-span-left:8.333%;--trajectory-span-width:8.333%;--trajectory-span-gap:min(0.667%,1px);--trajectory-span-lane:0\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"message\" data-timeline-record-index=\"2\" data-assistant-timing=\"true\" data-search-match=\"false\" data-selected=\"false\" style=\"--trajectory-span-left:16.667%;--trajectory-span-width:8.333%;--trajectory-span-gap:min(0.667%,1px);--trajectory-span-lane:1;--trajectory-assistant-ttft:54%\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"tool\" data-timeline-record-index=\"3\" data-search-match=\"true\" data-selected=\"true\" style=\"--trajectory-span-left:25%;--trajectory-span-width:8.333%;--trajectory-span-gap:min(0.667%,1px);--trajectory-span-lane:2\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"tool\" data-timeline-record-index=\"4\" data-current=\"true\" data-search-match=\"true\" data-selected=\"true\" data-hovered=\"true\" style=\"--trajectory-span-left:33.333%;--trajectory-span-width:8.333%;--trajectory-span-gap:min(0.667%,1px);--trajectory-span-lane:2\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"message\" data-timeline-record-index=\"5\" data-assistant-timing=\"true\" data-search-match=\"true\" data-selected=\"true\" style=\"--trajectory-span-left:41.667%;--trajectory-span-width:8.333%;--trajectory-span-gap:min(0.667%,1px);--trajectory-span-lane:1;--trajectory-assistant-ttft:38%\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"tool\" data-timeline-record-index=\"6\" data-search-match=\"true\" data-selected=\"true\" style=\"--trajectory-span-left:50%;--trajectory-span-width:8.333%;--trajectory-span-gap:min(0.667%,1px);--trajectory-span-lane:2\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"subtool\" data-timeline-record-index=\"7\" data-error=\"true\" data-search-match=\"true\" data-selected=\"false\" style=\"--trajectory-span-left:58.333%;--trajectory-span-width:8.333%;--trajectory-span-gap:min(0.667%,1px);--trajectory-span-lane:2\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"user\" data-timeline-record-index=\"8\" data-search-match=\"false\" data-selected=\"false\" style=\"--trajectory-span-left:66.667%;--trajectory-span-width:8.333%;--trajectory-span-gap:min(0.667%,1px);--trajectory-span-lane:0\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"message\" data-assistant-timing=\"true\" data-timeline-record-index=\"9\" data-search-match=\"false\" data-selected=\"false\" style=\"--trajectory-span-left:75%;--trajectory-span-width:8.333%;--trajectory-span-gap:min(0.667%,1px);--trajectory-span-lane:1;--trajectory-assistant-ttft:41%\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"tool\" data-timeline-record-index=\"10\" data-search-match=\"false\" data-selected=\"false\" style=\"--trajectory-span-left:83.333%;--trajectory-span-width:8.333%;--trajectory-span-gap:min(0.667%,1px);--trajectory-span-lane:2\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"message\" data-timeline-record-index=\"11\" data-assistant-timing=\"true\" data-search-match=\"false\" data-selected=\"false\" style=\"--trajectory-span-left:91.667%;--trajectory-span-width:8.333%;--trajectory-span-gap:min(0.667%,1px);--trajectory-span-lane:1\"></span></div></div></div></section></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "t",
+          "type": "TrajectoryTranslate",
+          "default": "—",
+          "desc": "trajectory 命名空间的翻译座位（泳道名、空态文案、更早历史按钮的无障碍标签与时间线提示）。"
+        },
+        {
+          "name": "turns",
+          "type": "readonly TrajectoryTurnModel[]",
+          "default": "—",
+          "desc": "与账本同一份分组记录，用来投影出条、泳道与轮次分界。"
+        },
+        {
+          "name": "mode",
+          "type": "TrajectoryTimelineMode",
+          "default": "—",
+          "desc": "投影模式：sequence（等宽一根一根）/ duration / time / actual，决定条宽是等宽还是真实耗时，以及是否保留空闲间隙。"
+        },
+        {
+          "name": "range",
+          "type": "TrajectoryTimeRange | null",
+          "default": "—",
+          "desc": "已提交的聚焦区间；为 null 时铺满全域，越界时会被清回 null。"
+        },
+        {
+          "name": "hasEarlierRecords",
+          "type": "boolean",
+          "default": "false",
+          "desc": "是否还有未加载的更早历史：在绘图区左缘显示 28px 的 … 补拉按钮。"
+        },
+        {
+          "name": "onLoadEarlier",
+          "type": "() => Promise<boolean>",
+          "default": "—",
+          "desc": "点击 … 时加载更早一页历史；返回 false 表示没有拉到新数据。"
+        },
+        {
+          "name": "selectedIndex",
+          "type": "number | null | undefined",
+          "default": "—",
+          "desc": "账本里选中的记录号：对应条加 2px 外环，必要时把视窗平移到它上面。"
+        },
+        {
+          "name": "searchMatchIndexes",
+          "type": "ReadonlySet<number> | null",
+          "default": "null",
+          "desc": "搜索命中的记录号集合；为 null 时不做搜索淡出，未命中的条降到 14% 不透明。"
+        },
+        {
+          "name": "onRangeChange",
+          "type": "(range: TrajectoryTimeRange | null) => void",
+          "default": "—",
+          "desc": "拖选、点击空白、Esc、双击都通过它提交或清除聚焦区间。"
+        },
+        {
+          "name": "onRecordSelect",
+          "type": "(index: number) => void",
+          "default": "—",
+          "desc": "直接点到某根条时选中该记录。"
+        },
+        {
+          "name": "onRecordFocus",
+          "type": "(index: number) => void",
+          "default": "—",
+          "desc": "点击空白后把最近的记录滚进视野（不改变选中）。"
+        }
+      ],
+      "notes": "泳道分配固定：system / user / context 在第 0 行，message / compacted 在第 1 行，tool / subtool 在第 2 行；条的纵向位置由 <code>--trajectory-span-lane × 14px</code> 决定。可控性：绘图区可聚焦，Esc 清空区间，右键拖动平移、滚轮缩放，<code>prefers-reduced-motion</code> 下视窗平移不做 180ms 过渡。无障碍：绘图区本身 <code>aria-label</code> 为「时间线概览；水平拖动可聚焦事件」，每根条都 <code>aria-hidden</code>，信息靠 500ms 延迟的 Tooltip（标题 + 起止时刻 + 总时长 / TTFT · 解码）传达。",
+      "keywords": [
+        "时间线",
+        "总览",
+        "泳道",
+        "timeline",
+        "拖选区间"
+      ]
+    },
+    {
+      "id": "trajectory-turn",
+      "name": "TrajectoryTurn",
+      "exportName": "TrajectoryTurn",
+      "zh": "轨迹轮次块",
+      "group": "agent",
+      "summary": "一整个轮次块：<code>section.root</code> 占满宽度并把轮次号写在 <code>data-turn</code> 上，里面先是粘顶的 <code>TrajectoryTurnHeader</code>（44px、ghost-active 填充），再是 <code>.body</code>——flex 列、行距 10px、<code>max-width: 880px</code> 居中、内边距 <code>8px 16px 22px</code>。它自己不加任何装饰，观感完全由表头与放进 body 的子行决定：分组标题（36px）、记录格（38px）或账本行。轮次号同时是表头文案「第 N 轮」与 <code>data-turn</code> 属性，因此同一个 <code>turn</code> 值会在两处出现。",
+      "source": "packages/client/ui-trajectory/src/client/TrajectoryTurn.tsx#L22",
+      "css": [
+        "packages/client/ui-trajectory/src/client/TrajectoryTurn.module.css",
+        "packages/client/ui-trajectory/src/client/TrajectoryTurnHeader.module.css",
+        "packages/client/ui-trajectory/src/client/TrajectoryCell.module.css",
+        "packages/client/ui-trajectory/src/client/TrajectoryGroupHeader.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-button-ghost-active-fill",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-font-xs-13",
+        "--dsw-font-xs-strong-13"
+      ],
+      "specimens": [
+        {
+          "label": "一轮的完整结构：粘顶表头 + 消息分组 + 三行记录",
+          "html": "<div style=\"width:900px\"><section class=\"c0-root\" data-turn=\"1\"><div class=\"c1-root\"><div class=\"inner\"><span class=\"c1-title\">第 1 轮</span><div class=\"columns\" aria-hidden=\"true\"><span class=\"column\">输入</span><span class=\"column\">输出</span><span class=\"column\">思考</span><span class=\"column\">时间</span></div></div></div><div class=\"body\"><div class=\"c3-root\"><span class=\"c3-title\">消息</span><span class=\"description\">8,240 毫秒 · read_file×2</span></div><div class=\"c2-root\" data-kind=\"user\"><span class=\"index\">#2</span><span class=\"tagSlot\"><span class=\"tag tagUser\">用户</span></span><span class=\"text\">轨迹账本的四列指标和轮次表头没对齐</span><span class=\"trailing\"><span class=\"time\">3 毫秒</span></span></div><div class=\"c2-root\" data-kind=\"message\"><span class=\"index\">#3</span><span class=\"tagSlot\"><span class=\"tag tagMessage\">消息</span></span><span class=\"text\">先读 TrajectoryCell.module.css，核对四列指标宽度</span><span class=\"trailing\"><span class=\"metric\">12480</span><span class=\"metric\">2048</span><span class=\"metric\">640</span><span class=\"time\">8,240 毫秒</span></span></div><div class=\"c2-root\" data-kind=\"tool\"><span class=\"index\">#4</span><span class=\"tagSlot\"><span class=\"tag tagTool\">工具</span></span><span class=\"text\">read_file · TrajectoryTurn.module.css</span><span class=\"trailing\"><span class=\"time\">21 毫秒</span></span></div></div></section></div>"
+        },
+        {
+          "label": "两轮相接：每轮各自重复一遍粘顶表头",
+          "html": "<div style=\"display:flex;flex-direction:column;gap:4px;width:900px\"><section class=\"c0-root\" data-turn=\"1\"><div class=\"c1-root\"><div class=\"inner\"><span class=\"c1-title\">第 1 轮</span><div class=\"columns\" aria-hidden=\"true\"><span class=\"column\">输入</span><span class=\"column\">输出</span><span class=\"column\">思考</span><span class=\"column\">时间</span></div></div></div><div class=\"body\"><div class=\"c2-root selected\" data-kind=\"tool\" data-selected=\"true\"><span class=\"index\">#4</span><span class=\"tagSlot\"><span class=\"tag tagTool\">工具</span></span><span class=\"text\">bash · 运行 pnpm exec vitest run packages/client/ui-trajectory</span><span class=\"trailing\"><span class=\"time\">1,204 毫秒</span></span></div></div></section><section class=\"c0-root\" data-turn=\"2\"><div class=\"c1-root\"><div class=\"inner\"><span class=\"c1-title\">第 2 轮</span><div class=\"columns\" aria-hidden=\"true\"><span class=\"column\">输入</span><span class=\"column\">输出</span><span class=\"column\">思考</span><span class=\"column\">时间</span></div></div></div><div class=\"body\"><div class=\"c3-root\"><span class=\"c3-title\">第 2 步</span><span class=\"description\">316 毫秒 · bash</span></div><div class=\"c2-root\" data-kind=\"tool\"><span class=\"index\">#6</span><span class=\"tagSlot\"><span class=\"tag tagTool\">工具</span></span><span class=\"text\">bash · 运行 pnpm test</span><span class=\"trailing\"><span class=\"time\">316 毫秒</span></span></div></div></section></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "turn",
+          "type": "number",
+          "default": "—",
+          "desc": "1-based 轮次号，同时用于表头文案「第 N 轮」和根节点的 data-turn。"
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "default": "—",
+          "desc": "轮次体内容：分组标题与 TrajectoryCell / 账本行，按 .body 的 10px 行距堆叠。"
+        },
+        {
+          "name": "t",
+          "type": "TrajectoryTranslate",
+          "default": "—",
+          "desc": "trajectory 命名空间的翻译座位，透传给表头。"
+        }
+      ],
+      "notes": "本组件只提供骨架：<code>.root</code> 是 <code>width: 100%</code> 的 <code>&lt;section&gt;</code>，<code>.body</code> 才是那个 880px 居中车道（左右各 16px 内边距、底部 22px）。它渲染的一行是 <code>TrajectoryTurnHeader</code>，粘顶效果需要外层有滚动容器才会显形，静态快照里只能看到那条 44px 的底栏。上面的示例把四张样式表一起列进 <code>css</code>，因为轮次的观感就是「表头 + 分组标题 + 记录格」三者叠加：<code>root</code> 在四张表里都存在、<code>title</code> 在表头与分组标题里各有一份，所以示例里显式写成 <code>c1-root</code> / <code>c3-root</code> 钉住归属。",
+      "keywords": [
+        "轮次",
+        "回合块",
+        "turn",
+        "粘顶表头"
+      ]
+    },
+    {
+      "id": "trajectory-turn-header",
+      "name": "TrajectoryTurnHeader",
+      "exportName": "TrajectoryTurnHeader",
+      "zh": "轮次表头",
+      "group": "agent",
+      "summary": "44px 高的粘顶轮次条：整条用 <code>--dsw-alias-button-ghost-active-fill</code> 铺满（比账本行的 layer1 更亮一档），<code>position: sticky; top: 0</code>、<code>z-index: 1</code>，所以滚动时它压在记录行上。内部是 <code>max-width: 880px</code> 居中的车道（左右各 16px 内边距、<code>justify-content: space-between</code>）：左边「第 N 轮」用 13px strong 的 <code>--dsw-alias-label-primary</code>，右边是 320px 的四列标签 输入 / 输出 / 思考 / 时间（4×71px + 3×12px 间距，再留 8px 右外边距与记录格的 padding-right 对齐），13px <code>--dsw-alias-label-secondary</code>。整组列名带 <code>aria-hidden</code>，它只是列标题、不承载任何交互。",
+      "source": "packages/client/ui-trajectory/src/client/TrajectoryTurnHeader.tsx#L22",
+      "css": [
+        "packages/client/ui-trajectory/src/client/TrajectoryTurnHeader.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-button-ghost-active-fill",
+        "--dsw-alias-label-primary",
+        "--dsw-alias-label-secondary",
+        "--dsw-font-xs-13",
+        "--dsw-font-xs-strong-13"
+      ],
+      "specimens": [
+        {
+          "label": "默认：第 N 轮 + 四个列标签",
+          "html": "<div style=\"width:900px\"><div class=\"root\"><div class=\"inner\"><span class=\"title\">第 1 轮</span><div class=\"columns\" aria-hidden=\"true\"><span class=\"column\">输入</span><span class=\"column\">输出</span><span class=\"column\">思考</span><span class=\"column\">时间</span></div></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "turn",
+          "type": "number",
+          "default": "—",
+          "desc": "1-based 轮次号，代入 turn.label 文案渲染成「第 N 轮」。"
+        },
+        {
+          "name": "t",
+          "type": "TrajectoryTranslate",
+          "default": "—",
+          "desc": "trajectory 命名空间的翻译座位，提供轮次文案与 column.input / output / think / time 四个列名。"
+        }
+      ],
+      "notes": "320px 的列车道是这套表格的隐形栅格：<code>4×71px + 3×12px = 320px</code>，右侧再补 8px 外边距，正好对上 <code>TrajectoryCell</code> 的 <code>.trailing</code> 与账本行的内容列右缘。列名固定在四个位置，不管那一轮实际有没有 message 行（没有 message 行时四列都空着）。",
+      "keywords": [
+        "轮次表头",
+        "列名",
+        "粘顶",
+        "turn header"
+      ]
+    },
+    {
+      "id": "trajectory-view",
+      "name": "TrajectoryView",
+      "exportName": "TrajectoryView",
+      "zh": "轨迹视图",
+      "group": "agent",
+      "summary": "轨迹视图的整页装配：<code>.root</code> 是全高 flex 列（100% 高、<code>overflow: hidden</code>、<code>--dsw-alias-bg-layer-1</code> 底、<code>--dsw-alias-label-primary</code> 文字，自带 <code>data-conversation-composer-overlay</code>），从上到下依次是粘顶的 <code>TrajectoryToolbar</code>（由 <code>--dsh-trajectory-toolbar-height</code> 定的 32px）、<code>TrajectoryTimeline</code>（50px 三泳道总览）与 <code>.ledger</code>（<code>flex: 1</code>、<code>isolation: isolate</code>，并发布 <code>--dsh-trajectory-bottom-clearance: calc(var(--dsh-composer-height, 152px) + 16px)</code> 给悬浮输入框留位）里的 <code>TrajectoryTable</code>。它自己不画新的视觉元素，负责把会话快照、折叠状态、搜索词与时间线区间汇到一起，再下发成 <code>searchMatchIndexes</code> / <code>timelineFocusIndexes</code> / <code>recordSelection</code> 交给账本。",
+      "source": "packages/client/ui-trajectory/src/client/TrajectoryView.tsx#L132",
+      "css": [
+        "packages/client/ui-trajectory/src/client/views.module.css",
+        "packages/client/ui-trajectory/src/client/TrajectoryToolbar.module.css",
+        "packages/client/ui-trajectory/src/client/TrajectoryTimeline.module.css",
+        "packages/client/ui-trajectory/src/client/TrajectoryTable.module.css"
+      ],
+      "tokens": [
+        "--dsw-alias-bg-layer-1",
+        "--dsw-alias-label-primary"
+      ],
+      "specimens": [
+        {
+          "label": "整视图：工具栏 + 时间线 + 账本首屏",
+          "note": "该组件本身没有独立外观，这里展示它挂载后用户实际看到的那一屏",
+          "html": "<div style=\"width:860px;height:420px\"><div class=\"c0-root\" data-conversation-composer-overlay=\"\"><div class=\"c1-root\" role=\"toolbar\" aria-label=\"轨迹工具栏\"><div class=\"inner\"><div class=\"actions\"><button type=\"button\" class=\"toggle\" aria-label=\"使用实际时长\" aria-pressed=\"false\" title=\"使用实际时长\"><svg class=\"toggleIcon\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><circle cx=\"8\" cy=\"8\" r=\"5.25\" /><path d=\"M8 4.75V8l2.25 1.5\" /></svg>时长</button><button type=\"button\" class=\"control\" role=\"switch\" aria-checked=\"false\" hidden><span>实际时间</span><span class=\"controlTrack\" aria-hidden=\"true\"><span class=\"controlThumb\"></span></span></button><button type=\"button\" class=\"action\" aria-label=\"收起所有轮次\" aria-pressed=\"false\" title=\"收起所有轮次\"><span class=\"actionIcon\" aria-hidden=\"true\">⊟</span>轮次</button><button type=\"button\" class=\"action\" aria-label=\"收起所有调用\" aria-pressed=\"false\" title=\"收起所有调用\"><span class=\"actionIcon\" aria-hidden=\"true\">⊟</span>调用</button></div><div class=\"search\"><svg width=\"11\" height=\"11\" class=\"searchIcon\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M6.58727 11.8586C9.55061 11.8586 11.9529 9.45637 11.9529 6.49304C11.9529 3.5297 9.55061 1.12744 6.58727 1.12744C3.62394 1.12744 1.22168 3.5297 1.22168 6.49304C1.22168 9.45637 3.62394 11.8586 6.58727 11.8586Z\" stroke=\"currentColor\" /><path d=\"M10.2991 10.3933L14.7783 14.8725\" stroke=\"currentColor\" /></svg><input type=\"search\" class=\"searchInput\" aria-label=\"搜索轨迹\" placeholder=\"搜索\" /></div></div></div><section class=\"c2-root\" aria-label=\"轨迹时间线\"><div class=\"plot\"><div class=\"labels\" aria-hidden=\"true\"><span>输入</span><span>模型</span><span>工具</span></div><div class=\"track\" aria-label=\"时间线概览；水平拖动可聚焦事件\" tabindex=\"0\"><div class=\"turnBoundaries\" aria-hidden=\"true\" style=\"--trajectory-domain-left:0%;--trajectory-domain-width:100%\"><span class=\"turnBoundary\" data-turn=\"2\" style=\"--trajectory-turn-left:63.636%\"></span></div><div class=\"lanes\" data-timeline-domain=\"\" style=\"--trajectory-domain-left:0%;--trajectory-domain-width:100%\"><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"system\" data-timeline-record-index=\"0\" style=\"--trajectory-span-left:0%;--trajectory-span-width:9.091%;--trajectory-span-gap:min(0.727%,1px);--trajectory-span-lane:0\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"user\" data-timeline-record-index=\"1\" style=\"--trajectory-span-left:9.091%;--trajectory-span-width:9.091%;--trajectory-span-gap:min(0.727%,1px);--trajectory-span-lane:0\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"message\" data-timeline-record-index=\"2\" data-assistant-timing=\"true\" style=\"--trajectory-span-left:18.182%;--trajectory-span-width:9.091%;--trajectory-span-gap:min(0.727%,1px);--trajectory-span-lane:1;--trajectory-assistant-ttft:54%\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"tool\" data-timeline-record-index=\"3\" style=\"--trajectory-span-left:27.273%;--trajectory-span-width:9.091%;--trajectory-span-gap:min(0.727%,1px);--trajectory-span-lane:2\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"subtool\" data-timeline-record-index=\"4\" style=\"--trajectory-span-left:36.364%;--trajectory-span-width:9.091%;--trajectory-span-gap:min(0.727%,1px);--trajectory-span-lane:2\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"message\" data-timeline-record-index=\"5\" data-assistant-timing=\"true\" style=\"--trajectory-span-left:45.455%;--trajectory-span-width:9.091%;--trajectory-span-gap:min(0.727%,1px);--trajectory-span-lane:1;--trajectory-assistant-ttft:44%\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"tool\" data-timeline-record-index=\"6\" style=\"--trajectory-span-left:54.545%;--trajectory-span-width:9.091%;--trajectory-span-gap:min(0.727%,1px);--trajectory-span-lane:2\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"user\" data-timeline-record-index=\"7\" style=\"--trajectory-span-left:63.636%;--trajectory-span-width:9.091%;--trajectory-span-gap:min(0.727%,1px);--trajectory-span-lane:0\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"message\" data-timeline-record-index=\"8\" data-assistant-timing=\"true\" style=\"--trajectory-span-left:72.727%;--trajectory-span-width:9.091%;--trajectory-span-gap:min(0.727%,1px);--trajectory-span-lane:1;--trajectory-assistant-ttft:39%\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"tool\" data-timeline-record-index=\"9\" style=\"--trajectory-span-left:81.818%;--trajectory-span-width:9.091%;--trajectory-span-gap:min(0.727%,1px);--trajectory-span-lane:2\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"message\" data-timeline-record-index=\"10\" data-assistant-timing=\"true\" style=\"--trajectory-span-left:90.909%;--trajectory-span-width:9.091%;--trajectory-span-gap:min(0.727%,1px);--trajectory-span-lane:1;--trajectory-assistant-ttft:47%\"></span></div></div></div></section><div class=\"ledger\"><div class=\"split\"><div class=\"tablePane\" data-trajectory-scroll=\"\"><table class=\"table\" data-scroll-ready=\"true\" aria-rowcount=\"5\"><colgroup><col class=\"eventColumn\" /><col class=\"contentColumn\" /></colgroup><tbody><tr tabindex=\"0\" data-kind=\"system\" data-turn-start=\"true\" aria-label=\"第 1 轮系统，初始系统提示词\"><td class=\"event\"><span class=\"turnLabel\" aria-label=\"第 1 轮\"><span class=\"turnLabelFull\" aria-hidden=\"true\">第 1 轮</span><span class=\"turnLabelCompact\" aria-hidden=\"true\">#1</span></span><div class=\"eventInner\"><span class=\"kindSlot\"><span class=\"kindTag systemNeutral\" data-role-kind=\"system\"><span class=\"kindTagIcon\" aria-hidden=\"true\"><svg width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\"><circle cx=\"8\" cy=\"8\" r=\"2.6\" /><path d=\"M8 1.8v1.6M8 12.6v1.6M1.8 8h1.6M12.6 8h1.6M3.6 3.6l1.15 1.15M11.25 11.25l1.15 1.15M12.4 3.6l-1.15 1.15M4.75 11.25L3.6 12.4\" /></svg></span><span class=\"kindTagLabel\">系统</span></span></span></div></td><td class=\"content\"><span class=\"contentText\" title=\"初始系统提示词\">初始系统提示词</span></td></tr><tr tabindex=\"0\" data-kind=\"user\" aria-label=\"第 1 轮用户，轨迹账本的四列指标和轮次表头没对齐\"><td class=\"event\"><span class=\"turnRail\" aria-hidden=\"true\"></span><div class=\"eventInner\"><span class=\"kindSlot\"><span class=\"kindTag user\" data-role-kind=\"user\"><span class=\"kindTagIcon\" aria-hidden=\"true\"><svg width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\"><circle cx=\"8\" cy=\"5.6\" r=\"2.6\" /><path d=\"M3.2 13.4c0-2.3 2.15-3.8 4.8-3.8s4.8 1.5 4.8 3.8\" /></svg></span><span class=\"kindTagLabel\">用户</span></span></span></div></td><td class=\"content\"><span class=\"contentText\" title=\"轨迹账本的四列指标和轮次表头没对齐\">轨迹账本的四列指标和轮次表头没对齐</span></td></tr><tr tabindex=\"0\" data-kind=\"message\" data-selected=\"true\" aria-label=\"第 1 轮消息，核对账本行与轮次表头的四列指标\"><td class=\"event\"><span class=\"turnRail\" aria-hidden=\"true\"></span><span class=\"selectionRail\" aria-hidden=\"true\"></span><div class=\"eventInner\"><span class=\"kindSlot\"><span class=\"kindTag assistantVioletBright\" data-role-kind=\"message\"><span class=\"kindTagIcon\" aria-hidden=\"true\"><svg width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\"><path d=\"M8 2.2l1.5 4.3 4.3 1.5-4.3 1.5L8 13.8l-1.5-4.3L2.2 8l4.3-1.5z\" /></svg></span><span class=\"kindTagLabel\">消息</span></span></span></div></td><td class=\"content\"><span class=\"resultPreview\" title=\"核对账本行与轮次表头的四列指标 → 两处都是 4×71px\"><span class=\"resultRequest\">核对账本行与轮次表头的四列指标</span><span class=\"inlineResult\"><span class=\"arrow\">→</span><span class=\"inlineResultText\">两处都是 4×71px</span></span></span></td></tr><tr tabindex=\"0\" data-kind=\"tool\" aria-label=\"第 2 步工具，运行 vitest\"><td class=\"event\"><button type=\"button\" class=\"requestBoundaryControl\" aria-label=\"请求 #2\" aria-pressed=\"false\" data-label=\"请求 #2\" data-request-run-index=\"0\" data-request-status=\"complete\" style=\"--request-boundary-offset:0px\"></button><span class=\"turnRail\" aria-hidden=\"true\"></span><div class=\"eventInner\"><span class=\"kindSlot\"><span class=\"kindTag toolAmber\" data-role-kind=\"tool\"><span class=\"kindTagIcon\" aria-hidden=\"true\"><svg width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\"><path d=\"M10.4 2.6a3.4 3.4 0 0 1 3 5.6l-6 6-2.6-2.6 6-6a3.4 3.4 0 0 1-.4-3z\" /></svg></span><span class=\"kindTagLabel\">工具</span></span></span></div></td><td class=\"content\"><span class=\"resultPreview\" title=\"bash 运行 pnpm exec vitest run packages/client/ui-trajectory → 3 个测试文件通过\"><span class=\"resultRequest\"><span class=\"toolCallNameTypeface\">bash</span><span class=\"toolCallPayload\">运行 pnpm exec vitest run packages/client/ui-trajectory</span></span><span class=\"inlineResult\"><span class=\"arrow\">→</span><span class=\"inlineResultText\">3 个测试文件通过</span></span></span></td></tr><tr tabindex=\"0\" data-kind=\"compacted\" data-turn-end=\"true\" aria-label=\"轮次之间已压缩，上下文已压缩\"><td class=\"event\"><span class=\"turnLabel\" aria-label=\"轮次之间\">轮次之间</span><div class=\"eventInner\"><span class=\"kindSlot\"><span class=\"kindTag compacted\" data-role-kind=\"compacted\"><span class=\"kindTagIcon\" aria-hidden=\"true\"><svg width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\"><path d=\"M3 5.4h10M3 8h10M3 10.6h6\" /></svg></span><span class=\"kindTagLabel\">已压缩</span></span></span></div></td><td class=\"content\"><span class=\"contentText\" title=\"上下文已压缩\">上下文已压缩</span></td></tr></tbody></table></div></div></div></div></div>"
+        },
+        {
+          "label": "时间线拖选 + 搜索过滤：区间外的行与未命中的条一起淡出",
+          "note": "该组件本身无独立外观，这里展示它把时间线区间与搜索命中间接接到账本上的效果；拖选为静态快照",
+          "html": "<div style=\"width:860px;height:420px\"><div class=\"c0-root\" data-conversation-composer-overlay=\"\"><div class=\"c1-root\" role=\"toolbar\" aria-label=\"轨迹工具栏\"><div class=\"inner\"><div class=\"actions\"><button type=\"button\" class=\"toggle\" aria-label=\"使用实际时长\" aria-pressed=\"true\" title=\"使用等宽操作\"><svg class=\"toggleIcon\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><circle cx=\"8\" cy=\"8\" r=\"5.25\" /><path d=\"M8 4.75V8l2.25 1.5\" /></svg>时长</button><button type=\"button\" class=\"action\" aria-label=\"展开所有轮次\" aria-pressed=\"false\" title=\"展开所有轮次\"><span class=\"actionIcon\" aria-hidden=\"true\">⊟</span>轮次</button><button type=\"button\" class=\"action\" aria-label=\"展开所有调用\" aria-pressed=\"false\" title=\"展开所有调用\"><span class=\"actionIcon\" aria-hidden=\"true\">⊟</span>调用</button></div><div class=\"search\"><svg width=\"11\" height=\"11\" class=\"searchIcon\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" stroke-width=\"1\"><path d=\"M6.58727 11.8586C9.55061 11.8586 11.9529 9.45637 11.9529 6.49304C11.9529 3.5297 9.55061 1.12744 6.58727 1.12744C3.62394 1.12744 1.22168 3.5297 1.22168 6.49304C1.22168 9.45637 3.62394 11.8586 6.58727 11.8586Z\" stroke=\"currentColor\" /><path d=\"M10.2991 10.3933L14.7783 14.8725\" stroke=\"currentColor\" /></svg><input type=\"search\" class=\"searchInput\" aria-label=\"搜索轨迹\" placeholder=\"搜索\" value=\"pnpm\" /></div></div></div><section class=\"c2-root\" aria-label=\"轨迹时间线\"><div class=\"plot\"><div class=\"labels\" aria-hidden=\"true\"><span>输入</span><span>模型</span><span>工具</span></div><div class=\"track\" aria-label=\"时间线概览；水平拖动可聚焦事件\" tabindex=\"0\"><div class=\"hoverLine\" aria-hidden=\"true\" style=\"--trajectory-hover-left:40%\"></div><div class=\"selection\" aria-hidden=\"true\" style=\"--trajectory-selection-left:18.182%;--trajectory-selection-width:36.364%\"></div><div class=\"selectionEdges\" aria-hidden=\"true\" style=\"--trajectory-selection-left:18.182%;--trajectory-selection-width:36.364%\"></div><div class=\"turnBoundaries\" aria-hidden=\"true\" style=\"--trajectory-domain-left:0%;--trajectory-domain-width:100%\"><span class=\"turnBoundary\" data-turn=\"2\" style=\"--trajectory-turn-left:63.636%\"></span></div><div class=\"lanes\" data-timeline-domain=\"\" style=\"--trajectory-domain-left:0%;--trajectory-domain-width:100%\"><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"system\" data-timeline-record-index=\"0\" data-search-match=\"false\" data-selected=\"false\" style=\"--trajectory-span-left:0%;--trajectory-span-width:9.091%;--trajectory-span-gap:min(0.727%,1px);--trajectory-span-lane:0\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"user\" data-timeline-record-index=\"1\" data-search-match=\"false\" data-selected=\"false\" style=\"--trajectory-span-left:9.091%;--trajectory-span-width:9.091%;--trajectory-span-gap:min(0.727%,1px);--trajectory-span-lane:0\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"message\" data-timeline-record-index=\"2\" data-assistant-timing=\"true\" data-search-match=\"false\" data-selected=\"true\" style=\"--trajectory-span-left:18.182%;--trajectory-span-width:9.091%;--trajectory-span-gap:min(0.727%,1px);--trajectory-span-lane:1;--trajectory-assistant-ttft:54%\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"tool\" data-timeline-record-index=\"3\" data-search-match=\"true\" data-selected=\"true\" style=\"--trajectory-span-left:27.273%;--trajectory-span-width:9.091%;--trajectory-span-gap:min(0.727%,1px);--trajectory-span-lane:2\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"subtool\" data-timeline-record-index=\"4\" data-search-match=\"true\" data-selected=\"true\" style=\"--trajectory-span-left:36.364%;--trajectory-span-width:9.091%;--trajectory-span-gap:min(0.727%,1px);--trajectory-span-lane:2\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"message\" data-timeline-record-index=\"5\" data-assistant-timing=\"true\" data-search-match=\"true\" data-selected=\"true\" style=\"--trajectory-span-left:45.455%;--trajectory-span-width:9.091%;--trajectory-span-gap:min(0.727%,1px);--trajectory-span-lane:1;--trajectory-assistant-ttft:44%\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"tool\" data-timeline-record-index=\"6\" data-search-match=\"false\" data-selected=\"false\" style=\"--trajectory-span-left:54.545%;--trajectory-span-width:9.091%;--trajectory-span-gap:min(0.727%,1px);--trajectory-span-lane:2\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"user\" data-timeline-record-index=\"7\" data-search-match=\"false\" data-selected=\"false\" style=\"--trajectory-span-left:63.636%;--trajectory-span-width:9.091%;--trajectory-span-gap:min(0.727%,1px);--trajectory-span-lane:0\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"message\" data-timeline-record-index=\"8\" data-assistant-timing=\"true\" data-search-match=\"false\" data-selected=\"false\" style=\"--trajectory-span-left:72.727%;--trajectory-span-width:9.091%;--trajectory-span-gap:min(0.727%,1px);--trajectory-span-lane:1;--trajectory-assistant-ttft:39%\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"tool\" data-timeline-record-index=\"9\" data-search-match=\"false\" data-selected=\"false\" style=\"--trajectory-span-left:81.818%;--trajectory-span-width:9.091%;--trajectory-span-gap:min(0.727%,1px);--trajectory-span-lane:2\"></span><span aria-hidden=\"true\" class=\"span\" data-timeline-span=\"message\" data-timeline-record-index=\"10\" data-assistant-timing=\"true\" data-search-match=\"false\" data-selected=\"false\" style=\"--trajectory-span-left:90.909%;--trajectory-span-width:9.091%;--trajectory-span-gap:min(0.727%,1px);--trajectory-span-lane:1;--trajectory-assistant-ttft:47%\"></span></div></div></div></section><div class=\"ledger\"><div class=\"split\"><div class=\"tablePane\" data-trajectory-scroll=\"\"><table class=\"table\" data-scroll-ready=\"true\" aria-rowcount=\"3\"><colgroup><col class=\"eventColumn\" /><col class=\"contentColumn\" /></colgroup><tbody><tr tabindex=\"0\" data-kind=\"system\" data-turn-start=\"true\" data-timeline-focus=\"outside\" aria-label=\"第 1 轮系统，初始系统提示词\"><td class=\"event\"><span class=\"turnLabel\" aria-label=\"第 1 轮\"><span class=\"turnLabelFull\" aria-hidden=\"true\">第 1 轮</span><span class=\"turnLabelCompact\" aria-hidden=\"true\">#1</span></span><div class=\"eventInner\"><span class=\"kindSlot\"><span class=\"kindTag systemNeutral\" data-role-kind=\"system\"><span class=\"kindTagIcon\" aria-hidden=\"true\"><svg width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\"><circle cx=\"8\" cy=\"8\" r=\"2.6\" /><path d=\"M8 1.8v1.6M8 12.6v1.6M1.8 8h1.6M12.6 8h1.6M3.6 3.6l1.15 1.15M11.25 11.25l1.15 1.15M12.4 3.6l-1.15 1.15M4.75 11.25L3.6 12.4\" /></svg></span><span class=\"kindTagLabel\">系统</span></span></span></div></td><td class=\"content\"><span class=\"contentText\" title=\"初始系统提示词\">初始系统提示词</span></td></tr><tr tabindex=\"0\" data-kind=\"tool\" data-timeline-focus=\"inside\" data-selected=\"true\" aria-label=\"第 1 轮工具，运行 vitest\"><td class=\"event\"><span class=\"turnRail\" aria-hidden=\"true\"></span><span class=\"selectionRail\" aria-hidden=\"true\"></span><div class=\"eventInner\"><span class=\"kindSlot\"><span class=\"kindTag toolAmber\" data-role-kind=\"tool\"><span class=\"kindTagIcon\" aria-hidden=\"true\"><svg width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\"><path d=\"M10.4 2.6a3.4 3.4 0 0 1 3 5.6l-6 6-2.6-2.6 6-6a3.4 3.4 0 0 1-.4-3z\" /></svg></span><span class=\"kindTagLabel\">工具</span></span></span></div></td><td class=\"content\"><span class=\"resultPreview\" title=\"bash 运行 pnpm exec vitest run packages/client/ui-trajectory → 3 个测试文件通过\"><span class=\"resultRequest\"><span class=\"toolCallNameTypeface\">bash</span><span class=\"toolCallPayload\">运行 pnpm exec vitest run packages/client/ui-trajectory</span></span><span class=\"inlineResult\"><span class=\"arrow\">→</span><span class=\"inlineResultText\">3 个测试文件通过</span></span></span></td></tr><tr tabindex=\"0\" data-kind=\"message\" data-timeline-focus=\"inside\" aria-label=\"第 1 轮消息，pnpm 全绿，四列指标已经对齐\"><td class=\"event\"><span class=\"turnRail\" aria-hidden=\"true\"></span><div class=\"eventInner\"><span class=\"kindSlot\"><span class=\"kindTag assistantVioletBright\" data-role-kind=\"message\"><span class=\"kindTagIcon\" aria-hidden=\"true\"><svg width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\"><path d=\"M8 2.2l1.5 4.3 4.3 1.5-4.3 1.5L8 13.8l-1.5-4.3L2.2 8l4.3-1.5z\" /></svg></span><span class=\"kindTagLabel\">消息</span></span></span></div></td><td class=\"content\"><span class=\"contentText\" title=\"pnpm 全绿，四列指标已经对齐\">pnpm 全绿，四列指标已经对齐</span></td></tr></tbody></table></div></div></div></div></div>"
+        }
+      ],
+      "props": [
+        {
+          "name": "useSession",
+          "type": "SessionSnapshotSelector",
+          "default": "—",
+          "desc": "会话快照选择器：读出 openState 决定首屏加载条、loadingOlder 与 hasMore 决定分页按钮。"
+        },
+        {
+          "name": "useTrajectory",
+          "type": "UseTrajectory",
+          "default": "—",
+          "desc": "轨迹目标的快照选择器：事件节点、请求、运行中的调用与计时段都从这里来。"
+        },
+        {
+          "name": "useDuration",
+          "type": "SnapshotSelectorHook<boolean>",
+          "default": "—",
+          "desc": "读取「使用实际时长」这一共享偏好，决定时间线投影模式。"
+        },
+        {
+          "name": "loadOlder",
+          "type": "() => Promise<boolean>",
+          "default": "—",
+          "desc": "向会话请求更早一页历史；返回 false 表示没有拉到新数据。"
+        },
+        {
+          "name": "loadImage",
+          "type": "MessageImageLoader",
+          "default": "—",
+          "desc": "会话授权的图片加载器，透传给账本里的记录图片组。"
+        },
+        {
+          "name": "setActualDuration",
+          "type": "(actualDuration: boolean) => void",
+          "default": "—",
+          "desc": "切换「使用实际时长」并顺带清掉时间线区间。"
+        },
+        {
+          "name": "viewRequest",
+          "type": "ConversationViewRequest | null",
+          "default": "—",
+          "desc": "跨视图聚焦请求：view 为 trajectory 时用它拿到 callId，滚到对应记录并打开检查器。"
+        },
+        {
+          "name": "completeViewRequest",
+          "type": "() => void",
+          "default": "—",
+          "desc": "确认一次性聚焦请求已消费（打开或无法解析都要回调）。"
+        },
+        {
+          "name": "renderSlot",
+          "type": "PropsRenderSlots<'conversation.trajectory.images'>['renderSlot']",
+          "default": "—",
+          "desc": "记录图片组插槽的渲染器，直接转交给账本。"
+        },
+        {
+          "name": "t",
+          "type": "TrajectoryTranslate",
+          "default": "—",
+          "desc": "trajectory 命名空间的翻译座位。"
+        },
+        {
+          "name": "jsonStringWrapping",
+          "type": "Omit<NonNullable<JsonTreeProps['stringWrapping']>, 'label'> | undefined",
+          "default": "—",
+          "desc": "共享的 JSON 字符串换行偏好，补上本命名空间的「自动换行」标签后传给账本。"
+        }
+      ],
+      "notes": "插槽身份：它是 <code>conversation.view</code> 的一条注册项（view id 为 <code>trajectory</code>），由 ui-trajectory 包注册，不产生自己的视觉元素——<code>.root</code> / <code>.ledger</code> 两张类来自 views.module.css，其余内容全是子组件画的，所以示例把工具栏、时间线、账本三张样式表一起列进 <code>css</code>（四张表里只有 <code>root</code> 重名，示例显式写成 <code>c0-root</code> / <code>c1-root</code> / <code>c2-root</code> 钉住归属）。状态：这里集中持有折叠集合、搜索词、时间线区间与选中记录、历史分页游标；搜索索引按 3s 节流重建，历史一页 50 个事件节点。<code>--dsh-trajectory-bottom-clearance</code> 会吃掉会话输入框的高度（默认 152px + 16px），所以账本底部始终留白，静态快照里能看到这段空白。",
+      "keywords": [
+        "轨迹视图",
+        "轨迹页",
+        "trajectory",
+        "conversation view"
+      ]
+    }
+  ]
+}
