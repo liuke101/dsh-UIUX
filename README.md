@@ -1,6 +1,6 @@
 # UIUX — DeepSeek Harness 界面组件目录
 
-> **English summary.** A catalog of every React UI component in the DeepSeek Harness Web client: 601 components with their export name, source location, CSS Module classes and design tokens, plus 116 of them with live appearance previews that inline the component's own stylesheet rather than a screenshot. Start at [`index.html`](index.html). The pages embed a CJK font subset, so they render Chinese correctly even where no CJK font is installed — GitHub's own Markdown view does not, so on such a machine this README shows boxes while the catalog itself stays readable.
+> **English summary.** A catalog of every React UI component in the DeepSeek Harness Web client: 601 components with their export name, source location, CSS Module classes and design tokens, plus 117 of them with live appearance previews that inline the component's own stylesheet rather than a screenshot. Start at [`index.html`](index.html). The pages embed a CJK font subset, so they render Chinese correctly even where no CJK font is installed — GitHub's own Markdown view does not, so on such a machine this README shows boxes while the catalog itself stays readable.
 
 这个目录是对 DeepSeek Harness Web 客户端全部 React UI 组件的调研产物：把每个组件的名称、导出变量名、外观示例与代码来源整理成可以直接在浏览器里查阅的 HTML 目录，同时保留生成它所需的脚本与结构化数据。
 
@@ -17,7 +17,7 @@
 | [inventory.html](inventory.html) | 全量清单：扫描到的每个组件的导出变量名、源码位置、Props 类型、CSS 类名与设计变量，可过滤。 |
 | [data/components.json](data/components.json) | 组件清单的机器可读版本（抽取脚本的产物）。 |
 | [data/tokens.json](data/tokens.json) | 设计变量的机器可读版本（含每个变量的声明位置与组件引用）。 |
-| [data/parts/](data/parts/) | 组件条目（外观示例的 HTML 与元数据），按批次分文件，共 116 条 / 293 个示例。 |
+| [data/parts/](data/parts/) | 组件条目（外观示例的 HTML 与元数据），按批次分文件，共 117 条 / 297 个示例。 |
 | [data/ENTRY-SCHEMA.md](data/ENTRY-SCHEMA.md) | 条目写入规范：字段含义与硬性规则。 |
 | [assets/](assets/) | 嵌入用的中文子集字体（`cjk-400.woff2` / `cjk-500.woff2`，OFL 授权的 Noto Sans SC 子集）。 |
 | [tools/](tools/) | 生成与校验脚本：`extract.mjs`、`extract-tokens.mjs`、`build.mjs`、`font.mjs`、`validate.mjs`、`check.mjs`。 |
