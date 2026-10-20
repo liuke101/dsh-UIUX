@@ -1,8 +1,10 @@
 # UIUX — DeepSeek Harness 界面组件目录
 
+**中文** | [English](README.en.md)
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-> **English summary.** A catalog of every React UI component in the DeepSeek Harness Web client: 601 components with their export name, source location, CSS Module classes and design tokens, plus 117 of them with live appearance previews that inline the component's own stylesheet rather than a screenshot. Start at [`index.html`](index.html). The pages embed a CJK font subset, so they render Chinese correctly even where no CJK font is installed — GitHub's own Markdown view does not, so on such a machine this README shows boxes while the catalog itself stays readable.
+> **English summary.** A catalog of every React UI component in the DeepSeek Harness Web client: 601 components with their export name, source location, CSS Module classes and design tokens; 388 of them have catalog entries and 967 live specimens that inline the component's own stylesheet rather than a screenshot. Start at [`index.html`](index.html). The pages embed a CJK font subset, so they render Chinese correctly even where no CJK font is installed — GitHub's own Markdown view does not, so on such a machine this README shows boxes while the catalog itself stays readable. A full English README is at [`README.en.md`](README.en.md).
 
 这个目录是对 DeepSeek Harness Web 客户端全部 React UI 组件的调研产物：把每个组件的名称、导出变量名、外观示例与代码来源整理成可以直接在浏览器里查阅的 HTML 目录，同时保留生成它所需的脚本与结构化数据。
 
