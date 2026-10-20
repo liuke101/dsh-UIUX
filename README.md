@@ -1,5 +1,7 @@
 # UIUX — DeepSeek Harness 界面组件目录
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 > **English summary.** A catalog of every React UI component in the DeepSeek Harness Web client: 601 components with their export name, source location, CSS Module classes and design tokens, plus 117 of them with live appearance previews that inline the component's own stylesheet rather than a screenshot. Start at [`index.html`](index.html). The pages embed a CJK font subset, so they render Chinese correctly even where no CJK font is installed — GitHub's own Markdown view does not, so on such a machine this README shows boxes while the catalog itself stays readable.
 
 这个目录是对 DeepSeek Harness Web 客户端全部 React UI 组件的调研产物：把每个组件的名称、导出变量名、外观示例与代码来源整理成可以直接在浏览器里查阅的 HTML 目录，同时保留生成它所需的脚本与结构化数据。
@@ -104,3 +106,11 @@ node <本目录>/tools/build.mjs
 页面在 `<head>` 内嵌了中文字体子集，因此单个 HTML 文件可以独立分发；代价是每页约 760 KiB 的字体数据（base64），九张页面合计约 22 MiB。清单页与变量页的数据规模较大，用浏览器搜索或页面自带的过滤框定位比滚动更快。
 
 目录数据取自工作区源码快照，页面顶部记录了快照日期；重新生成即可与当前源码对齐。
+
+## 许可
+
+本仓库的目录页面、生成脚本与结构化数据以 MIT 协议开源，全文见 [LICENSE](LICENSE)。
+
+Copyright (c) 2026 liuke
+
+两处内嵌内容保留各自的上游授权：示例里逐字内联的组件样式表与源码片段来自 DeepSeek Harness（MIT），`assets/` 下的中文字体子集来自 Noto Sans SC（SIL Open Font License 1.1）。
