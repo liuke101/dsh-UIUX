@@ -111,6 +111,6 @@ Catalog data is taken from a source snapshot in the workspace; the snapshot date
 
 The catalog pages, build scripts and structured data in this repository are open source under the MIT License; see [LICENSE](LICENSE) for the full text.
 
-Copyright (c) 2026 liuke
+Copyright (c) 2026 LiuKe
 
 Two kinds of embedded content keep their upstream licenses: the component stylesheets and source excerpts inlined verbatim in the specimens come from DeepSeek Harness (MIT), and the CJK subset fonts under `assets/` come from Noto Sans SC (SIL Open Font License 1.1).

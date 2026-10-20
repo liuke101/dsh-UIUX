@@ -111,6 +111,6 @@ node <本目录>/tools/build.mjs
 
 本仓库的目录页面、生成脚本与结构化数据以 MIT 协议开源，全文见 [LICENSE](LICENSE)。
 
-Copyright (c) 2026 liuke
+Copyright (c) 2026 LiuKe
 
 两处内嵌内容保留各自的上游授权：示例里逐字内联的组件样式表与源码片段来自 DeepSeek Harness（MIT），`assets/` 下的中文字体子集来自 Noto Sans SC（SIL Open Font License 1.1）。
