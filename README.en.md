@@ -1,10 +1,8 @@
 # UIUX — DeepSeek Harness UI Component Catalog
 
-[中文](README.md) | **English**
+[中文](README.md) | **English** | [Browse online](https://liuke101.github.io/dsh-UIUX/)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-
-> This is the English README. The catalog pages themselves are in Chinese; they embed a CJK font subset, so they render correctly even where no CJK font is installed. GitHub's Markdown view of the [Chinese README](README.md) does not embed fonts, so on such a machine it shows boxes while the catalog itself stays readable.
 
 This catalog is the product of a survey of the DeepSeek Harness Web client's React UI components: it collects every component's name, export identifier, appearance specimens and source location into an HTML catalog that can be browsed directly in a browser, and keeps the scripts and structured data needed to regenerate it.
 
